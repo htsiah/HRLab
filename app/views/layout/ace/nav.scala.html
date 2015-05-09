@@ -1,0 +1,151 @@
+@()(implicit session: play.api.mvc.Session)
+
+<!-- #section:basics/sidebar -->
+<div id="sidebar" class="sidebar responsive">
+	<script type="text/javascript">
+		try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+	</script>
+
+	<ul class="nav nav-list">
+
+		<li id="navProfile">
+			<a href="#" class="dropdown-toggle">
+				<i class="menu-icon fa fa-male"></i>
+				<span class="menu-text"> My Profile </span>
+				<b class="arrow fa fa-angle-down"></b>
+			</a>
+
+			<b class="arrow"></b>
+
+			<ul class="submenu">
+				<li id="navDashboard" class="">
+					<a href="@routes.DashboardController.index">
+						<i class="menu-icon fa fa-caret-right"></i>
+						Dashboard
+					</a>
+					<b class="arrow"></b>
+				</li>
+				
+				<li id="navMyProfile">
+					<a href="@routes.PersonController.myprofileview">
+						<i class="menu-icon fa fa-caret-right"></i>
+						Personal Info
+					</a>
+				</li>
+				
+			</ul>
+		</li>
+		
+		<li id="navCompany">
+			<a href="#" class="dropdown-toggle">
+				<i class="menu-icon fa fa-home"></i>
+				<span class="menu-text"> Company </span>
+				<b class="arrow fa fa-angle-down"></b>
+			</a>
+	
+			<ul class="submenu">
+				<li id="navStaff">
+					<a href="@routes.PersonController.index">
+						<i class="menu-icon fa fa-caret-right"></i>
+						Staff Directory
+					</a>
+				</li>
+				<li id="navCalendar">
+					<a href="@routes.CalendarController.company">
+						<i class="menu-icon fa fa-caret-right"></i>
+						Calendar
+					</a>
+				</li>
+				<li id="navComProfile">
+					<a href="@routes.CompanyController.index">
+						<i class="menu-icon fa fa-caret-right"></i>
+						Profile
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li id="navReports">
+			<a href="#" class="dropdown-toggle">
+				<i class="menu-icon fa fa-bar-chart-o"></i>
+				<span class="menu-text"> Reports </span>
+				<b class="arrow fa fa-angle-down"></b>
+			</a>
+	
+			<ul class="submenu">
+				<li id="navMyLeaveRequest">
+					<a href="@routes.ReportController.myleaverequest()">
+						<i class="menu-icon fa fa-caret-right"></i>
+						My Leave Request
+					</a>
+				</li>
+				@** only manager can view **@
+				@if(session.get("ismanager").get.contains("true")){
+					<li id="navMyTeamLeaveRequest">
+						<a href="@routes.ReportController.myteamleaverequest()">
+							<i class="menu-icon fa fa-caret-right"></i>
+							My Team Leave Request
+						</a>
+					</li>
+					<li id="navMyTeamLeaveProfile">
+						<a href="@routes.ReportController.myteamleaveprofile()">
+							<i class="menu-icon fa fa-caret-right"></i>
+							My Team Leave Profile
+						</a>
+					</li>
+				}
+				@** only admin can view **@
+				@if(session.get("roles").get.contains("Admin")){
+					<li id="navAllStaffLeaveRequest">
+						<a href="@routes.ReportController.allstaffleaverequest()">
+							<i class="menu-icon fa fa-caret-right"></i>
+							All Staff Leave Request
+						</a>
+					</li>
+					<li id="navAllStaffLeaveProfile">
+						<a href="@routes.ReportController.allstaffleaveprofile()">
+							<i class="menu-icon fa fa-caret-right"></i>
+							All Staff Leave Profile
+						</a>
+					</li>
+				}
+			</ul>
+		</li>
+
+		@if(session.get("roles").get.contains("Admin")) {
+			<li id="navAdmin">
+				<a href="#" class="dropdown-toggle">
+					<i class="menu-icon fa fa-gears"></i>
+					<span class="menu-text"> Admin </span>
+					<b class="arrow fa fa-angle-down"></b>
+				</a>
+	
+				<ul class="submenu">
+					<li id="navKeyword">
+						<a href="@routes.KeywordController.index">
+							<i class="menu-icon fa fa-caret-right"></i>
+							Keyword Setting
+						</a>
+					</li>
+					<li id="navLeaveTypeSetting">
+						<a href="@routes.LeaveSettingController.index">
+							<i class="menu-icon fa fa-caret-right"></i>
+							Leave Setting
+						</a>
+					</li>
+				</ul>
+			</li> @** Admin **@
+		}
+
+	</ul><!-- /.nav-list -->
+
+	<!-- #section:basics/sidebar.layout.minimize -->
+	<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+		<i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+	</div>
+
+	<!-- /section:basics/sidebar.layout.minimize -->
+	<script type="text/javascript">
+		try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+	</script>
+</div>

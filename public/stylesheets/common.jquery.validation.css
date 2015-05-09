@@ -1,0 +1,5 @@
+input.error, select.error, textarea.error{
+	border-color:#f09784;
+	-webkit-box-shadow:none;
+	box-shadow:none
+}

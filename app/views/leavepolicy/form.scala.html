@@ -1,0 +1,275 @@
+@import helper._
+@import reactivemongo.bson.BSONObjectID
+@import utilities.Alert
+
+@(leavepolicy:Form[LeavePolicy],leavetypes:List[String],positiontypes:List[String],oid:String="",alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		@if(oid=="") {	
+			<h1>Admin <small><i class="ace-icon fa fa-angle-double-right"></i> Leave Setting <i class="ace-icon fa fa-angle-double-right"></i> Leave Policy <i class="ace-icon fa fa-angle-double-right"></i> New</small></h1>
+		} else {
+			<h1>Admin <small><i class="ace-icon fa fa-angle-double-right"></i> Leave Setting <i class="ace-icon fa fa-angle-double-right"></i> Leave Policy</small></h1>
+		}
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/jquery-ui/javascripts/jquery-ui-1.10.3.full.min.js")"></script>
+	<script src="@routes.Assets.at("layout/jquery-ui/javascripts/jquery.ui.touch-punch.min.js")"></script>
+	<script src="@routes.Assets.at("layout/ace/js/fuelux/fuelux.spinner.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/common.dialogbox.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/leavepolicy.form.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link rel="stylesheet" href="@routes.Assets.at("layout/jquery-ui/stylesheets/jquery-ui-1.10.3.full.min.css")" />
+	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {}
+
+@buttons = {
+	@if(oid=="") {	
+		<a href="javascript:$('#leavepolicyform').submit();" class="btn btn-sm btn btn-block">Submit</a>
+	} else {
+		<a href="javascript:$('#leavepolicyform').submit();" class="btn btn-sm btn btn-block">Save</a>
+	}
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@radioSelected(value: Option[String], valueCheck: String) = {
+	@if(value != None){
+		@if(value.get == valueCheck){
+			checked="checked"
+		}
+	}
+}
+
+@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.alert(alert)
+	@helper.form(
+		action = (
+			if(oid=="")
+				routes.LeavePolicyController.insert
+			else
+				routes.LeavePolicyController.update(oid)
+		), 
+		'id -> "leavepolicyform"
+	) {
+	@if(oid==""){
+		@select(leavepolicy("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leavepolicy("pt"), options = options(positiontypes.map(positiontype=>positiontype)), '_label -> "Position type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+	} else {
+		<dl class="dl-horizontal">
+			<dt><label>Leave type</label></dt>
+			<dd class="">@leavepolicy("lt").value</dd>
+		</dl>
+		<dl class="dl-horizontal">
+			<dt><label>Position type</label></dt>
+			<dd class="">@leavepolicy("pt").value</dd>
+		</dl>
+	}
+	@select(leavepolicy("g"), options = Seq("Applicable for all"->"Applicable for all", "Male only"->"Male only", "Female only"->"Female only"), '_label -> "Gender", '_class->"dl-horizontal", 'class->"form-control")
+	@select(leavepolicy("ms"), options = Seq("Applicable for all"->"Applicable for all", "Single only"->"Single only", "Married only"->"Married only"), '_label -> "Marital status", '_class->"dl-horizontal", 'class->"form-control")
+	@select(leavepolicy("dt"), options = Seq("Full day only"->"Full day only", "Full day and half day (1st or 2nd)"->"Full day and half day (1st or 2nd)"), '_label -> "Day type option", '_class->"dl-horizontal", 'class->"form-control")
+	@select(leavepolicy("acc"), options = Seq("No accrue"->"Do not accrue. Just track usage", "Monthly"->"Accrue Monthly (At start of the month)", "Yearly"->"Accrue Annually (At start of the cut off month)"), '_label -> "Accrual / Earn", '_class->"dl-horizontal", 'class->"form-control")
+	@select(leavepolicy("cexp"), options = Seq(
+		"0"->"Does not expire", 
+		"1"->"After 1 month", 
+		"2"->"After 2 months",
+		"3"->"After 3 months",
+		"4"->"After 4 months",
+		"5"->"After 5 months",
+		"6"->"After 6 months",
+		"7"->"After 7 months",
+		"8"->"After 8 months",
+		"9"->"After 9 months",
+		"10"->"After 10 months",
+		"11"->"After 11 months",
+		"12"->"After 12 months"), 
+		'_label -> "Carry forward expires", '_class->"dl-horizontal", 'class->"form-control", '_showConstraints->false)
+	
+	<dl class="dl-horizontal">
+		<dt><label>&nbsp</label></dt>
+		<dd>
+			<div class="checkbox" style="display: inline-block;">
+				<label>
+					<input type="checkbox" value="true" name="nwd" id="nwd" class="ace" @radioSelected(leavepolicy("nwd").value, "true")>
+					<span class="lbl"> Eligible on non-working day</span>
+				</label>
+			</div>
+		</dd>
+	</dl>
+	
+	<div class="widget-box transparent">
+		<div class="widget-header widget-header-flat">
+			<h4 class="widget-title lighter">
+				<i class="fa fa-cog"></i>
+				Eligible Leave Entitlement Setup
+			</h4>
+		</div>
+
+		<div class="widget-body" style="display: block;">
+			<div class="widget-main no-padding">
+				<table class="table table-bordered table-striped">
+					<thead class="thin-border-bottom">
+						<tr>
+							<th class="text-center">
+								Service Months (<=) <br>
+								Maxinum is 600 which equivalent 50 years
+							</th>
+							<th class="text-center">Entitlement</th>
+							<th class="text-center">Carry Forward</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e1_s" id="e1_s" value=@leavepolicy("ent.e1_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e1_s-error" class="error" for="e1_s" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e1" id="e1" value=@leavepolicy("ent.e1").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e1-error" class="error" for="e1" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e1_cf" id="e1_cf" value=@leavepolicy("ent.e1_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e1_cf-error" class="error" for="e1_cf" style="display: inline;"></label>
+							</td>
+						</tr>
+						<tr>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e2_s" id="e2_s" value=@leavepolicy("ent.e2_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e2_s-error" class="error" for="e2_s" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e2" id="e2" value=@leavepolicy("ent.e2").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e2-error" class="error" for="e2" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="ent.e2_cf" id="e2_cf" value=@leavepolicy("ent.e2_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e2_cf-error" class="error" for="e2_cf" style="display: inline;"></label>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e3_s" id="e3_s" value=@leavepolicy("ent.e3_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e3_s-error" class="error" for="e3_s" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e3" id="e3" value=@leavepolicy("ent.e3").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e3-error" class="error" for="e3" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e3_cf" id="e3_cf" value=@leavepolicy("ent.e3_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e3_cf-error" class="error" for="e3_cf" style="display: inline;"></label>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e4_s" id="e4_s" value=@leavepolicy("ent.e4_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e4_s-error" class="error" for="e4_s" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e4" id="e4" value=@leavepolicy("ent.e4").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e4-error" class="error" for="e4" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e4_cf" id="e4_cf" value=@leavepolicy("ent.e4_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e4_cf-error" class="error" for="e4_cf" style="display: inline;"></label>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e5_s" id="e5_s" value=@leavepolicy("ent.e5_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e5_s-error" class="error" for="e5_s" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e5" id="e5" value=@leavepolicy("ent.e5").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e5-error" class="error" for="e5" style="display: inline;"></label>
+							</td>
+							<td class="text-center">
+								<div class="ace-spinner touch-spinner" style="width: 100px;">
+									<input type="text" name="ent.e5_cf" id="e5_cf" value=@leavepolicy("ent.e5_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+								</div>
+								<br>
+								<label id="e5_cf-error" class="error" for="e5_cf" style="display: inline;"></label>
+							</td>
+						</tr>
+						
+					</tbody>
+				</table>
+			</div><!-- /.widget-main -->
+		</div><!-- /.widget-body -->
+	</div>
+	
+	<div class="hidden">
+			@inputText(leavepolicy("_id"),'type -> "hidden")
+			@inputText(leavepolicy("sys")("eid"),'type -> "hidden")
+			@inputText(leavepolicy("sys")("cdat"),'type -> "hidden")
+			@inputText(leavepolicy("sys")("mdat"),'type -> "hidden")
+			@inputText(leavepolicy("sys")("mby"),'type -> "hidden")
+			@inputText(leavepolicy("sys")("ddat"),'type -> "hidden")
+			@inputText(leavepolicy("sys")("dby"),'type -> "hidden")
+			@inputText(leavepolicy("sys")("ll"),'type -> "hidden")
+			if(oid!="") {
+				@inputText(leavepolicy("lt"),'type -> "hidden")
+				@inputText(leavepolicy("pt"),'type -> "hidden")
+			}
+	</div>
+
+	}
+
+	@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>Do you want to update all staff's leave profile that linked to this policy?</p></div>"))
+}

@@ -1,0 +1,44 @@
+@(office:Office)(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Profile <i class="ace-icon fa fa-angle-double-right"></i> Office </small></h1>
+	</div>
+}
+
+@pluginjs = {}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/office.view.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {}
+
+@inlinestyle = {}
+
+@buttons = {
+	@if(session.get("roles").get.contains("Admin")) {
+		<a href="@routes.OfficeController.edit(office._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
+	}
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>
+}
+
+@contentRow(label: String, contentVal: String, cssClass:String="") = {
+	@if(contentVal.trim() == "") {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp</dd></dl>
+	} else {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">@contentVal</dd></dl>
+	}
+}
+
+@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+
+	@contentRow("Office name", office.n)
+	@contentRow("Address 1", office.ad1.getOrElse(""))
+	@contentRow("Address 2", office.ad2.getOrElse(""))
+	@contentRow("Address 3", office.ad3.getOrElse(""))
+	@contentRow("Postcode", office.pc.getOrElse(""))
+	@contentRow("State", office.st)
+	@contentRow("Country", office.ct)
+
+}

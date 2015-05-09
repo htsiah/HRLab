@@ -1,0 +1,80 @@
+@import helper._
+@import reactivemongo.bson.BSONObjectID
+@import utilities.Alert
+
+@(login:Form[Login],alert:Alert=null)(implicit flash: Flash)
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/authentication.create.js")"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("stylesheets/common.authentication.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {
+	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+}
+
+@layout.ace.public("Login | Human Resources Software | HRLab",pluginjs,inlinejs,pluginstyle,inlinestyle){
+	
+	<div id="login-box" class="login-box visible widget-box no-border">
+		<div class="widget-body">
+			<div class="widget-main">
+				<h4 class="header blue lighter bigger">
+					<i class="ace-icon fa fa-coffee green"></i>
+					Please Enter Your Information
+				</h4>
+				@layout.ace.alert(alert)
+				<div class="space-6"></div>
+				@helper.form(
+					action = routes.AuthenticationController.authentication,
+					'id -> "loginform"
+				) {
+					<fieldset>
+						<label class="block clearfix">
+								<input type="text" name="email" id="email" class="form-control" placeholder="Email address" data-toggle="tooltip" title="Email address" value="@login("email").value">
+						</label>
+						<label class="block clearfix">
+								<input type="password" name="password" id="password" class="form-control" placeholder="Password" data-toggle="tooltip" title="Password" value="@login("password").value">
+						</label>
+						<div class="space"></div>
+						<div class="clearfix">
+							<button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
+								<i class="ace-icon fa fa-sign-in"></i>									
+								<span class="bigger-110">Login</span>
+							</button>
+						</div>
+						<div class="space-4"></div>
+					</fieldset>
+				}
+			</div><!-- /widget-main -->
+			<div class="toolbar clearfix">
+				<div>
+					<a href="@routes.AuthenticationController.reset" class="forgot-password-link">
+						<i class="ace-icon fa fa-arrow-left"></i>
+						I forgot my password
+					</a>
+				</div>
+				
+				<div>
+					<a href="@routes.SignUpController.create" class="user-signup-link">
+						I want to sign up
+						<i class="ace-icon fa fa-arrow-right"></i>
+					</a>
+				</div>
+				
+			</div> @** /.toolbar clearfix **@
+		</div><!-- /widget-body -->
+		
+		<div class="space-12"></div>
+		<div class="center">
+			<a href="http://www.hrlab.my" class="back-to-home">Go to HRLab Website</a>
+		</div>
+	</div><!-- /login-box -->
+	
+}

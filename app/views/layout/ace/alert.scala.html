@@ -1,0 +1,59 @@
+@import utilities.Alert
+
+@(alert:Alert)(implicit flash: Flash)
+
+<div id="alert">
+@if(alert!=null) {
+
+	@if(alert.js.getOrElse("")!="") {
+		<script type="text/javascript">
+			$(function(){
+				@Html(alert.js.getOrElse(""))
+			})
+		</script>
+	}
+
+	@if(alert.k<=999) {
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			@Html(alert.m)
+		</div>
+	}
+	
+	@if(alert.k>=1000 && alert.k<=1999) {
+		<div class="alert alert-danger">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			@Html(alert.m)
+		</div>	
+	}
+	
+	@if(alert.k>=2000 && alert.k<=2999) {
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			@Html(alert.m)
+		</div>		
+	}
+	
+}
+
+@if(flash.get("success").getOrElse("") != ""){
+	<div class="alert alert-success">
+	  	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	  	@flash.get("success")
+	</div>
+}
+
+@if(flash.get("info").getOrElse("") != ""){
+	<div class="alert alert-info">
+	  	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	  	@flash.get("info")
+	</div>
+}
+
+@if(flash.get("error").getOrElse("") != ""){
+	<div class="alert alert-danger">
+	  	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	  	@flash.get("error")
+	</div>
+}
+</div>

@@ -1,0 +1,22 @@
+@(title: String,pluginjs:Html=Html(""),inlinejs:Html=Html(""),pluginstyle:Html=Html(""),inlinestyle:Html=Html(""))(content:Html)
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>@title</title>
+		<meta name="description" content="Human Resources Software for Malaysia Small Business" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />	
+		<link rel="icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+		@** page specific plugin styles **@
+		@pluginstyle
+		@** inline styles related to this page **@
+		@inlinestyle
+	</head>
+	<body>
+		@content
+		@** page specific plugin scripts **@
+		@pluginjs
+		@** inline scripts related to this page **@
+		@inlinejs
+	</body>
+</html>

@@ -1,0 +1,77 @@
+@import helper._
+@import reactivemongo.bson.BSONObjectID
+
+@(keyword:Form[Keyword],protectedkey:List[String],oid:String="")(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Admin <small><i class="ace-icon fa fa-angle-double-right"></i> Keyword Setting <i class="ace-icon fa fa-angle-double-right"></i> Keyword </small></h1>
+	</div>
+}
+
+@pluginjs = {}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/keyword.form.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {}
+
+@inlinestyle = {}
+
+@buttons = {
+	<a href="javascript:$('#keywordForm').submit()" class="btn btn-sm btn btn-block">Save</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+
+@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+
+	@helper.form( action = routes.KeywordController.update(oid), 'id -> "keywordForm") {
+	
+  		<dl class="dl-horizontal"><dt><label>Name</label><dt><dd>@keyword.forField("n")(value => value.value.get)</dd></dl>
+
+		@repeat(keyword("v")) { valuefield =>
+			<div class="well value">
+				@if(protectedkey.contains(keyword.forField(valuefield.name)(value => value.value.get))) {
+					@inputText(valuefield, '_label -> "Value", 'readonly -> "readonly")
+					<a class="removeValue"></a>
+				} else {
+					@inputText(valuefield, '_label -> "Value")
+					<a class="removeValue btn pull-right">Remove This Value</a>
+				}
+			</div>
+		}
+				
+		@**
+        * Keep an hidden block that will be used as template for Javascript copy code
+        **@
+        <div class="well hidden value_template">
+			@inputText(keyword("v[x]"), '_label -> "Value")
+			<a class="removeValue btn pull-right">Remove This Value</a>
+		</div>
+            
+		<dl>
+			<dt></dt>
+			<dd>
+				<div class="manage">
+					<a id="addValue" class="btn success">Add Another Value</a>
+				</div>
+			</dd>
+		</dl>
+		
+		<div class="hidden">		
+			@inputText(keyword("_id"),'type -> "hidden")
+			@inputText(keyword("n"),'type -> "hidden")
+			@inputText(keyword("s"),'type -> "hidden")
+			@inputText(keyword("sys")("eid"),'type -> "hidden")
+			@inputText(keyword("sys")("cdat"),'type -> "hidden")
+			@inputText(keyword("sys")("mdat"),'type -> "hidden")
+			@inputText(keyword("sys")("mby"),'type -> "hidden")
+			@inputText(keyword("sys")("ddat"),'type -> "hidden")
+			@inputText(keyword("sys")("dby"),'type -> "hidden")
+			@inputText(keyword("sys")("ll"),'type -> "hidden")
+		</div>
+		
+	}
+}

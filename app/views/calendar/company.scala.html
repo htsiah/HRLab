@@ -1,0 +1,49 @@
+@(departments:List[String])(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar</small></h1>
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.min.js")" type="text/javascript"></script>
+}
+
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/calendar.company.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {}
+
+@buttons = {
+	<a href="@routes.CompanyHolidayController.create" class="btn btn-sm btn btn-block">Add Holiday</a>
+}
+
+@if(session.get("roles").get.contains("Admin")) {
+	@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+		<div class="form-group">
+			<select class="form-control" id="calendardisplaytypes">
+				<option>My Calendar</option>
+				@departments.map{ department=> <option>@department</option> }
+			</select>		
+		</div>
+		<div id="calendar"></div>
+	}
+} else {
+	@layout.ace.main("Human Resources Software",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+		@pageheader
+		<div class="form-group">
+			<select class="form-control" id="calendardisplaytypes">
+				<option>My Calendar</option>
+				@departments.map{ department=> <option>@department</option> }
+			</select>		
+		</div>
+		<div id="calendar"></div>
+	}
+}

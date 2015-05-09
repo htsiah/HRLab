@@ -1,0 +1,38 @@
+@(hostname:String,mailbody: String)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Human Resources Software</title>
+	<style>
+		#outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
+        body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
+        .ExternalClass {width:100%;} /* Force Hotmail to display emails at full width */
+        #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+	</style>
+<head>
+<body style="background: #f4f7f9; font-family:Helvetica Neue, Helvetica, Arial;">
+	<table id="backgroundTable" align="center" bgcolor="#f4f7f9" border="0" cellpadding="0" cellspacing="0" style="background: #f4f7f9;" width="100%">
+		<tr>
+			<td align="center">
+				<table border="0" cellpadding="20" cellspacing="0" style="margin-left: auto;margin-right: auto;width:600px;text-align:center;" width="600">
+					<tr><td align="center" valign="top">
+						<div style="margin-top:10px;font-size:small">HR Lab</div>
+						<div style="margin-top:10px;font-size:small">Human Resources Software</div>
+					</td></tr>
+				</table>
+			<td>
+		</tr>
+		<tr>
+			<td align="center">
+				<table border="0" cellpadding="30" cellspacing="0" style="margin-left: auto;margin-right: auto;width:600px;text-align:center;" width="600">
+					<tr><td align="left" style="background: #ffffff; border: 1px solid #dce1e5;" valign="top" width="">
+						@Html(mailbody)
+					</td></tr>
+				</table>
+			</td>
+		</tr>
+	<table>
+</body>
+</html>
+	

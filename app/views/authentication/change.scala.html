@@ -1,0 +1,46 @@
+@import helper._
+@import utilities.Alert
+
+@(change:Form[Change], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Change Password</h1>
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/authentication.change.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("layout/ace/css/datepicker.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {
+	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+}
+
+@buttons = {
+	<a href="javascript:$('#changeform').submit()" class="btn btn-sm btn btn-block">Update Password</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.alert(alert)
+	@helper.form(
+		action = routes.AuthenticationController.changePost,
+		'id -> "changeform"
+	) {
+
+		@inputText(change("password"), '_label->"Old Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@inputText(change("npassword"), '_label->"New Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@inputText(change("cpassword"), '_label->"Confirm Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+	
+	}
+	
+}

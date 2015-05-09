@@ -1,0 +1,1 @@
+$('#loader-overlay-center').spin({color: '#ffffff'})

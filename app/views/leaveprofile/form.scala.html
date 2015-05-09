@@ -1,0 +1,314 @@
+@import helper._
+@import reactivemongo.bson.BSONObjectID
+@import utilities.Alert
+
+@(leaveprofile:Form[LeaveProfile], leavetypes:List[String], pid:String, ppt:String, oid:String="", alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		@if(oid==""){
+			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Staff Directory <i class="ace-icon fa fa-angle-double-right"></i> Simon Siah <i class="ace-icon fa fa-angle-double-right"></i> Leave Profile <i class="ace-icon fa fa-angle-double-right"></i> New</small></h1>
+		} else {
+			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Staff Directory <i class="ace-icon fa fa-angle-double-right"></i> Simon Siah <i class="ace-icon fa fa-angle-double-right"></i> Leave Profile</small></h1>
+		}
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/ace/js/fuelux/fuelux.spinner.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/ace/js/spin.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/jquery.spin.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
+}
+
+@inlinejs = {
+	<script type="text/javascript">
+		var p_position = "@ppt";
+	</script>
+	<script src="@routes.Assets.at("javascripts/leaveprofile.form.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {
+	<link href="@routes.Assets.at("stylesheets/common.loaderanimation.css")" rel="stylesheet" media="screen">
+}
+
+@buttons = {
+	<a href="javascript:$('#leaveprofileform').submit();" class="btn btn-sm btn btn-block">Save</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@contentRow(label: String, contentVal: String, cssClass:String="") = {
+	@if(contentVal.trim() == "") {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp</dd></dl>
+	} else {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">@contentVal</dd></dl>
+	}
+}
+
+@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.alert(alert)
+	@helper.form(
+		action = (
+			if(oid=="")
+				routes.LeaveProfileController.insert(pid)
+			else
+				routes.LeaveProfileController.update(oid)
+		),
+		'id -> "leaveprofileform"
+	) {
+
+		@if(oid=="") {
+			@select(leaveprofile("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		} else {
+			@contentRow("Leave type", leaveprofile("lt").value.get)
+		}
+		@contentRow("Entitlement", leaveprofile("ent").value.get)
+		@contentRow("Earned", leaveprofile("ear").value.get)
+		<dl class="dl-horizontal">
+			<dt><label>HR Adjustment</label></dt>
+			<dd>
+				<div class="ace-spinner touch-spinner" style="width: 100px;">
+					<input type="text" name="adj" id="adj" value=@leaveprofile("adj").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+				</div>
+				<br>
+				<label id="adj-error" class="error" for="adj" style="display: inline;"></label>
+			</dd>
+		</dl>
+		@contentRow("Utilized", leaveprofile("uti").value.get)
+		@contentRow("Carry Forward", leaveprofile("cf").value.get)
+		@contentRow("Carry Forward Utilized", leaveprofile("cfuti").value.get)
+		@contentRow("Carry Forward Expired", leaveprofile("cfexp").value.get)
+		@contentRow("Balance", leaveprofile("bal").value.get)
+
+		<div class="widget-box">
+			<div class="widget-header">
+				<h4 class="smaller">Monthly Leave Earned</h4>
+			</div>
+			<div class="widget-body">
+				<div class="widget-body-inner" style="display: block;">										
+					<div class="widget-main">
+						<div class="table-responsive">
+							<table id="monthlyleaveearnedtable" class="table table-bordered">
+								<thead><tr>
+									<th>Jan</th>
+									<th>Feb</th>
+									<th>Mar</th>
+									<th>Apr</th>
+									<th>May</th>
+									<th>Jun</th>
+									<th>Jul</th>
+									<th>Aug</th>
+									<th>Sep</th>
+									<th>Oct</th>
+									<th>Nov</th>
+									<th>Dec</th>
+								</tr></thead>
+								<tbody><tr>
+									<td>@leaveprofile("me.jan").value</td>
+									<td>@leaveprofile("me.feb").value</td>
+									<td>@leaveprofile("me.mar").value</td>
+									<td>@leaveprofile("me.apr").value</td>
+									<td>@leaveprofile("me.may").value</td>
+									<td>@leaveprofile("me.jun").value</td>
+									<td>@leaveprofile("me.jul").value</td>
+									<td>@leaveprofile("me.aug").value</td>
+									<td>@leaveprofile("me.sep").value</td>
+									<td>@leaveprofile("me.oct").value</td>
+									<td>@leaveprofile("me.nov").value</td>
+									<td>@leaveprofile("me.dec").value</td>
+								</tr></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="widget-box">
+			<div class="widget-header widget-header-flat">
+				<h4 class="widget-title lighter">
+					<i class="fa fa-cog"></i>
+					Eligible Leave Entitlement
+				</h4>
+			</div>
+
+			<div class="widget-body" style="display: block;">
+				<div class="widget-main no-padding">
+					<table class="table table-bordered table-striped">
+						<thead class="thin-border-bottom">
+							<tr>
+								<th class="text-center">
+									Service Months (<=) <br>
+									Maxinum is 600 which equivalent 50 years
+								</th>
+								<th class="text-center">Entitlement</th>
+								<th class="text-center">Carry Forward</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e1_s" id="e1_s" value=@leaveprofile("set_ent.e1_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e1_s-error" class="error" for="e1_s" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e1" id="e1" value=@leaveprofile("set_ent.e1").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e1-error" class="error" for="e1" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e1_cf" id="e1_cf" value=@leaveprofile("set_ent.e1_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e1_cf_s-error" class="error" for="e1_cf" style="display: inline;"></label>
+								</td>
+							</tr>
+
+							<tr>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e2_s" id="e2_s" value=@leaveprofile("set_ent.e2_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e2_s-error" class="error" for="e2_s" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e2" id="e2" value=@leaveprofile("set_ent.e2").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e2-error" class="error" for="e2" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e2_cf" id="e2_cf" value=@leaveprofile("set_ent.e2_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e2_cf_s-error" class="error" for="e2_cf" style="display: inline;"></label>
+								</td>
+							</tr>
+						
+							<tr>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e3_s" id="e3_s" value=@leaveprofile("set_ent.e3_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e3_s-error" class="error" for="e3_s" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e3" id="e3" value=@leaveprofile("set_ent.e3").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e3-error" class="error" for="e3" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e3_cf" id="e3_cf" value=@leaveprofile("set_ent.e3_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e3_cf_s-error" class="error" for="e3_cf" style="display: inline;"></label>
+								</td>
+							</tr>
+						
+							<tr>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e4_s" id="e4_s" value=@leaveprofile("set_ent.e4_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e4_s-error" class="error" for="e4_s" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e4" id="e4" value=@leaveprofile("set_ent.e4").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e4-error" class="error" for="e4" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e4_cf" id="e4_cf" value=@leaveprofile("set_ent.e4_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e4_cf_s-error" class="error" for="e4_cf" style="display: inline;"></label>
+								</td>
+							</tr>
+						
+							<tr>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e5_s" id="e5_s" value=@leaveprofile("set_ent.e5_s").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e5_s-error" class="error" for="e5_s" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e5" id="e5" value=@leaveprofile("set_ent.e5").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e5-error" class="error" for="e5" style="display: inline;"></label>
+								</td>
+								<td class="text-center">
+									<div class="ace-spinner touch-spinner" style="width: 100px;">
+										<input type="text" name="set_ent.e5_cf" id="e5_cf" value=@leaveprofile("set_ent.e5_cf").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+									</div>
+									<br>
+									<label id="e5_cf_s-error" class="error" for="e5_cf" style="display: inline;"></label>
+								</td>
+							</tr>
+						
+						</tbody>
+					</table>
+				</div>
+			</div> <!-- /.widget-main -->
+		</div> <!-- /.widget-body -->
+		<div class="hidden">
+			@inputText(leaveprofile("_id"),'type -> "hidden")
+			@inputText(leaveprofile("pid"),'type -> "hidden")
+			@inputText(leaveprofile("pn"),'type -> "hidden")
+			@inputText(leaveprofile("ent"),'type -> "hidden")
+			@inputText(leaveprofile("ear"),'type -> "hidden")
+			@inputText(leaveprofile("uti"),'type -> "hidden")
+			@inputText(leaveprofile("cf"),'type -> "hidden")
+			@inputText(leaveprofile("cfuti"),'type -> "hidden")
+			@inputText(leaveprofile("cfexp"),'type -> "hidden")
+			@inputText(leaveprofile("bal"),'type -> "hidden")
+			@inputText(leaveprofile("me")("jan"),'type -> "hidden")
+			@inputText(leaveprofile("me")("feb"),'type -> "hidden")
+			@inputText(leaveprofile("me")("mar"),'type -> "hidden")
+			@inputText(leaveprofile("me")("apr"),'type -> "hidden")
+			@inputText(leaveprofile("me")("may"),'type -> "hidden")
+			@inputText(leaveprofile("me")("jun"),'type -> "hidden")
+			@inputText(leaveprofile("me")("jul"),'type -> "hidden")
+			@inputText(leaveprofile("me")("aug"),'type -> "hidden")
+			@inputText(leaveprofile("me")("sep"),'type -> "hidden")
+			@inputText(leaveprofile("me")("oct"),'type -> "hidden")
+			@inputText(leaveprofile("me")("nov"),'type -> "hidden")
+			@inputText(leaveprofile("me")("dec"),'type -> "hidden")
+			@inputText(leaveprofile("sys")("eid"),'type -> "hidden")
+			@inputText(leaveprofile("sys")("cdat"),'type -> "hidden")
+			@inputText(leaveprofile("sys")("mdat"),'type -> "hidden")
+			@inputText(leaveprofile("sys")("mby"),'type -> "hidden")
+			@inputText(leaveprofile("sys")("ddat"),'type -> "hidden")
+			@inputText(leaveprofile("sys")("dby"),'type -> "hidden")
+			@inputText(leaveprofile("sys")("ll"),'type -> "hidden")
+			@if(oid!="") {
+				@inputText(leaveprofile("lt"),'type -> "hidden")
+			}
+		</div>
+	}	
+}
