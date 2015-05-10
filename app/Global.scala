@@ -20,11 +20,11 @@ object Global extends GlobalSettings {
     }
     
     Akka.system(app).scheduler.schedule(1 seconds, 30 seconds) {
-      MonthlyLeaveProfileUpdateJob.run
+      // MonthlyLeaveProfileUpdateJob.run
     }
     
     Akka.system(app).scheduler.schedule(1 seconds, 4 hours) {
-      // MonthlyLeaveProfileUpdateJob.run
+      MonthlyLeaveProfileUpdateJob.run
     }
       	
   }
