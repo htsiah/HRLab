@@ -60,6 +60,7 @@ object Job {
   )
   
   def insert(p_doc:Job)= {
+    print(this.uri)
     val future = col.insert(p_doc)
     future.onComplete {
       case Failure(e) => throw e
