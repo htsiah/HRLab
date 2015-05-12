@@ -5,7 +5,7 @@ object ApplicationBuild extends Build {
 
   val appName = "hrlab"
   val appVersion = "1.0"
-    
+  
   val appDependencies = Seq(
       play.PlayImport.cache,
       "org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.0.akka23",
