@@ -102,7 +102,7 @@ object CompanyHolidayController extends Controller with Secured {
   def delete(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(CompanyHolidayModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
-      Future.successful(Redirect(routes.CalendarController.company))
+      Future.successful(Redirect(request.session.get("path").getOrElse(routes.DashboardController.index).toString))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
