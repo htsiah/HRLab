@@ -8,10 +8,11 @@ import reactivemongo.api._
 import reactivemongo.bson._
 
 import scala.util.{Success, Failure,Try}
+import scala.concurrent.Await
 import org.joda.time.DateTime
 import akka.actor.ActorSystem
 
-import utilities.{System,SystemDataStore}
+import utilities.{System, SystemDataStore, Tools}
 
 case class Keyword (
      _id: BSONObjectID,
@@ -172,5 +173,49 @@ object KeywordModel {
   def findOne(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[Keyword]
   }
+  
+  /** Custom Model Methods **/ 
+  
+  def getProtectedKey(p_doc:Keyword, p_request:RequestHeader) = {
+    
+    def findProtectDepartmentKey() : List[String] = {
+      var protectedKeyList = List[String]()
+      p_doc.v.get.foreach { value => {
+        val person = Await.result(PersonModel.findOne(BSONDocument("p.dpm" -> value), p_request), Tools.db_timeout)
+        if (person.isDefined) protectedKeyList = value :: protectedKeyList
+      } }
+      protectedKeyList
+    }
+    
+    def findProtectLeaveTypeKey() : List[String] = {
+      var protectedKeyList = List[String]()
+      p_doc.v.get.foreach { value => {
+        val leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt" -> value), p_request), Tools.db_timeout)
+        if (leavepolicy.isDefined) protectedKeyList = value :: protectedKeyList
+      } }
+      protectedKeyList
+    }
+    
+    def findProtectPositionTypeKey() : List[String] = {
+      var protectedKeyList = List[String]()
+      p_doc.v.get.foreach { value => {
+        val person = Await.result(PersonModel.findOne(BSONDocument("p.pt" -> value), p_request), Tools.db_timeout)
+        if (person.isDefined) protectedKeyList = value :: protectedKeyList
+        val leavetype = Await.result(LeavePolicyModel.findOne(BSONDocument("lt" -> value), p_request), Tools.db_timeout)
+        if (leavetype.isDefined) protectedKeyList = value :: protectedKeyList
+      } }
+      protectedKeyList
+    }
+    
+    p_doc.n match {
+      case "Department" => findProtectDepartmentKey()
+      case "Position Type" => findProtectPositionTypeKey()
+      case "Leave Type" => findProtectLeaveTypeKey()
+      case _ => List("")
+    }
+    
+  }
+  
+  
 
 }

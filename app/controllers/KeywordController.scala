@@ -51,10 +51,12 @@ object KeywordController extends Controller with Secured {
   def edit(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
-        maybedoc <- KeywordModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request) 
+        maybedoc <- KeywordModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+        // maybeprotectedkeys <- KeywordModel.getProtectedKey(maybedoc.get, request)
       } yield {
         maybedoc.map( doc  => {
-          Ok(views.html.keyword.form(keywordform.fill(doc),List("No Value Now"),p_id))
+          println("Result " + KeywordModel.getProtectedKey(maybedoc.get, request));
+          Ok(views.html.keyword.form(keywordform.fill(doc),KeywordModel.getProtectedKey(maybedoc.get, request),p_id))
         }).getOrElse(NotFound)
       }
     } else {

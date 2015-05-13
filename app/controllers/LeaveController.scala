@@ -122,8 +122,6 @@ object LeaveController extends Controller with Secured {
                     "APPROVELINK"->(Tools.hostname + "/leave/approve/" + leave_update._id.stringify), 
                     "DOCLINK"->(Tools.hostname + "/leave/view/" + leave_update._id.stringify)    
                 )
-                println("rr")
-                println(leave_update.w_aprid)
                 TaskModel.insert(1, leave_update.w_aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
                 
                 // Send email
