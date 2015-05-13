@@ -177,7 +177,7 @@ object PersonController extends Controller with Secured{
             if (request.session.get("id").get==p_id) {
               // Update session when update own record.
               val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
-              val isManager = if(maybe_IsManager.isEmpty) "true" else "false"
+              val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
               Future.successful(Redirect(routes.PersonController.index).withSession(
                 request.session + 
                 ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
@@ -269,7 +269,7 @@ object PersonController extends Controller with Secured{
           formWithData => {
             Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), formWithData.copy(_id=BSONObjectID(request.session.get("id").get)), request), Tools.db_timeout)
             val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
-            val isManager = if(maybe_IsManager.isEmpty) "0" else "1"       
+            val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
             Future.successful(Redirect(routes.PersonController.myprofileview).withSession(
                 request.session + 
                 ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
