@@ -27,6 +27,7 @@ $(function(){
 					$("#header-company-name").text(data.name);
 					$("#header-company-name").fadeIn("slow");
 				});
+				document.title = data.name + ' | HRLab.my';
             },
             error: function(xhr, textStatus, errorThrown) {
             	alert("Update company name failed!!!");

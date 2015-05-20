@@ -27,7 +27,7 @@
 	}
 }
 
-@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+@layout.ace.main93(session.get("company").get + " | HRLab.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 	
 	@contentRow("Leave type", leavepolicy.lt)
 	@contentRow("Position type", leavepolicy.pt)

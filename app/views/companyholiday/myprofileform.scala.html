@@ -42,7 +42,7 @@
 	@if(values.contains(valueCheck)) { checked="checked" }
 }
 
-@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+@layout.ace.main93(session.get("company").get + " | HRLab.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 	
 	@helper.form(
 		action = routes.CompanyHolidayController.myprofileupdate(oid), 

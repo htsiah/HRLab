@@ -29,7 +29,7 @@
 }
 
 @if(session.get("roles").get.contains("Admin")) {
-	@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.main93(session.get("company").get + " | HRLab.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 		<div class="table-responsive">
 			<table id="persontable" class="table table-striped table-bordered table-hover">
 				<thead>
