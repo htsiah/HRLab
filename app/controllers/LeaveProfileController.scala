@@ -207,7 +207,7 @@ object LeaveProfileController extends Controller with Secured {
                 val replaceMap = Map(
                     "NAME"-> (maybeperson.get.p.fn + " " + maybeperson.get.p.ln),
                     "LEAVEPROFILE"-> formWithData.lt,
-                    "URL"->(Tools.hostname+"/leaveprofile/view?id=" + maybeleaveprofile.get._id.stringify)
+                    "URL"->(Tools.hostname+"/leaveprofile/view?p_id=" + maybeleaveprofile.get._id.stringify)
                 )
                 val alert = if ((maybe_alert.getOrElse(null))!=null) { maybe_alert.get.copy(m=Tools.replaceSubString(maybe_alert.get.m, replaceMap.toList)) } else { null }
                 maybeperson.map( person => {
@@ -424,7 +424,7 @@ object LeaveProfileController extends Controller with Secured {
                 val replaceMap = Map(
                     "NAME"-> (maybeperson.get.p.fn + " " + maybeperson.get.p.ln),
                     "LEAVEPROFILE"-> formWithData.lt,
-                    "URL"->(Tools.hostname+"/leaveprofile/view?id=" + maybeleaveprofile.get._id.stringify)
+                    "URL"->(Tools.hostname+"/leaveprofile/view?p_id=" + maybeleaveprofile.get._id.stringify)
                 )
                 val alert = if ((maybe_alert.getOrElse(null))!=null) { maybe_alert.get.copy(m=Tools.replaceSubString(maybe_alert.get.m, replaceMap.toList)) } else { null }
                 maybeperson.map( person => {
