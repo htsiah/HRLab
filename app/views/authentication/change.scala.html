@@ -30,16 +30,16 @@
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
 
-@layout.ace.main93("Change Password | Human Resources Software | HRLab.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+@layout.ace.main93(session.get("company").get + " | HRLab.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 	@layout.ace.alert(alert)
 	@helper.form(
 		action = routes.AuthenticationController.changePost,
 		'id -> "changeform"
 	) {
 
-		@inputText(change("password"), '_label->"Old Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
-		@inputText(change("npassword"), '_label->"New Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
-		@inputText(change("cpassword"), '_label->"Confirm Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@inputPassword(change("password"), '_label->"Old Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@inputPassword(change("npassword"), '_label->"New Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@inputPassword(change("cpassword"), '_label->"Confirm Password", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 	
 	}
 	
