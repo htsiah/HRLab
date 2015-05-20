@@ -371,7 +371,7 @@ object PersonModel {
   
   // Required during authentication
   def findOneByEmail(p_email:String) = {
-    col.find(BSONDocument("p.em" -> p_email)).one[Person]
+    col.find(BSONDocument("p.em" -> p_email, "sys.ddat"->BSONDocument("$exists"->false))).one[Person]
   }
   
   // Return: 

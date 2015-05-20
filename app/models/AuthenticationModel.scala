@@ -177,7 +177,7 @@ object AuthenticationModel {
   def logon(p_email:String) = {
     val future = this.findOneByEmail(p_email)
     future.map( doc => {
-      val future = col.update(BSONDocument("em"->p_email), doc.get.copy(r="",sys=SystemDataStore.logonWithSystem(doc.get.sys.get)))
+      val future = col.update(BSONDocument("em"->p_email, "sys.ddat"->BSONDocument("$exists"->false)), doc.get.copy(r="",sys=SystemDataStore.logonWithSystem(doc.get.sys.get)))
       future.onComplete {
         case Failure(e) => throw e
         case Success(lastError) => {}
