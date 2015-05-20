@@ -249,8 +249,6 @@ object PersonModel {
       case Failure(e) => throw e
       case Success(lastError) => {
         // Create person's leave profile from LEAVE POLICY
-        println(p_doc.p.g + " only")
-        println(p_doc.p.ms + " only")
         LeavePolicyModel.find(            
             BSONDocument(
                 "pt" -> p_doc.p.pt,
@@ -266,7 +264,6 @@ object PersonModel {
             p_request
         ).map(leavepolicies => {
           leavepolicies.map( leavepolicy => {
-            println("Found: " + leavepolicy._id.stringify + " " + leavepolicy.lt)
             val leaveprofile_doc = LeaveProfileModel.doc.copy(
                 _id = BSONObjectID.generate,
                 pid = p_doc._id.stringify,
