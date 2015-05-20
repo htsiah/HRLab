@@ -249,20 +249,24 @@ object PersonModel {
       case Failure(e) => throw e
       case Success(lastError) => {
         // Create person's leave profile from LEAVE POLICY
+        println(p_doc.p.g + " only")
+        println(p_doc.p.ms + " only")
         LeavePolicyModel.find(            
             BSONDocument(
-                "pt" -> "Manager",
+                "pt" -> p_doc.p.pt,
                 "$or" -> BSONArray(
-                    BSONDocument("g"->p_doc.p.g),
+                    BSONDocument("g"->(p_doc.p.g + " only")),
                     BSONDocument("g"->"Applicable for all")
                 ),
                 "$or" -> BSONArray(
-                    BSONDocument("ms"->p_doc.p.ms),
+                    BSONDocument("ms"->(p_doc.p.ms + " only")),
                     BSONDocument("ms"->"Applicable for all")
                 )
-            ) 
+            ),
+            p_request
         ).map(leavepolicies => {
           leavepolicies.map( leavepolicy => {
+            println("Found: " + leavepolicy._id.stringify + " " + leavepolicy.lt)
             val leaveprofile_doc = LeaveProfileModel.doc.copy(
                 _id = BSONObjectID.generate,
                 pid = p_doc._id.stringify,
@@ -305,14 +309,14 @@ object PersonModel {
             BSONDocument(
                 "pt" -> "Manager",
                 "$or" -> BSONArray(
-                    BSONDocument("g"->p_doc.p.g),
+                    BSONDocument("g"->(p_doc.p.g + " only")),
                     BSONDocument("g"->"Applicable for all")
                 ),
                 "$or" -> BSONArray(
-                    BSONDocument("ms"->p_doc.p.ms),
+                    BSONDocument("ms"->(p_doc.p.ms + " only")),
                     BSONDocument("ms"->"Applicable for all")
                 )
-            )    
+            )
         ).map(configleavepolicies => {
           configleavepolicies.map( configleavepolicy => {
             val leaveprofile_doc = LeaveProfileModel.doc.copy(
