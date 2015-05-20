@@ -1,3 +1,6 @@
+# mongo 128.199.80.162:9622 -u admin -p hrlab-admin
+# mongo 128.199.80.162:9622
+
 use hrlab-config
 db.alert.drop()
 db.alert.insert({k : NumberInt(1000), m : "The email or password you entered<br>is incorrect."})
