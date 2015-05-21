@@ -182,6 +182,7 @@ object PersonController extends Controller with Secured{
                 request.session + 
                 ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
                 ("department" -> formWithData.p.dpm) + 
+                ("position" -> formWithData.p.pt) + 
                 ("roles"->formWithData.p.rl.mkString(",")) + 
                 ("ismanager"->isManager)
               ))

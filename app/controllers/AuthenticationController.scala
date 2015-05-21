@@ -95,6 +95,7 @@ object AuthenticationController extends Controller with Secured {
                       "name"->(person_doc.get.p.fn+" "+person_doc.get.p.ln),
                       "company"->company_doc.get.c,
                       "department"->person_doc.get.p.dpm,
+                      "position"->person_doc.get.p.pt,
                       "roles"->person_doc.get.p.rl.mkString(","),
                       "path"->(routes.DashboardController.index).toString,
                       "ismanager"->isManager

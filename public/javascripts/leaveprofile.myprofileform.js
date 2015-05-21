@@ -81,7 +81,7 @@ $(function(){
 				$( "#e5_s" ).val("0");
 				$( "#e5" ).val("0");
 				$( "#e5_cf" ).val("0");
-				$('#loader-overlay').hide();
+				//$('#loader-overlay').hide();
 			},
 		});
 	});

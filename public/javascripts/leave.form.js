@@ -7,11 +7,32 @@ $(function(){
 		autoclose: true,
 		todayHighlight: true
 	})
-	
+		
 	//show datepicker when clicking on the icon
 	.next().on(ace.click_event, function(){
 		$(this).prev().focus();
 	});
+    
+    // Bind leave type field 
+    $("#lt").change(function() {
+    	var selectedLT = $( "#lt option:selected" ).text();
+		$.ajax({
+			url: "/leavepolicy/getdaytypejson/" + selectedLT,
+			contentType: "application/json; charset=utf-8",
+			success: function(data){
+				if (data.daytype == "Full day only") {
+					$("#dt").attr("disabled", "disabled");
+					$("#dt").val("Full day");
+					$("#tdat").removeAttr("disabled");
+				} else {
+					$("#dt").removeAttr("disabled");
+				}
+			},
+			error: function(xhr, status, error){
+				alert("There was an error while fetching your leave setting. Do not proceed! Please contact support@hrlab.my.")
+			},
+		});
+    });
     
 	// Bind date type field 
 	$(document).on('change', '#dt', function(e) {
@@ -81,6 +102,7 @@ $(function(){
 			}
 		},
 		submitHandler: function(form) {
+			$("#dt").removeAttr("disabled");
 		 	$("#tdat").removeAttr("disabled");
 		 	form.submit();
 		}

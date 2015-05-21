@@ -88,9 +88,10 @@ GET		/leavepolicy/create								controllers.LeavePolicyController.create
 POST	/leavepolicy/insert								controllers.LeavePolicyController.insert
 GET		/leavepolicy/edit								controllers.LeavePolicyController.edit(p_id:String)
 POST	/leavepolicy/update								controllers.LeavePolicyController.update(p_id:String)
-GET		/leavepolicy/delete/:p_id/:p_lt						controllers.LeavePolicyController.delete(p_id:String, p_lt:String)
+GET		/leavepolicy/delete/:p_id/:p_lt					controllers.LeavePolicyController.delete(p_id:String, p_lt:String)
 GET		/leavepolicy/view								controllers.LeavePolicyController.view(p_id:String)
 GET		/leavepolicy/getLeaveEntitlement/:p_lt/:p_pt	controllers.LeavePolicyController.getLeaveEntitlement(p_lt:String, p_pt:String)
+GET		/leavepolicy/getdaytypejson/:p_lt				controllers.LeavePolicyController.getDayTypeJSON(p_lt:String)
 
 # Keyword
 GET		/keyword					controllers.KeywordController.index
