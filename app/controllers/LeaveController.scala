@@ -269,10 +269,11 @@ object LeaveController extends Controller with Secured {
           // Update Todo
           TaskModel.setCompleted(leave_update._id.stringify, request)
         }
-        
+                
         // Send Email
-        val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "URL"->Tools.hostname)
-        MailUtility.sendEmailConfig(List(request.session.get("username").get, maybeapplicant.get.p.em, maybemanager.get.p.em), 6, replaceMap)
+        val recipients = List(maybeapplicant.get.p.em, maybemanager.get.p.em).filter(_ != request.session.get("username").get)
+        val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+        MailUtility.sendEmailConfig(recipients, 6, replaceMap)
         
         Redirect(request.session.get("path").get)
       } else {
