@@ -126,7 +126,7 @@ object LeaveController extends Controller with Secured {
                 
                 // Send email
                 val replaceMap = Map("MANAGER"->leave_update.w_aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-                MailUtility.sendEmailConfig(List(maybemanager.get.p.em), List(maybeperson.get.p.em), 3, replaceMap)
+                MailUtility.sendEmailConfig(List(maybemanager.get.p.em), 3, replaceMap)
 	              
 	              Redirect(routes.DashboardController.index)
 	            }
