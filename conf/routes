@@ -77,7 +77,7 @@ POST	/leaveprofile/myprofile/insert							controllers.LeaveProfileController.myp
 GET		/leaveprofile/myprofile/edit							controllers.LeaveProfileController.myprofileedit(p_id:String)
 POST	/leaveprofile/myprofile/update							controllers.LeaveProfileController.myprofileupdate(p_id:String)
 GET		/leaveprofile/myprofile/view							controllers.LeaveProfileController.myprofileview(p_id:String)
-GET		/leaveprofile/myprofile/delete/:p_id/:p_lt/:p_pid		controllers.LeaveProfileController.delete(p_id:String, p_lt:String, p_pid:String)
+GET		/leaveprofile/myprofile/delete/:p_id/:p_lt/:p_pid		controllers.LeaveProfileController.myprofiledelete(p_id:String, p_lt:String, p_pid:String)
 
 # Leave Setting
 GET		/leavesetting					controllers.LeaveSettingController.index
