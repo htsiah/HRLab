@@ -14,3 +14,7 @@ dist
 /RUNNING_PID
 /.settings
 /bin/
+/conf/application.conf
+/conf/application.conf.dev
+/conf/mongodb.dev.script
+/conf/mongodb.prod.script
