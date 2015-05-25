@@ -15,6 +15,6 @@ dist
 /.settings
 /bin/
 /conf/application.conf
-/conf/application.conf.dev
+conf/application.conf.dev
 /conf/mongodb.dev.script
 /conf/mongodb.prod.script
