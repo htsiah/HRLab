@@ -172,4 +172,15 @@ object LeaveSettingModel {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[LeaveSetting]
   }
   
+  /** Custom Model Methods **/ 
+  
+  def getPreviousCutOffMonthNow(p_cutoffmonth:Int) : DateTime = {
+    if (new DateTime(DateTime.now().getYear, p_cutoffmonth, 1, 0, 0, 0, 0).isAfterNow()){
+      new DateTime(DateTime.now().getYear-1, p_cutoffmonth, 1, 0, 0, 0, 0)
+    } else {
+      new DateTime(DateTime.now().getYear, p_cutoffmonth, 1, 0, 0, 0, 0)
+    }
+  }
+  
+  
 }
