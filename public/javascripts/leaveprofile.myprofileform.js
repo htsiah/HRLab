@@ -42,7 +42,7 @@ $(function(){
 	$( "#lt" ).change(function() {
 		var selectedLT = $( "#lt option:selected" ).text();
 		$.ajax({
-			url: "/leavepolicy/getLeaveEntitlement/" + selectedLT + "/" + p_position,
+			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + selectedLT + "/" + p_position,
 			contentType: "application/json; charset=utf-8",
 			beforeSend: function(){
 				// $('#loader-overlay').show()
@@ -63,6 +63,21 @@ $(function(){
 				$( "#e5_s" ).val(data.e5_s);
 				$( "#e5" ).val(data.e5);
 				$( "#e5_cf" ).val(data.e5_cf);
+				$( "#v_earned" ).text(data.earned);
+				$( "#v_ent" ).text(data.ent);
+				$( "#v_bal" ).text(data.bal);
+				$( "#m_jan" ).text(data.m_jan);
+				$( "#m_feb" ).text(data.m_feb);
+				$( "#m_mar" ).text(data.m_mar);
+				$( "#m_apr" ).text(data.m_apr);
+				$( "#m_may" ).text(data.m_may);
+				$( "#m_jun" ).text(data.m_jun);
+				$( "#m_jul" ).text(data.m_jul);
+				$( "#m_aug" ).text(data.m_aug);
+				$( "#m_sep" ).text(data.m_sep);
+				$( "#m_oct" ).text(data.m_oct);
+				$( "#m_nov" ).text(data.m_nov);
+				$( "#m_dec" ).text(data.m_dec);
 				// $('#loader-overlay').hide();
 			},
 			error: function(xhr, status, error){
@@ -81,6 +96,21 @@ $(function(){
 				$( "#e5_s" ).val("0");
 				$( "#e5" ).val("0");
 				$( "#e5_cf" ).val("0");
+				$( "#v_earned" ).text("0");
+				$( "#v_ent" ).text("0");
+				$( "#v_bal" ).text("0");
+				$( "#m_jan" ).text("0");
+				$( "#m_feb" ).text("0");
+				$( "#m_mar" ).text("0");
+				$( "#m_apr" ).text("0");
+				$( "#m_may" ).text("0");
+				$( "#m_jun" ).text("0");
+				$( "#m_jul" ).text("0");
+				$( "#m_aug" ).text("0");
+				$( "#m_sep" ).text("0");
+				$( "#m_oct" ).text("0");
+				$( "#m_nov" ).text("0");
+				$( "#m_dec" ).text("0");
 				//$('#loader-overlay').hide();
 			},
 		});

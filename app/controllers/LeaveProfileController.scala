@@ -9,9 +9,10 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 
+import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, Entitlement, LeavePolicyModel, PersonModel, LeaveModel}
+import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, Entitlement, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel}
 import utilities.{System, AlertUtility, Tools}
 
 import reactivemongo.api._
@@ -522,5 +523,57 @@ object LeaveProfileController extends Controller with Secured {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
+  
+ def getValuesOnLeaveTypeChangeJSON(p_pid:String, p_lt:String, p_pt:String) = withAuth { username => implicit request => {
+    for {
+      maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
+      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt, "pt" -> p_pt), request)
+      maybe_leavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
+    } yield {
+      val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))
+      val leavepolicy= maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+      val leavesetting = maybe_leavesetting.getOrElse(LeaveSettingModel.doc)
+      val cutoffdate = if (LeaveSettingModel.getPreviousCutOffMonthNow(leavesetting.cfm).isAfter(person.p.edat.get)) {
+          LeaveSettingModel.getPreviousCutOffMonthNow(leavesetting.cfm)
+        } else { 
+          new DateTime(person.p.edat.get.getYear, person.p.edat.get.getMonthOfYear, 1, 0, 0, 0, 0)
+        }
+      val leaveearned = leavepolicy.acc match {
+        case "No accrue" => 0.0
+        case "Monthly" => LeaveProfileModel.getTotalMonthlyEntitlementEarn(cutoffdate, leavepolicy, leavesetting, person)
+        case "Yearly" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+      }
+      val ent = LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+      val m_jan = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 1)
+      val m_feb = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 2)
+      val m_mar = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 3)
+      val m_apr = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 4)
+      val m_may = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 5)
+      val m_jun = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 6)
+      val m_jul = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 7)
+      val m_aug = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 8)
+      val m_sep = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 9)
+      val m_oct = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 10)
+      val m_nov = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 11)
+      val m_dec = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 12)
+      maybe_leavepolicy.map( leavepolicy => {
+        val json = Json.parse("{\"e1\":" + leavepolicy.ent.e1 + ", \"e1_s\":" + leavepolicy.ent.e1_s + ", \"e1_cf\":" + leavepolicy.ent.e1_cf +
+          ",\"e2\":" + leavepolicy.ent.e2 + ", \"e2_s\":" + leavepolicy.ent.e2_s + ", \"e2_cf\":" + leavepolicy.ent.e2_cf +
+          ",\"e3\":" + leavepolicy.ent.e3 + ", \"e3_s\":" + leavepolicy.ent.e3_s + ", \"e3_cf\":" + leavepolicy.ent.e3_cf +
+          ",\"e4\":" + leavepolicy.ent.e4 + ", \"e4_s\":" + leavepolicy.ent.e4_s + ", \"e4_cf\":" + leavepolicy.ent.e4_cf +
+          ",\"e5\":" + leavepolicy.ent.e5 + ", \"e5_s\":" + leavepolicy.ent.e5_s + ", \"e5_cf\":" + leavepolicy.ent.e5_cf +
+          ",\"earned\":" + leaveearned + ",\"ent\":" + ent + ",\"bal\":" + leaveearned + ",\"m_jan\":" + m_jan +
+          ",\"m_feb\":" + m_feb + ",\"m_mar\":" + m_mar + ",\"m_apr\":" + m_apr +
+          ",\"m_may\":" + m_may + ",\"m_jun\":" + m_jun + ",\"m_jul\":" + m_jul +
+          ",\"m_aug\":" + m_aug + ",\"m_sep\":" + m_sep + ",\"m_oct\":" + m_oct +
+          ",\"m_nov\":" + m_nov + ",\"m_dec\":" + m_dec +
+          "}");
+        Ok(json).as("application/json")
+      }).getOrElse({        
+          val json = Json.parse("{\"e1\":0,\"e1_s\":0,\"e1_cf\":0,\"e2\":0,\"e2_s\":0,\"e2_cf\":0,\"e3\":0,\"e3_s\":0,\"e3_cf\":0,\"e4\":0,\"e4_s\":0,\"e4_cf\":0,\"e5\":0,\"e5_s\":0,\"e5_cf\":0}");
+          Ok(json).as("application/json")
+      })
+    }
+ }}
     
 }

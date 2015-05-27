@@ -66,18 +66,19 @@ GET		/leave/getapprovedleavejson/:p_type						controllers.LeaveController.getApp
 GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
 
 # Leave Profile
-GET		/leaveprofile/create									controllers.LeaveProfileController.create(p_pid:String)
-POST	/leaveprofile/insert									controllers.LeaveProfileController.insert(p_pid:String)
-GET		/leaveprofile/edit										controllers.LeaveProfileController.edit(p_id:String)
-POST	/leaveprofile/update									controllers.LeaveProfileController.update(p_id:String)
-GET		/leaveprofile/delete/:p_id/:p_lt/:p_pid					controllers.LeaveProfileController.delete(p_id:String, p_lt:String, p_pid:String)
-GET		/leaveprofile/view										controllers.LeaveProfileController.view(p_id:String)
-GET		/leaveprofile/myprofile/create							controllers.LeaveProfileController.myprofilecreate
-POST	/leaveprofile/myprofile/insert							controllers.LeaveProfileController.myprofileinsert
-GET		/leaveprofile/myprofile/edit							controllers.LeaveProfileController.myprofileedit(p_id:String)
-POST	/leaveprofile/myprofile/update							controllers.LeaveProfileController.myprofileupdate(p_id:String)
-GET		/leaveprofile/myprofile/view							controllers.LeaveProfileController.myprofileview(p_id:String)
-GET		/leaveprofile/myprofile/delete/:p_id/:p_lt/:p_pid		controllers.LeaveProfileController.myprofiledelete(p_id:String, p_lt:String, p_pid:String)
+GET		/leaveprofile/create										controllers.LeaveProfileController.create(p_pid:String)
+POST	/leaveprofile/insert										controllers.LeaveProfileController.insert(p_pid:String)
+GET		/leaveprofile/edit											controllers.LeaveProfileController.edit(p_id:String)
+POST	/leaveprofile/update										controllers.LeaveProfileController.update(p_id:String)
+GET		/leaveprofile/delete/:p_id/:p_lt/:p_pid						controllers.LeaveProfileController.delete(p_id:String, p_lt:String, p_pid:String)
+GET		/leaveprofile/view											controllers.LeaveProfileController.view(p_id:String)
+GET		/leaveprofile/getvaluesonleavetypechangejson/:p_id/:p_lt/:p_pt	controllers.LeaveProfileController.getValuesOnLeaveTypeChangeJSON(p_id:String, p_lt:String, p_pt:String)
+GET		/leaveprofile/myprofile/create								controllers.LeaveProfileController.myprofilecreate
+POST	/leaveprofile/myprofile/insert								controllers.LeaveProfileController.myprofileinsert
+GET		/leaveprofile/myprofile/edit								controllers.LeaveProfileController.myprofileedit(p_id:String)
+POST	/leaveprofile/myprofile/update								controllers.LeaveProfileController.myprofileupdate(p_id:String)
+GET		/leaveprofile/myprofile/view								controllers.LeaveProfileController.myprofileview(p_id:String)
+GET		/leaveprofile/myprofile/delete/:p_id/:p_lt/:p_pid			controllers.LeaveProfileController.myprofiledelete(p_id:String, p_lt:String, p_pid:String)
 
 # Leave Setting
 GET		/leavesetting					controllers.LeaveSettingController.index
