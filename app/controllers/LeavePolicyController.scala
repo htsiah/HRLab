@@ -263,6 +263,7 @@ object LeavePolicyController extends Controller with Secured {
     }
   }}
   
+  /* deprecated on v1.1
   def getLeaveEntitlement(p_lt:String, p_pt:String) = withAuth { username => implicit request => {
     for {
       maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt, "pt" -> p_pt), request)
@@ -281,6 +282,7 @@ object LeavePolicyController extends Controller with Secured {
       })
     }
   }}
+  */
   
   def getDayTypeJSON(p_lt:String) = withAuth { username => implicit request => {
     for {
