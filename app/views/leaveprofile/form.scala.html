@@ -7,9 +7,9 @@
 @pageheader = {
 	<div class="page-header">
 		@if(oid==""){
-			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Staff Directory <i class="ace-icon fa fa-angle-double-right"></i> Simon Siah <i class="ace-icon fa fa-angle-double-right"></i> Leave Profile <i class="ace-icon fa fa-angle-double-right"></i> New</small></h1>
+			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Staff Directory <i class="ace-icon fa fa-angle-double-right"></i> @leaveprofile("pn").value <i class="ace-icon fa fa-angle-double-right"></i> Leave Profile <i class="ace-icon fa fa-angle-double-right"></i> New</small></h1>
 		} else {
-			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Staff Directory <i class="ace-icon fa fa-angle-double-right"></i> Simon Siah <i class="ace-icon fa fa-angle-double-right"></i> Leave Profile</small></h1>
+			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Staff Directory <i class="ace-icon fa fa-angle-double-right"></i> @leaveprofile("pn").value <i class="ace-icon fa fa-angle-double-right"></i> Leave Profile</small></h1>
 		}
 	</div>
 }
