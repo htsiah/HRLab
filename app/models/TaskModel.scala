@@ -129,6 +129,21 @@ object TaskModel {
       case Success(lastError) => {}
     }
   }
+  
+  // Soft deletion by setting deletion flag in document
+  def remove(p_query:BSONDocument) = {
+    for {
+      docs <- this.find(p_query)
+    } yield {
+      docs.map { doc => 
+        val future = col.update(p_query, doc.copy(sys = SystemDataStore.setDeletionFlag(this.updateSystem(doc))))
+        future.onComplete {
+          case Failure(e) => throw e
+          case Success(lastError) => {}
+        }
+      }
+    }
+  }
 
   // Soft deletion by setting deletion flag in document
   def remove(p_query:BSONDocument, p_request:RequestHeader) = {

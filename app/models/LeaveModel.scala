@@ -191,6 +191,15 @@ object LeaveModel {
   }
 	
   // Update document
+  def update(p_query:BSONDocument, p_doc:Leave) = {
+    val future = col.update(p_query, p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc))))
+    future.onComplete {
+      case Failure(e) => throw e
+      case Success(lastError) => {}
+    }
+  }
+  
+  // Update document
   def update(p_query:BSONDocument,p_doc:Leave,p_request:RequestHeader) = {
     val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
     future.onComplete {
@@ -300,6 +309,16 @@ object LeaveModel {
     future.onComplete {
       case Failure(e) => throw e
       case Success(lastError) => {}
+    }
+  }
+  
+  def setLockDown(p_query:BSONDocument) = {
+    val f_leaves = this.find(p_query)
+    f_leaves.map { leaves => 
+      leaves.map { leave => {
+        this.update(BSONDocument("_id"->leave._id), leave.copy(ld = true))
+        TaskModel.remove(BSONDocument("lk"->leave._id.stringify))
+      }}
     }
   }
   
