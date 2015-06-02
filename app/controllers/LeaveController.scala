@@ -18,6 +18,8 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.format.DateTimeFormatter
+import org.joda.time.format.DateTimeFormat
 
 object LeaveController extends Controller with Secured {
   
@@ -90,8 +92,20 @@ object LeaveController extends Controller with Secured {
             maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.w_aprid)), request)
 	          maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
 	          maybealert_notenoughtbalance <- AlertUtility.findOne(BSONDocument("k"->1007))
+            maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
 	        } yield {
-	          if (maybeleavepolicy.isDefined) {
+	          if (!maybeleavepolicy.isDefined) {
+              // Missing leave policy.
+              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_missingleavepolicy.getOrElse(null)))
+            } else if (maybeperson.get.p.edat.get.isAfter(formWithData.fdat.get)) {
+              // restricted apply leave before employment start date.
+              val dtfOut:DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+              val replaceMap = Map(
+                  "DATE"-> (dtfOut.print(maybeperson.get.p.edat.get))
+              )
+              val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
+              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=alert))
+            } else {
 	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
 	            val leavebalance = maybeleaveprofile.get.bal 
 	            if (leavebalance < appliedduration) {
@@ -130,9 +144,6 @@ object LeaveController extends Controller with Secured {
 	              
 	              Redirect(routes.DashboardController.index)
 	            }
-	          } else {
-	            // Missing leave policy.
-	            Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_missingleavepolicy.getOrElse(null)))
 	          }
 	        }
         }
