@@ -15,6 +15,14 @@
 	if("ontouchend" in document) document.write("<script src='@routes.Assets.at("javascripts/jquery.mobile.custom.min.js")'>"+"<"+"/script>");
 </script>
 <script src="@routes.Assets.at("layout/bootstrap/js/bootstrap.min.js")"></script>
+<script src="@routes.Assets.at("layout/bootbox/bootbox.min.js")"></script>
+
+@if(session.get("roles").get.contains("Admin")) {
+
+	@** delete application **@
+	<script src="@routes.Assets.at("javascripts/deleteapp.js")"></script>
+
+}
 
 @** browser detection **@
 <script src="@routes.Assets.at("javascripts/common.browserdetect.js")" type="text/javascript"></script>

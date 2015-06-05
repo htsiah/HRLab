@@ -127,3 +127,9 @@ GET		/report/allstaffleaveprofileJSON	controllers.ReportController.allstaffleave
 
 # Task
 GET		/task/dismiss/:p_lk				controllers.TaskController.dismiss(p_lk: String)
+
+# Delete Application
+POST	/deleteapp/delete			controllers.DeleteAppController.delete
+GET		/deleteapp/success			controllers.DeleteAppController.success
+GET		/deleteapp/fail				controllers.DeleteAppController.fail
+GET		/deleteapp/error			controllers.DeleteAppController.error
