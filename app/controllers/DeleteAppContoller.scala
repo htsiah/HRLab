@@ -51,7 +51,7 @@ object DeleteAppController extends Controller with Secured {
             TaskModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             
             // Send email
-            MailUtility.sendEmail(List("support@hrlab.my"), "System Notification: " + formWithData.company + " deleted by " + request.session.get("username").get + ".", formWithData.company + " deleted by " + request.session.get("username").get + ".")
+            MailUtility.sendEmail(List("support@hrlab.my"), "System Notification: " + formWithData.company + " deleted.", formWithData.company + "(" + request.session.get("entity").get +  ") deleted by " + request.session.get("username").get + ".")
             
             // return result
             val output = """{"status":"fail","url":"""" + Tools.hostname + """/deleteapp/success"}"""
