@@ -204,7 +204,8 @@ object SignUpController extends Controller {
           // Send email
           val replaceMap = Map("URL"->(Tools.hostname+"/set/"+authentication_doc.em +"/"+authentication_doc.r), "BY"->(person_doc.p.fn+" "+person_doc.p.ln))
           MailUtility.sendEmailConfig(List(authentication_doc.em), 1, replaceMap)
-          
+          MailUtility.sendEmail(List("support@hrlab.my"), "System Notification: New Sign Up - " + formWithData.company + ".", formWithData.company + "(" + eid +  ") sign up by " + formWithData.email + ".")
+            
           Redirect(routes.AuthenticationController.login()).flashing(
               "success" -> "Your registration was successful. An email with your logon detail has been sent."
           )
