@@ -19,11 +19,11 @@
 @inlinestyle = {}
 
 @buttons = {
-	@if(leave.w_s=="Pending Approval" && session.get("id").get==leave.w_aprid && !leave.ld) {
+	@if(leave.wf.s=="Pending Approval" && session.get("id").get==leave.wf.aprid && !leave.ld) {
 		<a href="@routes.LeaveController.approve(leave._id.stringify)" class="btn btn-sm btn btn-block">Approve</a>	
 		<a href="@routes.LeaveController.reject(leave._id.stringify)" class="btn btn-sm btn btn-block">Reject</a>
 	}
-	@if((leave.w_s=="Pending Approval" || leave.w_s=="Approved") && (session.get("id").get==leave.pid || session.get("roles").get.contains("Admin")) && !leave.ld) {
+	@if((leave.wf.s=="Pending Approval" || leave.wf.s=="Approved") && (session.get("id").get==leave.pid || session.get("roles").get.contains("Admin")) && !leave.ld) {
 		<a href="@routes.LeaveController.cancel(leave._id.stringify)" class="btn btn-sm btn btn-block">Cancel Leave</a>
 	}
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
@@ -41,8 +41,8 @@
 	@layout.ace.alert(alert)
 	@contentRow("Doc Num", leave.docnum.toString())
 	@contentRow("Applicant", leave.pn)
-	@contentRow("Status", leave.w_s)
-	@contentRow("Approver", leave.w_aprn)
+	@contentRow("Status", leave.wf.s)
+	@contentRow("Approver", leave.wf.aprn)
 	@contentRow("Leave type", leave.lt)
 	@contentRow("Day type", leave.dt)
 	@contentRow("Date from", leave.fdat.get.toLocalDate().toString())

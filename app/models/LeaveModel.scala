@@ -28,10 +28,14 @@ case class Leave (
     uti: Double,
     cfuti: Double,
     ld: Boolean,
-    w_s: String,
-    w_aprid: String,
-    w_aprn: String,
+    wf: Workflow,
     sys: Option[System]
+)
+
+case class Workflow (
+    s: String,
+    aprid: String,
+    aprn: String
 )
 
 object LeaveModel {
@@ -51,6 +55,16 @@ object LeaveModel {
     }
   }
   
+  implicit object WorkflowBSONReader extends BSONDocumentReader[Workflow] {
+    def read(doc: BSONDocument): Workflow = {
+      Workflow(
+          doc.getAs[String]("s").get,
+          doc.getAs[String]("aprid").get,
+          doc.getAs[String]("aprn").get
+      )
+    }
+  }
+    
   implicit object LeaveBSONReader extends BSONDocumentReader[Leave] {
     def read(doc: BSONDocument): Leave = {
       Leave(
@@ -66,9 +80,7 @@ object LeaveModel {
           doc.getAs[Double]("uti").get,
           doc.getAs[Double]("cfuti").get,
           doc.getAs[Boolean]("ld").getOrElse(true),
-          doc.getAs[String]("w_s").get,
-          doc.getAs[String]("w_aprid").get,
-          doc.getAs[String]("w_aprn").get,
+          doc.getAs[Workflow]("wf").get,
           doc.getAs[System]("sys").map(o => o)
       )
     }
@@ -89,6 +101,16 @@ object LeaveModel {
     }
   }
   
+  implicit object WorkflowBSONWriter extends BSONDocumentWriter[Workflow] {
+    def write(wf: Workflow): BSONDocument = {
+      BSONDocument(
+          "s" -> wf.s,
+          "aprid" -> wf.aprid,
+          "aprn" -> wf.aprn
+      )     
+    }
+  }
+  
   implicit object LeaveBSONWriter extends BSONDocumentWriter[Leave] {
     def write(leave: Leave): BSONDocument = {
       BSONDocument(
@@ -104,9 +126,7 @@ object LeaveModel {
           "uti" -> leave.uti,
           "cfuti" -> leave.cfuti,
           "ld" -> leave.ld,
-          "w_s" -> leave.w_s,
-          "w_aprid" -> leave.w_aprid,
-          "w_aprn" -> leave.w_aprn,
+          "wf" -> leave.wf,
           "sys" -> leave.sys
       )     
     }
@@ -133,9 +153,11 @@ object LeaveModel {
       uti = 0.0,
       cfuti = 0.0,
       ld = false,
-      w_s = "Draft",
-      w_aprid = "",
-      w_aprn = "",
+      wf = Workflow(
+          s = "New",
+          aprid = "",
+          aprn = ""    
+      ),
       sys=None
   )
   

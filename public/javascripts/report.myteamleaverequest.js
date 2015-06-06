@@ -16,8 +16,8 @@ $(function(){
 			{name:'tdat',index:'tdat',width:70,sortable:false},
 			{name:'uti',index:'uti',width:70, sorttype:"int"},
 			{name:'cfuti',index:'cfuti',width:130, sorttype:"int"},
-			{name:'w_s',index:'w_s',width:130},
-			{name:'w_aprn',index:'w_aprn',width:130}
+			{name:'wf_s',index:'wf_s',width:130},
+			{name:'wf_aprn',index:'wf_aprn',width:130}
 		],
 	   	rowNum:30,
 	   	rowList:[],

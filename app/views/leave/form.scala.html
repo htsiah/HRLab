@@ -45,11 +45,11 @@
 		</dl>
 		<dl class="dl-horizontal">
 			<dt><label for="s">Status</label></dt>
-			<dd>@leave("w_s").value</dd>
+			<dd>@leave("wf.s").value</dd>
 		</dl>
 		<dl class="dl-horizontal">
 			<dt><label for="s">Approver</label></dt>
-			<dd>@leave("w_aprn").value</dd>
+			<dd>@leave("wf.aprn").value</dd>
 		</dl>
 		@select(leave("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(leave("dt"), options = Seq("Full day"->"Full day", "1st half"->"1st half", "2nd half"->"2nd half"), '_label -> "Day Type", '_class->"dl-horizontal", 'class->"form-control")
@@ -78,9 +78,9 @@
 			@inputText(leave("pn"),'type -> "hidden")
 			@inputText(leave("uti"),'type -> "hidden")
 			@inputText(leave("cfuti"),'type -> "hidden")
-			@inputText(leave("w_s"),'type -> "hidden")
-			@inputText(leave("w_aprid"),'type -> "hidden")
-			@inputText(leave("w_aprn"),'type -> "hidden")
+			@inputText(leave("wf.s"),'type -> "hidden")
+			@inputText(leave("wf.aprid"),'type -> "hidden")
+			@inputText(leave("wf.aprn"),'type -> "hidden")
 			@inputText(leave("sys")("eid"),'type -> "hidden")
 			@inputText(leave("sys")("cdat"),'type -> "hidden")
 			@inputText(leave("sys")("mdat"),'type -> "hidden")

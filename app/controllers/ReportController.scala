@@ -33,8 +33,8 @@ object ReportController extends Controller with Secured {
           "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
           "uti" -> Json.toJson(leave.uti),
           "cfuti" -> Json.toJson(leave.cfuti),
-          "w_s" -> Json.toJson(leave.w_s),
-          "w_aprn" -> Json.toJson(leave.w_aprn)
+          "wf_s" -> Json.toJson(leave.wf.s),
+          "wf_aprn" -> Json.toJson(leave.wf.aprn)
       )}
       Ok(Json.toJson(leavesMap)).as("application/json")
     }
@@ -65,8 +65,8 @@ object ReportController extends Controller with Secured {
             "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
             "uti" -> Json.toJson(leave.uti),
             "cfuti" -> Json.toJson(leave.cfuti),
-            "w_s" -> Json.toJson(leave.w_s),
-            "w_aprn" -> Json.toJson(leave.w_aprn)
+            "wf_s" -> Json.toJson(leave.wf.s),
+            "wf_aprn" -> Json.toJson(leave.wf.aprn)
         )}
         Ok(Json.toJson(leavesMap)).as("application/json")
       }
@@ -133,8 +133,8 @@ object ReportController extends Controller with Secured {
             "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
             "uti" -> Json.toJson(leave.uti),
             "cfuti" -> Json.toJson(leave.cfuti),
-            "w_s" -> Json.toJson(leave.w_s),
-            "w_aprn" -> Json.toJson(leave.w_aprn)
+            "wf_s" -> Json.toJson(leave.wf.s),
+            "wf_aprn" -> Json.toJson(leave.wf.aprn)
         )}
         Ok(Json.toJson(leavesMap)).as("application/json")
       }
