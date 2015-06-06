@@ -94,13 +94,13 @@ object ReportController extends Controller with Secured {
         val leavesMap = leaveprofiles.map { leaveprofile => Map(
             "name" -> Json.toJson(leaveprofile.pn),
             "lt" -> Json.toJson(leaveprofile.lt),
-            "ent" -> Json.toJson(leaveprofile.ent),
-            "ear" -> Json.toJson(leaveprofile.ear),
-            "adj" -> Json.toJson(leaveprofile.adj),
-            "cf" -> Json.toJson(leaveprofile.cf),
-            "tuti" -> Json.toJson(leaveprofile.uti + leaveprofile.cfuti),
-            "texp" -> Json.toJson(leaveprofile.cfexp),
-            "bal" -> Json.toJson(leaveprofile.bal)
+            "ent" -> Json.toJson(leaveprofile.cal.ent),
+            "ear" -> Json.toJson(leaveprofile.cal.ear),
+            "adj" -> Json.toJson(leaveprofile.cal.adj),
+            "cf" -> Json.toJson(leaveprofile.cal.cf),
+            "tuti" -> Json.toJson(leaveprofile.cal.uti + leaveprofile.cal.cfuti),
+            "texp" -> Json.toJson(leaveprofile.cal.cfexp),
+            "bal" -> Json.toJson(leaveprofile.cal.bal)
         )}
         Ok(Json.toJson(leavesMap)).as("application/json")
       }  
@@ -161,13 +161,13 @@ object ReportController extends Controller with Secured {
         val leavesMap = leaveprofiles.map { leaveprofile => Map(
             "name" -> Json.toJson(leaveprofile.pn),
             "lt" -> Json.toJson(leaveprofile.lt),
-            "ent" -> Json.toJson(leaveprofile.ent),
-            "ear" -> Json.toJson(leaveprofile.ear),
-            "adj" -> Json.toJson(leaveprofile.adj),
-            "cf" -> Json.toJson(leaveprofile.cf),
-            "tuti" -> Json.toJson(leaveprofile.uti + leaveprofile.cfuti),
-            "texp" -> Json.toJson(leaveprofile.cfexp),
-            "bal" -> Json.toJson(leaveprofile.bal)
+            "ent" -> Json.toJson(leaveprofile.cal.ent),
+            "ear" -> Json.toJson(leaveprofile.cal.ear),
+            "adj" -> Json.toJson(leaveprofile.cal.adj),
+            "cf" -> Json.toJson(leaveprofile.cal.cf),
+            "tuti" -> Json.toJson(leaveprofile.cal.uti + leaveprofile.cal.cfuti),
+            "texp" -> Json.toJson(leaveprofile.cal.cfexp),
+            "bal" -> Json.toJson(leaveprofile.cal.bal)
         )}
         Ok(Json.toJson(leavesMap)).as("application/json")
       }

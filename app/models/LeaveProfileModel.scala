@@ -20,6 +20,13 @@ case class LeaveProfile (
     pid: String,	// person object id
     pn: String,
     lt: String,
+    cal: LeaveProfileCalculation,
+    me: LeaveProfileMonthEarn,
+    set_ent: Entitlement, // Case class from leave policy model
+    sys: Option[System]
+)
+
+case class LeaveProfileCalculation (
     ent: Int,
     ear: Double,
     adj: Int,
@@ -27,10 +34,7 @@ case class LeaveProfile (
     cf: Double,
     cfuti: Double,
     cfexp: Double,
-    bal: Double,
-    me: LeaveProfileMonthEarn,
-    set_ent: Entitlement, // Case class from leave policy model
-    sys: Option[System]
+    bal: Double
 )
 
 case class LeaveProfileMonthEarn (
@@ -106,13 +110,9 @@ object LeaveProfileModel {
     }
   }
   
-  implicit object LeaveProfileBSONReader extends BSONDocumentReader[LeaveProfile] {
-    def read(doc: BSONDocument): LeaveProfile = {
-      LeaveProfile(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("pid").get,
-          doc.getAs[String]("pn").get,
-          doc.getAs[String]("lt").get,
+  implicit object LeaveProfileCalculationBSONReader extends BSONDocumentReader[LeaveProfileCalculation] {
+    def read(doc: BSONDocument): LeaveProfileCalculation = {
+      LeaveProfileCalculation(
           doc.getAs[Int]("ent").get,
           doc.getAs[Double]("ear").get,
           doc.getAs[Int]("adj").get,
@@ -120,7 +120,19 @@ object LeaveProfileModel {
           doc.getAs[Double]("cf").get,
           doc.getAs[Double]("cfuti").get,
           doc.getAs[Double]("cfexp").get,
-          doc.getAs[Double]("bal").get,
+          doc.getAs[Double]("bal").get
+      )
+    }
+  }
+  
+  implicit object LeaveProfileBSONReader extends BSONDocumentReader[LeaveProfile] {
+    def read(doc: BSONDocument): LeaveProfile = {
+      LeaveProfile(
+          doc.getAs[BSONObjectID]("_id").get,
+          doc.getAs[String]("pid").get,
+          doc.getAs[String]("pn").get,
+          doc.getAs[String]("lt").get,
+          doc.getAs[LeaveProfileCalculation]("cal").get,
           doc.getAs[LeaveProfileMonthEarn]("me").get,
           doc.getAs[Entitlement]("set_ent").get,
           doc.getAs[System]("sys").map(o => o)
@@ -183,6 +195,21 @@ object LeaveProfileModel {
       )     
     }
   }
+  
+  implicit object LeaveProfileCalculationBSONWriter extends BSONDocumentWriter[LeaveProfileCalculation] {
+    def write(leaveprofilecalculation: LeaveProfileCalculation): BSONDocument = {
+      BSONDocument(
+          "ent" -> leaveprofilecalculation.ent,
+          "ear" -> leaveprofilecalculation.ear,
+          "adj" -> leaveprofilecalculation.adj,
+          "uti" -> leaveprofilecalculation.uti,
+          "cf" -> leaveprofilecalculation.cf,
+          "cfuti" -> leaveprofilecalculation.cfuti,
+          "cfexp" -> leaveprofilecalculation.cfexp,
+          "bal" -> leaveprofilecalculation.bal
+      )     
+    }
+  }
       
   implicit object LeaveProfileBSONWriter extends BSONDocumentWriter[LeaveProfile] {
     def write(leaveprofile: LeaveProfile): BSONDocument = {
@@ -191,14 +218,7 @@ object LeaveProfileModel {
           "pid" -> leaveprofile.pid,
           "pn" -> leaveprofile.pn,
           "lt" -> leaveprofile.lt,
-          "ent" -> leaveprofile.ent,
-          "ear" -> leaveprofile.ear,
-          "adj" -> leaveprofile.adj,
-          "uti" -> leaveprofile.uti,
-          "cf" -> leaveprofile.cf,
-          "cfuti" -> leaveprofile.cfuti,
-          "cfexp" -> leaveprofile.cfexp,
-          "bal" -> leaveprofile.bal,
+          "cal" -> leaveprofile.cal,
           "me" -> leaveprofile.me,
           "set_ent" -> leaveprofile.set_ent,
           "sys" -> leaveprofile.sys
@@ -219,14 +239,7 @@ object LeaveProfileModel {
       pid = "",
       pn = "",
       lt = "",
-      ent = 0,
-      ear = 0,
-      adj = 0,
-      uti = 0,
-      cf = 0,
-      cfuti = 0,
-      cfexp = 0,
-      bal = 0,
+      cal = LeaveProfileCalculation (ent = 0, ear = 0.0, adj = 0, uti = 0.0, cf = 0.0, cfuti = 0.0, cfexp = 0.0, bal = 0.0),
       me = LeaveProfileMonthEarn(jan=0.0, feb=0.0, mar=0.0, apr=0.0, may=0.0, jun=0.0, jul=0.0, aug=0.0, sep = 0.0, oct=0.0, nov=0.0, dec=0.0),
       set_ent = Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
       sys=None
@@ -318,9 +331,11 @@ object LeaveProfileModel {
       }
       val future = col.insert(
           p_doc.copy(
-              ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
-              ear = leaveearned,
-              bal = leaveearned + p_doc.adj - p_doc.uti + p_doc.cf - p_doc.cfuti - p_doc.cfexp,
+              cal = p_doc.cal.copy(
+                  ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
+                  ear = leaveearned,
+                  bal = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+              ),
               me = LeaveProfileMonthEarn(
                   jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
                   feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2),
@@ -358,8 +373,10 @@ object LeaveProfileModel {
       val future = col.update(
           p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), 
           p_doc.copy(
-              ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
-              bal = p_doc.ear + p_doc.adj - p_doc.uti + p_doc.cf - p_doc.cfuti - p_doc.cfexp,
+              cal = p_doc.cal.copy(
+                  ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
+                  bal = p_doc.cal.ear + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+              ), 
               me = LeaveProfileMonthEarn(
                   jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
                   feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2),
@@ -397,8 +414,10 @@ object LeaveProfileModel {
       val future = col.update(
           p_query.++(BSONDocument("sys.eid" -> p_eid, "sys.ddat"->BSONDocument("$exists"->false))), 
           p_doc.copy(
-              ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
-              bal = p_doc.ear + p_doc.adj - p_doc.uti + p_doc.cf - p_doc.cfuti - p_doc.cfexp,
+              cal = p_doc.cal.copy(
+                  ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
+                  bal = p_doc.cal.ear + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+              ),
               me = LeaveProfileMonthEarn(
                   jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
                   feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2),
@@ -523,7 +542,7 @@ object LeaveProfileModel {
   
   def getEligibleCarryForwordEarn(p_leaveprofile:LeaveProfile, p_servicemonth:Int) = {
     val eligblecarryforword = this.getEligibleCarryForword(p_leaveprofile, p_servicemonth)
-    if (p_leaveprofile.bal > eligblecarryforword) eligblecarryforword else p_leaveprofile.bal
+    if (p_leaveprofile.cal.bal > eligblecarryforword) eligblecarryforword else p_leaveprofile.cal.bal
   }
   
   // Get total leave earn from previous cut off date until now.
@@ -605,7 +624,7 @@ object LeaveProfileModel {
       val now = new DateTime
       val cutoffdate = new DateTime(now.year().get(), p_leavesetting.cfm,1,0,0,0,0)
       val carryforwardexpireddate = cutoffdate.plusMonths(p_leavepolicy.cexp)
-      if (now.isAfter(carryforwardexpireddate)) p_leaveprofile.cf - p_leaveprofile.cfuti else 0.0
+      if (now.isAfter(carryforwardexpireddate)) p_leaveprofile.cal.cf - p_leaveprofile.cal.cfuti else 0.0
     }
   }
     

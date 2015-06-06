@@ -67,23 +67,23 @@
 		} else {
 			@contentRow("Leave type", leaveprofile("lt").value.get)
 		}
-		@contentRow("Entitlement", leaveprofile("ent").value.get, "", "v_ent")
-		@contentRow("Earned", leaveprofile("ear").value.get, "", "v_earned")
+		@contentRow("Entitlement", leaveprofile("cal")("ent").value.get, "", "v_ent")
+		@contentRow("Earned", leaveprofile("cal")("ear").value.get, "", "v_earned")
 		<dl class="dl-horizontal">
 			<dt><label>HR Adjustment</label></dt>
 			<dd>
 				<div class="ace-spinner touch-spinner" style="width: 100px;">
-					<input type="text" name="adj" id="adj" value=@leaveprofile("adj").value class="input-mini spinner-input form-control" maxlength="3" readonly>
+					<input type="text" name="cal.adj" id="adj" value=@leaveprofile("cal")("adj").value class="input-mini spinner-input form-control" maxlength="3" readonly>
 				</div>
 				<br>
 				<label id="adj-error" class="error" for="adj" style="display: inline;"></label>
 			</dd>
 		</dl>
-		@contentRow("Utilized", leaveprofile("uti").value.get)
-		@contentRow("Carry Forward", leaveprofile("cf").value.get)
-		@contentRow("Carry Forward Utilized", leaveprofile("cfuti").value.get)
-		@contentRow("Carry Forward Expired", leaveprofile("cfexp").value.get)
-		@contentRow("Balance", leaveprofile("bal").value.get, "", "v_bal")
+		@contentRow("Utilized", leaveprofile("cal")("uti").value.get)
+		@contentRow("Carry Forward", leaveprofile("cal")("cf").value.get)
+		@contentRow("Carry Forward Utilized", leaveprofile("cal")("cfuti").value.get)
+		@contentRow("Carry Forward Expired", leaveprofile("cal")("cfexp").value.get)
+		@contentRow("Balance", leaveprofile("cal")("bal").value.get, "", "v_bal")
 
 		<div class="widget-box">
 			<div class="widget-header">
@@ -281,13 +281,13 @@
 			@inputText(leaveprofile("_id"),'type -> "hidden")
 			@inputText(leaveprofile("pid"),'type -> "hidden")
 			@inputText(leaveprofile("pn"),'type -> "hidden")
-			@inputText(leaveprofile("ent"),'type -> "hidden")
-			@inputText(leaveprofile("ear"),'type -> "hidden")
-			@inputText(leaveprofile("uti"),'type -> "hidden")
-			@inputText(leaveprofile("cf"),'type -> "hidden")
-			@inputText(leaveprofile("cfuti"),'type -> "hidden")
-			@inputText(leaveprofile("cfexp"),'type -> "hidden")
-			@inputText(leaveprofile("bal"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("ent"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("ear"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("uti"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("cf"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("cfuti"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("cfexp"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("bal"),'type -> "hidden")
 			@inputText(leaveprofile("me")("jan"),'type -> "hidden")
 			@inputText(leaveprofile("me")("feb"),'type -> "hidden")
 			@inputText(leaveprofile("me")("mar"),'type -> "hidden")

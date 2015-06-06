@@ -137,13 +137,13 @@
 										@leaveprofiles.map{ leaveprofile =>
 											<tr>
 												<td>@leaveprofile.lt</td>
-												<td>@leaveprofile.ent</td>
-												<td>@leaveprofile.ear</td>
-												<td>@leaveprofile.adj</td>
-												<td>@leaveprofile.cf</td>
-												<td>@(leaveprofile.cfuti + leaveprofile.uti)</td>
-												<td>@leaveprofile.cfexp</td>
-												<td>@leaveprofile.bal</td>
+												<td>@leaveprofile.cal.ent</td>
+												<td>@leaveprofile.cal.ear</td>
+												<td>@leaveprofile.cal.adj</td>
+												<td>@leaveprofile.cal.cf</td>
+												<td>@(leaveprofile.cal.cfuti + leaveprofile.cal.uti)</td>
+												<td>@leaveprofile.cal.cfexp</td>
+												<td>@leaveprofile.cal.bal</td>
 												<td class="center">
 													<div class="btn-group">
 														<a class="btn btn-xs btn-success" title="View" href="@routes.LeaveProfileController.myprofileview(leaveprofile._id.stringify)">
@@ -185,13 +185,13 @@
 										@leaveprofiles.map{ leaveprofile =>
 											<tr>
 												<td>@leaveprofile.lt</td>
-												<td>@leaveprofile.ent</td>
-												<td>@leaveprofile.ear</td>
-												<td>@leaveprofile.adj</td>
-												<td>@leaveprofile.cf</td>
-												<td>@(leaveprofile.cfuti + leaveprofile.uti)</td>
-												<td>@leaveprofile.cfexp</td>
-												<td>@leaveprofile.bal</td>
+												<td>@leaveprofile.cal.ent</td>
+												<td>@leaveprofile.cal.ear</td>
+												<td>@leaveprofile.cal.adj</td>
+												<td>@leaveprofile.cal.cf</td>
+												<td>@(leaveprofile.cal.cfuti + leaveprofile.cal.uti)</td>
+												<td>@leaveprofile.cal.cfexp</td>
+												<td>@leaveprofile.cal.bal</td>
 												<td class="center">
 													<div class="btn-group">
 														<a class="btn btn-xs btn-success" title="View" href="@routes.LeaveProfileController.myprofileview(leaveprofile._id.stringify)">

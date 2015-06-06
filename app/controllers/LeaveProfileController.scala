@@ -12,7 +12,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, Entitlement, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel}
+import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel}
 import utilities.{System, AlertUtility, Tools}
 
 import reactivemongo.api._
@@ -26,14 +26,16 @@ object LeaveProfileController extends Controller with Secured {
           "pid" -> text,
           "pn" -> text,
           "lt" -> text,
-          "ent" -> number,
-          "ear" -> of[Double],
-          "adj" -> number,
-          "uti" -> of[Double],
-          "cf" -> of[Double],
-          "cfuti" -> of[Double],
-          "cfexp" -> of[Double],
-          "bal" -> of[Double],
+          "cal" -> mapping(
+              "ent" -> number,
+              "ear" -> of[Double],
+              "adj" -> number,
+              "uti" -> of[Double],
+              "cf" -> of[Double],
+              "cfuti" -> of[Double],
+              "cfexp" -> of[Double],
+              "bal" -> of[Double]  
+          )(LeaveProfileCalculation.apply)(LeaveProfileCalculation.unapply),
           "me" -> mapping(
               "jan" -> of[Double],
               "feb" -> of[Double],
@@ -74,20 +76,13 @@ object LeaveProfileController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))
-      ){(_id,pid,pn,lt,ent,ear,adj,uti,cf,cfuti,cfexp,bal,me,set_ent,sys)=>LeaveProfile(_id,pid,pn,lt,ent,ear,adj,uti,cf,cfuti,cfexp,bal,me,set_ent,sys)}
+      ){(_id,pid,pn,lt,cal,me,set_ent,sys)=>LeaveProfile(_id,pid,pn,lt,cal,me,set_ent,sys)}
       {leaveprofile:LeaveProfile=>
         Some(leaveprofile._id,
             leaveprofile.pid,
             leaveprofile.pn,
             leaveprofile.lt,
-            leaveprofile.ent,
-            leaveprofile.ear,
-            leaveprofile.adj,
-            leaveprofile.uti,
-            leaveprofile.cf,
-            leaveprofile.cfuti,
-            leaveprofile.cfexp,
-            leaveprofile.bal,
+            leaveprofile.cal,
             leaveprofile.me,
             leaveprofile.set_ent,
             leaveprofile.sys)      
@@ -106,14 +101,16 @@ object LeaveProfileController extends Controller with Secured {
               pid = p_pid,
               pn = person.p.fn + " " + person.p.ln,
               lt = "",
-              ent = 0,
-              ear = 0.0,
-              adj = 0,
-              uti = 0.0,
-              cf = 0.0,
-              cfuti = 0.0,
-              cfexp = 0.0,
-              bal = 0.0,
+              cal = LeaveProfileCalculation(
+                  ent = 0,
+                  ear = 0.0,
+                  adj = 0,
+                  uti = 0.0,
+                  cf = 0.0,
+                  cfuti = 0.0,
+                  cfexp = 0.0,
+                  bal = 0.0
+              ),
               me = LeaveProfileMonthEarn(
                   jan = 0.0,
                   feb = 0.0,
@@ -323,14 +320,16 @@ object LeaveProfileController extends Controller with Secured {
               pid = request.session.get("id").get,
               pn = person.p.fn + " " + person.p.ln,
               lt = "",
-              ent = 0,
-              ear = 0.0,
-              adj = 0,
-              uti = 0.0,
-              cf = 0.0,
-              cfuti = 0.0,
-              cfexp = 0.0,
-              bal = 0.0,
+              cal = LeaveProfileCalculation(
+                  ent = 0,
+                  ear = 0.0,
+                  adj = 0,
+                  uti = 0.0,
+                  cf = 0.0,
+                  cfuti = 0.0,
+                  cfexp = 0.0,
+                  bal = 0.0
+              ),
               me = LeaveProfileMonthEarn(
                   jan = 0.0,
                   feb = 0.0,

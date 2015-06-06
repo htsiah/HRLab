@@ -117,8 +117,10 @@ object MonthlyLeaveProfileUpdateJob {
                 LeaveProfileModel.update(
                     BSONDocument("_id" -> leaveprofile._id), 
                     leaveprofile.copy(
-                        ear=leaveprofile.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person.get, now.monthOfYear().get), 
-                        cfexp=LeaveProfileModel.getEligibleCarryForwardExpired(leaveprofile, p_leavesetting, leavepolicy)
+                        cal = leaveprofile.cal.copy(
+                            ear=leaveprofile.cal.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person.get, now.monthOfYear().get), 
+                            cfexp=LeaveProfileModel.getEligibleCarryForwardExpired(leaveprofile, p_leavesetting, leavepolicy)
+                        )
                     ), 
                     p_eid)
               } }
@@ -140,13 +142,15 @@ object MonthlyLeaveProfileUpdateJob {
             LeaveProfileModel.update(
                 BSONDocument("_id" -> leaveprofile._id), 
                 leaveprofile.copy(
-                    ent=LeaveProfileModel.getEligibleEntitlement(leaveprofile, PersonModel.getServiceMonths(person.get)),
-                    ear=LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person.get, now.monthOfYear().get), 
-                    adj=0,
-                    uti=0.0,
-                    cf=LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person.get)),
-                    cfuti=0.0,
-                    cfexp=0.0
+                    cal = leaveprofile.cal.copy(
+                        ent=LeaveProfileModel.getEligibleEntitlement(leaveprofile, PersonModel.getServiceMonths(person.get)),
+                        ear=LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person.get, now.monthOfYear().get), 
+                        adj=0,
+                        uti=0.0,
+                        cf=LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person.get)),
+                        cfuti=0.0,
+                        cfexp=0.0 
+                    )
                 ), 
                 p_eid)
             } }

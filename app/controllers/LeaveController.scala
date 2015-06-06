@@ -112,12 +112,12 @@ object LeaveController extends Controller with Secured {
               Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=alert))
             } else {
 	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
-	            val leavebalance = maybeleaveprofile.get.bal 
+	            val leavebalance = maybeleaveprofile.get.cal.bal 
 	            if (leavebalance < appliedduration) {
 	              // No enough leave balance
 	              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_notenoughtbalance.getOrElse(null)))
 	            } else {
-                val carryforward_bal = maybeleaveprofile.get.cf - maybeleaveprofile.get.cfuti - maybeleaveprofile.get.cfexp
+                val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
 	                           
                 // Add Leave
                 val leave_update = if (carryforward_bal <= 0) 
@@ -183,13 +183,13 @@ object LeaveController extends Controller with Secured {
 	        Ok(views.html.leave.view(maybeleave.get, alert=maybealert_missingleavepolicy.getOrElse(null)))
 	      } else {
 	        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
-	        val leavebalance = maybeleaveprofile.get.bal 
+	        val leavebalance = maybeleaveprofile.get.cal.bal 
 
 	        // Check enough leave balance
 	        if (leavebalance < appliedduration) {
 	          Ok(views.html.leave.view(maybeleave.get, alert=maybealert_notenoughtbalance.getOrElse(null)))
 	        } else {
-            val carryforward_bal = maybeleaveprofile.get.cf - maybeleaveprofile.get.cfuti - maybeleaveprofile.get.cfexp
+            val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
             
             // Update Leave
             val leave_update = if (carryforward_bal <= 0)
@@ -202,11 +202,17 @@ object LeaveController extends Controller with Secured {
                 
             // Update leave profile
             val leaveprofile_update = if (carryforward_bal <= 0) 
-              maybeleaveprofile.get.copy(uti = maybeleaveprofile.get.uti + appliedduration)
+              maybeleaveprofile.get.copy(
+                  cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration)
+              )
               else if (carryforward_bal >= appliedduration)
-                maybeleaveprofile.get.copy(cfuti = maybeleaveprofile.get.cfuti + appliedduration)
+                maybeleaveprofile.get.copy(
+                    cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + appliedduration)
+                )
               else
-                maybeleaveprofile.get.copy(cfuti = maybeleaveprofile.get.cfuti + carryforward_bal, uti = maybeleaveprofile.get.uti + (appliedduration - carryforward_bal))
+                maybeleaveprofile.get.copy(
+                    cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal))
+                )
             LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
             
             // Update Todo
@@ -277,7 +283,9 @@ object LeaveController extends Controller with Secured {
         
         if (maybeleave.get.wf.s=="Approved") {
           // Update Leave Profile
-          val leaveprofile_update = maybeleaveprofile.get.copy(uti = maybeleaveprofile.get.uti - maybeleave.get.uti, cfuti = maybeleaveprofile.get.cfuti - maybeleave.get.cfuti)
+          val leaveprofile_update = maybeleaveprofile.get.copy(
+              cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti - maybeleave.get.uti, cfuti = maybeleaveprofile.get.cal.cfuti - maybeleave.get.cfuti)
+          )
           LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         }
         
