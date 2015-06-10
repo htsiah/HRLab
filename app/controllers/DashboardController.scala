@@ -12,7 +12,7 @@ object DashboardController extends Controller with Secured {
   
   def index = withAuth { username => implicit request => {
     for {
-      leaves <- LeaveModel.find(BSONDocument("pid"->getPersonProfile(request).get._id.stringify, "w_s"->"Pending Approval", "ld" -> false), BSONDocument("docnum" -> -1), request)
+      leaves <- LeaveModel.find(BSONDocument("pid"->getPersonProfile(request).get._id.stringify, "wf.s"->"Pending Approval", "ld" -> false), BSONDocument("docnum" -> -1), request)
       tasks <- TaskModel.find(BSONDocument("pid"->getPersonProfile(request).get._id.stringify, "cf"->false), BSONDocument("sys.cdat" -> -1), request)
     } yield {
       Ok(views.html.dashboard.index(tasks, leaves)).withSession(
