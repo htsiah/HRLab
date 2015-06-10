@@ -29,7 +29,7 @@ object LeaveProfileController extends Controller with Secured {
           "cal" -> mapping(
               "ent" -> number,
               "ear" -> of[Double],
-              "adj" -> number,
+              "adj" -> of[Double],
               "uti" -> of[Double],
               "cf" -> of[Double],
               "cfuti" -> of[Double],
@@ -104,7 +104,7 @@ object LeaveProfileController extends Controller with Secured {
               cal = LeaveProfileCalculation(
                   ent = 0,
                   ear = 0.0,
-                  adj = 0,
+                  adj = 0.0,
                   uti = 0.0,
                   cf = 0.0,
                   cfuti = 0.0,

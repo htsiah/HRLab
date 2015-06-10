@@ -7,7 +7,7 @@ $(function(){
 		value:0,
 		min:-100,
 		max:100,
-		step:1, 
+		step:0.5, 
 		on_sides: true, 
 		icon_up:'ace-icon fa fa-plus smaller-75', 
 		icon_down:'ace-icon fa fa-minus smaller-75', 

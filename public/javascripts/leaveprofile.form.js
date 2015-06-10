@@ -7,7 +7,7 @@ $(function(){
 		value:0,
 		min:-100,
 		max:100,
-		step:1, 
+		step:0.5, 
 		on_sides: true, 
 		icon_up:'ace-icon fa fa-plus smaller-75', 
 		icon_down:'ace-icon fa fa-minus smaller-75', 
@@ -15,7 +15,7 @@ $(function(){
 		btn_down_class:'btn-danger'
 	});
 
-	$('#adj,#e1,#e2,#e3,#e4,#e5,#e1_cf,#e2_cf,#e3_cf,#e4_cf,#e5_cf').ace_spinner({
+	$('#e1,#e2,#e3,#e4,#e5,#e1_cf,#e2_cf,#e3_cf,#e4_cf,#e5_cf').ace_spinner({
 		value:0,
 		min:0,
 		max:100,
