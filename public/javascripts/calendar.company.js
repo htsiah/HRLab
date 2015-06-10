@@ -4,6 +4,7 @@ var Calendar = {
 	companyholidaysource:{
 		url: '/companyholiday/getcompanyholidayjson',
 		type: 'GET',
+		cache: false,
 		error: function() {
 			alert('There was an error while fetching company holiday!');
 		},
@@ -13,12 +14,15 @@ var Calendar = {
 	myapprovedleavessource:{
 		url: '/leave/getapprovedleaveforcompanyviewjson/my',
 		type: 'GET',
+		cache: false,
 		error: function() {
 			alert('There was an error while fetching your leave!');
 		},
 		color: 'blue',   // a non-ajax option
 		textColor: 'white' // a non-ajax option
 	},
+	
+	deptleavesurl:{},
 	
 	deptleavessource:{},
 	
@@ -30,8 +34,8 @@ var Calendar = {
 		$('#calendar').fullCalendar({});	
 	},
 
-	removeEvents:function(){
-		$('#calendar').fullCalendar('removeEvents').fullCalendar('removeEventSources');
+	removeEvents:function(p_source){
+		$('#calendar').fullCalendar( 'removeEventSource', p_source )
 	},
 
 	showMyCalendar:function(){
@@ -42,10 +46,11 @@ var Calendar = {
 		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
 	},
 	
-	showDeptCalendar:function(p_dept){
+	showDeptCalendar:function(){
 		this.deptleavessource = {
-			url: '/leave/getapprovedleavejson/' + p_dept,
+			url: this.deptleavesurl,
 			type: 'GET',
+			cache: false,
 			error: function() {
 				alert('There was an error while fetching department leave!');
 			},
@@ -69,12 +74,16 @@ $(function(){
 	$(document).on('change', '#calendardisplaytypes', function(e) {
 		var selcalendardisplaytypes = this.options[this.selectedIndex].value;
 		if (selcalendardisplaytypes=="My Calendar"){
-			Calendar.removeEvents();
+			Calendar.removeEvents(Calendar.deptleavesurl);
 			Calendar.showMyCalendar();
 			Calendar.showMyLeave();
 		} else {
-			Calendar.removeEvents();
-			Calendar.showDeptCalendar(selcalendardisplaytypes);
+			Calendar.removeEvents(Calendar.deptleavesurl);
+			Calendar.removeEvents("/companyholiday/getcompanyholidayjson");
+			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/my");
+			Calendar.deptleavesurl = "/leave/getapprovedleavejson/" + selcalendardisplaytypes;
+			Calendar.showDeptCalendar();
+			
 		}
 	})
 });
