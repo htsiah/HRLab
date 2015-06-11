@@ -537,7 +537,7 @@ object LeaveProfileController extends Controller with Secured {
         } else { 
           new DateTime(person.p.edat.get.getYear, person.p.edat.get.getMonthOfYear, 1, 0, 0, 0, 0)
         }
-      val leaveearned = leavepolicy.acc match {
+      val leaveearned = leavepolicy.set.acc match {
         case "No accrue" => 0.0
         case "Monthly" => LeaveProfileModel.getTotalMonthlyEntitlementEarn(cutoffdate, leavepolicy, leavesetting, person)
         case "Yearly" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))

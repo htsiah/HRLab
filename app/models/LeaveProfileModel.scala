@@ -324,7 +324,7 @@ object LeaveProfileModel {
         } else { 
           new DateTime(person.p.edat.get.getYear, person.p.edat.get.getMonthOfYear, 1, 0, 0, 0, 0)
         }
-      val leaveearned = leavepolicy.acc match {
+      val leaveearned = leavepolicy.set.acc match {
         case "No accrue" => 0.0
         case "Monthly" => this.getTotalMonthlyEntitlementEarn(cutoffdate, p_doc, leavepolicy, leavesetting, person)
         case "Yearly" => this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person))
@@ -574,7 +574,7 @@ object LeaveProfileModel {
   def getMonthEntitlementEarn(p_leaveprofile:LeaveProfile, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int) = {
     val servicemonth = PersonModel.getServiceMonths(p_person)
     val entitlement = this.getEligibleEntitlement(p_leaveprofile, servicemonth)
-    val accruetype = p_leavepolicy.acc
+    val accruetype = p_leavepolicy.set.acc
     val leavecutoff_mth = p_leavesetting.cfm
     accruetype match {
       case "No accrue" => 0.0
@@ -598,7 +598,7 @@ object LeaveProfileModel {
   def getMonthEntitlementEarn(p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int) = {
     val servicemonth = PersonModel.getServiceMonths(p_person)
     val entitlement = this.getEligibleEntitlement(p_leavepolicy, servicemonth)
-    val accruetype = p_leavepolicy.acc
+    val accruetype = p_leavepolicy.set.acc
     val leavecutoff_mth = p_leavesetting.cfm
     accruetype match {
       case "No accrue" => 0.0
@@ -618,12 +618,12 @@ object LeaveProfileModel {
   }
   
   def getEligibleCarryForwardExpired(p_leaveprofile: LeaveProfile, p_leavesetting: LeaveSetting, p_leavepolicy: LeavePolicy) = {
-    if (p_leavepolicy.cexp == 0) {
+    if (p_leavepolicy.set.cexp == 0) {
       0.0
     } else {
       val now = new DateTime
       val cutoffdate = new DateTime(now.year().get(), p_leavesetting.cfm,1,0,0,0,0)
-      val carryforwardexpireddate = cutoffdate.plusMonths(p_leavepolicy.cexp)
+      val carryforwardexpireddate = cutoffdate.plusMonths(p_leavepolicy.set.cexp)
       if (now.isAfter(carryforwardexpireddate)) p_leaveprofile.cal.cf - p_leaveprofile.cal.cfuti else 0.0
     }
   }

@@ -11,7 +11,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeavePolicyModel, KeywordModel, Keyword, LeavePolicy, Entitlement, LeaveProfileModel, LeaveModel}
+import models.{LeavePolicyModel, KeywordModel, Keyword, LeavePolicy, LeavePolicySetting, Entitlement, LeaveProfileModel, LeaveModel}
 import utilities.{System, AlertUtility, Tools}
 
 import reactivemongo.api._
@@ -24,12 +24,14 @@ object LeavePolicyController extends Controller with Secured {
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
           "lt" -> text,
           "pt" -> text,
-          "g" -> text,
-          "acc" -> text,
-          "ms" -> text,
-          "dt" -> text,
-          "nwd" -> boolean,
-          "cexp" -> number,
+          "set" -> mapping(
+              "g" -> text,
+              "acc" -> text,
+              "ms" -> text,
+              "dt" -> text,
+              "nwd" -> boolean,
+              "cexp" -> number
+          )(LeavePolicySetting.apply)(LeavePolicySetting.unapply), 
           "ent" -> mapping(
               "e1" -> number,
               "e1_s" -> number,
@@ -56,8 +58,8 @@ object LeavePolicyController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))  
-      ){(_id,lt,pt,g,acc,ms,dt,nwd,cexp,ent,sys)=>LeavePolicy(_id,lt,pt,g,acc,ms,dt,nwd,cexp,ent,sys)}
-      {leavepolicy:LeavePolicy=>Some(leavepolicy._id, leavepolicy.lt, leavepolicy.pt, leavepolicy.g, leavepolicy.acc, leavepolicy.ms, leavepolicy.dt, leavepolicy.nwd, leavepolicy.cexp, leavepolicy.ent, leavepolicy.sys)}
+      ){(_id,lt,pt,set,ent,sys)=>LeavePolicy(_id,lt,pt,set,ent,sys)}
+      {leavepolicy:LeavePolicy=>Some(leavepolicy._id, leavepolicy.lt, leavepolicy.pt, leavepolicy.set, leavepolicy.ent, leavepolicy.sys)}
   ) 
   
   def view(p_id:String) = withAuth { username => implicit request => {
@@ -76,35 +78,7 @@ object LeavePolicyController extends Controller with Secured {
   
   def create = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
-      val doc = LeavePolicy(
-          _id = BSONObjectID.generate,
-          lt = "",
-          pt = "",
-          g = "",
-          acc = "",
-          ms = "",
-          dt = "",
-          nwd = false,
-          cexp = 0,
-          ent = Entitlement(
-            e1 = 0,
-            e1_s = 0,
-            e1_cf = 0,
-            e2 = 0,
-            e2_s = 0,
-            e2_cf = 0,
-            e3 = 0,
-            e3_s = 0,
-            e3_cf = 0,
-            e4 = 0,
-            e4_s = 0,
-            e4_cf = 0,
-            e5 = 0,
-            e5_s = 0,
-            e5_cf = 0
-          ),
-          sys = None
-      )
+      val doc = LeavePolicyModel.doc
       for { 
         maybe_leavetypes <- KeywordModel.findOne(BSONDocument("n" -> "Leave Type"), request)
         maybe_positiontypes <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
@@ -289,7 +263,7 @@ object LeavePolicyController extends Controller with Secured {
       maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt, "pt" -> request.session.get("position").get), request)
     } yield {
       maybeleavepolicy.map( leavepolicy => {
-        val json = Json.parse("{\"daytype\":\"" + leavepolicy.dt + "\"}");
+        val json = Json.parse("{\"daytype\":\"" + leavepolicy.set.dt + "\"}");
         Ok(json).as("application/json")
       }).getOrElse({        
           val json = Json.parse("{\"daytype\":\"error\"}");

@@ -265,7 +265,7 @@ object LeaveModel {
   }
   
   def getAppliedDuration(p_leave:Leave, p_leavepolicy:LeavePolicy, p_person:Person, p_office:Office, p_request:RequestHeader) = {    
-    val isvalidonnonworkday = p_leavepolicy.nwd
+    val isvalidonnonworkday = p_leavepolicy.set.nwd
     val applieddates = this.getAppliedDate(p_leave.fdat.get , p_leave.tdat.get)
     var appliedduration : Double = 0
     

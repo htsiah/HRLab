@@ -31,11 +31,11 @@
 	
 	@contentRow("Leave type", leavepolicy.lt)
 	@contentRow("Position type", leavepolicy.pt)
-	@contentRow("Gender", leavepolicy.g)
-	@contentRow("Marital status", leavepolicy.ms)
-	@contentRow("Day type option", leavepolicy.dt)
+	@contentRow("Gender", leavepolicy.set.g)
+	@contentRow("Marital status", leavepolicy.set.ms)
+	@contentRow("Day type option", leavepolicy.set.dt)
 	@contentRow("Accrual / Earn", 		
-		leavepolicy.acc match {
+		leavepolicy.set.acc match {
 			case "No accrue" => "Do not accrue. Just track usage"
 			case "Monthly" => "Accrue Monthly (At start of the month)"
 			case "Yearly" => "Accrue Annually (At start of the cut off month)"
@@ -43,7 +43,7 @@
 		}
 	)
 	@contentRow("Carry forward expires", 
-		leavepolicy.cexp match {
+		leavepolicy.set.cexp match {
 			case 0 => "Does not expire"
 			case 1 => "After 1 month"
 			case 2 => "After 2 months"
@@ -60,7 +60,7 @@
 			case _ => "Opps! something is not correct. Please contact support."
 		}
 	)
-	@contentRow("", if(leavepolicy.nwd==true){"This leave policy will not be taken into account for holidays / weekends on leave calculation"}else{""})
+	@contentRow("", if(leavepolicy.set.nwd==true){"This leave policy will not be taken into account for holidays / weekends on leave calculation"}else{""})
 	
 	<div class="widget-box transparent">
 		<div class="widget-header widget-header-flat">

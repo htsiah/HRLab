@@ -18,14 +18,18 @@ case class LeavePolicy (
     _id: BSONObjectID,
     lt: String,
     pt: String,
+    set: LeavePolicySetting,
+    ent: Entitlement,
+    sys: Option[System]
+)
+
+case class LeavePolicySetting (
     g: String,
     acc: String,
     ms: String,
     dt: String,
     nwd: Boolean,
-    cexp: Int,
-    ent: Entitlement,
-    sys: Option[System]
+    cexp: Int
 )
 
 case class Entitlement (
@@ -63,6 +67,19 @@ object LeavePolicyModel {
     }
   }
   
+  implicit object LeavePolicySettingBSONReader extends BSONDocumentReader[LeavePolicySetting] {
+    def read(doc: BSONDocument): LeavePolicySetting = {
+      LeavePolicySetting(
+          doc.getAs[String]("g").get,
+          doc.getAs[String]("acc").get,
+          doc.getAs[String]("ms").get,
+          doc.getAs[String]("dt").get,
+          doc.getAs[Boolean]("nwd").get,
+          doc.getAs[Int]("cexp").get
+      )
+    }
+  }
+  
   implicit object EntitlementBSONReader extends BSONDocumentReader[Entitlement] {
     def read(doc: BSONDocument): Entitlement = {
       Entitlement(
@@ -91,12 +108,7 @@ object LeavePolicyModel {
           doc.getAs[BSONObjectID]("_id").get,
           doc.getAs[String]("lt").get,
           doc.getAs[String]("pt").get,
-          doc.getAs[String]("g").get,
-          doc.getAs[String]("acc").get,
-          doc.getAs[String]("ms").get,
-          doc.getAs[String]("dt").get,
-          doc.getAs[Boolean]("nwd").get,
-          doc.getAs[Int]("cexp").get,
+          doc.getAs[LeavePolicySetting]("set").get,
           doc.getAs[Entitlement]("ent").get,
           doc.getAs[System]("sys").map(o => o)
       )
@@ -118,6 +130,19 @@ object LeavePolicyModel {
     }
   }
     
+  implicit object LeavePolicySettingBSONWriter extends BSONDocumentWriter[LeavePolicySetting] {
+    def write(leavepolicysetting: LeavePolicySetting): BSONDocument = {
+      BSONDocument(
+          "g" -> leavepolicysetting.g,
+          "acc" -> leavepolicysetting.acc,
+          "ms" -> leavepolicysetting.ms,
+          "dt" -> leavepolicysetting.dt,
+          "nwd" -> leavepolicysetting.nwd,
+          "cexp" -> leavepolicysetting.cexp
+      )     
+    }
+  }
+  
   implicit object EntitlementBSONWriter extends BSONDocumentWriter[Entitlement] {
     def write(entitlement: Entitlement): BSONDocument = {
       BSONDocument(
@@ -146,12 +171,7 @@ object LeavePolicyModel {
           "_id" -> leavepolicy._id,
           "lt" -> leavepolicy.lt,
           "pt" -> leavepolicy.pt,
-          "g" -> leavepolicy.g,
-          "acc" -> leavepolicy.acc,
-          "ms" -> leavepolicy.ms,
-          "dt" -> leavepolicy.dt,
-          "nwd" -> leavepolicy.nwd,
-          "cexp" -> leavepolicy.cexp,
+          "set" -> leavepolicy.set,
           "ent" -> leavepolicy.ent,
           "sys" -> leavepolicy.sys
       )     
@@ -170,12 +190,7 @@ object LeavePolicyModel {
       _id = BSONObjectID.generate,
       lt = "",
       pt = "",
-      g = "",
-      acc = "",
-      ms = "",
-      dt = "",
-      nwd = true,
-      cexp = 0,
+      LeavePolicySetting(g = "", acc = "", ms = "", dt = "", nwd = false, cexp = 0),
       Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
       sys=None
   )
@@ -275,12 +290,12 @@ object LeavePolicyModel {
         BSONDocument(
             "pt"->p_pt, 
             "$or" -> BSONArray(
-                BSONDocument("g"->p_g),
-                BSONDocument("g"->"Applicable for all")
+                BSONDocument("set.g"->p_g),
+                BSONDocument("set.g"->"Applicable for all")
             ),
             "$or" -> BSONArray(
-                BSONDocument("ms"->p_ms),
-                BSONDocument("ms"->"Applicable for all")
+                BSONDocument("set.ms"->p_ms),
+                BSONDocument("set.ms"->"Applicable for all")
             )
         ),
         p_request

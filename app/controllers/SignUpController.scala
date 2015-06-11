@@ -57,12 +57,14 @@ object SignUpController extends Controller {
                       BSONObjectID.generate,
                       configleavepolicy.lt,
                       configleavepolicy.pt,
-                      configleavepolicy.g,
-                      configleavepolicy.acc,
-                      configleavepolicy.ms,
-                      configleavepolicy.dt,
-                      configleavepolicy.nwd,
-                      configleavepolicy.cexp,
+                      LeavePolicySetting(
+                          configleavepolicy.g,
+                          configleavepolicy.acc,
+                          configleavepolicy.ms,
+                          configleavepolicy.dt,
+                          configleavepolicy.nwd,
+                          configleavepolicy.cexp  
+                      ),
                       Entitlement(
                           configleavepolicy.ent.e1,
                           configleavepolicy.ent.e1_s,
