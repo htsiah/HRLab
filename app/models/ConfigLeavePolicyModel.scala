@@ -17,14 +17,18 @@ case class ConfigLeavePolicy (
     _id: BSONObjectID,
     lt: String,
     pt: String,
+    set: ConfigLeavePolicySetting,
+    ent: ConfigEntitlement,
+    sys: Option[System]
+)
+
+case class ConfigLeavePolicySetting (
     g: String,
     acc: String,
     ms: String,
     dt: String,
     nwd: Boolean,
-    cexp: Int,
-    ent: ConfigEntitlement,
-    sys: Option[System]
+    cexp: Int
 )
 
 case class ConfigEntitlement (
@@ -62,6 +66,19 @@ object ConfigLeavePolicyModel {
     }
   }
   
+  implicit object ConfigLeavePolicySettingBSONReader extends BSONDocumentReader[ConfigLeavePolicySetting] {
+    def read(doc: BSONDocument): ConfigLeavePolicySetting = {
+      ConfigLeavePolicySetting(
+          doc.getAs[String]("g").get,
+          doc.getAs[String]("acc").get,
+          doc.getAs[String]("ms").get,
+          doc.getAs[String]("dt").get,
+          doc.getAs[Boolean]("nwd").get,
+          doc.getAs[Int]("cexp").get
+      )
+    }
+  }
+  
   implicit object ConfigEntitlementBSONReader extends BSONDocumentReader[ConfigEntitlement] {
     def read(doc: BSONDocument): ConfigEntitlement = {
       ConfigEntitlement(
@@ -90,12 +107,7 @@ object ConfigLeavePolicyModel {
           doc.getAs[BSONObjectID]("_id").get,
           doc.getAs[String]("lt").get,
           doc.getAs[String]("pt").get,
-          doc.getAs[String]("g").get,
-          doc.getAs[String]("acc").get,
-          doc.getAs[String]("ms").get,
-          doc.getAs[String]("dt").get,
-          doc.getAs[Boolean]("nwd").get,
-          doc.getAs[Int]("cexp").get,
+          doc.getAs[ConfigLeavePolicySetting]("set").get,
           doc.getAs[ConfigEntitlement]("ent").get,
           doc.getAs[System]("sys").map(o => o)
       )

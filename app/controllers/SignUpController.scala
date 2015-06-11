@@ -58,12 +58,12 @@ object SignUpController extends Controller {
                       configleavepolicy.lt,
                       configleavepolicy.pt,
                       LeavePolicySetting(
-                          configleavepolicy.g,
-                          configleavepolicy.acc,
-                          configleavepolicy.ms,
-                          configleavepolicy.dt,
-                          configleavepolicy.nwd,
-                          configleavepolicy.cexp  
+                          configleavepolicy.set.g,
+                          configleavepolicy.set.acc,
+                          configleavepolicy.set.ms,
+                          configleavepolicy.set.dt,
+                          configleavepolicy.set.nwd,
+                          configleavepolicy.set.cexp  
                       ),
                       Entitlement(
                           configleavepolicy.ent.e1,

@@ -253,12 +253,12 @@ object PersonModel {
             BSONDocument(
                 "pt" -> p_doc.p.pt,
                 "$or" -> BSONArray(
-                    BSONDocument("g"->(p_doc.p.g + " only")),
-                    BSONDocument("g"->"Applicable for all")
+                    BSONDocument("set.g"->(p_doc.p.g + " only")),
+                    BSONDocument("set.g"->"Applicable for all")
                 ),
                 "$or" -> BSONArray(
-                    BSONDocument("ms"->(p_doc.p.ms + " only")),
-                    BSONDocument("ms"->"Applicable for all")
+                    BSONDocument("set.ms"->(p_doc.p.ms + " only")),
+                    BSONDocument("set.ms"->"Applicable for all")
                 )
             ),
             p_request
@@ -306,12 +306,12 @@ object PersonModel {
             BSONDocument(
                 "pt" -> "Manager",
                 "$or" -> BSONArray(
-                    BSONDocument("g"->(p_doc.p.g + " only")),
-                    BSONDocument("g"->"Applicable for all")
+                    BSONDocument("set.g"->(p_doc.p.g + " only")),
+                    BSONDocument("set.g"->"Applicable for all")
                 ),
                 "$or" -> BSONArray(
-                    BSONDocument("ms"->(p_doc.p.ms + " only")),
-                    BSONDocument("ms"->"Applicable for all")
+                    BSONDocument("set.ms"->(p_doc.p.ms + " only")),
+                    BSONDocument("set.ms"->"Applicable for all")
                 )
             )
         ).map(configleavepolicies => {
