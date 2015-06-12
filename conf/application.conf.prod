@@ -12,7 +12,7 @@ application.secret="xkd3_R4C:Mqfpqu3OLJ=vMe_L<Awy<rvtZH59JCZ3qwiksOrudj>a;sm19N@
 
 # Application Info
 application_name=hrlab
-application_release=1.0
+application_release=1.1
 
 # Domain name
 # can be used for mail, etc
@@ -71,9 +71,7 @@ logger.play=INFO
 logger.application=DEBUG
 # logger.application=OFF
 
-# Custom Logger
-# Application (OFF/ERROR/INFO/DEBUG)
-# Security (OFF/ON)
+# Custom Logger on Application (OFF/ERROR/INFO/DEBUG) and Security (OFF/ON)
 dblogger_application=DEBUG
 dblogger_security=ON 
 
