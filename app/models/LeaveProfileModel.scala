@@ -329,12 +329,13 @@ object LeaveProfileModel {
         case "Monthly" => this.getTotalMonthlyEntitlementEarn(cutoffdate, p_doc, leavepolicy, leavesetting, person)
         case "Yearly" => this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person))
       }
+      val balance = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
       val future = col.insert(
           p_doc.copy(
               cal = p_doc.cal.copy(
                   ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
                   ear = leaveearned,
-                  bal = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+                  bal = BigDecimal(balance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ),
               me = LeaveProfileMonthEarn(
                   jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
@@ -370,12 +371,13 @@ object LeaveProfileModel {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))
       val leavepolicy= maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
       val leavesetting = maybe_leavesetting.getOrElse(LeaveSettingModel.doc)
+      val balance = p_doc.cal.ear + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
       val future = col.update(
           p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), 
           p_doc.copy(
               cal = p_doc.cal.copy(
                   ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
-                  bal = p_doc.cal.ear + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+                  bal = BigDecimal(balance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ), 
               me = LeaveProfileMonthEarn(
                   jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
@@ -411,12 +413,13 @@ object LeaveProfileModel {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))
       val leavepolicy= maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
       val leavesetting = maybe_leavesetting.getOrElse(LeaveSettingModel.doc)
+      val balance = p_doc.cal.ear + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
       val future = col.update(
           p_query.++(BSONDocument("sys.eid" -> p_eid, "sys.ddat"->BSONDocument("$exists"->false))), 
           p_doc.copy(
               cal = p_doc.cal.copy(
                   ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
-                  bal = p_doc.cal.ear + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+                  bal = BigDecimal(balance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ),
               me = LeaveProfileMonthEarn(
                   jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
