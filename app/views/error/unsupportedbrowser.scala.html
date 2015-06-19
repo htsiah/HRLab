@@ -1,0 +1,68 @@
+@(msg:String="")
+
+@pluginjs = {
+	<!--[if !IE]> -->
+	<script type="text/javascript">
+		window.jQuery || document.write("<script src='@routes.Assets.at("javascripts/jquery-2.1.1.min.js")'>"+"<"+"/script>");
+	</script>
+	<!-- <![endif]-->
+
+	<!--[if IE]>
+	<script type="text/javascript">
+			window.jQuery || document.write("<script src='@routes.Assets.at("javascripts/jquery-1.11.1.min.js")'>"+"<"+"/script>");
+	</script>
+	<![endif]-->
+	<script src="@routes.Assets.at("layout/bootstrap/js/bootstrap.min.js")"></script>
+}
+
+@inlinejs = {}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("layout/bootstrap/css/bootstrap.min.css")" rel="stylesheet" />
+	<link href="@routes.Assets.at("layout/ace/css/font-awesome.min.css")" rel="stylesheet" />
+	
+	@** fonts **@	
+	<link rel="stylesheet" href="@routes.Assets.at("layout/ace/css/ace-fonts.css")" />
+	
+	@** ace styles **@
+	<link rel="stylesheet" href="@routes.Assets.at("layout/ace/css/ace_modified.min.css")" />
+	
+	<!--[if lte IE 9]>
+		<link rel="stylesheet" href="@routes.Assets.at("layout/ace/css/ace-part2.min.css")" />
+	<![endif]-->
+	<link rel="stylesheet" href="@routes.Assets.at("layout/ace/css/ace-skins.min.css")" />
+	<link rel="stylesheet" href="@routes.Assets.at("layout/ace/css/ace-rtl.min.css")" />
+	
+	<!--[if lte IE 9]>
+		<link rel="stylesheet" href="@routes.Assets.at("layout/ace/css/ace-ie.min.css")" />
+	<![endif]-->
+}
+
+@inlinestyle = {}
+
+@layout.ace.empty("Unsupported Browser | Human Resources Software | HRLab.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+	<div class="error-container">
+		<div class="well">
+			<h1 class="grey lighter smaller">
+				<span class="blue bigger-125">
+					<i class="icon-exclamation-sign"></i>
+					Unsupported Browser
+				</span>
+			</h1>
+			<hr />
+			<h3 class="lighter smaller">Your web browser is not supported. This application is optimized for Microsoft Internet Explorer 8+, latest Chrome, latest Firefox, latest Safari and latest Opera.</h3>
+			<div class="space"></div>
+			<h4 class="smaller">Try one of the following:</h4>
+			<ul class="spaced bigger-110">
+				<li>
+					Upgrade your web browser
+				</li>
+				<li>
+					Back to <a href="http://www.hrlab.my">HRLab.my</a>
+				</li>
+			</ul>
+			<hr />
+			<i class="red">@msg</i>
+		</div>
+	<div>
+}

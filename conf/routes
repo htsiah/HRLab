@@ -16,6 +16,9 @@ POST    /change						controllers.AuthenticationController.changePost
 GET     /set/:p_email/:p_resetkey	controllers.AuthenticationController.set(p_email:String, p_resetkey:String)
 POST    /set						controllers.AuthenticationController.setPost
 
+# Error Handler
+GET		/unsupportedbrowser			controllers.ErrorController.unsupportedbrowser
+
 # Sign Up
 GET		/signup/create					controllers.SignUpController.create
 POST	/signup/insert					controllers.SignUpController.insert
