@@ -47,7 +47,7 @@ db.leavepolicy.insert({"lt":"Hospitalisation","pt":"Executive","set":{"g":"Appli
 
 use d-hrlab-config
 db.task.drop()
-db.task.insert({k:NumberInt(1),ct:"Leave Request ##DOCUNUM#: #APPLICANT# applied #NUMDAY# day #LEAVETYPE# started on #FDAT# to #TDAT#. What do you think?",bt:"<a href='#APPROVELINK#' class='green'>Approve</a><div class='space-1'></div><a href='#DOCLINK#' class='blue'>Review Request</a>"})
+db.task.insert({k:NumberInt(1),ct:"Leave Request ##DOCUNUM#: #APPLICANT# applied #NUMDAY# day #LEAVETYPE# starting on #FDAT# to #TDAT#. What do you think?",bt:"<a href='#APPROVELINK#' class='green'>Approve</a><div class='space-1'></div><a href='#DOCLINK#' class='blue'>Review Request</a>"})
 db.task.insert({k:NumberInt(2),ct:"Step 1: Update company profile",bt:"<a href='#SETTINGLINK#' class='green'>Goto Company Profile</a><div class='space-1'></div><a href='#DISMISSLINK#' class='blue'>Dismiss</a>"})
 db.task.insert({k:NumberInt(3),ct:"Step 2: Update keywords for department, leave types and position types",bt:"<a href='#SETTINGLINK#' class='green'>Goto Keyword Setting</a><div class='space-1'></div><a href='#DISMISSLINK#' class='blue'>Dismiss</a>"})
 db.task.insert({k:NumberInt(4),ct:"Step 3: Configure leave policy",bt:"<a href='#SETTINGLINK#' class='green'>Review Leave Setting</a><div class='space-1'></div><a href='#DISMISSLINK#' class='blue'>Dismiss</a>"})
