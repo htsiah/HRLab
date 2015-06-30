@@ -15,7 +15,7 @@ $(function(){
 		btn_down_class:'btn-danger'
 	});
 
-	$('#adj,#e1,#e2,#e3,#e4,#e5,#e1_cf,#e2_cf,#e3_cf,#e4_cf,#e5_cf').ace_spinner({
+	$('#e1,#e2,#e3,#e4,#e5,#e1_cf,#e2_cf,#e3_cf,#e4_cf,#e5_cf').ace_spinner({
 		value:0,
 		min:0,
 		max:100,
@@ -45,7 +45,7 @@ $(function(){
 			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + selectedLT + "/" + p_position,
 			contentType: "application/json; charset=utf-8",
 			beforeSend: function(){
-				// $('#loader-overlay').show()
+				loader.on();
 			},
 			success: function(data){
 				$( "#e1_s" ).val(data.e1_s);
@@ -78,7 +78,7 @@ $(function(){
 				$( "#m_oct" ).text(data.m_oct);
 				$( "#m_nov" ).text(data.m_nov);
 				$( "#m_dec" ).text(data.m_dec);
-				// $('#loader-overlay').hide();
+				loader.off();
 			},
 			error: function(xhr, status, error){
 				$( "#e1_s" ).val("0");
@@ -111,7 +111,7 @@ $(function(){
 				$( "#m_oct" ).text("0");
 				$( "#m_nov" ).text("0");
 				$( "#m_dec" ).text("0");
-				//$('#loader-overlay').hide();
+				loader.off();
 			},
 		});
 	});
