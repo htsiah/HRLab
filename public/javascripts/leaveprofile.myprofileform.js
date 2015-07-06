@@ -66,6 +66,7 @@ $(function(){
 				$( "#v_earned" ).text(data.earned);
 				$( "#v_ent" ).text(data.ent);
 				$( "#v_bal" ).text(data.bal);
+				$( "#v_cbal" ).text(data.cbal);
 				$( "#m_jan" ).text(data.m_jan);
 				$( "#m_feb" ).text(data.m_feb);
 				$( "#m_mar" ).text(data.m_mar);
@@ -99,6 +100,7 @@ $(function(){
 				$( "#v_earned" ).text("0");
 				$( "#v_ent" ).text("0");
 				$( "#v_bal" ).text("0");
+				$( "#v_cbal" ).text("0");
 				$( "#m_jan" ).text("0");
 				$( "#m_feb" ).text("0");
 				$( "#m_mar" ).text("0");

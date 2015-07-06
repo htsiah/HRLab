@@ -112,7 +112,7 @@ object LeaveController extends Controller with Secured {
               Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=alert))
             } else {
 	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
-	            val leavebalance = maybeleaveprofile.get.cal.bal 
+              val leavebalance = if (maybeleavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybeleaveprofile.get.cal.bal } else { maybeleaveprofile.get.cal.cbal } 
 	            if (leavebalance < appliedduration) {
 	              // No enough leave balance
 	              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_notenoughtbalance.getOrElse(null)))
@@ -183,8 +183,7 @@ object LeaveController extends Controller with Secured {
 	        Ok(views.html.leave.view(maybeleave.get, alert=maybealert_missingleavepolicy.getOrElse(null)))
 	      } else {
 	        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
-	        val leavebalance = maybeleaveprofile.get.cal.bal 
-
+	        val leavebalance = if (maybeleavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybeleaveprofile.get.cal.bal } else { maybeleaveprofile.get.cal.cbal }
 	        // Check enough leave balance
 	        if (leavebalance < appliedduration) {
 	          Ok(views.html.leave.view(maybeleave.get, alert=maybealert_notenoughtbalance.getOrElse(null)))

@@ -316,6 +316,7 @@ object PersonModel {
             )
         ).map(configleavepolicies => {
           configleavepolicies.map( configleavepolicy => {
+            println(configleavepolicy.lt)
             val leaveprofile_doc = LeaveProfileModel.doc.copy(
                 _id = BSONObjectID.generate,
                 pid = p_doc._id.stringify,
@@ -339,6 +340,7 @@ object PersonModel {
                     configleavepolicy.ent.e5_cf                
                 )
             )
+            println(leaveprofile_doc)
             LeaveProfileModel.insert(leaveprofile_doc, p_eid)
           })
         })

@@ -77,7 +77,12 @@
 	@select(leavepolicy("set")("g"), options = Seq("Applicable for all"->"Applicable for all", "Male only"->"Male only", "Female only"->"Female only"), '_label -> "Gender", '_class->"dl-horizontal", 'class->"form-control")
 	@select(leavepolicy("set")("ms"), options = Seq("Applicable for all"->"Applicable for all", "Single only"->"Single only", "Married only"->"Married only"), '_label -> "Marital status", '_class->"dl-horizontal", 'class->"form-control")
 	@select(leavepolicy("set")("dt"), options = Seq("Full day only"->"Full day only", "Full day and half day (1st or 2nd)"->"Full day and half day (1st or 2nd)"), '_label -> "Day type option", '_class->"dl-horizontal", 'class->"form-control")
-	@select(leavepolicy("set")("acc"), options = Seq("No accrue"->"Do not accrue. Just track usage", "Monthly"->"Accrue Monthly (At start of the month)", "Yearly"->"Accrue Annually (At start of the cut off month)"), '_label -> "Accrual / Earn", '_class->"dl-horizontal", 'class->"form-control")
+	@select(leavepolicy("set")("acc"), options = Seq(
+		"No accrue"->"Do not accrue. Just track usage", 
+		"Monthly - utilisation based on earned"->"Accrue Monthly (At start of the month) - utilisation based on leave earned", 
+		"Monthly - utilisation based on closing balance"->"Accrue Monthly (At start of the month) - utilisation based on closing balance",
+		"Yearly"->"Accrue Annually (At start of the cut off month)"), 
+		'_label -> "Accrual / Earn", '_class->"dl-horizontal", 'class->"form-control")
 	@select(leavepolicy("set")("cexp"), options = Seq(
 		"0"->"Does not expire", 
 		"1"->"After 1 month", 

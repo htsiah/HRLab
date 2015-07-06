@@ -6,7 +6,7 @@ var loader = {
 	},
 		
 	off: function() {
-		$('#loader-overlay-center').stop();
+		$('#loader-overlay-center').spin(false);
 		$('#loader-overlay').hide();
 	}
 	

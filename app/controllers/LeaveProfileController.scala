@@ -34,7 +34,8 @@ object LeaveProfileController extends Controller with Secured {
               "cf" -> of[Double],
               "cfuti" -> of[Double],
               "cfexp" -> of[Double],
-              "bal" -> of[Double]  
+              "bal" -> of[Double],
+              "cbal" -> of[Double]
           )(LeaveProfileCalculation.apply)(LeaveProfileCalculation.unapply),
           "me" -> mapping(
               "jan" -> of[Double],
@@ -96,53 +97,9 @@ object LeaveProfileController extends Controller with Secured {
         leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
       } yield {
         maybeperson.map( person => {
-          val leaveprofile_doc = LeaveProfile(
-              _id = BSONObjectID.generate,
+          val leaveprofile_doc = LeaveProfileModel.doc.copy(
               pid = p_pid,
-              pn = person.p.fn + " " + person.p.ln,
-              lt = "",
-              cal = LeaveProfileCalculation(
-                  ent = 0,
-                  ear = 0.0,
-                  adj = 0.0,
-                  uti = 0.0,
-                  cf = 0.0,
-                  cfuti = 0.0,
-                  cfexp = 0.0,
-                  bal = 0.0
-              ),
-              me = LeaveProfileMonthEarn(
-                  jan = 0.0,
-                  feb = 0.0,
-                  mar = 0.0,
-                  apr = 0.0,
-                  may = 0.0,
-                  jun = 0.0,
-                  jul = 0.0,
-                  aug = 0.0,
-                  sep = 0.0,
-                  oct = 0.0,
-                  nov = 0.0,
-                  dec = 0.0
-              ),
-              set_ent = Entitlement(
-                  e1 = 0,
-                  e1_s = 0,
-                  e1_cf = 0,
-                  e2 = 0,
-                  e2_s = 0,
-                  e2_cf = 0,
-                  e3 = 0,
-                  e3_s = 0,
-                  e3_cf = 0,
-                  e4 = 0,
-                  e4_s = 0,
-                  e4_cf = 0,
-                  e5 = 0,
-                  e5_s = 0,
-                  e5_cf = 0
-              ),
-              sys = None
+              pn = person.p.fn + " " + person.p.ln
           )
           Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile_doc), leavepolicies, p_pid, person.p.pt))
         }).getOrElse(NotFound)
@@ -315,53 +272,9 @@ object LeaveProfileController extends Controller with Secured {
         leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
       } yield {
         maybeperson.map( person => {
-          val leaveprofile_doc = LeaveProfile(
-              _id = BSONObjectID.generate,
+          val leaveprofile_doc = LeaveProfileModel.doc.copy(
               pid = request.session.get("id").get,
-              pn = person.p.fn + " " + person.p.ln,
-              lt = "",
-              cal = LeaveProfileCalculation(
-                  ent = 0,
-                  ear = 0.0,
-                  adj = 0,
-                  uti = 0.0,
-                  cf = 0.0,
-                  cfuti = 0.0,
-                  cfexp = 0.0,
-                  bal = 0.0
-              ),
-              me = LeaveProfileMonthEarn(
-                  jan = 0.0,
-                  feb = 0.0,
-                  mar = 0.0,
-                  apr = 0.0,
-                  may = 0.0,
-                  jun = 0.0,
-                  jul = 0.0,
-                  aug = 0.0,
-                  sep = 0.0,
-                  oct = 0.0,
-                  nov = 0.0,
-                  dec = 0.0
-              ),
-              set_ent = Entitlement(
-                  e1 = 0,
-                  e1_s = 0,
-                  e1_cf = 0,
-                  e2 = 0,
-                  e2_s = 0,
-                  e2_cf = 0,
-                  e3 = 0,
-                  e3_s = 0,
-                  e3_cf = 0,
-                  e4 = 0,
-                  e4_s = 0,
-                  e4_cf = 0,
-                  e5 = 0,
-                  e5_s = 0,
-                  e5_cf = 0
-              ),
-              sys = None
+              pn = person.p.fn + " " + person.p.ln
           )
           Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(leaveprofile_doc), leavepolicies, person.p.pt))
         }).getOrElse(NotFound)
@@ -532,16 +445,24 @@ object LeaveProfileController extends Controller with Secured {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))
       val leavepolicy= maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
       val leavesetting = maybe_leavesetting.getOrElse(LeaveSettingModel.doc)
-      val cutoffdate = if (LeaveSettingModel.getPreviousCutOffMonthNow(leavesetting.cfm).isAfter(person.p.edat.get)) {
-          LeaveSettingModel.getPreviousCutOffMonthNow(leavesetting.cfm)
+      val previouscutoffdate = if (LeaveSettingModel.getPreviousCutOffDate(leavesetting.cfm).isAfter(person.p.edat.get)) {
+          LeaveSettingModel.getPreviousCutOffDate(leavesetting.cfm)
         } else { 
           new DateTime(person.p.edat.get.getYear, person.p.edat.get.getMonthOfYear, 1, 0, 0, 0, 0)
         }
+      val cutoffdate = LeaveSettingModel.getCutOffDate(leavesetting.cfm)
       val leaveearned = leavepolicy.set.acc match {
-        case "No accrue" => 0.0
-        case "Monthly" => LeaveProfileModel.getTotalMonthlyEntitlementEarn(cutoffdate, leavepolicy, leavesetting, person)
+        case "No accrue" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+        case "Monthly - utilisation based on earned" => LeaveProfileModel.getTotalMonthlyEntitlementEarn(previouscutoffdate, leavepolicy, leavesetting, person)
+        case "Monthly - utilisation based on closing balance" => LeaveProfileModel.getTotalMonthlyEntitlementEarn(previouscutoffdate, leavepolicy, leavesetting, person)
         case "Yearly" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
       }
+      val cbal = leavepolicy.set.acc match {
+        case "No accrue" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+        case "Monthly - utilisation based on earned" => LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person)
+        case "Monthly - utilisation based on closing balance" => LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person)
+        case "Yearly" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+      }      
       val ent = LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
       val m_jan = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 1)
       val m_feb = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 2)
@@ -561,7 +482,7 @@ object LeaveProfileController extends Controller with Secured {
           ",\"e3\":" + leavepolicy.ent.e3 + ", \"e3_s\":" + leavepolicy.ent.e3_s + ", \"e3_cf\":" + leavepolicy.ent.e3_cf +
           ",\"e4\":" + leavepolicy.ent.e4 + ", \"e4_s\":" + leavepolicy.ent.e4_s + ", \"e4_cf\":" + leavepolicy.ent.e4_cf +
           ",\"e5\":" + leavepolicy.ent.e5 + ", \"e5_s\":" + leavepolicy.ent.e5_s + ", \"e5_cf\":" + leavepolicy.ent.e5_cf +
-          ",\"earned\":" + leaveearned + ",\"ent\":" + ent + ",\"bal\":" + leaveearned + ",\"m_jan\":" + m_jan +
+          ",\"earned\":" + leaveearned + ",\"ent\":" + ent + ",\"bal\":" + leaveearned + ",\"cbal\":" + cbal + ",\"m_jan\":" + m_jan +
           ",\"m_feb\":" + m_feb + ",\"m_mar\":" + m_mar + ",\"m_apr\":" + m_apr +
           ",\"m_may\":" + m_may + ",\"m_jun\":" + m_jun + ",\"m_jul\":" + m_jul +
           ",\"m_aug\":" + m_aug + ",\"m_sep\":" + m_sep + ",\"m_oct\":" + m_oct +

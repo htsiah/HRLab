@@ -174,7 +174,7 @@ object LeaveSettingModel {
   
   /** Custom Model Methods **/ 
   
-  def getPreviousCutOffMonthNow(p_cutoffmonth:Int) : DateTime = {
+  def getPreviousCutOffDate(p_cutoffmonth:Int) : DateTime = {
     if (new DateTime(DateTime.now().getYear, p_cutoffmonth, 1, 0, 0, 0, 0).isAfterNow()){
       new DateTime(DateTime.now().getYear-1, p_cutoffmonth, 1, 0, 0, 0, 0)
     } else {
@@ -182,5 +182,12 @@ object LeaveSettingModel {
     }
   }
   
+  def getCutOffDate(p_cutoffmonth:Int) : DateTime = {
+    if (new DateTime(DateTime.now().getYear, p_cutoffmonth, 1, 0, 0, 0, 0).isAfterNow()){
+      new DateTime(DateTime.now().getYear, p_cutoffmonth, 1, 0, 0, 0, 0)
+    } else {
+      new DateTime(DateTime.now().getYear + 1, p_cutoffmonth, 1, 0, 0, 0, 0)
+    }
+  }
   
 }

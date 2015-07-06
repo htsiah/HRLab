@@ -111,54 +111,60 @@ object MonthlyLeaveProfileUpdateJob {
       leavepolicies.map { leavepolicy => {
         
         // Only process accumulation is monthly and has carry expired
-        if(leavepolicy.set.acc=="Monthly" || leavepolicy.set.cexp>0) {
-          PersonModel.findOne(BSONDocument("p.pt"->leavepolicy.pt, "sys.eid"->p_eid)).map { person => {
-            LeaveProfileModel.find(BSONDocument("lt"->leavepolicy.lt ,"pid"->person.get._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => {
-              leaveprofiles.map { leaveprofile => {
-                LeaveProfileModel.update(
-                    BSONDocument("_id" -> leaveprofile._id), 
-                    leaveprofile.copy(
-                        cal = leaveprofile.cal.copy(
-                            ear=leaveprofile.cal.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person.get, now.monthOfYear().get), 
-                            cfexp=LeaveProfileModel.getEligibleCarryForwardExpired(leaveprofile, p_leavesetting, leavepolicy)
-                        )
-                    ), 
-                    p_eid)
-              } }
+        if(leavepolicy.set.acc=="Monthly - utilisation based on earned" || leavepolicy.set.acc=="Monthly - utilisation based on closing balance" || leavepolicy.set.cexp>0) {
+          PersonModel.find(BSONDocument("p.pt"->leavepolicy.pt, "sys.eid"->p_eid)).map { persons => {
+            persons.map { person => {
+              LeaveProfileModel.find(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => {
+                leaveprofiles.map { leaveprofile => {
+                  LeaveProfileModel.update(
+                      BSONDocument("_id" -> leaveprofile._id), 
+                      leaveprofile.copy(
+                          cal = leaveprofile.cal.copy(
+                              ear=leaveprofile.cal.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get), 
+                              cfexp=LeaveProfileModel.getEligibleCarryForwardExpired(leaveprofile, p_leavesetting, leavepolicy)
+                          )
+                      ), 
+                      p_eid
+                  )
+                }}
+              }}
             }}
           }}
         }
         
-      } }
-    } }
+      }}
+    }}
   }
   
   private def yearlycut0ff(p_eid: String, p_leavesetting: LeaveSetting) = {
     val now = new DateTime
     LeavePolicyModel.find(BSONDocument("sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leavepolicies => {
       leavepolicies.map { leavepolicy => {
-        PersonModel.findOne(BSONDocument("p.pt"->leavepolicy.pt, "sys.eid"->p_eid)).map { person => {
-          LeaveProfileModel.findOne(BSONDocument("lt"->leavepolicy.lt ,"pid"->person.get._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => {
-            leaveprofiles.map { leaveprofile => {
-            LeaveProfileModel.update(
-                BSONDocument("_id" -> leaveprofile._id), 
-                leaveprofile.copy(
-                    cal = leaveprofile.cal.copy(
-                        ent=LeaveProfileModel.getEligibleEntitlement(leaveprofile, PersonModel.getServiceMonths(person.get)),
-                        ear=LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person.get, now.monthOfYear().get), 
-                        adj=0,
-                        uti=0.0,
-                        cf=LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person.get)),
-                        cfuti=0.0,
-                        cfexp=0.0 
-                    )
-                ), 
-                p_eid)
-            } }
+        PersonModel.find(BSONDocument("p.pt"->leavepolicy.pt, "sys.eid"->p_eid)).map { persons => {
+          persons.map { person => {
+            LeaveProfileModel.findOne(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => { 
+              leaveprofiles.map { leaveprofile => {
+                  LeaveProfileModel.update(
+                      BSONDocument("_id" -> leaveprofile._id), 
+                      leaveprofile.copy(
+                          cal = leaveprofile.cal.copy(
+                              ent=LeaveProfileModel.getEligibleEntitlement(leaveprofile, PersonModel.getServiceMonths(person)),
+                              ear=LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get), 
+                              adj=0,
+                              uti=0.0,
+                              cf=LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person)),
+                              cfuti=0.0,
+                              cfexp=0.0 
+                          )
+                      ), 
+                      p_eid
+                  )
+              }}
+            }}
           }}
         }}
-      } }
-    } }
+      }}
+    }}
   }
-      
+  
 }

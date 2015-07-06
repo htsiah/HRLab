@@ -37,7 +37,8 @@
 	@contentRow("Accrual / Earn", 		
 		leavepolicy.set.acc match {
 			case "No accrue" => "Do not accrue. Just track usage"
-			case "Monthly" => "Accrue Monthly (At start of the month)"
+			case "Monthly - utilisation based on earned" => "Accrue Monthly (At start of the month) - utilisation based on leave earned"
+			case "Monthly - utilisation based on closing balance" => "Accrue Monthly (At start of the month) - utilisation based on closing balance"
 			case "Yearly" => "Accrue Annually (At start of the cut off month)"
 			case _ => "Opps! something is not correct. Please contact support."
 		}
