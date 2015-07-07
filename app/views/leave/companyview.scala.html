@@ -4,7 +4,11 @@
 
 @pageheader = {
 	<div class="page-header">
-		<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Leave</small></h1>
+		@if(leave.ld) {
+			<h1>My Profile <small><i class="ace-icon fa fa-angle-double-right"></i> Dashboard <i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Leave (<i class="ace-icon fa fa-lock"></i>)</small></h1>
+		} else {
+			<h1>My Profile <small><i class="ace-icon fa fa-angle-double-right"></i> Dashboard <i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Leave</small></h1>
+		}
 	</div>
 }
 

@@ -26,6 +26,7 @@ object ReportController extends Controller with Secured {
       leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get), request)
     } yield {
       val leavesMap = leaves.map { leave => Map(
+          "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
           "docnum" -> Json.toJson(leave.docnum),
           "lt" -> Json.toJson(leave.lt),
           "dt" -> Json.toJson(leave.dt),
@@ -57,6 +58,7 @@ object ReportController extends Controller with Secured {
         leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), request)
       } yield {
         val leavesMap = leaves.map { leave => Map(
+            "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
             "name" -> Json.toJson(leave.pn),
             "docnum" -> Json.toJson(leave.docnum),
             "lt" -> Json.toJson(leave.lt),
@@ -125,6 +127,7 @@ object ReportController extends Controller with Secured {
         leaves <- LeaveModel.find(BSONDocument(), request)
       } yield {
         val leavesMap = leaves.map { leave => Map(
+            "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
             "name" -> Json.toJson(leave.pn),
             "docnum" -> Json.toJson(leave.docnum),
             "lt" -> Json.toJson(leave.lt),

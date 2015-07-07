@@ -4,11 +4,12 @@ $(function(){
     $("#navMyTeamLeaveRequest").addClass("active");
 				
 	$("#grid-table").jqGrid({
-	   	url:"/report/allstaffleaverequestJSON",
+	   	url:"/report/myteamleaverequestJSON",
 		datatype: 'json',
-		colNames:['Name','DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', "Carry Forward Utilized", 'Status', 'Approver'],
+		colNames:['Name','','DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', "Carry Forward Utilized", 'Status', 'Approver'],
 	   	colModel:[
 	   		{name:'name',index:'name',width:100},
+	   		{name:'lock',index:'lock',width:20},
 			{name:'docnum',index:'docnum', width:70, sorttype:'int'},
 			{name:'lt',index:'lt',width:130},
 			{name:'dt',index:'dt',width:70},
