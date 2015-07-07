@@ -34,6 +34,7 @@ object LeaveProfileController extends Controller with Secured {
               "cf" -> of[Double],
               "cfuti" -> of[Double],
               "cfexp" -> of[Double],
+              "papr" -> of[Double],
               "bal" -> of[Double],
               "cbal" -> of[Double]
           )(LeaveProfileCalculation.apply)(LeaveProfileCalculation.unapply),

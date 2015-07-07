@@ -34,6 +34,7 @@ case class LeaveProfileCalculation (
     cf: Double,
     cfuti: Double,
     cfexp: Double,
+    papr: Double,
     bal: Double,
     cbal: Double
 )
@@ -121,6 +122,7 @@ object LeaveProfileModel {
           doc.getAs[Double]("cf").get,
           doc.getAs[Double]("cfuti").get,
           doc.getAs[Double]("cfexp").get,
+          doc.getAs[Double]("papr").get,
           doc.getAs[Double]("bal").get,
           doc.getAs[Double]("cbal").get
       )
@@ -208,6 +210,7 @@ object LeaveProfileModel {
           "cf" -> leaveprofilecalculation.cf,
           "cfuti" -> leaveprofilecalculation.cfuti,
           "cfexp" -> leaveprofilecalculation.cfexp,
+          "papr" -> leaveprofilecalculation.papr,
           "bal" -> leaveprofilecalculation.bal,
           "cbal" -> leaveprofilecalculation.cbal
       )     
@@ -242,7 +245,7 @@ object LeaveProfileModel {
       pid = "",
       pn = "",
       lt = "",
-      cal = LeaveProfileCalculation (ent = 0, ear = 0.0, adj = 0.0, uti = 0.0, cf = 0.0, cfuti = 0.0, cfexp = 0.0, bal = 0.0, cbal = 0.0),
+      cal = LeaveProfileCalculation (ent = 0, ear = 0.0, adj = 0.0, uti = 0.0, cf = 0.0, cfuti = 0.0, cfexp = 0.0, papr = 0.0, bal = 0.0, cbal = 0.0),
       me = LeaveProfileMonthEarn(jan=0.0, feb=0.0, mar=0.0, apr=0.0, may=0.0, jun=0.0, jul=0.0, aug=0.0, sep = 0.0, oct=0.0, nov=0.0, dec=0.0),
       set_ent = Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
       sys=None

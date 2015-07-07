@@ -128,6 +128,12 @@ object LeaveController extends Controller with Secured {
                       formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
                 LeaveModel.insert(leave_update, p_request=request)
                 
+                // Update leave profile
+                val leaveprofile_update = maybeleaveprofile.get.copy(
+                    cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr + leave_update.uti + leave_update.cfuti)
+                )
+                LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
+                
 	              // Add ToDo
 	              val contentMap = Map(
                     "DOCUNUM"->leave_update.docnum.toString(), 
@@ -202,15 +208,15 @@ object LeaveController extends Controller with Secured {
             // Update leave profile
             val leaveprofile_update = if (carryforward_bal <= 0) 
               maybeleaveprofile.get.copy(
-                  cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration)
+                  cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
               )
               else if (carryforward_bal >= appliedduration)
                 maybeleaveprofile.get.copy(
-                    cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + appliedduration)
+                    cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
                 )
               else
                 maybeleaveprofile.get.copy(
-                    cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal))
+                    cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal), papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
                 )
             LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
             
@@ -244,14 +250,21 @@ object LeaveController extends Controller with Secured {
 	def reject(p_id:String) = withAuth { username => implicit request => {
     for {
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+      maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
       maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
     } yield {
       // Check authorized
       if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==getPersonProfile(request).get._id.stringify && !maybeleave.get.ld) {
-        
+                
         // Update Leave
         val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy( s = "Rejected"))
         LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
+        
+        // Update leave profile
+        val leaveprofile_update = maybeleaveprofile.get.copy(
+            cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr - leave_update.uti - leave_update.cfuti)
+        )
+        LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         
         // Update Todo
         TaskModel.setCompleted(leave_update._id.stringify, request)
@@ -288,7 +301,13 @@ object LeaveController extends Controller with Secured {
           LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         }
         
-        if (maybeleave.get.wf.s=="Pending Approval") {          
+        if (maybeleave.get.wf.s=="Pending Approval") {    
+          // Update leave profile
+          val leaveprofile_update = maybeleaveprofile.get.copy(
+              cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr - leave_update.uti - leave_update.cfuti)
+          )
+          LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
+        
           // Update Todo
           TaskModel.setCompleted(leave_update._id.stringify, request)
         }

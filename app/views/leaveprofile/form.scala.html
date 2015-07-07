@@ -84,9 +84,10 @@
 		@contentRow("Carry Forward", leaveprofile("cal")("cf").value.get)
 		@contentRow("Carry Forward Utilized", leaveprofile("cal")("cfuti").value.get)
 		@contentRow("Carry Forward Expired", leaveprofile("cal")("cfexp").value.get)
+		@contentRow("Pending Approval", leaveprofile("cal")("papr").value.get)
 		@contentRow("Balance", leaveprofile("cal")("bal").value.get, "", "v_bal")
 		@contentRow("Closing Balance", leaveprofile("cal")("cbal").value.get, "", "v_cbal")
-
+		
 		<div class="widget-box">
 			<div class="widget-header">
 				<h4 class="smaller">Monthly Leave Earned</h4>
@@ -299,6 +300,7 @@
 			@inputText(leaveprofile("cal")("cf"),'type -> "hidden")
 			@inputText(leaveprofile("cal")("cfuti"),'type -> "hidden")
 			@inputText(leaveprofile("cal")("cfexp"),'type -> "hidden")
+			@inputText(leaveprofile("cal")("papr"),'type -> "hidden")
 			@inputText(leaveprofile("cal")("bal"),'type -> "hidden")
 			@inputText(leaveprofile("cal")("cbal"),'type -> "hidden")
 			@inputText(leaveprofile("me")("jan"),'type -> "hidden")
