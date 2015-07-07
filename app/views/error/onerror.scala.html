@@ -40,23 +40,26 @@
 
 @inlinestyle = {}
 
-@layout.ace.empty("404 Page Not Found | Human Resources Software | HRLab.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+@layout.ace.empty("500 Error Page | Human Resources Software | HRLab.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 
 	<div class="error-container">
 		<div class="well">
 			<h1 class="grey lighter smaller">
 				<span class="blue bigger-125">
-					<i class="ace-icon fa fa-sitemap"></i>
-					404
+					<i class="ace-icon fa fa-random"></i>
+					505
 				</span>
-				Page Not Found
+				Internal Server Error
 			</h1>
 			<hr />
-			<h3 class="lighter smaller">We looked everywhere but we couldn't find it!</h3>
-			@msg
+			<h3 class="lighter smaller">Looks like something went completely wrong! But don't worry - it can happen to the best of us, and it just happen to you.</h3>
 			<div class="space"></div>
 			<h4 class="smaller">Try one of the following:</h4>
 			<ul class="list-unstyled spaced inline bigger-110 margin-15">
+				<li>
+					<i class="ace-icon fa fa-hand-o-right blue"></i>
+					Email us at <a href="mailto:support@@hrlab.my">support@@hrlab.my</a> on how this specific error occurred!
+				</li>
 				<li>
 					<i class="ace-icon fa fa-hand-o-right blue"></i>
 					Re-check the url for typos.
@@ -65,11 +68,9 @@
 					<i class="ace-icon fa fa-hand-o-right blue"></i>
 					Go to <a href="http://www.hrlab.my">hrlab.my</a>.
 				</li>
-				<li>
-					<i class="ace-icon fa fa-hand-o-right blue"></i>
-					Email us the url at <a href="mailto:support@@hrlab.my">support@@hrlab.my</a>.
-				</li>
 			</ul>
+			<hr />
+			<i class="red">@msg</i>
 		</div>
 	<div>
 	
