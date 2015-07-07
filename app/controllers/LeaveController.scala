@@ -98,6 +98,7 @@ object LeaveController extends Controller with Secured {
 	          maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
 	          maybealert_notenoughtbalance <- AlertUtility.findOne(BSONDocument("k"->1007))
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
+            maybealert_requestdateconflict <- AlertUtility.findOne(BSONDocument("k"->1014))
 	        } yield {
 	          if (!maybeleavepolicy.isDefined) {
               // Missing leave policy.
@@ -110,6 +111,9 @@ object LeaveController extends Controller with Secured {
               )
               val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
               Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=alert))
+            } else if (LeaveModel.isOverlap(formWithData, request)) {
+              // Request date conflict (Overlap).
+              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_requestdateconflict.getOrElse(null)))
             } else {
 	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
               val leavebalance = if (maybeleavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybeleaveprofile.get.cal.bal } else { maybeleaveprofile.get.cal.cbal } 
@@ -267,7 +271,7 @@ object LeaveController extends Controller with Secured {
         LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         
         // Update Todo
-        TaskModel.setCompleted(leave_update._id.stringify, request)
+        Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
         
         // Send Email
         val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
@@ -309,7 +313,7 @@ object LeaveController extends Controller with Secured {
           LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         
           // Update Todo
-          TaskModel.setCompleted(leave_update._id.stringify, request)
+          Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
         }
                 
         // Send Email

@@ -14,6 +14,7 @@ db.alert.insert({k : NumberInt(1010), m : "Missing person's leave profile. Pleas
 db.alert.insert({k : NumberInt(1011), m : "Missing person document. Please contact IT Support."})
 db.alert.insert({k : NumberInt(1012), m : "The password you entered is incorrect."})
 db.alert.insert({k : NumberInt(1013), m : "Your employment start date is on #DATE#.<br/>You are not allow to apply leave before your employment start date.<br/>Please change leave's application date or contact HR to update your employee profile"})
+db.alert.insert({k : NumberInt(1014), m : "You are not allow to create another request for the same dates or in between the dates of the existing request.<br/>Please check is there any request has conflict with this request."})
 db.alert.insert({k : NumberInt(2000), m : "An email with reset instructions has been sent."})
 db.alert.insert({k : NumberInt(2001), m : "Password updated."})
 

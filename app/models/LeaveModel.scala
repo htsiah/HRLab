@@ -10,6 +10,7 @@ import reactivemongo.bson._
 import utilities.{System,SystemDataStore,Tools}
 
 import scala.util.{Success,Failure,Try}
+import scala.util.control.Breaks._
 import scala.concurrent.{Future,Await}
 import scala.collection.mutable.ArrayBuffer
 import org.joda.time.DateTime
@@ -156,7 +157,7 @@ object LeaveModel {
       wf = Workflow(
           s = "New",
           aprid = "",
-          aprn = ""    
+          aprn = ""
       ),
       sys=None
   )
@@ -299,6 +300,33 @@ object LeaveModel {
     }
   }
   
+  def isOverlap(p_leave:Leave, p_request:RequestHeader) = {
+    val overlap = p_leave.dt match {
+      case "Full day" => {
+        val applieddates = this.getAppliedDate(p_leave.fdat.get , p_leave.tdat.get)
+        var result : Boolean = false
+        breakable { applieddates.foreach ( applieddate => {
+          val leave =  Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "ld"->false, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(applieddate.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(applieddate.getMillis()))), p_request), Tools.db_timeout)
+          if (!leave.isEmpty) {
+            result = true
+            break
+          }
+        })}
+        result
+      }
+      case "1st half" => {
+        val leave = Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "dt"->BSONDocument("$in"->List(p_leave.dt, "Full day")), "ld"->false, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(p_leave.fdat.get.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_leave.fdat.get.getMillis()))), p_request), Tools.db_timeout)
+        if (leave.isEmpty) false else true
+      }
+      case "2nd half" => {
+        val leave = Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "dt"->BSONDocument("$in"->List(p_leave.dt, "Full day")), "ld"->false, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(p_leave.fdat.get.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_leave.fdat.get.getMillis()))), p_request), Tools.db_timeout)
+        if (leave.isEmpty) false else true
+      }
+    }
+    
+    overlap
+  }
+  
   // Notes:
   // 1 p_modifier format: 
   //   1.1 Replace - BSONDocument
@@ -316,7 +344,7 @@ object LeaveModel {
     val f_leaves = this.find(p_query)
     f_leaves.map { leaves => 
       leaves.map { leave => {
-        this.update(BSONDocument("_id"->leave._id), leave.copy(ld = true))
+        this.update(BSONDocument("_id"->leave._id), leave.copy(ld=true))
         TaskModel.remove(BSONDocument("lk"->leave._id.stringify))
       }}
     }
@@ -326,7 +354,7 @@ object LeaveModel {
     val f_leaves = this.find(p_query, p_request)
     f_leaves.map { leaves => 
       leaves.map { leave => {
-        this.update(BSONDocument("_id"->leave._id), leave.copy(ld = true), p_request)
+        this.update(BSONDocument("_id"->leave._id), leave.copy(ld=true), p_request)
         TaskModel.remove(BSONDocument("lk"->leave._id.stringify), p_request)
       }}
     }
