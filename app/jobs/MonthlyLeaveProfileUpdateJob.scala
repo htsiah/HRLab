@@ -116,11 +116,12 @@ object MonthlyLeaveProfileUpdateJob {
             persons.map { person => {
               LeaveProfileModel.find(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => {
                 leaveprofiles.map { leaveprofile => {
+                  val earned = leaveprofile.cal.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get)
                   LeaveProfileModel.update(
                       BSONDocument("_id" -> leaveprofile._id), 
                       leaveprofile.copy(
                           cal = leaveprofile.cal.copy(
-                              ear=leaveprofile.cal.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get), 
+                              ear=BigDecimal(earned).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble, 
                               cfexp=LeaveProfileModel.getEligibleCarryForwardExpired(leaveprofile, p_leavesetting, leavepolicy)
                           )
                       ), 
@@ -154,7 +155,8 @@ object MonthlyLeaveProfileUpdateJob {
                               uti=0.0,
                               cf=LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person)),
                               cfuti=0.0,
-                              cfexp=0.0 
+                              cfexp=0.0,
+                              papr=0.0
                           )
                       ), 
                       p_eid
