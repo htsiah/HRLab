@@ -8,7 +8,9 @@
 
 @pluginjs = {}
 
-@inlinejs = {}
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/leavepolicy.view.js")" type="text/javascript"></script>
+}
 
 @pluginstyle = {}
 
@@ -61,7 +63,7 @@
 			case _ => "Opps! something is not correct. Please contact support."
 		}
 	)
-	@contentRow("", if(leavepolicy.set.nwd==true){"This leave policy is not taken into account for holidays / weekends on leave calculation"}else{""})
+	@if(leavepolicy.set.nwd==true){@contentRow("", "This leave policy is intervening  holiday and weekend.")}
 	
 	<div class="widget-box transparent">
 		<div class="widget-header widget-header-flat">
