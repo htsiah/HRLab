@@ -339,7 +339,6 @@ object PersonModel {
                     configleavepolicy.ent.e5_cf                
                 )
             )
-            println(leaveprofile_doc)
             LeaveProfileModel.insert(leaveprofile_doc, p_eid)
           })
         })

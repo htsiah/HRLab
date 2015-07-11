@@ -11,12 +11,12 @@
 application.secret="xkd3_R4C:Mqfpqu3OLJ=vMe_L<Awy<rvtZH59JCZ3qwiksOrudj>a;sm19N@3b4j"
 
 # Application Info
-application_name=hrlab
+application_name=hrsifu
 application_release=1.3
 
 # Domain name
 # can be used for mail, etc
-domain_name="http://app.hrlab.my"
+domain_name="http://app.hrsifu.my"
 
 # The application languages
 # ~~~~~
@@ -81,24 +81,24 @@ evolutionplugin = disabled
 ehcacheplugin = enable
 
 # Reactivemongo default database
-mongodb.uri = "mongodb://admin:hrlab-admin@128.199.80.162:9622/hrlab-directory"
+mongodb.uri = "mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-directory"
 
 # Custom mongodb connectiony
 mongodb_timeout = 10000
-mongodb_directory = "hrlab-directory"
-mongodb_directory_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrlab-directory"
-mongodb_config="hrlab-config"
-mongodb_config_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrlab-config"
-mongodb_admin="hrlab-admin"
-mongodb_admin_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrlab-admin"
-mongodb_dblogger="hrlab-dblogger"
-mongodb_dblogger_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrlab-dblogger"
-mongodb_calendar="hrlab-calendar"
-mongodb_calendar_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrlab-calendar"
-mongodb_leave="hrlab-leave"
-mongodb_leave_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrlab-leave"
-mongodb_job="hrlab-job"
-mongodb_job_uri="admin:hrlab-admin@128.199.80.162:9622/hrlab-job"
+mongodb_directory = "hrsifu-directory"
+mongodb_directory_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-directory"
+mongodb_config="hrsifu-config"
+mongodb_config_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-config"
+mongodb_admin="hrsifu-admin"
+mongodb_admin_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-admin"
+mongodb_dblogger="hrsifu-dblogger"
+mongodb_dblogger_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-dblogger"
+mongodb_calendar="hrsifu-calendar"
+mongodb_calendar_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-calendar"
+mongodb_leave="hrsifu-leave"
+mongodb_leave_uri="mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-leave"
+mongodb_job="hrsifu-job"
+mongodb_job_uri="admin:hrlab-admin@128.199.80.162:9622/hrsifu-job"
 
 # Mailer
 # ~~~~~

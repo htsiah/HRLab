@@ -45,7 +45,7 @@
 }
 
 @if(session.get("roles").get.contains("Admin")) {
-	@layout.ace.main(session.get("company").get + " | HRLab.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+	@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 		@pageheader
 		<div class="tabbable">
 			<ul class="nav nav-tabs" id="myTab">

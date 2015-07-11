@@ -26,7 +26,7 @@
 }
 
 @if(session.get("roles").get.contains("Admin")) {
-	@layout.ace.main93(session.get("company").get + " | HRLab.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.main93(session.get("company").get + " | HRSifu.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 		<div class="form-group">
 			<select class="form-control" id="calendardisplaytypes">
 				<option>My Calendar</option>
@@ -36,7 +36,7 @@
 		<div id="calendar"></div>
 	}
 } else {
-	@layout.ace.main(session.get("company").get + " | HRLab.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+	@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 		@pageheader
 		<div class="form-group">
 			<select class="form-control" id="calendardisplaytypes">

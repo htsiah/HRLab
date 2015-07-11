@@ -3,8 +3,8 @@ import Keys._
 
 object ApplicationBuild extends Build {
 
-  val appName = "hrlab"
-  val appVersion = "1.0"
+  val appName = "hrsifu"
+  val appVersion = "1.3"
   
   val appDependencies = Seq(
       play.PlayImport.cache,
