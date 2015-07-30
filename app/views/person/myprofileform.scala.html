@@ -64,7 +64,7 @@
 		@select(person("p")("ms"), options = Seq("Single"->"Single","Married"->"Married"), '_label -> "Marital Status",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("dpm"), options = options(departments.map(department=>department)), '_label -> "Department",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("off"), options = options(offices.map(office=>office)), '_label -> "Office",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		@input(person("p")("edat"), '_label->"Employment start date", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+		@input(person("p")("edat"), '_label->"Employee joining date", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     	<div class="input-group">
     		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="yyyy-mm-dd" @toHtmlArgs(args)>
 				<span class="input-group-addon">
