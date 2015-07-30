@@ -292,12 +292,12 @@ object LeaveProfileModel {
 	
   // Find all documents
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[LeaveProfile].collect[List]()
+    col.find(p_query).cursor[LeaveProfile](ReadPreference.primary).collect[List]()
   }
   
   // Find all documents using session
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[LeaveProfile].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[LeaveProfile](ReadPreference.primary).collect[List]()
   }
 	
   // Find one document

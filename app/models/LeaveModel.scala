@@ -230,12 +230,12 @@ object LeaveModel {
 	
   // Find all documents
   def find(p_query:BSONDocument=BSONDocument()) = {
-    col.find(p_query).cursor[Leave].collect[List]()
+    col.find(p_query).cursor[Leave](ReadPreference.primary).collect[List]()
   }
   
   // Find all documents using session
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Leave].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Leave](ReadPreference.primary).collect[List]()
   }
 	
   // Find one document
@@ -252,7 +252,7 @@ object LeaveModel {
   
   // Optional - Find all document with sorting
   def find(p_query:BSONDocument, p_sort:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get))).sort(p_sort).cursor[Leave].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get))).sort(p_sort).cursor[Leave](ReadPreference.primary).collect[List]()
   }
   
   /** Custom Model Methods **/ 

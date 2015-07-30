@@ -144,11 +144,11 @@ object CompanyModel {
   }
 
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[Company].collect[List]()
+    col.find(p_query).cursor[Company](ReadPreference.primary).collect[List]()
   }
   
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Company].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Company](ReadPreference.primary).collect[List]()
   }
 
   def findOne(p_query:BSONDocument) = {

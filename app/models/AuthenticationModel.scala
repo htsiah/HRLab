@@ -148,16 +148,17 @@ object AuthenticationModel {
   }
   
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[Authentication].collect[List]()
+    col.find(p_query).cursor[Authentication](ReadPreference.primary).collect[List]()
   }
     
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Authentication].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Authentication](ReadPreference.primary).collect[List]()
   }
 
   def findOne(p_query:BSONDocument) = {
     col.find(p_query).one[Authentication]
   }
+  
   
   def findOne(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[Authentication]

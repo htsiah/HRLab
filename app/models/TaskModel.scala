@@ -166,12 +166,12 @@ object TaskModel {
   
   // Find all documents
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[Task].collect[List]()
+    col.find(p_query).cursor[Task](ReadPreference.primary).collect[List]()
   }
   
   // Find all documents using session
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Task].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Task](ReadPreference.primary).collect[List]()
   }
   
   // Find one document
@@ -188,7 +188,7 @@ object TaskModel {
   
   // Optional - Find all document with sorting
   def find(p_query:BSONDocument, p_sort:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).sort(p_sort).cursor[Task].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).sort(p_sort).cursor[Task](ReadPreference.primary).collect[List]()
   }
   
   /** Custom Model Methods **/ 

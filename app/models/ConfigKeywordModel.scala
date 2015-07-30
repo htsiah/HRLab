@@ -107,7 +107,7 @@ object ConfigKeywordModel {
   }
   
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[ConfigKeyword].collect[List]()
+    col.find(p_query).cursor[ConfigKeyword](ReadPreference.primary).collect[List]()
   }
   
   def findOne(p_query:BSONDocument) = {

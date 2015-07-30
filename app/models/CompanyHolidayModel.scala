@@ -161,11 +161,11 @@ object CompanyHolidayModel {
   }
 	
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[CompanyHoliday].collect[List]()
+    col.find(p_query).cursor[CompanyHoliday](ReadPreference.primary).collect[List]()
   }
   
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[CompanyHoliday].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[CompanyHoliday](ReadPreference.primary).collect[List]()
   }
   
   // Return the first found document

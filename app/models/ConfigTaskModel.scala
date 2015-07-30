@@ -106,7 +106,7 @@ object ConfigTaskModel {
   }
   
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[ConfigTask].collect[List]()
+    col.find(p_query).cursor[ConfigTask](ReadPreference.primary).collect[List]()
   }
   
   def findOne(p_query:BSONDocument) = {

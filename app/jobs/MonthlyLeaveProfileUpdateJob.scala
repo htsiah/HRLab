@@ -65,7 +65,7 @@ object MonthlyLeaveProfileUpdateJob {
   }
   
   private def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[MonthlyLeaveProfileUpdateLog].collect[List]()
+    col.find(p_query).cursor[MonthlyLeaveProfileUpdateLog](ReadPreference.primary).collect[List]()
   }
   
   private def findOne(p_query:BSONDocument) = {

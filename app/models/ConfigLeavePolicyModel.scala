@@ -143,7 +143,7 @@ object ConfigLeavePolicyModel {
   }
   
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[ConfigLeavePolicy].collect[List]()
+    col.find(p_query).cursor[ConfigLeavePolicy](ReadPreference.primary).collect[List]()
   }
   
   def findOne(p_query:BSONDocument) = {

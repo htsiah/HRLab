@@ -254,12 +254,12 @@ object LeavePolicyModel {
 	
   // Find all documents
   def find(p_query:BSONDocument=BSONDocument()) = {
-    col.find(p_query).cursor[LeavePolicy].collect[List]()
+    col.find(p_query).cursor[LeavePolicy](ReadPreference.primary).collect[List]()
   }
   
   // Find all documents using session
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[LeavePolicy].collect[List]()
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[LeavePolicy](ReadPreference.primary).collect[List]()
   }
 	
   // Find one document
