@@ -96,7 +96,9 @@ object AuthenticationController extends Controller with Secured {
                       "company"->company_doc.get.c,
                       "department"->person_doc.get.p.dpm,
                       "position"->person_doc.get.p.pt,
+                      "office"->person_doc.get.p.off,
                       "roles"->person_doc.get.p.rl.mkString(","),
+                      "managerid"->person_doc.get.p.mgrid,
                       "path"->(routes.DashboardController.index).toString,
                       "ismanager"->isManager
                   )
@@ -235,18 +237,20 @@ trait Secured {
       Action.async(bp)(request => f(user)(request))
     }
   }
-  
-  // getPersonProfile(request).get
-  implicit def getPersonProfile(p_request: RequestHeader) = {
-    Cache.getOrElse[Option[Person]]("PersonProfile." + p_request.session.get("username").get) {
-      Await.result(PersonModel.findOneByEmail(p_request.session.get("username").get), Tools.db_timeout)
-    }  
-  }
+
+  // Deprecated on v1.3.1
+  /* getPersonProfile(request).get
+   * implicit def getPersonProfile(p_request: RequestHeader) = {
+   * Cache.getOrElse[Option[Person]]("PersonProfile." + p_request.session.get("username").get) {
+   * Await.result(PersonModel.findOneByEmail(p_request.session.get("username").get), Tools.db_timeout)
+   *   }  
+   * }
+   */
   
   // Check if current login user have the role
   // hasRoles(List("Admin"), request)
   implicit def hasRoles(p_roles: List[String], p_request: RequestHeader):Boolean = {
-    val personroles = getPersonProfile(p_request).get.p.rl
+    val personroles = p_request.session.get("roles").get
     if(p_roles.length>1){
       personroles.contains(p_roles.head) || hasRoles(p_roles.tail, p_request)
     }else{

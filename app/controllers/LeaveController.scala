@@ -58,7 +58,7 @@ object LeaveController extends Controller with Secured {
 	def create = withAuth { username => implicit request => {
 	  for {
 	    leavetypes <- LeaveProfileModel.getLeaveTypes(request.session.get("id").get, request)
-	    maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(getPersonProfile(request).get.p.mgrid)), request)
+	    maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("managerid").get)), request)
 	  } yield{
 	    val docnum = DocNumUtility.getNumberText("leave", request.session.get("entity").get)
 	    maybemanager.map( manager => {
@@ -91,9 +91,9 @@ object LeaveController extends Controller with Secured {
 	        for {
 	          leavetypes <- LeaveProfileModel.getLeaveTypes(request.session.get("id").get, request)
 	          maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
-	          maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt, "pt" -> getPersonProfile(request).get.p.pt), request)
-	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> getPersonProfile(request).get.p.off))
-	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> getPersonProfile(request).get._id), request)
+	          maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt, "pt" -> request.session.get("position").get), request)
+	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get))
+	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
             maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.wf.aprid)), request)
 	          maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
 	          maybealert_notenoughtbalance <- AlertUtility.findOne(BSONDocument("k"->1007))
@@ -186,7 +186,7 @@ object LeaveController extends Controller with Secured {
 	    maybealert_notenoughtbalance <- AlertUtility.findOne(BSONDocument("k"->1008))
 	  } yield {
 	    // Check authorized
-	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==getPersonProfile(request).get._id.stringify && !maybeleave.get.ld) {
+	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==request.session.get("id").get && !maybeleave.get.ld) {
 	      
 	      // Check leave policy existence
 	      if (maybeleavepolicy.isDefined == false) {
@@ -258,7 +258,7 @@ object LeaveController extends Controller with Secured {
       maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
     } yield {
       // Check authorized
-      if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==getPersonProfile(request).get._id.stringify && !maybeleave.get.ld) {
+      if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==request.session.get("id").get && !maybeleave.get.ld) {
                 
         // Update Leave
         val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy( s = "Rejected"))
@@ -291,7 +291,7 @@ object LeaveController extends Controller with Secured {
       maybeapplicant <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
       maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.wf.aprid)), request)
     } yield {
-      if ((maybeleave.get.wf.s=="Pending Approval" || maybeleave.get.wf.s=="Approved") && (maybeleave.get.pid==getPersonProfile(request).get._id.stringify || hasRoles(List("Admin"), request)) && !maybeleave.get.ld) {
+      if ((maybeleave.get.wf.s=="Pending Approval" || maybeleave.get.wf.s=="Approved") && (maybeleave.get.pid==request.session.get("id").get || hasRoles(List("Admin"), request)) && !maybeleave.get.ld) {
         
         // Update Leave
         val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy( s = "Cancelled"))
@@ -345,11 +345,11 @@ object LeaveController extends Controller with Secured {
         
     if (p_type=="my") {
       for {
-        leaves <- LeaveModel.find(BSONDocument("pid"->getPersonProfile(request).get._id.stringify, "wf.s"->"Approved"), request)
+        leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
       } yield {
         leaves.map ( leave => {
           val title = leave.pn + " (" + leave.lt + ")"
-          val url = if (leave.pid==getPersonProfile(request).get._id.stringify || leave.wf.aprid==getPersonProfile(request).get._id.stringify || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
+          val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
           val start = fmt.print(leave.fdat.get)
           val end = fmt.print(leave.tdat.get)
           if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -366,7 +366,7 @@ object LeaveController extends Controller with Secured {
           val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
           leaves.map { leave => {
             val title = leave.pn + " (" + leave.lt + ")"
-            val url = if (leave.pid==getPersonProfile(request).get._id.stringify || leave.wf.aprid==getPersonProfile(request).get._id.stringify || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
+            val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
             val start = fmt.print(leave.fdat.get)
             val end = fmt.print(leave.tdat.get)
             if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -388,11 +388,11 @@ object LeaveController extends Controller with Secured {
         
     if (p_type=="my") {
       for {
-        leaves <- LeaveModel.find(BSONDocument("pid"->getPersonProfile(request).get._id.stringify, "wf.s"->"Approved"), request)
+        leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
       } yield {
         leaves.map ( leave => {
           val title = leave.pn + " (" + leave.lt + ")"
-          val url = if (leave.pid==getPersonProfile(request).get._id.stringify || leave.wf.aprid==getPersonProfile(request).get._id.stringify || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
+          val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
           val start = fmt.print(leave.fdat.get)
           val end = fmt.print(leave.tdat.get)
           if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -409,7 +409,7 @@ object LeaveController extends Controller with Secured {
           val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
           leaves.map { leave => {
             val title = leave.pn + " (" + leave.lt + ")"
-            val url = if (leave.pid==getPersonProfile(request).get._id.stringify || leave.wf.aprid==getPersonProfile(request).get._id.stringify || hasRoles(List("Admin"), request)) "/leave/compnay/view/" + leave._id.stringify else ""
+            val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/compnay/view/" + leave._id.stringify else ""
             val start = fmt.print(leave.fdat.get)
             val end = fmt.print(leave.tdat.get)
             if (count > 0) leavejsonstr = leavejsonstr + ","
