@@ -1,7 +1,6 @@
 package utilities
 
 import scala.util.{Success, Failure,Try}
-import akka.actor.ActorSystem
 import play.api.Play
 import play.api.libs.concurrent._
 import play.api.libs.concurrent.Execution.Implicits._
@@ -63,7 +62,8 @@ object DbLoggerUtility {
   private val dbloggerSec = Play.current.configuration.getString("dblogger_security").getOrElse("OFF")
   private val dbname = Play.current.configuration.getString("mongodb_dblogger").getOrElse("dblogger")
   private val uri = Play.current.configuration.getString("mongodb_dblogger_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
+  // private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
+  private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
   }

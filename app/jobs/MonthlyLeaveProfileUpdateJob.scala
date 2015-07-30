@@ -2,7 +2,6 @@ package jobs
 
 import scala.util.{Success, Failure,Try}
 import org.joda.time.DateTime
-import akka.actor.ActorSystem
 
 import play.api.Play
 import play.api.mvc._
@@ -45,7 +44,7 @@ object MonthlyLeaveProfileUpdateJob {
   
   private val dbname = Play.current.configuration.getString("mongodb_job").getOrElse("job")
   private val uri = Play.current.configuration.getString("mongodb_job_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
+  private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
   }

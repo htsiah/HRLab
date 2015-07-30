@@ -1,5 +1,7 @@
 @import helper._
 @import reactivemongo.bson.BSONObjectID
+@import play.api.Play.current
+@import play.api.i18n.Messages.Implicits._
 
 @(person:Form[Person], persons:List[Person], departments:List[String], offices:List[String], isLastAdmin:Boolean=false)(implicit session: play.api.mvc.Session)
 

@@ -10,7 +10,6 @@ import reactivemongo.bson._
 import scala.util.{Success, Failure,Try}
 import scala.concurrent.Await
 import org.joda.time.DateTime
-import akka.actor.ActorSystem
 
 import utilities.{System, SystemDataStore, Tools}
 
@@ -80,7 +79,7 @@ object KeywordModel {
   
   private val dbname = Play.current.configuration.getString("mongodb_admin").getOrElse("admin")
   private val uri = Play.current.configuration.getString("mongodb_admin_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
+  private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
   }

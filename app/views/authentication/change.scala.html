@@ -1,5 +1,7 @@
 @import helper._
 @import utilities.Alert
+@import play.api.Play.current
+@import play.api.i18n.Messages.Implicits._
 
 @(change:Form[Change], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 

@@ -12,7 +12,6 @@ import utilities.{System,SystemDataStore}
 import scala.util.{Success, Failure,Try}
 import scala.collection.mutable.ArrayBuffer
 import org.joda.time.DateTime
-import akka.actor.ActorSystem
 
 case class LeavePolicy (
     _id: BSONObjectID,
@@ -180,7 +179,7 @@ object LeavePolicyModel {
   
   private val dbname = Play.current.configuration.getString("mongodb_leave").getOrElse("leave")
   private val uri = Play.current.configuration.getString("mongodb_leave_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
+  private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
   }

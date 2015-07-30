@@ -11,7 +11,6 @@ import utilities.{System,SystemDataStore}
 
 import scala.util.{Success, Failure,Try}
 import org.joda.time.DateTime
-import akka.actor.ActorSystem
 
 case class ConfigKeyword (
      _id: BSONObjectID,
@@ -80,7 +79,7 @@ object ConfigKeywordModel {
   
   private val dbname = Play.current.configuration.getString("mongodb_config").getOrElse("config")
   private val uri = Play.current.configuration.getString("mongodb_config_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
+  private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
   }
