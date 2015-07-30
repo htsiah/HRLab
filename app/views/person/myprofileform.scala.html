@@ -3,7 +3,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(person:Form[Person], persons:List[Person], departments:List[String], offices:List[String], isLastAdmin:Boolean=false)(implicit session: play.api.mvc.Session)
+@(person:Form[Person], persons:List[Person], departments:List[String], offices:List[String], positions:List[String], isLastAdmin:Boolean=false)(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -53,7 +53,7 @@
 			<dt><label>Email</label></dt>
 			<dd class="">@person("p")("em").value</dd>
 		</dl>
-		@select(person("p")("pt"), options = Seq("Manager"->"Manager","Executive"->"Executive"), '_label -> "Position",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(person("p")("pt"), options = options(positions.map(position=>position)), '_label -> "Position",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("mgrid"), options=persons.map(person=>person._id.stringify->{person.p.fn + " " + person.p.ln}),
 			'_default -> "Please select",
 			'_label -> "Manager",

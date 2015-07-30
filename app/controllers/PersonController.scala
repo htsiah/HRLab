@@ -85,10 +85,12 @@ object PersonController extends Controller with Secured{
       for {
         persons <- PersonModel.find(BSONDocument(), request)
         maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+        maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
         offices <- OfficeModel.getAllOfficeName(request)
       } yield {
         val department = maybe_departments.getOrElse(KeywordModel.doc)
-        Ok(views.html.person.form(personform.fill(PersonModel.doc), persons, department.v.get, offices))
+        val position = maybe_positions.getOrElse(KeywordModel.doc)
+        Ok(views.html.person.form(personform.fill(PersonModel.doc), persons, department.v.get, offices, position.v.get))
       }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -102,10 +104,12 @@ object PersonController extends Controller with Secured{
             for {
               persons <- PersonModel.find(BSONDocument(), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+              maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
             } yield {
               val department = maybe_departments.getOrElse(KeywordModel.doc)
-              Ok(views.html.person.form(formWithError, persons, department.v.get, offices))
+              val position = maybe_positions.getOrElse(KeywordModel.doc)
+              Ok(views.html.person.form(formWithError, persons, department.v.get, offices, position.v.get))
             }
           },
           formWithData => {
@@ -145,12 +149,14 @@ object PersonController extends Controller with Secured{
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
         persons <- PersonModel.find(BSONDocument(), request)
         maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+        maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
         offices <- OfficeModel.getAllOfficeName(request)
         isLastAdmin <- PersonModel.isLastAdmin(p_id, request)
       } yield {
         maybeperson.map( person => {
           val department = maybe_departments.getOrElse(KeywordModel.doc)
-          Ok(views.html.person.form(personform.fill(person), persons, department.v.get, offices, isLastAdmin, p_id))
+          val position = maybe_positions.getOrElse(KeywordModel.doc)
+          Ok(views.html.person.form(personform.fill(person), persons, department.v.get, offices, position.v.get, isLastAdmin, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -165,11 +171,13 @@ object PersonController extends Controller with Secured{
             for {
               persons <- PersonModel.find(BSONDocument(), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+              maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
               isLastAdmin <- PersonModel.isLastAdmin(p_id, request)
             } yield {
               val department = maybe_departments.getOrElse(KeywordModel.doc)
-              Ok(views.html.person.form(formWithError, persons, department.v.get, offices, isLastAdmin, p_id))
+              val position = maybe_positions.getOrElse(KeywordModel.doc)
+              Ok(views.html.person.form(formWithError, persons, department.v.get, offices, position.v.get, isLastAdmin, p_id))
             }
           },
           formWithData => {
@@ -240,12 +248,14 @@ object PersonController extends Controller with Secured{
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
         persons <- PersonModel.find(BSONDocument(), request)
         maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+        maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
         offices <- OfficeModel.getAllOfficeName(request)
         isLastAdmin <- PersonModel.isLastAdmin(request.session.get("id").get, request)
       } yield {
         maybeperson.map( person => {
           val department = maybe_departments.getOrElse(KeywordModel.doc)
-          Ok(views.html.person.myprofileform(personform.fill(person), persons, department.v.get, offices, isLastAdmin))
+          val position = maybe_positions.getOrElse(KeywordModel.doc)
+          Ok(views.html.person.myprofileform(personform.fill(person), persons, department.v.get, offices, position.v.get, isLastAdmin))
         }).getOrElse(NotFound)
       }
     } else {
@@ -260,11 +270,13 @@ object PersonController extends Controller with Secured{
             for {
               persons <- PersonModel.find(BSONDocument(), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+              maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
               isLastAdmin <- PersonModel.isLastAdmin(request.session.get("id").get, request)
             } yield {
               val department = maybe_departments.getOrElse(KeywordModel.doc)
-              Ok(views.html.person.myprofileform(formWithError, persons, department.v.get, offices, isLastAdmin))
+              val position = maybe_positions.getOrElse(KeywordModel.doc)
+              Ok(views.html.person.myprofileform(formWithError, persons, department.v.get, offices, position.v.get, isLastAdmin))
             }
           },
           formWithData => {
