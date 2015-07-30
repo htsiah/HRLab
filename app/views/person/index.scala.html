@@ -70,7 +70,7 @@
 		@layout.ace.dialogbox("dialog-delete", Html("<div class='alert alert-info bigger-110'><p>Selected staff will be permanently removed from the system and cannot be recovered.</p><p>Notes:<ul><li>His/Her leave profile will be deleted.</li><li>His/Her leave will be locked.</li><li>No workflow action can be perform on lock document.</li></ul></p></div>"))
 	}
 } else {
-	@layout.ace.main("Human Resources Software",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+	@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 		@pageheader
 		<div class="table-responsive">
 			<table id="persontable" class="table table-striped table-bordered table-hover">
