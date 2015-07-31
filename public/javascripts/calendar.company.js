@@ -75,11 +75,9 @@ $(function(){
 		var selcalendardisplaytypes = this.options[this.selectedIndex].value;
 		if (selcalendardisplaytypes=="My Calendar"){
 			Calendar.removeEvents(Calendar.deptleavesurl);
-			Calendar.showMyCalendar();
 			Calendar.showMyLeave();
 		} else {
 			Calendar.removeEvents(Calendar.deptleavesurl);
-			Calendar.removeEvents("/companyholiday/getcompanyholidayjson");
 			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/my");
 			Calendar.deptleavesurl = "/leave/getapprovedleavejson/" + selcalendardisplaytypes;
 			Calendar.showDeptCalendar();
