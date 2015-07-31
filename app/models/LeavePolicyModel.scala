@@ -28,7 +28,8 @@ case class LeavePolicySetting (
     ms: String,
     dt: String,
     nwd: Boolean,
-    cexp: Int
+    cexp: Int,
+    scal: Boolean
 )
 
 case class Entitlement (
@@ -74,7 +75,8 @@ object LeavePolicyModel {
           doc.getAs[String]("ms").get,
           doc.getAs[String]("dt").get,
           doc.getAs[Boolean]("nwd").get,
-          doc.getAs[Int]("cexp").get
+          doc.getAs[Int]("cexp").get,
+          doc.getAs[Boolean]("scal").get
       )
     }
   }
@@ -137,7 +139,8 @@ object LeavePolicyModel {
           "ms" -> leavepolicysetting.ms,
           "dt" -> leavepolicysetting.dt,
           "nwd" -> leavepolicysetting.nwd,
-          "cexp" -> leavepolicysetting.cexp
+          "cexp" -> leavepolicysetting.cexp,
+          "scal" -> leavepolicysetting.scal
       )     
     }
   }
@@ -189,7 +192,7 @@ object LeavePolicyModel {
       _id = BSONObjectID.generate,
       lt = "",
       pt = "",
-      LeavePolicySetting(g = "", acc = "", ms = "", dt = "", nwd = false, cexp = 0),
+      LeavePolicySetting(g = "", acc = "", ms = "", dt = "", nwd = false, cexp = 0, scal = true),
       Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
       sys=None
   )
@@ -225,6 +228,7 @@ object LeavePolicyModel {
 	
   // Update document
   def update(p_query:BSONDocument,p_doc:LeavePolicy,p_request:RequestHeader) = {
+    println("Model " + p_doc.set.scal)
     val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
     future.onComplete {
       case Failure(e) => throw e

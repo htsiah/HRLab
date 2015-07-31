@@ -30,7 +30,8 @@ object LeavePolicyController extends Controller with Secured {
               "ms" -> text,
               "dt" -> text,
               "nwd" -> boolean,
-              "cexp" -> number
+              "cexp" -> number,
+              "scal" -> boolean
           )(LeavePolicySetting.apply)(LeavePolicySetting.unapply), 
           "ent" -> mapping(
               "e1" -> number,
@@ -115,6 +116,7 @@ object LeavePolicyController extends Controller with Secured {
             } yield {
               if (maybe_unique) {
                 val eligbleleaveentitlement = LeavePolicyModel.sortEligbleLeaveEntitlement(formWithData, request)
+                println(formWithData.set.scal)
                 LeavePolicyModel.insert(
                     formWithData.copy(
                         _id=BSONObjectID.generate, 
@@ -188,6 +190,7 @@ object LeavePolicyController extends Controller with Secured {
           },
           formWithData => {
             val eligbleleaveentitlement = LeavePolicyModel.sortEligbleLeaveEntitlement(formWithData, request)
+            println(formWithData.set.scal)
             LeavePolicyModel.update(
                 BSONDocument("_id" -> BSONObjectID(p_id)), 
                 formWithData.copy(

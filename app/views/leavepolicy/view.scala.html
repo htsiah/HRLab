@@ -63,6 +63,7 @@
 			case _ => "Opps! something is not correct. Please contact support."
 		}
 	)
+	@if(leavepolicy.set.scal==true){@contentRow("", "Show leave in Company's Calendar.")} else {@contentRow("", "Hide leave in Company's Calendar.")}
 	@if(leavepolicy.set.nwd==true){@contentRow("", "This leave policy is intervening  holiday and weekend.")}
 	
 	<div class="widget-box transparent">

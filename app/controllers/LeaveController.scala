@@ -365,13 +365,17 @@ object LeaveController extends Controller with Secured {
         persons.map { person => {
           val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
           leaves.map { leave => {
-            val title = leave.pn + " (" + leave.lt + ")"
-            val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
-            val start = fmt.print(leave.fdat.get)
-            val end = fmt.print(leave.tdat.get)
-            if (count > 0) leavejsonstr = leavejsonstr + ","
-            leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
-            count = count + 1   
+            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt, "pt"->person.p.pt), request), Tools.db_timeout)
+            val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+            if (leavepolicy.set.scal) {
+              val title = leave.pn + " (" + leave.lt + ")"
+              val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
+              val start = fmt.print(leave.fdat.get)
+              val end = fmt.print(leave.tdat.get)
+              if (count > 0) leavejsonstr = leavejsonstr + ","
+              leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
+              count = count + 1
+            }
           } }
         } }
         Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
@@ -408,13 +412,17 @@ object LeaveController extends Controller with Secured {
         persons.map { person => {
           val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
           leaves.map { leave => {
-            val title = leave.pn + " (" + leave.lt + ")"
-            val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/compnay/view/" + leave._id.stringify else ""
-            val start = fmt.print(leave.fdat.get)
-            val end = fmt.print(leave.tdat.get)
-            if (count > 0) leavejsonstr = leavejsonstr + ","
-            leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
-            count = count + 1   
+            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt, "pt"->person.p.pt), request), Tools.db_timeout)
+            val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+            if (leavepolicy.set.scal) {
+              val title = leave.pn + " (" + leave.lt + ")"
+              val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/compnay/view/" + leave._id.stringify else ""
+              val start = fmt.print(leave.fdat.get)
+              val end = fmt.print(leave.tdat.get)
+              if (count > 0) leavejsonstr = leavejsonstr + ","
+              leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
+              count = count + 1    
+            }
           } }
         } }
         Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")

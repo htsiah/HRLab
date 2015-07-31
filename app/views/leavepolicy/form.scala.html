@@ -98,8 +98,15 @@
 		'_label -> "Carry forward expires", '_class->"dl-horizontal", 'class->"form-control", '_showConstraints->false)
 	
 	<dl class="dl-horizontal">
-		<dt><label>&nbsp</label></dt>
+		<dt><label>Others</label></dt>
 		<dd>
+			<div class="checkbox" style="display: inline-block;">
+				<label>
+					<input type="checkbox" value="true" name="set.scal" id="set_scal" class="ace" @radioSelected(leavepolicy("set")("scal").value, "true")>
+					<span class="lbl"> Show leave in Company's Calendar</span>
+				</label>
+			</div>
+			<br/>
 			<div class="checkbox" style="display: inline-block;">
 				<label>
 					<input type="checkbox" value="true" name="set.nwd" id="set_nwd" class="ace" @radioSelected(leavepolicy("set")("nwd").value, "true")>
@@ -108,7 +115,7 @@
 			</div>
 		</dd>
 	</dl>
-	
+		
 	<div class="widget-box transparent">
 		<div class="widget-header widget-header-flat">
 			<h4 class="widget-title lighter">

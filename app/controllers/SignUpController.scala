@@ -63,7 +63,8 @@ object SignUpController extends Controller {
                           configleavepolicy.set.ms,
                           configleavepolicy.set.dt,
                           configleavepolicy.set.nwd,
-                          configleavepolicy.set.cexp  
+                          configleavepolicy.set.cexp,
+                          configleavepolicy.set.scal
                       ),
                       Entitlement(
                           configleavepolicy.ent.e1,

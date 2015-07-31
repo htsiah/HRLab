@@ -3,6 +3,7 @@ var Calendar = {
 	companyholidaysource:{
 		url: '/companyholiday/getcompanyholidaymyprofilejson',
 		type: 'GET',
+		cache: true,
 		error: function() {
 			alert('There was an error while fetching company holiday!');
 		},
@@ -12,6 +13,7 @@ var Calendar = {
 	myapprovedleavessource:{
 		url: '/leave/getapprovedleavejson/my',
 		type: 'GET',
+		cache: true,
 		error: function() {
 			alert('There was an error while fetching your leave!');
 		},

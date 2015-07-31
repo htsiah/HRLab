@@ -1,0 +1,2 @@
+use d-hrsifu-leave
+db.leavepolicy.update({},{ $set: {"set.scal": true }}, false, true)
