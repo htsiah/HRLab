@@ -30,7 +30,7 @@ $(function(){
 	$('#e1_s,#e2_s,#e3_s,#e4_s,#e5_s').ace_spinner({
 		value:0,
 		min:0,
-		max:600,
+		max:999,
 		step:1, 
 		on_sides: true, 
 		icon_up:'ace-icon fa fa-plus smaller-75', 
