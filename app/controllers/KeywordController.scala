@@ -52,10 +52,8 @@ object KeywordController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
         maybedoc <- KeywordModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-        // maybeprotectedkeys <- KeywordModel.getProtectedKey(maybedoc.get, request)
       } yield {
         maybedoc.map( doc  => {
-          println("Result " + KeywordModel.getProtectedKey(maybedoc.get, request));
           Ok(views.html.keyword.form(keywordform.fill(doc),KeywordModel.getProtectedKey(maybedoc.get, request),p_id))
         }).getOrElse(NotFound)
       }
@@ -68,7 +66,13 @@ object KeywordController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       keywordform.bindFromRequest.fold(
           formWithError => {
-            Future.successful(Ok(views.html.keyword.form(formWithError,List("No Value Now"),p_id)))
+            for { 
+              maybedoc <- KeywordModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+            } yield {
+              maybedoc.map( doc  => {
+                Ok(views.html.keyword.form(formWithError,KeywordModel.getProtectedKey(maybedoc.get, request),p_id))
+              }).getOrElse(NotFound)
+            }
           },
           formWithData => {
             KeywordModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
