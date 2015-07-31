@@ -11,7 +11,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeavePolicyModel, KeywordModel, Keyword, LeavePolicy, LeavePolicySetting, Entitlement, LeaveProfileModel, LeaveModel}
+import models.{LeavePolicyModel, KeywordModel, Keyword, LeavePolicy, LeavePolicySetting, Entitlement, LeaveProfileModel, LeaveModel, PersonModel}
 import utilities.{System, AlertUtility, Tools}
 
 import reactivemongo.api._
@@ -219,16 +219,21 @@ object LeavePolicyController extends Controller with Secured {
     }
   }}
   
-  def delete(p_id:String, p_lt:String) = withAuth { username => implicit request => {
+  def delete(p_id:String, p_lt:String, p_pt:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       // Delete leave policy
       Await.result(LeavePolicyModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
       LeaveProfileModel.find(BSONDocument("lt" -> p_lt), request).map { leaveprofiles => 
         leaveprofiles.map { leaveprofile => {
-          // Delete leave profile
-          LeaveProfileModel.remove(BSONDocument("_id" -> leaveprofile._id), request)
-          // Lockdown leave
-          LeaveModel.setLockDown(BSONDocument("pid" -> leaveprofile.pid, "lt" -> leaveprofile.lt), request)
+          PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(leaveprofile.pid)), request).map { person =>
+            if (person.get.p.pt == p_pt) {
+              // Delete leave profile
+              LeaveProfileModel.remove(BSONDocument("_id" -> leaveprofile._id), request)
+              // Lockdown leave
+              LeaveModel.setLockDown(BSONDocument("pid" -> leaveprofile.pid, "lt" -> leaveprofile.lt), request)
+            }
+          }
+
         } }
       }
       Future.successful(Redirect(routes.LeaveSettingController.index))

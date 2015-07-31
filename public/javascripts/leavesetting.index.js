@@ -75,7 +75,7 @@ $(function(){
 			    
 });
 
-function onDelete(p_id, p_lt) {
+function onDelete(p_id, p_lt, p_pt) {
 
 	$( "#dialog-message" ).removeClass('hide').dialog({
 		resizable: false,
@@ -87,7 +87,7 @@ function onDelete(p_id, p_lt) {
 				html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Delete",
 				"class" : "btn btn-danger btn-mini",
 				click: function() {
-					window.location = "/leavepolicy/delete/" + p_id + "/" + p_lt;
+					window.location = "/leavepolicy/delete/" + p_id + "/" + p_lt + "/" + p_pt;
 				}
 			},
 			{
