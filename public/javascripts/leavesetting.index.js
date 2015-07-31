@@ -2,7 +2,14 @@ $(function(){
 
 	$("#navAdmin").addClass("active open");
     $("#navLeaveTypeSetting").addClass("active");
-        
+    
+	// Setup jquery dataTable
+	$('#leavepoliciestable').dataTable({
+		"aoColumnDefs": [
+	    	{ "bSortable": false, "sClass":"text-center", "aTargets": [ 4 ] }
+	    ]
+	});
+	
 	$("#leave-cut-off-pencil").click(function(){
 		$("#leave-cut-off-view").hide();
 		$("#leave-cut-off-edit").show();
