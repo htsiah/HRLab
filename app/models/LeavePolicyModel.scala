@@ -228,7 +228,6 @@ object LeavePolicyModel {
 	
   // Update document
   def update(p_query:BSONDocument,p_doc:LeavePolicy,p_request:RequestHeader) = {
-    println("Model " + p_doc.set.scal)
     val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
     future.onComplete {
       case Failure(e) => throw e
