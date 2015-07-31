@@ -113,12 +113,11 @@ object PersonController extends Controller with Secured{
             }
           },
           formWithData => {
-            val rd = Random.alphanumeric.take(8).mkString
             val authentication_doc = Authentication(
                 _id = BSONObjectID.generate,
                 em = formWithData.p.em,
-                p = rd,
-                r = "",
+                p = Random.alphanumeric.take(8).mkString,
+                r = Random.alphanumeric.take(8).mkString,
                 sys = None
             )
             PersonModel.insert(formWithData.copy(_id=BSONObjectID.generate), p_request=request)
@@ -129,9 +128,7 @@ object PersonController extends Controller with Secured{
                 "FULLNAME" -> {formWithData.p.fn + " " + formWithData.p.ln},
                 "ADMIN" -> request.session.get("name").get,
                 "COMPANY" -> request.session.get("company").get,
-                "EMAIL" -> {formWithData.p.em},
-                "PASSWORD" -> rd,
-                "URL" -> Tools.hostname
+                "URL" -> {Tools.hostname + "/set/" + authentication_doc.em  + "/" + authentication_doc.r}
             )
             MailUtility.sendEmailConfig(List(authentication_doc.em), 7, replaceMap)
             
