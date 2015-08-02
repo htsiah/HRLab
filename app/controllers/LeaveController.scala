@@ -416,7 +416,7 @@ object LeaveController extends Controller with Secured {
             val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
             if (leavepolicy.set.scal) {
               val title = leave.pn + " (" + leave.lt + ")"
-              val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/compnay/view/" + leave._id.stringify else ""
+              val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get)
               if (count > 0) leavejsonstr = leavejsonstr + ","

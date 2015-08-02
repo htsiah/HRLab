@@ -79,7 +79,7 @@ $(function(){
 		} else {
 			Calendar.removeEvents(Calendar.deptleavesurl);
 			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/my");
-			Calendar.deptleavesurl = "/leave/getapprovedleavejson/" + selcalendardisplaytypes;
+			Calendar.deptleavesurl = "/leave/getapprovedleaveforcompanyviewjson/" + selcalendardisplaytypes;
 			Calendar.showDeptCalendar();
 			
 		}
