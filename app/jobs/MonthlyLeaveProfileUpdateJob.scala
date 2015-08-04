@@ -152,7 +152,7 @@ object MonthlyLeaveProfileUpdateJob {
                               ear=LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get), 
                               adj=0,
                               uti=0.0,
-                              cf=LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person)),
+                              cf=(leaveprofile.cal.cf - leaveprofile.cal.cfexp - leaveprofile.cal.cfuti) + LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person)),
                               cfuti=0.0,
                               cfexp=0.0,
                               papr=0.0

@@ -458,7 +458,8 @@ object LeaveProfileModel {
           p_doc.copy(
               cal = p_doc.cal.copy(
                   ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
-                  bal = BigDecimal(balance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
+                  bal = BigDecimal(balance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble,
+                  cbal = BigDecimal(cbalance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ),
               me = LeaveProfileMonthEarn(
                   jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
@@ -584,7 +585,7 @@ object LeaveProfileModel {
   
   def getEligibleCarryForwordEarn(p_leaveprofile:LeaveProfile, p_servicemonth:Int) = {
     val eligblecarryforword = this.getEligibleCarryForword(p_leaveprofile, p_servicemonth)
-    if (p_leaveprofile.cal.bal > eligblecarryforword) eligblecarryforword else p_leaveprofile.cal.bal
+    if (p_leaveprofile.cal.cbal > eligblecarryforword) eligblecarryforword else p_leaveprofile.cal.cbal
   }
   
   // Get total leave earn from previous cut off date or employee start date until coming cut off date.

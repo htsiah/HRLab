@@ -38,7 +38,7 @@ object Global extends GlobalSettings {
     
     // Parameter 1: initial delat
     // Parameter 2: interval
-    Akka.system(app).scheduler.schedule(1 seconds, 1 seconds) {
+    Akka.system(app).scheduler.schedule(1 seconds, 10 seconds) {
       // MonthlyLeaveProfileUpdateJob.run
     }
     
