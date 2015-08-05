@@ -8,7 +8,7 @@ object ApplicationBuild extends Build {
   
   val appDependencies = Seq(
       play.PlayImport.cache,
-      "org.reactivemongo" %% "play2-reactivemongo" % "0.11.4.play24",
+      "org.reactivemongo" %% "play2-reactivemongo" % "0.11.5.play24",
       "com.typesafe.play" %% "play-mailer" % "3.0.1"
   )
   
