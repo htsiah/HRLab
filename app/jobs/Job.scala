@@ -9,6 +9,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import reactivemongo.api._
 import reactivemongo.bson._
+import reactivemongo.core.nodeset.Authenticate
 
 case class Job (
     _id: BSONObjectID,
@@ -47,10 +48,11 @@ object Job {
   private val uri = Play.current.configuration.getString("mongodb_job_uri").getOrElse("mongodb://localhost")
   private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
+     parsedUri => driver.connection(parsedUri)
   }
   private val db = connection.get.db(dbname)
   private val col = db.collection("job")
+  
   val doc = Job(
       _id = BSONObjectID.generate,
       n = "",
