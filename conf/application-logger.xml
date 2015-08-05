@@ -22,7 +22,13 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-
+    
+    <!-- # Logger used by the framework -->
+    <logger name="play" level="INFO" />
+    
+    <!-- # Logger provided to your application -->
+  	<logger name="application" level="DEBUG" />
+  
     <root level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>

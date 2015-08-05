@@ -8,11 +8,12 @@
 # This must be changed for production, but we recommend not changing it in this file.
 #
 # See http://www.playframework.com/documentation/latest/ApplicationSecret for more details.
-application.secret="xkd3_R4C:Mqfpqu3OLJ=vMe_L<Awy<rvtZH59JCZ3qwiksOrudj>a;sm19N@3b4j"
+play.crypto.secret="akd3_R4C:Mqfpqu3OLJ=vMe_L<Awy<rvtZH59JCZ3qwiksOrudj>a;sm19N@3b4j"
+play.crypto.secret=${?APPLICATION_SECRET}
 
 # Application Info
 application_name=hrsifu
-application_release=1.3
+application_release=1.3.1
 
 # Domain name
 # can be used for mail, etc
@@ -20,7 +21,7 @@ domain_name="http://app.hrsifu.my"
 
 # The application languages
 # ~~~~~
-application.langs="en"
+play.i18n.langs = [ "en" ]
 
 # Global object class
 # ~~~~~
@@ -54,31 +55,9 @@ application.langs="en"
 # You can disable evolutions if needed
 # evolutionplugin=disabled
 
-# Logger
-# ~~~~~
-# You can also configure logback (http://logback.qos.ch/),
-# by providing an application-logger.xml file in the conf directory.
-
-# Root logger:
-logger.root=ERROR
-# logger.root=OFF
-
-# Logger used by the framework:
-logger.play=INFO
-# logger.play=OFF
-
-# Logger provided to your application:
-logger.application=DEBUG
-# logger.application=OFF
-
 # Custom Logger on Application (OFF/ERROR/INFO/DEBUG) and Security (OFF/ON)
-dblogger_application=DEBUG
+dblogger_application=ERROR
 dblogger_security=ON 
-
-# Disable Db Plugin
-dbplugin = disabled
-evolutionplugin = disabled
-ehcacheplugin = enable
 
 # Reactivemongo default database
 mongodb.uri = "mongodb://admin:hrlab-admin@128.199.80.162:9622/hrsifu-directory"
