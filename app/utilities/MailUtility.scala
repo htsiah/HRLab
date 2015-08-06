@@ -5,8 +5,8 @@ import scala.util.{Success, Failure,Try}
 
 import play.api.Play
 import play.api.Play.current
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
 import scala.util.{Success, Failure}
@@ -15,22 +15,6 @@ import views._
 
 import reactivemongo.api._
 import reactivemongo.bson._
-
-/*
- * Still in development on new send method.
- * import javax.inject.Inject
- * import javax.inject._
- * 
- * @Singleton
- * class myMail @Inject()(mailer: MailerClient){
- *   def send (p_email:Email) = {
- *     val id = mailer.send(p_email) 
- *   }  
- * }
- * 
- * val mailer = new myMail
- * def sendEmail = mailer.send(email)
- */
 
 case class MailTemplate (
      _id: BSONObjectID,
@@ -41,7 +25,7 @@ case class MailTemplate (
 )
 
 object MailUtility {
-    
+  
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
     def read(doc: BSONDocument): System = {
@@ -87,11 +71,10 @@ object MailUtility {
   def sendEmail(p_recipient: Seq[String], p_subject: String, p_body: String) =  {
     val email = Email(
         subject = p_subject,
-        from = "HR Sifu <noreply@hrsifu.my>",
+        from = "HR Lab <noreply@hrlab.my>",
         to = p_recipient,
         bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
     )
-      
     val future = Future( MailerPlugin.send(email) )
     future.onComplete {
       case Failure(e) => throw e
@@ -103,7 +86,7 @@ object MailUtility {
   def sendEmail(p_recipient: Seq[String], p_cc: Seq[String], p_subject: String, p_body: String) =  {
     val email = Email(
         subject = p_subject,
-        from = "HR Sifu <noreply@hrsifu.my>",
+        from = "HR Lab <noreply@hrlab.my>",
         to = p_recipient,
         cc = p_cc,
         bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
