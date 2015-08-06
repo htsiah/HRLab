@@ -116,7 +116,6 @@ object LeavePolicyController extends Controller with Secured {
             } yield {
               if (maybe_unique) {
                 val eligbleleaveentitlement = LeavePolicyModel.sortEligbleLeaveEntitlement(formWithData, request)
-                println(formWithData.set.scal)
                 LeavePolicyModel.insert(
                     formWithData.copy(
                         _id=BSONObjectID.generate, 
@@ -144,7 +143,7 @@ object LeavePolicyController extends Controller with Secured {
               } else {
                 val leavetypes = maybe_leavetypes.getOrElse(KeywordModel.doc)
                 val positiontypes = maybe_positiontypes.getOrElse(KeywordModel.doc)
-                val replaceMap = Map("URL"->(Tools.hostname+"/leavepolicy/view?id=" + maybeleavepolicy.get._id.stringify))
+                val replaceMap = Map("URL"->(Tools.hostname+"/leavepolicy/view?p_id=" + maybeleavepolicy.get._id.stringify))
                 val alert = maybe_alert.getOrElse(null)
                 val mod_alert = if(alert!=null){alert.copy(m=Tools.replaceSubString(alert.m, replaceMap.toList))}else{alert}
                 Ok(views.html.leavepolicy.form(leavepolicyform.fill(formWithData), leavetypes.v.get, positiontypes.v.get,alert=mod_alert))

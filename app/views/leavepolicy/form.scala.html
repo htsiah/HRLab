@@ -62,6 +62,8 @@
 	@if(oid==""){
 		@select(leavepolicy("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(leavepolicy("pt"), options = options(positiontypes.map(positiontype=>positiontype)), '_label -> "Position type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leavepolicy("set")("g"), options = Seq("Applicable for all"->"Applicable for all", "Male only"->"Male only", "Female only"->"Female only"), '_label -> "Gender", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leavepolicy("set")("ms"), options = Seq("Applicable for all"->"Applicable for all", "Single only"->"Single only", "Married only"->"Married only"), '_label -> "Marital status", '_class->"dl-horizontal", 'class->"form-control")
 	} else {
 		<dl class="dl-horizontal">
 			<dt><label>Leave type</label></dt>
@@ -71,9 +73,15 @@
 			<dt><label>Position type</label></dt>
 			<dd class="">@leavepolicy("pt").value</dd>
 		</dl>
+		<dl class="dl-horizontal">
+			<dt><label>Gender</label></dt>
+			<dd class="">@leavepolicy("set.g").value</dd>
+		</dl>
+		<dl class="dl-horizontal">
+			<dt><label>Marital status</label></dt>
+			<dd class="">@leavepolicy("set.ms").value</dd>
+		</dl>
 	}
-	@select(leavepolicy("set")("g"), options = Seq("Applicable for all"->"Applicable for all", "Male only"->"Male only", "Female only"->"Female only"), '_label -> "Gender", '_class->"dl-horizontal", 'class->"form-control")
-	@select(leavepolicy("set")("ms"), options = Seq("Applicable for all"->"Applicable for all", "Single only"->"Single only", "Married only"->"Married only"), '_label -> "Marital status", '_class->"dl-horizontal", 'class->"form-control")
 	@select(leavepolicy("set")("dt"), options = Seq("Full day only"->"Full day only", "Full day and half day (1st or 2nd)"->"Full day and half day (1st or 2nd)"), '_label -> "Day type option", '_class->"dl-horizontal", 'class->"form-control")
 	@select(leavepolicy("set")("acc"), options = Seq(
 		"No accrue"->"Do not accrue. Just track usage", 
@@ -286,6 +294,8 @@
 			if(oid!="") {
 				@inputText(leavepolicy("lt"),'type -> "hidden")
 				@inputText(leavepolicy("pt"),'type -> "hidden")
+				@inputText(leavepolicy("set.g"),'type -> "hidden")
+				@inputText(leavepolicy("set.ms"),'type -> "hidden")
 			}
 	</div>
 
