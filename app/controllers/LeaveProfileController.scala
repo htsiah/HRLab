@@ -96,15 +96,7 @@ object LeaveProfileController extends Controller with Secured {
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request) 
         leavepolicies <- {
-          val gender = maybeperson.get.p.g match {
-            case "Male" => "Male only"
-            case "Female" => "Female only"
-          }
-          val marital = maybeperson.get.p.ms match {
-            case "Single" => "Single only"
-            case "Married" => "Married only"
-          }
-          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, gender, marital, request)
+          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
         }
       } yield {
         maybeperson.map( person => {
@@ -126,7 +118,9 @@ object LeaveProfileController extends Controller with Secured {
           formWithError => {
             for {
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request) 
-              leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
+              leavepolicies <- {
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+              }
             } yield {
               maybeperson.map( person => {
                 Ok(views.html.leaveprofile.form(formWithError, leavepolicies, p_pid, person.p.pt))
@@ -137,7 +131,9 @@ object LeaveProfileController extends Controller with Secured {
             for {
               leaveprofileunique <- LeaveProfileModel.isUnique(formWithData, request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
-              leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
+              leavepolicies <- {
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+              }
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid" ->formWithData.pid, "lt"->formWithData.lt), request)
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1005))
             } yield {
@@ -192,11 +188,10 @@ object LeaveProfileController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for {
         maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-        maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request) 
-        leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
+        maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request)
       } yield {
         maybeleaveprofile.map( leaveprofile => {
-            Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile), leavepolicies, leaveprofile.pid, "", p_id))
+            Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile), List(), leaveprofile.pid, "", p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -211,9 +206,8 @@ object LeaveProfileController extends Controller with Secured {
             for {
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request) 
-              leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
             } yield {
-              Ok(views.html.leaveprofile.form(formWithError, leavepolicies, maybeleaveprofile.get.pid, "", p_id))
+              Ok(views.html.leaveprofile.form(formWithError, List(), maybeleaveprofile.get.pid, "", p_id))
             }
           },
           formWithData => {
@@ -281,15 +275,7 @@ object LeaveProfileController extends Controller with Secured {
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
         leavepolicies <- {
-          val gender = maybeperson.get.p.g match {
-            case "Male" => "Male only"
-            case "Female" => "Female only"
-          }
-          val marital = maybeperson.get.p.ms match {
-            case "Single" => "Single only"
-            case "Married" => "Married only"
-          }
-          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, gender, marital, request)
+          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
         }
       } yield {
         maybeperson.map( person => {
@@ -311,7 +297,9 @@ object LeaveProfileController extends Controller with Secured {
           formWithError => {
             for {
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
-              leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
+              leavepolicies <- {
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+              }
             } yield {
               maybeperson.map( person => {
                 Ok(views.html.leaveprofile.myprofileform(formWithError, leavepolicies, person.p.pt))
@@ -322,7 +310,9 @@ object LeaveProfileController extends Controller with Secured {
             for {
               leaveprofileunique <- LeaveProfileModel.isUnique(formWithData, request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
-              leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
+              leavepolicies <- {
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+              }
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid" ->formWithData.pid, "lt"->formWithData.lt), request)
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1005))
             } yield {
@@ -378,10 +368,9 @@ object LeaveProfileController extends Controller with Secured {
       for {
         maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
-        leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
       } yield {
         maybeleaveprofile.map( leaveprofile => {
-          Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(leaveprofile), leavepolicies, "", p_id))
+          Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(leaveprofile), List(), "", p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -396,9 +385,8 @@ object LeaveProfileController extends Controller with Secured {
             for {
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
-              leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
             } yield {
-              Ok(views.html.leaveprofile.myprofileform(formWithError, leavepolicies, "", p_id))
+              Ok(views.html.leaveprofile.myprofileform(formWithError, List(), "", p_id))
             }
           },
           formWithData => {
