@@ -95,7 +95,17 @@ object LeaveProfileController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request) 
-        leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
+        leavepolicies <- {
+          val gender = maybeperson.get.p.g match {
+            case "Male" => "Male only"
+            case "Female" => "Female only"
+          }
+          val marital = maybeperson.get.p.ms match {
+            case "Single" => "Single only"
+            case "Married" => "Married only"
+          }
+          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, gender, marital, request)
+        }
       } yield {
         maybeperson.map( person => {
           val leaveprofile_doc = LeaveProfileModel.doc.copy(
@@ -270,7 +280,17 @@ object LeaveProfileController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
-        leavepolicies <- LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g, maybeperson.get.p.ms, request)
+        leavepolicies <- {
+          val gender = maybeperson.get.p.g match {
+            case "Male" => "Male only"
+            case "Female" => "Female only"
+          }
+          val marital = maybeperson.get.p.ms match {
+            case "Single" => "Single only"
+            case "Married" => "Married only"
+          }
+          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, gender, marital, request)
+        }
       } yield {
         maybeperson.map( person => {
           val leaveprofile_doc = LeaveProfileModel.doc.copy(
