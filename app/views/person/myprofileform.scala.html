@@ -1,9 +1,10 @@
 @import helper._
 @import reactivemongo.bson.BSONObjectID
+@import utilities.Alert
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(person:Form[Person], persons:List[Person], departments:List[String], offices:List[String], positions:List[String], isLastAdmin:Boolean=false)(implicit session: play.api.mvc.Session)
+@(person:Form[Person], persons:List[Person], departments:List[String], offices:List[String], positions:List[String], isLastAdmin:Boolean=false, alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -42,6 +43,7 @@
 
 @layout.ace.main93(session.get("company").get + " | HRSifu.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 
+	@layout.ace.alert(alert)
 	@helper.form(
 		action = routes.PersonController.myprofileupdate, 
 		'id -> "personform"

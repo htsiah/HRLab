@@ -286,6 +286,28 @@ object LeavePolicyModel {
     }
   }
   
+  def isAvailable(p_lt:String, p_pt:String,p_g: String, p_ms: String, p_request:RequestHeader) = {
+    for{
+      maybe_leavetypes <- this.find(
+        BSONDocument(
+            "lt" -> p_lt,
+            "pt" -> p_pt, 
+            "$or" -> BSONArray(
+                BSONDocument("set.g"->p_g),
+                BSONDocument("set.g"->"Applicable for all")
+            ),
+            "$or" -> BSONArray(
+                BSONDocument("set.ms"->p_ms),
+                BSONDocument("set.ms"->"Applicable for all")
+            )
+        ),
+        p_request
+      )
+    } yield {
+      if (maybe_leavetypes.isEmpty) false else true
+    }
+  }
+  
   def getLeavePolicies(p_pt:String, p_g: String, p_ms: String, p_request:RequestHeader) = { 
     for {
       maybe_leavetypes <- this.find(

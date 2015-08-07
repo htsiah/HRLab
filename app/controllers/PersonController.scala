@@ -3,21 +3,18 @@ package controllers
 import scala.util.{Success, Failure,Try,Random}
 import scala.concurrent.{Future, Await}
 import org.joda.time.DateTime
-
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.cache.Cache
-
 import play.api.libs.concurrent.Execution.Implicits._
-
 import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel}
-import utilities.{System, MailUtility, Tools}
-
+import utilities.{System, MailUtility, Tools, AlertUtility}
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import models.LeavePolicyModel
 
 object PersonController extends Controller with Secured{
   
@@ -178,22 +175,55 @@ object PersonController extends Controller with Secured{
             }
           },
           formWithData => {
-            Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request), Tools.db_timeout)
-            if (request.session.get("id").get==p_id) {
-              // Update session when update own record.
-              val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
-              val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
-              Future.successful(Redirect(routes.PersonController.index).withSession(
-                request.session + 
-                ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
-                ("department" -> formWithData.p.dpm) + 
-                ("position" -> formWithData.p.pt) + 
-                ("roles"->formWithData.p.rl.mkString(",")) + 
-                ("ismanager"->isManager)
-              ))
-            } else {
-              Future.successful(Redirect(routes.PersonController.index))
-            } 
+            for {
+              maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+              persons <- PersonModel.find(BSONDocument(), request)
+              maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+              maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
+              offices <- OfficeModel.getAllOfficeName(request)
+              isLastAdmin <- PersonModel.isLastAdmin(p_id, request)
+              leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid" -> p_id), request)
+              maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1015))
+            } yield {
+              
+              // Make sure after person update, all leave profile able link to leave policy.
+              var LeaveTypesList = List[String]()
+              leaveprofiles.map { leaveprofile => {
+                val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.pt, formWithData.p.g, formWithData.p.ms, request), Tools.db_timeout)
+                if ( isAvailable == false) {
+                  LeaveTypesList = LeaveTypesList :+ leaveprofile.lt
+                }
+              } }
+              
+              if (LeaveTypesList.isEmpty) {
+                Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request), Tools.db_timeout)
+                if (request.session.get("id").get==p_id) {
+                  // Update session when update own record.
+                  val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
+                  val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
+                  Redirect(routes.PersonController.index).withSession(
+                    request.session + 
+                    ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
+                    ("department" -> formWithData.p.dpm) + 
+                    ("position" -> formWithData.p.pt) + 
+                    ("roles"->formWithData.p.rl.mkString(",")) + 
+                    ("ismanager"->isManager)
+                  )
+                } else {
+                  Redirect(routes.PersonController.index)
+                } 
+                
+              } else {
+                val replaceMap = Map(
+                  "NAME"-> (formWithData.p.fn + " " + formWithData.p.ln),
+                  "LEAVEPROFILE" -> LeaveTypesList.mkString(", ")
+                )
+                val alert = if ((maybealert_missingleavepolicy.getOrElse(null))!=null) { maybealert_missingleavepolicy.get.copy(m=Tools.replaceSubString(maybealert_missingleavepolicy.get.m, replaceMap.toList)) } else { null }
+                val department = maybe_departments.getOrElse(KeywordModel.doc)
+                val position = maybe_positions.getOrElse(KeywordModel.doc)
+                Ok(views.html.person.form(personform.fill(formWithData), persons, department.v.get, offices, position.v.get, isLastAdmin, p_id, alert))
+              }
+            }
           }
       )
     } else {
@@ -277,16 +307,47 @@ object PersonController extends Controller with Secured{
             }
           },
           formWithData => {
-            Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), formWithData.copy(_id=BSONObjectID(request.session.get("id").get)), request), Tools.db_timeout)
-            val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
-            val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
-            Future.successful(Redirect(routes.PersonController.myprofileview).withSession(
-                request.session + 
-                ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
-                ("department" -> formWithData.p.dpm) + 
-                ("roles"->formWithData.p.rl.mkString(",")) + 
-                ("ismanager"->isManager)
-            ))
+            for {
+              maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
+              persons <- PersonModel.find(BSONDocument(), request)
+              maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
+              maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
+              offices <- OfficeModel.getAllOfficeName(request)
+              isLastAdmin <- PersonModel.isLastAdmin(request.session.get("id").get, request)
+              leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid" -> request.session.get("id").get), request)
+              maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1016))
+            } yield {
+              
+              // Make sure after person update, leave profiles able link to leave policy.
+              var LeaveTypesList = List[String]()
+              leaveprofiles.map { leaveprofile => {
+                val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.pt, formWithData.p.g, formWithData.p.ms, request), Tools.db_timeout)
+                if ( isAvailable == false) {
+                  LeaveTypesList = LeaveTypesList :+ leaveprofile.lt
+                }
+              } }
+              
+              if (LeaveTypesList.isEmpty) {
+                Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), formWithData.copy(_id=BSONObjectID(request.session.get("id").get)), request), Tools.db_timeout)
+                val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
+                val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
+                Redirect(routes.PersonController.myprofileview).withSession(
+                    request.session + 
+                    ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
+                    ("department" -> formWithData.p.dpm) + 
+                    ("roles"->formWithData.p.rl.mkString(",")) + 
+                    ("ismanager"->isManager)
+                )
+              } else {
+                val replaceMap = Map(
+                  "LEAVEPROFILE" -> LeaveTypesList.mkString(", ")
+                )
+                val alert = if ((maybealert_missingleavepolicy.getOrElse(null))!=null) { maybealert_missingleavepolicy.get.copy(m=Tools.replaceSubString(maybealert_missingleavepolicy.get.m, replaceMap.toList)) } else { null }
+                val department = maybe_departments.getOrElse(KeywordModel.doc)
+                val position = maybe_positions.getOrElse(KeywordModel.doc)
+                Ok(views.html.person.myprofileform(personform.fill(formWithData), persons, department.v.get, offices, position.v.get, isLastAdmin, alert))
+              }
+            }
           }
       )
     } else {
