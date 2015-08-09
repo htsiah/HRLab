@@ -71,7 +71,7 @@ object MailUtility {
   def sendEmail(p_recipient: Seq[String], p_subject: String, p_body: String) =  {
     val email = Email(
         subject = p_subject,
-        from = "HR Lab <noreply@hrlab.my>",
+        from = "HRSifu <noreply@hrsifu.my>",
         to = p_recipient,
         bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
     )
@@ -86,7 +86,7 @@ object MailUtility {
   def sendEmail(p_recipient: Seq[String], p_cc: Seq[String], p_subject: String, p_body: String) =  {
     val email = Email(
         subject = p_subject,
-        from = "HR Lab <noreply@hrlab.my>",
+        from = "HRSifu <noreply@hrsifu.my>",
         to = p_recipient,
         cc = p_cc,
         bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
