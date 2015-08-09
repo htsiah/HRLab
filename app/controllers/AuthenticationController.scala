@@ -135,7 +135,7 @@ object AuthenticationController extends Controller with Secured {
               case true => {
                 val resetkey = Random.alphanumeric.take(8).mkString
                 val modifier = BSONDocument("$set"->BSONDocument("r"->resetkey))
-                AuthenticationModel.updateUsingBSON(BSONDocument("em"->email), modifier)
+                AuthenticationModel.updateUsingBSON(BSONDocument("em"->email, "sys.ddat"->BSONDocument("$exists"->false)), modifier)
                 val replaceMap = Map("URL"->(Tools.hostname+"/set/"+email+"/"+resetkey))
                 MailUtility.sendEmailConfig(List(email), 2, replaceMap)
                 val alert =  Await.result(AlertUtility.findOne(BSONDocument("k"->2000)), Tools.db_timeout)
