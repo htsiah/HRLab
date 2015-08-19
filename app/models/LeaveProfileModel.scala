@@ -757,6 +757,20 @@ object LeaveProfileModel {
     BigDecimal(earned).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
   
+  // Get total leave earn from calculate date until now.
+  // Get entitlement using leave policy
+  // For new leave profile
+  def getTotalMonthlyEntitlementEarn(p_date:DateTime, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_cutoffdate:DateTime):Double = {
+    val earned = if (p_person.p.edat.get.dayOfMonth().withMaximumValue().isAfter(DateTime.now().dayOfMonth().withMaximumValue())) {
+      0.0
+    } else if (p_date.isAfter(DateTime.now().minusMonths(1).dayOfMonth().withMaximumValue())) {
+      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate)
+    } else {
+      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate) + getTotalMonthlyEntitlementEarn(p_date.plusMonths(1), p_leavepolicy, p_leavesetting, p_person)
+    }
+    BigDecimal(earned).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
+  }
+  
   // Get entitlement using leave profile
   // For update leave profile
   def getMonthEntitlementEarn(p_leaveprofile:LeaveProfile, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int) = {                 
@@ -873,13 +887,15 @@ object LeaveProfileModel {
   // Get entitlement using leave policy
   // For new leave profile
   def getMonthEntitlementEarn(p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int, p_cutoffdate:DateTime) = {
-    if (p_person.p.edat.get.isAfter(p_cutoffdate.minusMonths(13-p_month).dayOfMonth().withMaximumValue())) {
-      // No entitled any leave when employee have not join the company
+    val accruetype = p_leavepolicy.set.acc
+    if (p_person.p.edat.get.isAfter(p_cutoffdate.minusMonths(13-p_month).dayOfMonth().withMaximumValue()) && accruetype!="Yearly") {
+      // Entitlement is 0 when employee join after cut of month.
+      0.0      
+    } else if (p_person.p.edat.get.isAfter(p_cutoffdate.minusMonths(1).dayOfMonth().withMaximumValue()) && accruetype=="Yearly") {
       0.0
     } else {
       val servicemonth = PersonModel.getServiceMonths(p_person)
       val entitlement = this.getEligibleEntitlement(p_leavepolicy, servicemonth)
-      val accruetype = p_leavepolicy.set.acc
       val leavecutoff_mth = p_leavesetting.cfm
       accruetype match {
         case "No accrue" => 0.0

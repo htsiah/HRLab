@@ -454,37 +454,67 @@ object LeaveProfileController extends Controller with Secured {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))
       val leavepolicy= maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
       val leavesetting = maybe_leavesetting.getOrElse(LeaveSettingModel.doc)
-      val previouscutoffdate = if (LeaveSettingModel.getPreviousCutOffDate(leavesetting.cfm).isAfter(person.p.edat.get)) {
-          LeaveSettingModel.getPreviousCutOffDate(leavesetting.cfm)
-        } else { 
-          new DateTime(person.p.edat.get.getYear, person.p.edat.get.getMonthOfYear, 1, 0, 0, 0, 0)
-        }
+      val previouscutoffdate = LeaveSettingModel.getPreviousCutOffDate(leavesetting.cfm)
       val cutoffdate = LeaveSettingModel.getCutOffDate(leavesetting.cfm)
       val leaveearned = leavepolicy.set.acc match {
         case "No accrue" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
-        case "Monthly - utilisation based on earned" => LeaveProfileModel.getTotalMonthlyEntitlementEarn(previouscutoffdate, leavepolicy, leavesetting, person)
-        case "Monthly - utilisation based on closing balance" => LeaveProfileModel.getTotalMonthlyEntitlementEarn(previouscutoffdate, leavepolicy, leavesetting, person)
-        case "Yearly" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+        case "Monthly - utilisation based on earned" => {
+          if (person.p.edat.get.isAfter(previouscutoffdate)) {
+            // Earn calculate from join date to now.
+            LeaveProfileModel.getTotalMonthlyEntitlementEarn(person.p.edat.get, leavepolicy, leavesetting, person, cutoffdate)
+          } else {
+            // Earn calculate from previous cut of date to now.
+            LeaveProfileModel.getTotalMonthlyEntitlementEarn(previouscutoffdate, leavepolicy, leavesetting, person, cutoffdate)
+          }
+        }
+        case "Monthly - utilisation based on closing balance" => {
+          if (person.p.edat.get.isAfter(previouscutoffdate)) {
+            // Earn calculate from join date to now.
+            LeaveProfileModel.getTotalMonthlyEntitlementEarn(person.p.edat.get, leavepolicy, leavesetting, person, cutoffdate)
+          } else {
+            // Earn calculate from previous cut of date to now.
+            LeaveProfileModel.getTotalMonthlyEntitlementEarn(previouscutoffdate, leavepolicy, leavesetting, person, cutoffdate)
+          }
+        }
+        case "Yearly" => {
+          if (person.p.edat.get.isAfter(cutoffdate.minusMonths(1).dayOfMonth().withMaximumValue())) {
+            0.0
+          } else {
+            LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+          }
+        }
       }
       val cbal = leavepolicy.set.acc match {
         case "No accrue" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
-        case "Monthly - utilisation based on earned" => LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person)
-        case "Monthly - utilisation based on closing balance" => LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person)
-        case "Yearly" => LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
+        case "Monthly - utilisation based on earned" => {
+          if (person.p.edat.get.isAfter(previouscutoffdate)) {
+            LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, leavepolicy, leavesetting, person)
+          } else {
+            LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person)
+          }
+        }
+        case "Monthly - utilisation based on closing balance" => {
+          if (person.p.edat.get.isAfter(previouscutoffdate)) {
+            LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, leavepolicy, leavesetting, person)
+          } else {
+            LeaveProfileModel.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person)
+          }
+        }
+        case "Yearly" => leaveearned
       }      
       val ent = LeaveProfileModel.getEligibleEntitlement(leavepolicy, PersonModel.getServiceMonths(person))
-      val m_jan = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 1)
-      val m_feb = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 2)
-      val m_mar = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 3)
-      val m_apr = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 4)
-      val m_may = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 5)
-      val m_jun = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 6)
-      val m_jul = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 7)
-      val m_aug = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 8)
-      val m_sep = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 9)
-      val m_oct = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 10)
-      val m_nov = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 11)
-      val m_dec = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 12)
+      val m_jan = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 1, cutoffdate)
+      val m_feb = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 2, cutoffdate)
+      val m_mar = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 3, cutoffdate)
+      val m_apr = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 4, cutoffdate)
+      val m_may = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 5, cutoffdate)
+      val m_jun = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 6, cutoffdate)
+      val m_jul = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 7, cutoffdate)
+      val m_aug = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 8, cutoffdate)
+      val m_sep = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 9, cutoffdate)
+      val m_oct = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 10, cutoffdate)
+      val m_nov = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 11, cutoffdate)
+      val m_dec = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 12, cutoffdate)
       maybe_leavepolicy.map( leavepolicy => {
         val json = Json.parse("{\"e1\":" + leavepolicy.ent.e1 + ", \"e1_s\":" + leavepolicy.ent.e1_s + ", \"e1_cf\":" + leavepolicy.ent.e1_cf +
           ",\"e2\":" + leavepolicy.ent.e2 + ", \"e2_s\":" + leavepolicy.ent.e2_s + ", \"e2_cf\":" + leavepolicy.ent.e2_cf +
