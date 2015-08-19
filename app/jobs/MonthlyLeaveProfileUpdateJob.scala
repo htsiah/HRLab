@@ -105,6 +105,7 @@ object MonthlyLeaveProfileUpdateJob {
   
   private def monthlyaccumulation(p_eid:String, p_leavesetting: LeaveSetting) = {
     val now = new DateTime
+    val cutoffdate = LeaveSettingModel.getCutOffDate(p_leavesetting.cfm)
     
     LeavePolicyModel.find(BSONDocument("sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leavepolicies => {
       leavepolicies.map { leavepolicy => {
@@ -115,7 +116,7 @@ object MonthlyLeaveProfileUpdateJob {
             persons.map { person => {
               LeaveProfileModel.find(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => {
                 leaveprofiles.map { leaveprofile => {
-                  val earned = leaveprofile.cal.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get)
+                  val earned = leaveprofile.cal.ear + LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get, cutoffdate)
                   LeaveProfileModel.update(
                       BSONDocument("_id" -> leaveprofile._id), 
                       leaveprofile.copy(
@@ -138,6 +139,8 @@ object MonthlyLeaveProfileUpdateJob {
   
   private def yearlycut0ff(p_eid: String, p_leavesetting: LeaveSetting) = {
     val now = new DateTime
+    val cutoffdate = LeaveSettingModel.getCutOffDate(p_leavesetting.cfm)
+    
     LeavePolicyModel.find(BSONDocument("sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leavepolicies => {
       leavepolicies.map { leavepolicy => {
         PersonModel.find(BSONDocument("p.pt"->leavepolicy.pt, "sys.eid"->p_eid)).map { persons => {
@@ -149,7 +152,7 @@ object MonthlyLeaveProfileUpdateJob {
                       leaveprofile.copy(
                           cal = leaveprofile.cal.copy(
                               ent=LeaveProfileModel.getEligibleEntitlement(leaveprofile, PersonModel.getServiceMonths(person)),
-                              ear=LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get), 
+                              ear=LeaveProfileModel.getMonthEntitlementEarn(leaveprofile, leavepolicy, p_leavesetting, person, now.monthOfYear().get, cutoffdate), 
                               adj=0,
                               uti=0.0,
                               cf=(leaveprofile.cal.cf - leaveprofile.cal.cfexp - leaveprofile.cal.cfuti) + LeaveProfileModel.getEligibleCarryForwordEarn(leaveprofile, PersonModel.getServiceMonths(person)),
