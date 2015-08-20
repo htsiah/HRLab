@@ -5,10 +5,10 @@ import scala.concurrent.Future
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeavePolicyModel, LeavePolicy, LeaveSettingModel}
+import models.{LeavePolicyModel, LeavePolicy, LeaveSettingModel, PersonModel, LeaveProfileModel}
 
 import reactivemongo.api._
-import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import reactivemongo.bson.{BSONObjectID,BSONDocument,BSONDateTime}
 
 import play.api.mvc._
 
@@ -43,6 +43,23 @@ object LeaveSettingController extends Controller with Secured {
             ), 
             request
         )
+        
+        // Update employee's leave profile
+        if (leavesetting.cfm != p_mnth.toInt) {
+          val old_previouscutoffdate = LeaveSettingModel.getPreviousCutOffDate(leavesetting.cfm)
+          val new_previouscutoffdate = LeaveSettingModel.getPreviousCutOffDate(p_mnth.toInt)
+          val search_date = if (old_previouscutoffdate.isBefore(new_previouscutoffdate)) {old_previouscutoffdate} else {new_previouscutoffdate}
+          PersonModel.find(BSONDocument("p.edat"->BSONDocument("$gte" -> BSONDateTime(search_date.getMillis()))), request).map { persons => 
+            persons.map { person => {
+              LeaveProfileModel.find(BSONDocument("pid" -> person._id.stringify)).map { leaveprofiles =>  
+                leaveprofiles.map { leaveprofile => {
+                  LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile, request)
+                } }
+              }
+            } }
+          }
+        }
+        
         Ok(Json.parse("""{"status":true}""")).as("application/json")
       }
     } else {
