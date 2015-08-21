@@ -49,7 +49,7 @@ object LeaveSettingController extends Controller with Secured {
           val old_previouscutoffdate = LeaveSettingModel.getPreviousCutOffDate(leavesetting.cfm)
           val new_previouscutoffdate = LeaveSettingModel.getPreviousCutOffDate(p_mnth.toInt)
           val search_date = if (old_previouscutoffdate.isBefore(new_previouscutoffdate)) {old_previouscutoffdate} else {new_previouscutoffdate}
-          PersonModel.find(BSONDocument("p.edat"->BSONDocument("$gte" -> BSONDateTime(search_date.getMillis()))), request).map { persons => 
+          PersonModel.find(BSONDocument(), request).map { persons => 
             persons.map { person => {
               LeaveProfileModel.find(BSONDocument("pid" -> person._id.stringify)).map { leaveprofiles =>  
                 leaveprofiles.map { leaveprofile => {
