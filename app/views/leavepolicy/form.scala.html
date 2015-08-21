@@ -60,17 +60,17 @@
 		'id -> "leavepolicyform"
 	) {
 	@if(oid==""){
-		@select(leavepolicy("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		@select(leavepolicy("pt"), options = options(positiontypes.map(positiontype=>positiontype)), '_label -> "Position type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leavepolicy("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave Type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leavepolicy("pt"), options = options(positiontypes.map(positiontype=>positiontype)), '_label -> "Position Type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(leavepolicy("set")("g"), options = Seq("Applicable for all"->"Applicable for all", "Male only"->"Male only", "Female only"->"Female only"), '_label -> "Gender", '_class->"dl-horizontal", 'class->"form-control")
-		@select(leavepolicy("set")("ms"), options = Seq("Applicable for all"->"Applicable for all", "Single only"->"Single only", "Married only"->"Married only"), '_label -> "Marital status", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leavepolicy("set")("ms"), options = Seq("Applicable for all"->"Applicable for all", "Single only"->"Single only", "Married only"->"Married only"), '_label -> "Marital Status", '_class->"dl-horizontal", 'class->"form-control")
 	} else {
 		<dl class="dl-horizontal">
-			<dt><label>Leave type</label></dt>
+			<dt><label>Leave Type</label></dt>
 			<dd class="">@leavepolicy("lt").value</dd>
 		</dl>
 		<dl class="dl-horizontal">
-			<dt><label>Position type</label></dt>
+			<dt><label>Position Type</label></dt>
 			<dd class="">@leavepolicy("pt").value</dd>
 		</dl>
 		<dl class="dl-horizontal">
@@ -78,11 +78,11 @@
 			<dd class="">@leavepolicy("set.g").value</dd>
 		</dl>
 		<dl class="dl-horizontal">
-			<dt><label>Marital status</label></dt>
+			<dt><label>Marital Status</label></dt>
 			<dd class="">@leavepolicy("set.ms").value</dd>
 		</dl>
 	}
-	@select(leavepolicy("set")("dt"), options = Seq("Full day only"->"Full day only", "Full day and half day (1st or 2nd)"->"Full day and half day (1st or 2nd)"), '_label -> "Day type option", '_class->"dl-horizontal", 'class->"form-control")
+	@select(leavepolicy("set")("dt"), options = Seq("Full day only"->"Full day only", "Full day and half day (1st or 2nd)"->"Full day and half day (1st or 2nd)"), '_label -> "Day Type Option", '_class->"dl-horizontal", 'class->"form-control")
 	@select(leavepolicy("set")("acc"), options = Seq(
 		"No accrue"->"Do not accrue. Just track usage", 
 		"Monthly - utilisation based on earned"->"Accrue Monthly (At start of the month) - utilisation based on leave earned", 
@@ -103,7 +103,7 @@
 		"10"->"After 10 months",
 		"11"->"After 11 months",
 		"12"->"After 12 months"), 
-		'_label -> "Carry forward expires", '_class->"dl-horizontal", 'class->"form-control", '_showConstraints->false)
+		'_label -> "Carry Forward Expires", '_class->"dl-horizontal", 'class->"form-control", '_showConstraints->false)
 	
 	<dl class="dl-horizontal">
 		<dt><label>Others</label></dt>

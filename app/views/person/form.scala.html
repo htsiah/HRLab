@@ -58,8 +58,8 @@
 		'id -> "personform"
 	) {
 		
-		@inputText(person("p")("fn"), '_label->"First name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
-		@inputText(person("p")("ln"), '_label->"Last name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@inputText(person("p")("fn"), '_label->"First Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@inputText(person("p")("ln"), '_label->"Last Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@if(oid=="") {	
 			@input(person("p")("em"), '_label->"Email", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     		<div class="input-group">
@@ -86,7 +86,7 @@
 		@select(person("p")("ms"), options = Seq("Single"->"Single","Married"->"Married"), '_label -> "Marital Status",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("dpm"), options = options(departments.map(department=>department)), '_label -> "Department",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("off"), options = options(offices.map(office=>office)), '_label -> "Office",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		@input(person("p")("edat"), '_label->"Join date", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+		@input(person("p")("edat"), '_label->"Join Date", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     	<div class="input-group">
     		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="yyyy-mm-dd" @toHtmlArgs(args)>
 				<span class="input-group-addon">
@@ -95,7 +95,7 @@
 			</div>
 		}
 		<dl class="dl-horizontal">
-			<dt><label>Work day</label></dt>
+			<dt><label>Work Day</label></dt>
 			<dd>
 				<div class="checkbox" style="display: inline-block;">
 					<label>

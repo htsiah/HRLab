@@ -66,8 +66,8 @@
 				<div id="home" class="tab-pane fade active in">
 					<div class="row">
 						<div class="col-sm-9">
-							@contentRow("First name", person.p.fn)
-							@contentRow("Last name", person.p.ln)
+							@contentRow("First Name", person.p.fn)
+							@contentRow("Last Name", person.p.ln)
 							@contentRow("Email", person.p.em)
 							@contentRow("Position", person.p.pt)
 							@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
@@ -75,9 +75,9 @@
 							@contentRow("Marital Status", person.p.ms)
 							@contentRow("Department", person.p.dpm)
 							@contentRow("Office", person.p.off)
-							@contentRow("Join date", person.p.edat.get.toLocalDate().toString())
+							@contentRow("Join Date", person.p.edat.get.toLocalDate().toString())
 							<dl class="dl-horizontal">
-								<dt><label>Work day</label></dt>
+								<dt><label>Work Day</label></dt>
 								<dd>
 									@if(person.wd.wd1==true) {Monday}
 									@if(person.wd.wd2==true) {Tuesday}

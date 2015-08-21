@@ -66,9 +66,9 @@
 	) {
 
 		@if(oid=="") {
-			@select(leaveprofile("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+			@select(leaveprofile("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave Type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		} else {
-			@contentRow("Leave type", leaveprofile("lt").value.get)
+			@contentRow("Leave Type", leaveprofile("lt").value.get)
 		}
 		@contentRow("Entitlement", leaveprofile("cal")("ent").value.get, "", "v_ent")
 		@contentRow("Earned", leaveprofile("cal")("ear").value.get, "", "v_earned")
