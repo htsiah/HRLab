@@ -24,7 +24,7 @@ $(function(){
 		$( "#dialog-cutoff-change-confirm" ).removeClass('hide').dialog({
 			resizable: false,
 			modal: true,
-			title: "<div class='widget-header'><h4 class='smaller'>Are you sure?</h4></div>",
+			title: "<div class='widget-header'><h4 class='smaller'>Confirmation</h4></div>",
 			title_html: true,
 			buttons: [
 				{

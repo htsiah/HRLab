@@ -176,7 +176,6 @@ object PersonController extends Controller with Secured{
           },
           formWithData => {
             for {
-              maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
               persons <- PersonModel.find(BSONDocument(), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
               maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
@@ -197,6 +196,12 @@ object PersonController extends Controller with Secured{
               
               if (LeaveTypesList.isEmpty) {
                 Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request), Tools.db_timeout)
+                
+                // Update leave profiles 
+                leaveprofiles.foreach { leaveprofile => {
+                  LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile, request)
+                } }
+                
                 if (request.session.get("id").get==p_id) {
                   // Update session when update own record.
                   val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
@@ -327,8 +332,15 @@ object PersonController extends Controller with Secured{
                 }
               } }
               
+              
               if (LeaveTypesList.isEmpty) {
                 Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), formWithData.copy(_id=BSONObjectID(request.session.get("id").get)), request), Tools.db_timeout)
+                
+                // Update leave profiles
+                leaveprofiles.foreach { leaveprofile => {
+                  LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile, request)
+                } }
+                
                 val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
                 val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
                 Redirect(routes.PersonController.myprofileview).withSession(
