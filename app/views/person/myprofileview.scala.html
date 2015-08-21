@@ -79,7 +79,9 @@
 									@if(person.wd.wd6==true) {Sunday}
 								</dd>
 							</dl>
-							@contentRow("Role", if(person.p.rl.toString=="List()"){""}else{person.p.rl.mkString(",")})
+							@if(person.p.rl.toString!="List()") {
+								@contentRow("Role", person.p.rl.mkString(","))
+							}
 						</div>@** /.col-xs-9 **@
 						<div class="col-sm-3">
 							@pbuttons
@@ -88,18 +90,18 @@
 				} else {
 					<div class="row">
 						<div class="col-sm-12">
-							@contentRow("First name", person.p.fn)
-							@contentRow("Last name", person.p.ln)
+							@contentRow("First Name", person.p.fn)
+							@contentRow("Last Name", person.p.ln)
 							@contentRow("Email", person.p.em)
-							@contentRow("Position type", person.p.pt)
+							@contentRow("Position Type", person.p.pt)
 							@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
 							@contentRow("Gender", person.p.g)
 							@contentRow("Marital Status", person.p.ms)
 							@contentRow("Department", person.p.dpm)
 							@contentRow("Office", person.p.off)
-							@contentRow("Employee joining date", person.p.edat.get.toLocalDate().toString())
+							@contentRow("Join Date", person.p.edat.get.toLocalDate().toString())
 							<dl class="dl-horizontal">
-								<dt><label>Work day</label></dt>
+								<dt><label>Work Day</label></dt>
 								<dd>
 									@if(person.wd.wd1==true) {Monday}
 									@if(person.wd.wd2==true) {Tuesday}
@@ -110,7 +112,9 @@
 									@if(person.wd.wd6==true) {Sunday}
 								</dd>
 							</dl>
-							@contentRow("Role", if(person.p.rl.toString=="List()"){""}else{person.p.rl.mkString(",")})
+							@if(person.p.rl.toString!="List()") {
+								@contentRow("Role", person.p.rl.mkString(","))
+							}
 						</div>@** /.col-xs-12 **@
 					</div>@** /.row **@ 
 				}
