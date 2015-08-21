@@ -331,19 +331,19 @@ object LeaveProfileModel {
         case "Monthly - utilisation based on earned" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to now.
-            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person)
           } else {
             // Earn calculate from previous cut of date to now.
-            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person)
           }
         }
         case "Monthly - utilisation based on closing balance" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to now.
-            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person)
           } else {
             // Earn calculate from previous cut of date to now.
-            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person)
           }
         }
         case "Yearly" => {
@@ -386,18 +386,18 @@ object LeaveProfileModel {
                   cbal = BigDecimal(cbalance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ),
               me = LeaveProfileMonthEarn(
-                  jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1, cutoffdate),
-                  feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2, cutoffdate),
-                  mar = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 3, cutoffdate),
-                  apr = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 4, cutoffdate),
-                  may = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 5, cutoffdate),
-                  jun = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 6, cutoffdate),
-                  jul = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 7, cutoffdate),
-                  aug = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 8, cutoffdate),
-                  sep = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 9, cutoffdate),
-                  oct = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 10, cutoffdate),
-                  nov = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 11, cutoffdate),
-                  dec = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 12, cutoffdate)
+                  jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
+                  feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2),
+                  mar = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 3),
+                  apr = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 4),
+                  may = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 5),
+                  jun = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 6),
+                  jul = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 7),
+                  aug = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 8),
+                  sep = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 9),
+                  oct = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 10),
+                  nov = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 11),
+                  dec = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 12)
               ),
               sys = SystemDataStore.creation(p_eid,p_request)
           )
@@ -426,19 +426,19 @@ object LeaveProfileModel {
         case "Monthly - utilisation based on earned" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to now.
-            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person)
           } else {
             // Earn calculate from previous cut of date to now.
-            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person)
           }
         }
         case "Monthly - utilisation based on closing balance" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to now.
-            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person)
           } else {
             // Earn calculate from previous cut of date to now.
-            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person)
           }
         }
         case "Yearly" => {
@@ -478,18 +478,18 @@ object LeaveProfileModel {
                   cbal = BigDecimal(cbalance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ), 
               me = LeaveProfileMonthEarn(
-                  jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1, cutoffdate),
-                  feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2, cutoffdate),
-                  mar = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 3, cutoffdate),
-                  apr = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 4, cutoffdate),
-                  may = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 5, cutoffdate),
-                  jun = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 6, cutoffdate),
-                  jul = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 7, cutoffdate),
-                  aug = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 8, cutoffdate),
-                  sep = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 9, cutoffdate),
-                  oct = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 10, cutoffdate),
-                  nov = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 11, cutoffdate),
-                  dec = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 12, cutoffdate)
+                  jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
+                  feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2),
+                  mar = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 3),
+                  apr = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 4),
+                  may = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 5),
+                  jun = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 6),
+                  jul = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 7),
+                  aug = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 8),
+                  sep = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 9),
+                  oct = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 10),
+                  nov = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 11),
+                  dec = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 12)
               ),
               sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)
           )
@@ -518,19 +518,19 @@ object LeaveProfileModel {
         case "Monthly - utilisation based on earned" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to now.
-            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person)
           } else {
             // Earn calculate from previous cut of date to now.
-            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person)
           }
         }
         case "Monthly - utilisation based on closing balance" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to now.
-            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(person.p.edat.get, p_doc, leavepolicy, leavesetting, person)
           } else {
             // Earn calculate from previous cut of date to now.
-            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person, cutoffdate)
+            this.getTotalMonthlyEntitlementEarn(previouscutoffdate, p_doc, leavepolicy, leavesetting, person)
           }
         }
         case "Yearly" => {
@@ -569,18 +569,18 @@ object LeaveProfileModel {
                   cbal = BigDecimal(cbalance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ),
               me = LeaveProfileMonthEarn(
-                  jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1, cutoffdate),
-                  feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2, cutoffdate),
-                  mar = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 3, cutoffdate),
-                  apr = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 4, cutoffdate),
-                  may = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 5, cutoffdate),
-                  jun = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 6, cutoffdate),
-                  jul = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 7, cutoffdate),
-                  aug = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 8, cutoffdate),
-                  sep = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 9, cutoffdate),
-                  oct = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 10, cutoffdate),
-                  nov = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 11, cutoffdate),
-                  dec = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 12, cutoffdate)
+                  jan = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 1),
+                  feb = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 2),
+                  mar = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 3),
+                  apr = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 4),
+                  may = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 5),
+                  jun = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 6),
+                  jul = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 7),
+                  aug = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 8),
+                  sep = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 9),
+                  oct = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 10),
+                  nov = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 11),
+                  dec = this.getMonthEntitlementEarn(p_doc, leavepolicy, leavesetting, person, 12)
               ),
               sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc))
           )
@@ -700,9 +700,9 @@ object LeaveProfileModel {
   // For update leave profile
   def getTotalMonthlyEntitlementEarnUntilCutOff(p_cutoffdate:DateTime, p_date:DateTime, p_leaveprofile:LeaveProfile, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person):Double = {
     val earned = if (p_date.isAfter(p_cutoffdate.minusMonths(2).dayOfMonth().withMaximumValue())) {
-      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate)
+      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear)
     } else {
-      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate) + getTotalMonthlyEntitlementEarnUntilCutOff(p_cutoffdate, p_date.plusMonths(1), p_leaveprofile, p_leavepolicy, p_leavesetting, p_person)
+      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear) + getTotalMonthlyEntitlementEarnUntilCutOff(p_cutoffdate, p_date.plusMonths(1), p_leaveprofile, p_leavepolicy, p_leavesetting, p_person)
     }
     BigDecimal(earned).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
@@ -712,9 +712,9 @@ object LeaveProfileModel {
   // For new leave profile
   def getTotalMonthlyEntitlementEarnUntilCutOff(p_cutoffdate:DateTime, p_date:DateTime, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person):Double = {
     val earned = if (p_date.isAfter(p_cutoffdate.minusMonths(2).dayOfMonth().withMaximumValue())) {
-      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate)
+      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear)
     } else {
-      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate) + getTotalMonthlyEntitlementEarnUntilCutOff(p_cutoffdate, p_date.plusMonths(1), p_leavepolicy, p_leavesetting, p_person)
+      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear) + getTotalMonthlyEntitlementEarnUntilCutOff(p_cutoffdate, p_date.plusMonths(1), p_leavepolicy, p_leavesetting, p_person)
     }
     BigDecimal(earned).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
@@ -722,13 +722,13 @@ object LeaveProfileModel {
   // Get total leave earn from given parameter date until now.
   // Get entitlement using leave profile
   // For update leave profile
-  def getTotalMonthlyEntitlementEarn(p_date:DateTime, p_leaveprofile:LeaveProfile, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_cutoffdate:DateTime):Double = {
+  def getTotalMonthlyEntitlementEarn(p_date:DateTime, p_leaveprofile:LeaveProfile, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person):Double = {
     val earned = if (p_person.p.edat.get.dayOfMonth().withMaximumValue().isAfter(DateTime.now().dayOfMonth().withMaximumValue())) {
       0.0
     } else if (p_date.isAfter(DateTime.now().minusMonths(1).dayOfMonth().withMaximumValue())) {
-      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate)
+      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear)
     } else {
-      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate) + getTotalMonthlyEntitlementEarn(p_date.plusMonths(1), p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_cutoffdate)
+      this.getMonthEntitlementEarn(p_leaveprofile, p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear) + getTotalMonthlyEntitlementEarn(p_date.plusMonths(1), p_leaveprofile, p_leavepolicy, p_leavesetting, p_person)
     }
     BigDecimal(earned).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
@@ -736,13 +736,13 @@ object LeaveProfileModel {
   // Get total leave earn from given parameter date until now.
   // Get entitlement using leave policy
   // For new leave profile
-  def getTotalMonthlyEntitlementEarn(p_date:DateTime, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_cutoffdate:DateTime):Double = {
+  def getTotalMonthlyEntitlementEarn(p_date:DateTime, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person):Double = {
     val earned = if (p_person.p.edat.get.dayOfMonth().withMaximumValue().isAfter(DateTime.now().dayOfMonth().withMaximumValue())) {
       0.0
     } else if (p_date.isAfter(DateTime.now().minusMonths(1).dayOfMonth().withMaximumValue())) {
-      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate)
+      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear)
     } else {
-      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear, p_cutoffdate) + getTotalMonthlyEntitlementEarn(p_date.plusMonths(1), p_leavepolicy, p_leavesetting, p_person, p_cutoffdate)
+      this.getMonthEntitlementEarn(p_leavepolicy, p_leavesetting, p_person, p_date.getMonthOfYear) + getTotalMonthlyEntitlementEarn(p_date.plusMonths(1), p_leavepolicy, p_leavesetting, p_person)
     }
     BigDecimal(earned).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
@@ -750,12 +750,16 @@ object LeaveProfileModel {
   // Get entitlement using leave profile
   // Entitlement is 0 when employee join after cut of month.
   // For update leave profile
-  def getMonthEntitlementEarn(p_leaveprofile:LeaveProfile, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int, p_cutoffdate:DateTime) = {
+  def getMonthEntitlementEarn(p_leaveprofile:LeaveProfile, p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int) = {
+    val cutoffmonth = p_leavesetting.cfm
+    val nextcutofdate = LeaveSettingModel.getCutOffDate(p_leavesetting.cfm)
+    val previouscutofdate = LeaveSettingModel.getPreviousCutOffDate(p_leavesetting.cfm)
+    val calculate_date = if (cutoffmonth <= p_month) { previouscutofdate.plusMonths(p_month - cutoffmonth) } else { nextcutofdate.minusMonths(cutoffmonth - p_month) }
     val accruetype = p_leavepolicy.set.acc
-    if (p_person.p.edat.get.isAfter(p_cutoffdate.minusMonths(13-p_month).dayOfMonth().withMaximumValue()) && accruetype!="Yearly") {
+    if (p_person.p.edat.get.isAfter(calculate_date.dayOfMonth().withMaximumValue()) && accruetype!="Yearly") {
       // Entitlement is 0 when employee join after cut of month.
       0.0      
-    } else if (p_person.p.edat.get.isAfter(p_cutoffdate.minusMonths(1).dayOfMonth().withMaximumValue()) && accruetype=="Yearly") {
+    } else if (p_person.p.edat.get.isAfter(nextcutofdate.minusMonths(1).dayOfMonth().withMaximumValue()) && accruetype=="Yearly") {
       0.0
     } else {
       val servicemonth = PersonModel.getServiceMonths(p_person)
@@ -791,13 +795,17 @@ object LeaveProfileModel {
   }
     
   // Get entitlement using leave policy
-  // For new leave profile
-  def getMonthEntitlementEarn(p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int, p_cutoffdate:DateTime) = {
+  // For new leave profile  
+  def getMonthEntitlementEarn(p_leavepolicy:LeavePolicy, p_leavesetting:LeaveSetting, p_person:Person, p_month:Int) = {
+    val cutoffmonth = p_leavesetting.cfm
+    val nextcutofdate = LeaveSettingModel.getCutOffDate(p_leavesetting.cfm)
+    val previouscutofdate = LeaveSettingModel.getPreviousCutOffDate(p_leavesetting.cfm)
+    val calculate_date = if (cutoffmonth <= p_month) { previouscutofdate.plusMonths(p_month - cutoffmonth) } else { nextcutofdate.minusMonths(cutoffmonth - p_month) }
     val accruetype = p_leavepolicy.set.acc
-    if (p_person.p.edat.get.isAfter(p_cutoffdate.minusMonths(13-p_month).dayOfMonth().withMaximumValue()) && accruetype!="Yearly") {
+    if (p_person.p.edat.get.isAfter(calculate_date.dayOfMonth().withMaximumValue()) && accruetype!="Yearly") {
       // Entitlement is 0 when employee join after cut of month.
       0.0      
-    } else if (p_person.p.edat.get.isAfter(p_cutoffdate.minusMonths(1).dayOfMonth().withMaximumValue()) && accruetype=="Yearly") {
+    } else if (p_person.p.edat.get.isAfter(nextcutofdate.minusMonths(1).dayOfMonth().withMaximumValue()) && accruetype=="Yearly") {
       0.0
     } else {
       val servicemonth = PersonModel.getServiceMonths(p_person)
