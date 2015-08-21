@@ -88,7 +88,9 @@
 									@if(person.wd.wd6==true) {Sunday}
 								</dd>
 							</dl>
-							@contentRow("Role", if(person.p.rl.toString=="List()"){""}else{person.p.rl.mkString(",")})
+							@if(person.p.rl.toString!="List()") {
+								@contentRow("Role", person.p.rl.mkString(","))
+							}
 						</div>@** /.col-xs-9 **@
 						<div class="col-sm-3">
 							@pbuttons
