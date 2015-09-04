@@ -1,0 +1,55 @@
+New log file opened at Wed Aug 26 16:56:16 SGT 2015 by 7064@APMYLT4019
+Taking next connection to: 55454
+New client attempting to connect on port: 55455-55454
+  Address = /172.20.10.5:55454
+This client on port 55455 has uuid 9609e1d9-9688-47a1-aebf-4059cf3382fa configName activator humanReadableName Activator protocolVersion 3 featureTags Vector()
+Connected Clients: activator-9609e1d9-9688-47a1-aebf-4059cf3382fa
+Taking next connection to: 55454
+New client attempting to connect on port: 55461-55454
+  Address = /172.20.10.5:55454
+Handshake exception on socket: 55461
+sbt.impl.ipc.HandshakeException: Unable to perform handshake
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:46)
+	at sbt.impl.ipc.MultiClientServer.<init>(IPC.scala:150)
+	at sbt.server.SbtServerSocketHandler$$anon$1.run(SbtServerSocketHandler.scala:43)
+Caused by: java.io.EOFException
+	at java.io.DataInputStream.readInt(Unknown Source)
+	at sbt.impl.ipc.Peer.receive(IPC.scala:95)
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:49)
+	... 2 more
+Taking next connection to: 55454
+New client attempting to connect on port: 55462-55454
+  Address = /172.20.10.5:55454
+This client on port 55462 has uuid 321d83da-1c11-44f4-9c5f-389be5e9def7 configName activator humanReadableName Activator protocolVersion 3 featureTags Vector()
+Connected Clients: activator-321d83da-1c11-44f4-9c5f-389be5e9def7
+Taking next connection to: 55454
+New client attempting to connect on port: 55465-55454
+  Address = /172.20.10.5:55454
+Handshake exception on socket: 55465
+sbt.impl.ipc.HandshakeException: Unable to perform handshake
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:46)
+	at sbt.impl.ipc.MultiClientServer.<init>(IPC.scala:150)
+	at sbt.server.SbtServerSocketHandler$$anon$1.run(SbtServerSocketHandler.scala:43)
+Caused by: java.net.SocketException: Software caused connection abort: recv failed
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(Unknown Source)
+	at java.net.SocketInputStream.read(Unknown Source)
+	at java.net.SocketInputStream.read(Unknown Source)
+	at java.io.BufferedInputStream.fill(Unknown Source)
+	at java.io.BufferedInputStream.read(Unknown Source)
+	at java.io.DataInputStream.readInt(Unknown Source)
+	at sbt.impl.ipc.Peer.receive(IPC.scala:95)
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:49)
+	... 2 more
+Taking next connection to: 55454
+New client attempting to connect on port: 55466-55454
+  Address = /172.20.10.5:55454
+This client on port 55466 has uuid dcc31920-b6e2-4bfb-a6ab-daddf174d4f5 configName activator humanReadableName Activator protocolVersion 3 featureTags Vector()
+Connected Clients: activator-321d83da-1c11-44f4-9c5f-389be5e9def7, activator-dcc31920-b6e2-4bfb-a6ab-daddf174d4f5
+Taking next connection to: 55454
+Checking to see if clients are empty...
+No non-daemon clients connected after 3 min. Shutting down.
+Server socket thread exiting.
+0 clients open, will close them...
+All client sockets have been closed.
+Closing the 7064@APMYLT4019 logs at Wed Aug 26 16:59:40 SGT 2015, goodbye.
