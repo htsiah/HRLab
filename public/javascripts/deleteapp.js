@@ -20,7 +20,7 @@ function delApp() {
             },
             cancel: {
                 label: "Cancel",
-                className: "btn btn-mini"
+                className: "btn"
             }
         }
     });
