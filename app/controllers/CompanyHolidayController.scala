@@ -166,12 +166,12 @@ object CompanyHolidayController extends Controller with Secured {
     } yield {
       var companyholidayJSONStr = ""
       var count = 0
-      val fmt = ISODateTimeFormat.dateTime()
+      val fmt = ISODateTimeFormat.date()
       companyholidays.foreach(companyholiday => {
         var title = companyholiday.n 
         var url = "/companyholiday/view/" + companyholiday._id.stringify
-        var start = fmt.print(companyholiday.fdat.get) //choliday.sd.getYear() + "-" + choliday.sd.getMonthOfYear() + "-" + choliday.sd.getDayOfMonth()
-        var end = fmt.print(companyholiday.tdat.get) //choliday.ed.getYear() + "-" + choliday.ed.getMonthOfYear() + "-" + choliday.ed.getDayOfMonth()
+        var start = fmt.print(companyholiday.fdat.get)
+        var end = fmt.print(companyholiday.tdat.get.plusDays(1))
         if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
         companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
         count = count + 1
@@ -186,12 +186,12 @@ object CompanyHolidayController extends Controller with Secured {
     } yield {
       var companyholidayJSONStr = ""
       var count = 0
-      val fmt = ISODateTimeFormat.dateTime()
+      val fmt = ISODateTimeFormat.date()
       companyholidays.foreach(companyholiday => {
         var title = companyholiday.n 
         var url = "/companyholiday/myprofile/view/" + companyholiday._id.stringify
-        var start = fmt.print(companyholiday.fdat.get) //choliday.sd.getYear() + "-" + choliday.sd.getMonthOfYear() + "-" + choliday.sd.getDayOfMonth()
-        var end = fmt.print(companyholiday.tdat.get) //choliday.ed.getYear() + "-" + choliday.ed.getMonthOfYear() + "-" + choliday.ed.getDayOfMonth()
+        var start = fmt.print(companyholiday.fdat.get)
+        var end = fmt.print(companyholiday.tdat.get.plusDays(1))
         if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
         companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
         count = count + 1

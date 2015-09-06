@@ -18,8 +18,6 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.format.DateTimeFormatter
-import org.joda.time.format.DateTimeFormat
 
 object LeaveController extends Controller with Secured {
   
@@ -105,9 +103,9 @@ object LeaveController extends Controller with Secured {
               Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_missingleavepolicy.getOrElse(null)))
             } else if (maybeperson.get.p.edat.get.isAfter(formWithData.fdat.get.plusDays(1))) {
               // restricted apply leave before employment start date.
-              val dtfOut:DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+              val fmt = ISODateTimeFormat.date()
               val replaceMap = Map(
-                  "DATE"-> (dtfOut.print(maybeperson.get.p.edat.get))
+                  "DATE"-> (fmt.print(maybeperson.get.p.edat.get))
               )
               val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
               Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=alert))
@@ -341,7 +339,7 @@ object LeaveController extends Controller with Secured {
   def getApprovedLeaveJSON(p_type:String) = withAuth { username => implicit request => {
     var leavejsonstr = ""
     var count = 0
-    val fmt = ISODateTimeFormat.dateTime()
+    val fmt = ISODateTimeFormat.date()
         
     if (p_type=="my") {
       for {
@@ -351,7 +349,7 @@ object LeaveController extends Controller with Secured {
           val title = leave.pn + " (" + leave.lt + ")"
           val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
           val start = fmt.print(leave.fdat.get)
-          val end = fmt.print(leave.tdat.get)
+          val end = fmt.print(leave.tdat.get.plusDays(1))
           if (count > 0) leavejsonstr = leavejsonstr + ","
           leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
           count = count + 1   
@@ -371,7 +369,7 @@ object LeaveController extends Controller with Secured {
               val title = leave.pn + " (" + leave.lt + ")"
               val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
-              val end = fmt.print(leave.tdat.get)
+              val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","
               leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
               count = count + 1
@@ -388,7 +386,7 @@ object LeaveController extends Controller with Secured {
   def getApprovedLeaveForCompanyViewJSON(p_type:String) = withAuth { username => implicit request => {
     var leavejsonstr = ""
     var count = 0
-    val fmt = ISODateTimeFormat.dateTime()
+    val fmt = ISODateTimeFormat.date()
         
     if (p_type=="my") {
       for {
@@ -398,7 +396,7 @@ object LeaveController extends Controller with Secured {
           val title = leave.pn + " (" + leave.lt + ")"
           val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
           val start = fmt.print(leave.fdat.get)
-          val end = fmt.print(leave.tdat.get)
+          val end = fmt.print(leave.tdat.get.plusDays(1))
           if (count > 0) leavejsonstr = leavejsonstr + ","
           leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
           count = count + 1   
@@ -418,7 +416,7 @@ object LeaveController extends Controller with Secured {
               val title = leave.pn + " (" + leave.lt + ")"
               val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
-              val end = fmt.print(leave.tdat.get)
+              val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","
               leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
               count = count + 1    

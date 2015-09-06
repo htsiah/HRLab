@@ -4,7 +4,7 @@ var Calendar = {
 	companyholidaysource:{
 		url: '/companyholiday/getcompanyholidayjson',
 		type: 'GET',
-		cache: true,
+		cache: false,
 		error: function() {
 			alert('There was an error while fetching company holiday!');
 		},
@@ -14,7 +14,7 @@ var Calendar = {
 	myapprovedleavessource:{
 		url: '/leave/getapprovedleaveforcompanyviewjson/my',
 		type: 'GET',
-		cache: true,
+		cache: false,
 		error: function() {
 			alert('There was an error while fetching your leave!');
 		},
@@ -50,7 +50,7 @@ var Calendar = {
 		this.deptleavessource = {
 			url: this.deptleavesurl,
 			type: 'GET',
-			cache: true,
+			cache: false,
 			error: function() {
 				alert('There was an error while fetching department leave!');
 			},
@@ -84,4 +84,5 @@ $(function(){
 			
 		}
 	})
+	
 });
