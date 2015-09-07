@@ -189,7 +189,6 @@ object LeavePolicyController extends Controller with Secured {
           },
           formWithData => {
             val eligbleleaveentitlement = LeavePolicyModel.sortEligbleLeaveEntitlement(formWithData, request)
-            println(formWithData.set.scal)
             LeavePolicyModel.update(
                 BSONDocument("_id" -> BSONObjectID(p_id)), 
                 formWithData.copy(
