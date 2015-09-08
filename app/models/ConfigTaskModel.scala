@@ -105,6 +105,14 @@ object ConfigTaskModel {
     sys_doc
   }
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   def find(p_query:BSONDocument) = {
     col.find(p_query).cursor[ConfigTask](ReadPreference.primary).collect[List]()
   }

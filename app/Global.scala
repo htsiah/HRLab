@@ -13,6 +13,9 @@ import scala.concurrent.Future
 import jobs._
 import views._
 
+import models._
+import utilities._
+
 object Global extends GlobalSettings {
   
   // 400 - bad request
@@ -36,6 +39,26 @@ object Global extends GlobalSettings {
     
   override def onStart(app: Application) {
     
+    // (Re)Initialize all database references on application start.
+    AuthenticationModel.init()
+    CompanyHolidayModel.init()
+    CompanyModel.init()
+    ConfigKeywordModel.init()
+    ConfigLeavePolicyModel.init()
+    ConfigTaskModel.init()
+    KeywordModel.init()
+    LeaveModel.init()
+    LeavePolicyModel.init()
+    LeaveProfileModel.init()
+    LeaveSettingModel.init()
+    OfficeModel.init()
+    PersonModel.init()
+    TaskModel.init()
+    AlertUtility.init()
+    DbLoggerUtility.init()
+    DocNumUtility.init()
+    MailUtility.init()
+    
     // Parameter 1: initial delat
     // Parameter 2: interval
     Akka.system(app).scheduler.schedule(1 seconds, 10 seconds) {
@@ -51,4 +74,29 @@ object Global extends GlobalSettings {
     }
           	
   }
+  
+  override def onStop(app: Application) {
+    
+    // Shutdown database connection
+    AuthenticationModel.close()
+    CompanyHolidayModel.close()
+    CompanyModel.close()
+    ConfigKeywordModel.close()
+    ConfigLeavePolicyModel.close()
+    ConfigTaskModel.close()
+    KeywordModel.close()
+    LeaveModel.close()
+    LeavePolicyModel.close()
+    LeaveProfileModel.close()
+    LeaveSettingModel.close()
+    OfficeModel.close()
+    PersonModel.close()
+    TaskModel.close()
+    AlertUtility.close()
+    DbLoggerUtility.close()
+    DocNumUtility.close()
+    MailUtility.close()
+
+  }  
+   
 }

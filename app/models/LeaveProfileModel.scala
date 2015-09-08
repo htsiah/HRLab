@@ -270,6 +270,14 @@ object LeaveProfileModel {
     sys_doc
   }
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   // Soft deletion by setting deletion flag in document
   def remove(p_query:BSONDocument, p_request:RequestHeader) = {
     for {

@@ -113,6 +113,14 @@ object KeywordModel {
     sys_doc
   }
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+    
   // Insert new document
   def insert(p_doc:Keyword, p_eid:String="", p_request:RequestHeader=null)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
@@ -121,7 +129,7 @@ object KeywordModel {
       case Success(lastError) => {}
     }
   }
-	
+  	
   // Update document
   def update(p_query:BSONDocument, p_doc:Keyword, p_request:RequestHeader) = {
     val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))

@@ -56,6 +56,14 @@ object AlertUtility {
   private val db = connection.get.db(dbname)
   private val col = db.collection("alert")
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   def findOne(p_query:BSONDocument) = {
     col.find(p_query).one[Alert]
   }

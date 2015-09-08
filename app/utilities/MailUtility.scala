@@ -63,6 +63,14 @@ object MailUtility {
   private val db = connection.get.db(dbname)
   private val col = db.collection("mailtemplate")
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   def findOne(p_query:BSONDocument) = {
     col.find(p_query).one[MailTemplate]
   }

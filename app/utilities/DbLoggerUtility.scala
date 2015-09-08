@@ -71,6 +71,15 @@ object DbLoggerUtility {
   private val authenticationCol = db.collection("authentication")
   private val applicationCol = db.collection("application")
   
+  def init() = {
+    println("Initialized Db Collection: " + authenticationCol.name)
+    println("Initialized Db Collection: " + applicationCol.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   def debug(p_msg:String, p_request:RequestHeader=null) = {
     if (dbloggerApp=="DEBUG") {
       val future = if (p_request != null && !(p_request.session.isEmpty)) {

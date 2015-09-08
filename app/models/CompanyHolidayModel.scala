@@ -124,6 +124,14 @@ object CompanyHolidayModel {
     sys_doc
   }
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   def insert(p_doc:CompanyHoliday, p_eid:String="", p_request:RequestHeader=null)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
     future.onComplete {

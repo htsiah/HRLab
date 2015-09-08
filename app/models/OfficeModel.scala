@@ -132,6 +132,14 @@ object OfficeModel {
     sys_doc
   }
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   // Insert new document
   def insert(p_doc:Office, p_eid:String="", p_request:RequestHeader=null)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))

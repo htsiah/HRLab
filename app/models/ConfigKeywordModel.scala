@@ -105,6 +105,14 @@ object ConfigKeywordModel {
     ) 
     sys_doc
   }
+    
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
   
   def find(p_query:BSONDocument) = {
     col.find(p_query).cursor[ConfigKeyword](ReadPreference.primary).collect[List]()

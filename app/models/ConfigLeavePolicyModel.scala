@@ -144,6 +144,14 @@ object ConfigLeavePolicyModel {
     sys_doc
   }
   
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
+  
   def find(p_query:BSONDocument) = {
     col.find(p_query).cursor[ConfigLeavePolicy](ReadPreference.primary).collect[List]()
   }

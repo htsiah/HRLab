@@ -119,6 +119,14 @@ object TaskModel {
     ) 
     sys_doc
   }
+  
+  def init() = {
+    println("Initialized Db Collection: " + col.name)
+  }
+  
+  def close() = {
+    driver.close()
+  }
     
   // Update document
   def update(p_query:BSONDocument,p_doc:Task,p_request:RequestHeader) = {
