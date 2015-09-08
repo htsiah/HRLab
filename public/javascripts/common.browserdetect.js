@@ -242,7 +242,7 @@
     // Graded Browser Support
     // http://developer.yahoo.com/yui/articles/gbs
     if (result.msedge ||
-        (result.msie && result.version >= 10) ||
+        (result.msie && result.version >= 9) ||
         // (result.yandexbrowser && result.version >= 15) ||
         (result.chrome && result.version >= 45) ||
         (result.firefox && result.version >= 40.0) ||
@@ -253,7 +253,7 @@
         ) {
       result.a = t;
     }
-    else if ((result.msie && result.version < 10) ||
+    else if ((result.msie && result.version < 9) ||
         (result.chrome && result.version < 45) ||
         (result.firefox && result.version < 40.0) ||
         (result.safari && result.version < 8) ||

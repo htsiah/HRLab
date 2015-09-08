@@ -32,14 +32,17 @@
 				</h4>
 				@layout.ace.alert(alert)
 				<div class="space-6"></div>
-				<div>Enter your email address below. We'll look for your account and send you a password reset email.</div>
+				<div>Enter your email and to receive instructions.</div>
 				@helper.form(
 					action = routes.AuthenticationController.resetPost,
 					'id -> "resetform"
 				) {
 					<fieldset>
 						<label class="block clearfix">
-							<input type="text" name="email" id="email" class="form-control" placeholder="Email address" data-toggle="tooltip" title="Email address">
+							<span class="block input-icon input-icon-right">
+								<input type="text" name="email" id="email" class="form-control" placeholder="Email address" data-toggle="tooltip" title="Email address">
+								<i class="ace-icon fa fa-envelope"></i>
+							</span>
 						</label>
 				 		<div class="clearfix">
 							<button type="submit" class="form-control pull-left btn btn-sm btn-danger">
