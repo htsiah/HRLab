@@ -9,7 +9,7 @@ import play.api.libs.json._
 
 import scala.concurrent.{Future, Await}
 
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, LeavePolicyModel, LeaveProfileModel, LeaveSettingModel, LeaveModel, CompanyModel, TaskModel}
+import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, CompanyHolidayModel, LeavePolicyModel, LeaveProfileModel, LeaveSettingModel, LeaveModel, CompanyModel, TaskModel}
 import utilities.{MailUtility, Tools}
 import reactivemongo.bson.BSONDocument
 
@@ -48,6 +48,7 @@ object DeleteAppController extends Controller with Secured {
             LeaveSettingModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             LeavePolicyModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             KeywordModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
+            CompanyHolidayModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             TaskModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             
             // Send email
