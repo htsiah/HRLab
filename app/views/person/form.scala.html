@@ -37,9 +37,11 @@
 
 @buttons = {
 	@if(oid=="") {
-		<a href="javascript:var update=false;$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
+		<script>var update=false;</script>
+		<a href="#" onclick="$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
 	} else {
-		<a href="javascript:var update=true;$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
+		<script>var update=true;</script>
+		<a href="#" onclick="$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
 	}
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
@@ -153,7 +155,7 @@
 			<dt><label>Role</label></dt>
 			<dd>
 				@if(isLastAdmin) {
-					<dd class="">Only admin</dd>
+					Only admin
 				} else {
 					<div class="checkbox" style="display: inline-block;">
 						<label>

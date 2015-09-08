@@ -32,7 +32,7 @@
 @inlinestyle = {}
 
 @buttons = {
-	<a href="javascript:$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
+	<a href="#" onclick="$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
 
@@ -51,7 +51,6 @@
 		action = routes.PersonController.myprofileupdate, 
 		'id -> "personform"
 	) {
-		
 		@inputText(person("p")("fn"), '_label->"First Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@inputText(person("p")("ln"), '_label->"Last Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		<dl class="dl-horizontal">
@@ -129,7 +128,7 @@
 			<dt><label>Role</label></dt>
 			<dd>
 				@if(isLastAdmin) {
-					<dd class="">Only admin</dd>
+					Only admin
 				} else {
 					<div class="checkbox" style="display: inline-block;">
 						<label>

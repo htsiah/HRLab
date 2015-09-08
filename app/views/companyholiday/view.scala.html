@@ -45,6 +45,6 @@
 	@contentRow("State", companyholiday.st.mkString(", "))
 	@contentRow("Date From", companyholiday.fdat.get.toLocalDate().toString())
 	@contentRow("Date To", companyholiday.tdat.get.toLocalDate().toString())
-	@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>This holiday will be permanently removed from the system and cannot be recovered.</p><p>Notes:<ul><li>Utilized on approved leave that fall on this holiday will not be re-calculate as result the utilized calculation might not be accurate.</li></ul></p></div>"))
+	@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>This holiday will be permanently removed from the system and cannot be recovered.</p><p>Notes:</p><ul><li>Utilized on approved leave that fall on this holiday will not be re-calculate as result the utilized calculation might not be accurate.</li></ul></div>"))
 
 }

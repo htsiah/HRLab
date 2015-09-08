@@ -55,7 +55,7 @@
 						case _ => {}
 					}
 				</span>
-				&nbsp<a href="#" title="Edit"><i class="ace-icon blue fa fa-pencil bigger-120" id="leave-cut-off-pencil"></i></a>
+				&nbsp;<a href="#" title="Edit"><i class="ace-icon blue fa fa-pencil bigger-120" id="leave-cut-off-pencil"></i></a>
 			</div>
 			<div id="leave-cut-off-edit" style="display:none">
 				<select id="leave-cut-off-field">
@@ -72,8 +72,8 @@
 					<option value="11" @checkSelected(leavecutoffmonth.toString, "11")>1st November</option>
 					<option value="12" @checkSelected(leavecutoffmonth.toString, "12")>1st December</option>
 				</select>
-				&nbsp<a href="#" title="Update"><i class="ace-icon green fa fa-check bigger-120" id="leave-cut-off-check"></i></a>
-				&nbsp<a href="#" title="Cancel"><i class="ace-icon red fa fa-times bigger-120" id="leave-cut-off-times"></i></a>
+				&nbsp;<a href="#" title="Update"><i class="ace-icon green fa fa-check bigger-120" id="leave-cut-off-check"></i></a>
+				&nbsp;<a href="#" title="Cancel"><i class="ace-icon red fa fa-times bigger-120" id="leave-cut-off-times"></i></a>
 			</div>
 		</dd>	
 	</dl>
@@ -114,6 +114,6 @@
 			</tbody>
 		</table>
 	</div>
-	@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>Selected leave policy will be permanently deleted and cannot be recovered.</p><p>Notes:<ul><li>Leave profile that linked to this leave policy will be deleted.</li><li>Leave that linked to this leave policy will be locked.</li><li>No workflow action can be perform on lock document.</li></ul></p></div>"))
+	@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>Selected leave policy will be permanently deleted and cannot be recovered.</p><p>Notes:</p><ul><li>Leave profile that linked to this leave policy will be deleted.</li><li>Leave that linked to this leave policy will be locked.</li><li>No workflow action can be perform on lock document.</li></ul></div>"))
 	@layout.ace.dialogbox("dialog-cutoff-change-confirm", Html("<p>Updating cut off month will re-calculate all employee’s leave earned in leave profiles.</p><p>Make sure you understand what you are doing. If not, please advise support@hrsifu.my.</p><div class='hr hr-12 hr-double'></div><p class='center'><i class='ace-icon fa fa-hand-o-right blue bigger-120'></i> Are you sure you want to update cut off month?</p>"))
 }

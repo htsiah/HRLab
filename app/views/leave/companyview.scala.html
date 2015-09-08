@@ -35,7 +35,7 @@
 
 @contentRow(label: String, contentVal: String, cssClass:String="") = {
 	@if(contentVal.trim() == "") {
-		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp</dd></dl>
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp;</dd></dl>
 	} else {
 		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">@contentVal</dd></dl>
 	}
