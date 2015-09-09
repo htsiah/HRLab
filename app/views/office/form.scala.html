@@ -26,7 +26,7 @@
 			"checkExistOfficeName",
 			function(value) {
 				var result = true
-				var request = $.ajax({url:'/office/checkexistofficename?p_id=@oid&p_officename='+value, type: 'GET', async: true, dataType: 'json'});
+				var request = $.ajax({url:'/office/checkexistofficename?p_id=@oid&p_officename='+value, type: 'GET', async: false, dataType: 'json'});
 				request.done(function(data) {
 					if(data.status==true){
 						result = false;
@@ -52,7 +52,7 @@
 @inlinestyle = {}
 
 @buttons = {
-	<a href="javascript:$('#officeform').submit();" class="btn btn-sm btn btn-block">Save</a>
+	<a href="#" onclick="$('#officeform').submit();" class="btn btn-sm btn btn-block">Save</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>
 }
 
