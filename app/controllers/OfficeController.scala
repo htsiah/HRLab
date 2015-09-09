@@ -160,8 +160,6 @@ object OfficeController extends Controller with Secured {
   }}
     
   def checkoffice(p_id:String, p_officename:String) = withAuth { username => implicit request => {
-    println(p_id);
-    println(p_officename);
     val f_office = if (p_id == "") {
       OfficeModel.findOne(BSONDocument("n" -> p_officename), request)
     } else {
