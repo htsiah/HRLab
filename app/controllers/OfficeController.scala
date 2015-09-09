@@ -158,8 +158,10 @@ object OfficeController extends Controller with Secured {
       }
     }
   }}
-  
-  def checkExistOfficeName(p_id:String, p_officename:String) = withAuth { username => implicit request => {
+    
+  def checkoffice(p_id:String, p_officename:String) = withAuth { username => implicit request => {
+    println(p_id);
+    println(p_officename);
     val f_office = if (p_id == "") {
       OfficeModel.findOne(BSONDocument("n" -> p_officename), request)
     } else {
@@ -167,8 +169,8 @@ object OfficeController extends Controller with Secured {
     }
     f_office.map( office =>
       office.isDefined match {
-      	case true => Ok(Json.parse("""{"status":true}""")).as("application/json")
-      	case _ =>Ok(Json.parse("""{"status":false}""")).as("application/json")
+        case true => Ok("false").as("text/plain")
+        case _ => Ok("true").as("text/plain")
       }
     )
   }}

@@ -21,7 +21,16 @@ $(function(){
 			"p.em": {
 				required: true,
 				email: true,
-				checkEmailExist: true
+				remote: {
+					url: "/signup/checkemail",
+			        type: "get",
+			        cache: false,
+			        data: {
+			        	p_email: function() {
+			        		return $( "#p_em" ).val();
+			        	}
+			        }
+				}
 			},
 			"p.pt": "required",
 			"p.mgrid": "required",
@@ -40,7 +49,7 @@ $(function(){
 			"p.em": {
 				required: "Please enter an email address.",
 				email: "Please enter a valid email address.",
-				checkEmailExist: "Someone already used this email. Try another one?"
+				remote: "Someone already used this email. Try another one?"
 			},
 			"p.pt": "Please select position.",
 			"p.mgrid": "Please select manager.",
@@ -91,26 +100,6 @@ $(function(){
 		"Please enter a valid date format yyyy-mm-dd."
 	);
 	
-	$.validator.addMethod(
-		"checkEmailExist",
-		function(value) {
-			var result = true
-			var request = $.ajax({url:'/signup/checkemailexistjson?p_email='+value, type: 'GET', async: false, dataType: 'json'});
-			request.done(function(data) {
-				if(data.status==true){
-					result = false;
-				}else{
-					result = true;
-				}
-		    });
-		    request.fail(function(jqXHR, textStatus) {
-		    	console.log("fail " + textStatus);
-			  	result = true;
-			});
-			return result
-		},
-		"Someone already used this email. Try another one?"
-	);
 });
 
 $("#rl_admin").click(function(){

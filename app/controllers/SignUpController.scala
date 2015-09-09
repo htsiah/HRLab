@@ -234,14 +234,14 @@ object SignUpController extends Controller {
         }     
     )    
   }}
-  
-  def checkemailexistjson(p_email:String) = Action.async { implicit request =>
+    
+  def checkemail(p_email:String) = Action.async { implicit request =>
     AuthenticationModel.findOneByEmail(p_email.toLowerCase()).map( email => {
       email.isDefined match {
-      	case true => Ok(Json.parse("""{"status":true}""")).as("application/json")
-      	case _ =>Ok(Json.parse("""{"status":false}""")).as("application/json")
+        case true => Ok("false").as("text/plain")
+        case _ =>Ok("true").as("text/plain")
       }
     })
   }
-    
+  
 }

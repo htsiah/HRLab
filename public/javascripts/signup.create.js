@@ -8,7 +8,16 @@ $(function(){
 			email: {
 				required: true,
 				email: true,
-				checkEmailExist: true
+				remote: {
+					url: "/signup/checkemail",
+			        type: "get",
+			        cache: false,
+			        data: {
+			        	p_email: function() {
+			        		return $( "#email" ).val();
+			        	}
+			        }
+				}
 			},
 			gender: "required",
 			marital: "required",
@@ -20,7 +29,7 @@ $(function(){
 			email: {
 				required: "Please enter an email address.",
 				email: "Please enter a valid email address.",
-				checkEmailExist: "Someone already used this email. Try another one?"
+				remote: "Someone already used this email. Try another one?"
 			},
 			gender: "Please select your gender.",
 			marital: "Please select your marital status.",
@@ -31,25 +40,4 @@ $(function(){
 		 }
 	});
 	
-	$.validator.addMethod(
-		"checkEmailExist",
-		function(value) {
-			var result = true
-			var request = $.ajax({url:'/signup/checkemailexistjson?p_email='+value, type: 'GET', async: false, dataType: 'json'});
-			request.done(function(data) {
-				if(data.status==true){
-					result = false;
-				}else{
-					result = true;
-				}
-		    });
-		    request.fail(function(jqXHR, textStatus) {
-		    	console.log("fail " + textStatus);
-			  	result = true;
-			});
-			return result
-		},
-		"Someone already used this email. Try another one?"
-	);
-
 });

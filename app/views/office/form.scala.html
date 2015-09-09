@@ -22,26 +22,11 @@
 @inlinejs = {
 	<script src="@routes.Assets.at("javascripts/office.form.js")" type="text/javascript"></script>
 	<script>
-		$.validator.addMethod(
-			"checkExistOfficeName",
-			function(value) {
-				var result = true
-				var request = $.ajax({url:'/office/checkexistofficename?p_id=@oid&p_officename='+value, type: 'GET', async: false, dataType: 'json'});
-				request.done(function(data) {
-					if(data.status==true){
-						result = false;
-					}else{
-						result = true;
-					}
-		   	 	});
-		   	 	request.fail(function(jqXHR, textStatus) {
-		   	 		console.log("Fail function checkExistOfficeName: " + textStatus);
-					result = true;
-				});
-				return result
-			},
-			"Office name already been used."
-		);
+		@if(oid==""){
+			var oid = "";
+		} else {
+			var oid = "@oid";
+		}
 	</script>
 }
 

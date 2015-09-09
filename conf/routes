@@ -22,7 +22,7 @@ GET		/unsupportedbrowser			controllers.ErrorController.unsupportedbrowser
 # Sign Up
 GET		/signup/create					controllers.SignUpController.create
 POST	/signup/insert					controllers.SignUpController.insert
-GET		/signup/checkemailexistjson		controllers.SignUpController.checkemailexistjson(p_email:String)
+GET		/signup/checkemail				controllers.SignUpController.checkemail(p_email:String)
 
 # Dashboard
 GET		/dashboard					controllers.DashboardController.index
@@ -113,7 +113,7 @@ GET		/office/edit/:p_id					controllers.OfficeController.edit(p_id:String)
 POST	/office/update						controllers.OfficeController.update(p_id:String)
 GET		/office/delete/:p_officename		controllers.OfficeController.delete(p_officename:String)
 GET		/office/view						controllers.OfficeController.view(p_id:String)
-GET		/office/checkexistofficename		controllers.OfficeController.checkExistOfficeName(p_id:String, p_officename:String)
+GET		/office/checkoffice					controllers.OfficeController.checkoffice(p_id:String, p_officename:String)
 GET		/office/isUsedJSON/:p_officename	controllers.OfficeController.isUsedJSON(p_officename:String)
 
 # Report

@@ -19,11 +19,6 @@ $(function(){
 		rules: {
 			"p.fn": "required",
 			"p.ln": "required",
-			"p.em": {
-				required: true,
-				email: true,
-				checkEmailExist: true
-			},
 			"p.pt": "required",
 			"p.mgrid": "required",
 			"p.g": "required",
@@ -38,11 +33,6 @@ $(function(){
 		messages: {
 			"p.fn": "Please enter first name.",
 			"p.ln": "Please enter last name.",
-			"p.em": {
-				required: "Please enter an email address.",
-				email: "Please enter a valid email address.",
-				checkEmailExist: "Someone already used this email. Try another one?"
-			},
 			"p.pt": "Please select position.",
 			"p.mgrid": "Please select manager.",
 			"p.g": "Please select gender.",
@@ -88,26 +78,6 @@ $(function(){
 		"Please enter a valid date format yyyy-mm-dd."
 	);
 	
-	$.validator.addMethod(
-		"checkEmailExist",
-		function(value) {
-			var result = true
-			var request = $.ajax({url:'/signup/checkemailexistjson?email='+value, type: 'GET', async: false, dataType: 'json'});
-			request.done(function(data) {
-				if(data.status==true){
-					result = false;
-				}else{
-					result = true;
-				}
-		    });
-		    request.fail(function(jqXHR, textStatus) {
-		    	console.log("fail " + textStatus);
-			  	result = true;
-			});
-			return result
-		},
-		"Someone already used this email. Try another one?"
-	);
 });
 
 $("#rl_admin").click(function(){
@@ -117,28 +87,3 @@ $("#rl_admin").click(function(){
 		$("#p_rl").val("");
 	}
 });
-
-function Test(){
-	$( "#dialog-save-confirm" ).removeClass('hide').dialog({
-		resizable: false,
-		modal: true,
-		title: "<div class='widget-header'><h4 class='smaller'>Confirmation</h4></div>",
-		title_html: true,
-		buttons: [
-			{
-				html: "Yes",
-				"class" : "btn btn-primary btn-mini",
-				click: function() {
-					form.submit();
-				}
-			},
-			{
-				html: "Cancel",
-				"class" : "btn btn-mini",
-				click: function() {
-					$( this ).dialog( "close" );
-				}
-			}
-		]
-	});
-}
