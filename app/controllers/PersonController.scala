@@ -33,7 +33,7 @@ object PersonController extends Controller with Secured{
               "off" -> text,
               "edat" -> optional(jodaDate),
               "rl" -> text
-          ){(fn,ln,em,pt,mgrid,g,ms,dpm,off,edat,rl)=>Profile(fn,ln,em,pt,mgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
+          ){(fn,ln,em,pt,mgrid,g,ms,dpm,off,edat,rl)=>Profile(fn,ln,em.toLowerCase().trim(),pt,mgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
           {profile:Profile => Some(profile.fn,profile.ln,profile.em,profile.pt,profile.mgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
           "wd" -> mapping(
               "wd1" -> boolean,
