@@ -362,25 +362,25 @@ object LeaveProfileModel {
           }
         }
       }
-      val balance = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+      val balance = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
       val cbalance = leavepolicy.set.acc match {
         case "No accrue" => balance
         case "Monthly - utilisation based on earned" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to cut off.
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           } else {
             // Earn calculate from previous cut of date to cut off.
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           }
         }
         case "Monthly - utilisation based on closing balance" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
             // Earn calculate from join date to cut off.
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           } else {
             // Earn calculate from previous cut of date to cut off.
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           }
         }
         case "Yearly" => balance
@@ -457,21 +457,21 @@ object LeaveProfileModel {
           }
         }
       }
-      val balance = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+      val balance = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
       val cbalance = leavepolicy.set.acc match {
         case "No accrue" => balance
         case "Monthly - utilisation based on earned" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           } else {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           }
         }
         case "Monthly - utilisation based on closing balance" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           } else {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           }
         }
         case "Yearly" => balance
@@ -549,21 +549,21 @@ object LeaveProfileModel {
           }
         }
       }
-      val balance = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+      val balance = leaveearned + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
       val cbalance = leavepolicy.set.acc match {
         case "No accrue" => balance
         case "Monthly - utilisation based on earned" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           } else {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           }
         }
         case "Monthly - utilisation based on closing balance" => {
           if (person.p.edat.get.isAfter(previouscutoffdate)) {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, person.p.edat.get, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           } else {
-            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp
+            this.getTotalMonthlyEntitlementEarnUntilCutOff(cutoffdate, previouscutoffdate, p_doc, leavepolicy, leavesetting, person) + p_doc.cal.adj - p_doc.cal.uti + p_doc.cal.cf - p_doc.cal.cfuti - p_doc.cal.cfexp - p_doc.cal.papr
           }
         }
         case "Yearly" => balance
