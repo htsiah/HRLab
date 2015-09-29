@@ -63,32 +63,7 @@ $(function(){
 			}
 		},		 
 		submitHandler: function(form) {
-			if ( update ) {
-				$( "#dialog-save-confirm" ).removeClass('hide').dialog({
-					resizable: false,
-					modal: true,
-					title: "<div class='widget-header'><h4 class='smaller'>Confirmation</h4></div>",
-					title_html: true,
-					buttons: [
-						{
-							html: "Yes",
-							"class" : "btn btn-primary btn-mini",
-							click: function() {
-								form.submit();
-							}
-						},
-						{
-							html: "Cancel",
-							"class" : "btn btn-mini",
-							click: function() {
-								$( this ).dialog( "close" );
-							}
-						}
-					]
-				});
-			} else {
-				form.submit();
-			}
+			form.submit();
 		 }
 	});
 	
