@@ -35,10 +35,12 @@
 @inlinestyle = {}
 
 @buttons = {
-	<div class="well">
-		<h4 class="green smaller lighter">Notes</h4>
-		* - Updating employee's position, gender, marital status and join date would re-compute leave profiles.
-	</div>
+	@if(oid!=""){
+		<div class="well">
+			<h4 class="green smaller lighter">Notes:</h4>
+			Updating position, gender, marital status and join date would re-compute leave profiles.
+		</div>
+	}
 	<a href="#" onclick="$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
@@ -81,18 +83,18 @@
 				<dd class="">@person("p")("em").value</dd>
 			</dl>
 		}
-		@select(person("p")("pt"), options = options(positions.map(position=>position)), '_label -> "Position *",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(person("p")("pt"), options = options(positions.map(position=>position)), '_label -> "Position",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("mgrid"), options=persons.map(person=>person._id.stringify->{person.p.fn + " " + person.p.ln}),
 			'_default -> "Please select",
 			'_label -> "Manager",
 			'_showConstraints -> false,
 			'_class->"dl-horizontal", 
 			'class->"form-control")	
-		@select(person("p")("g"), options = Seq("Male"->"Male","Female"->"Female"), '_label -> "Gender *",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		@select(person("p")("ms"), options = Seq("Single"->"Single","Married"->"Married"), '_label -> "Marital Status *",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(person("p")("g"), options = Seq("Male"->"Male","Female"->"Female"), '_label -> "Gender",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(person("p")("ms"), options = Seq("Single"->"Single","Married"->"Married"), '_label -> "Marital Status",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("dpm"), options = options(departments.map(department=>department)), '_label -> "Department",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("off"), options = options(offices.map(office=>office)), '_label -> "Office",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		@input(person("p")("edat"), '_label->"Join Date *", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+		@input(person("p")("edat"), '_label->"Join Date", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     	<div class="input-group">
     		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="yyyy-mm-dd" @toHtmlArgs(args)>
 				<span class="input-group-addon">
