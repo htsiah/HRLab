@@ -53,6 +53,7 @@
 	@contentRow("Date To", leave.tdat.get.toLocalDate().toString())
 	@contentRow("Utilized", leave.uti.toString())
 	@contentRow("Carry Forward Utilized", leave.cfuti.toString())
-	@contentRow("Reason", leave.r)
-	
+	@if(leave.r.toString()!="") {
+		@contentRow("Reason", leave.r)								
+	}
 }
