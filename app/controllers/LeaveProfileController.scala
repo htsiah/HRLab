@@ -18,6 +18,8 @@ import utilities.{System, AlertUtility, Tools}
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument,BSONArray}
 
+case class LeaveProfileScope(n: String)
+
 object LeaveProfileController extends Controller with Secured {
   
   val leaveprofileform = Form(
@@ -90,6 +92,12 @@ object LeaveProfileController extends Controller with Secured {
             leaveprofile.sys)      
       }
   )
+  
+  implicit val leaveprofilescopeWrites = new Writes[LeaveProfileScope] {
+    def writes(leaveprofilescope: LeaveProfileScope) = Json.obj(
+        "n" -> leaveprofilescope.n
+    )
+  }
   
   def create(p_pid:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
@@ -533,6 +541,29 @@ object LeaveProfileController extends Controller with Secured {
           Ok(json).as("application/json")
       })
     }
+ }}
+ 
+ def getLeaveProfile(p_pid:String) = withAuth { username => implicit request => {
+   
+   if(request.session.get("roles").get.contains("Admin")){
+     for {
+       leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid" -> p_pid), request)
+     } yield {
+       var list: List[LeaveProfileScope] = List()
+       render {
+         case Accepts.Html() => Ok(views.html.error.unauthorized())
+         case Accepts.Json() => {
+           leaveprofiles.map { leaveprofile => {
+             list = list ::: List(LeaveProfileScope(leaveprofile.lt))
+           }}
+           Ok(Json.toJson(list))
+         }
+       }
+     }
+   } else {
+     Future.successful(Ok(views.html.error.unauthorized()))
+   }
+   
  }}
     
 }

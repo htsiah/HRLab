@@ -8,17 +8,53 @@ $(function(){
 		todayHighlight: true
 	})
 		
-	//show datepicker when clicking on the icon
+	// show datepicker when clicking on the icon
 	.next().on(ace.click_event, function(){
 		$(this).prev().focus();
 	});
     
+    // Bind Applicant field 
+    $(document).on('change', '#pid', function(e) {
+    	var selperson = this.options[this.selectedIndex].value;
+    	if (selperson == "") {
+			$('#lt option').remove();
+			$('#lt').append( new Option("Please select","") );
+    		$("#dt").removeAttr("disabled");
+    	} else {
+    		$.ajax({
+    			url: "/leaveprofile/getleaveprofile/" + selperson,
+    			dataType: "json",
+    			beforeSend: function(){
+    				loader.on();
+    			},
+    			success: function(data){
+    				$('#lt option').remove();
+    				$('#lt').append( new Option("Please select","") );
+    				$.each(data, function(key, val) {
+    					$('#lt').append( new Option(val.n,val.n) );
+    				});
+    				$("#dt").removeAttr("disabled");
+    				loader.off();
+    			},
+    			error: function(xhr, status, error){
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.")
+    				loader.off();
+    			}
+    			
+    		})
+    	}
+    })
+
     // Bind leave type field 
     $("#lt").change(function() {
+    	var selectedApplicant = $( "#pid option:selected" ).val();
     	var selectedLT = $( "#lt option:selected" ).text();
 		$.ajax({
-			url: "/leavepolicy/getdaytypejson/" + selectedLT,
-			contentType: "application/json; charset=utf-8",
+			url: "/leavepolicy/getdaytype/" + selectedApplicant + "/" + selectedLT,
+			dataType: "json",
+			beforeSend: function(){
+				loader.on();
+			},
 			success: function(data){
 				if (data.daytype == "Full day only") {
 					$("#dt").attr("disabled", "disabled");
@@ -27,14 +63,16 @@ $(function(){
 				} else {
 					$("#dt").removeAttr("disabled");
 				}
+				loader.off();
 			},
 			error: function(xhr, status, error){
-				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.")
+				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+				loader.off();
 			},
 		});
     });
     
-	// Bind date type field 
+	// Bind day type field 
 	$(document).on('change', '#dt', function(e) {
 		var seldatetype = this.options[this.selectedIndex].value;
 		if (seldatetype=="1st half" || seldatetype=="2nd half") {
@@ -50,6 +88,7 @@ $(function(){
 		$("#tdat").val($("#fdat").val());
 	})
 	
+	// Validation for form
 	$.validator.addMethod(
 		"date", 
 		function(value, element) {
@@ -57,7 +96,7 @@ $(function(){
 		}, 
 		"Please enter a valid date format yyyy-mm-dd."
 	);
-	
+		
 	$.validator.addMethod(
 		"checkDate",
 		function(value,element){
@@ -72,12 +111,12 @@ $(function(){
 		},
 		"Date to should greater than date from."
 	);
-	
-	// Validation for form
-	$("#leaveform").validate({
+		
+	$("#leaveonbehalfform").validate({
 		debug: false,
 		onkeyup: false,
 		rules: {
+			pid: "required",
 			lt: "required",
 			fdat: {
 				required: true,
@@ -90,6 +129,7 @@ $(function(){
 			}
 		},
 		messages: {
+			pid: "Please select applicant",
 			lt: "Please select a leave type",
 			fdat: {
 				required: "Please enter the date from.",
@@ -112,5 +152,5 @@ $(function(){
 
 // Form submit function
 var handleSubmit = function() {
-	$('#leaveform').submit();	
+	$('#leaveonbehalfform').submit();	
 }

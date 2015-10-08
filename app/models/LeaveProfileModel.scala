@@ -55,7 +55,7 @@ case class LeaveProfileMonthEarn (
     
 object LeaveProfileModel {
 
-    // Use Reader to deserialize document automatically
+  // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
     def read(doc: BSONDocument): System = {
       System(

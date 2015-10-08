@@ -68,6 +68,10 @@ GET		/leave/company/view/:p_id								controllers.LeaveController.companyview(p_
 GET		/leave/getapprovedleavejson/:p_type						controllers.LeaveController.getApprovedLeaveJSON(p_type)
 GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
 
+# Leave - Apply On Behalf
+GET		/leaveonbehalf/create											controllers.LeaveOnBehalfController.create
+POST	/leaveonbehalf/insert											controllers.LeaveOnBehalfController.insert
+
 # Leave Profile
 GET		/leaveprofile/create										controllers.LeaveProfileController.create(p_pid:String)
 POST	/leaveprofile/insert										controllers.LeaveProfileController.insert(p_pid:String)
@@ -82,6 +86,7 @@ GET		/leaveprofile/myprofile/edit								controllers.LeaveProfileController.mypr
 POST	/leaveprofile/myprofile/update								controllers.LeaveProfileController.myprofileupdate(p_id:String)
 GET		/leaveprofile/myprofile/view								controllers.LeaveProfileController.myprofileview(p_id:String)
 GET		/leaveprofile/myprofile/delete/:p_id/:p_lt/:p_pid			controllers.LeaveProfileController.myprofiledelete(p_id:String, p_lt:String, p_pid:String)
+GET		/leaveprofile/getleaveprofile/:p_pid						controllers.LeaveProfileController.getLeaveProfile(p_pid:String)
 
 # Leave Setting
 GET		/leavesetting					controllers.LeaveSettingController.index
@@ -96,6 +101,7 @@ GET		/leavepolicy/delete/:p_id/:p_lt/:p_pt			controllers.LeavePolicyController.d
 GET		/leavepolicy/view								controllers.LeavePolicyController.view(p_id:String)
 # GET		/leavepolicy/getLeaveEntitlement/:p_lt/:p_pt	controllers.LeavePolicyController.getLeaveEntitlement(p_lt:String, p_pt:String)
 GET		/leavepolicy/getdaytypejson/:p_lt				controllers.LeavePolicyController.getDayTypeJSON(p_lt:String)
+GET		/leavepolicy/getdaytype/:p_pid/:p_lt			controllers.LeavePolicyController.getDayType(p_pid:String, p_lt:String)
 
 # Keyword
 GET		/keyword					controllers.KeywordController.index
