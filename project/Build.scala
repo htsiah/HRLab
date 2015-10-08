@@ -12,7 +12,7 @@ object ApplicationBuild extends Build {
       "com.typesafe.play" %% "play-mailer" % "3.0.1"
   )
   
-  val main = Project(appName, file(".")).enablePlugins(play.PlayScala).settings(
+  lazy val main = Project(appName, file(".")).enablePlugins(play.PlayScala).settings(
     version := appVersion,
     scalaVersion := "2.11.6",
     scalacOptions ++= Seq("-feature"),
