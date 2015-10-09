@@ -437,10 +437,15 @@ object LeaveProfileController extends Controller with Secured {
   def myprofileview(p_id:String) = withAuth { username => implicit request => {
     for {
       maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request)
     } yield {
-      maybeleaveprofile.map( leaveprofile => {
-        Ok(views.html.leaveprofile.myprofileview(leaveprofile))
-    }).getOrElse(NotFound)
+      if(request.session.get("id").get == maybeperson.get._id.stringify){
+        maybeleaveprofile.map( leaveprofile => {
+          Ok(views.html.leaveprofile.myprofileview(leaveprofile))
+        }).getOrElse(NotFound) 
+      } else {
+        Ok(views.html.error.unauthorized())
+      }
     }
   }}
   
