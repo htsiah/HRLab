@@ -265,16 +265,17 @@ object LeaveProfileController extends Controller with Secured {
   }}
   
   def view(p_id:String) = withAuth { username => implicit request => {
-    if(request.session.get("roles").get.contains("Admin")){
-      for {
-        maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-      } yield {
+    for {
+      maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request)
+    } yield {
+      if(request.session.get("roles").get.contains("Admin") | request.session.get("id").get == maybeperson.get._id.stringify | request.session.get("id").get == maybeperson.get.p.mgrid){
         maybeleaveprofile.map( leaveprofile => {
           Ok(views.html.leaveprofile.view(leaveprofile))
         }).getOrElse(NotFound)
+      } else {
+        Ok(views.html.error.unauthorized())
       }
-    } else {
-      Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
   

@@ -1,3 +1,5 @@
+@import reactivemongo.bson.BSONObjectID
+
 @(person:Person, manager:Person, leaveprofiles: List[LeaveProfile])(implicit session: play.api.mvc.Session)
 
 @pageheader = {
@@ -45,6 +47,7 @@
 }
 
 @if(session.get("roles").get.contains("Admin")) {
+
 	@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 		@pageheader
 		<div class="tabbable">
@@ -157,33 +160,145 @@
 		</div>
 		@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>Selected leave profile will be permanently deleted and cannot be recovered.</p><p>Notes:</p><ul><li>Leave that linked to this leave profile will be locked.</li><li>No workflow action can be perform on lock document.</li></ul></div>"))
 	}
+
 } else {
 
-	@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,vbuttons) {
-		@contentRow("First Name", person.p.fn)
-		@contentRow("Last Name", person.p.ln)
-		@contentRow("Email", person.p.em)
-		@contentRow("Position Type", person.p.pt)
-		@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
-		@contentRow("Gender", person.p.g)
-		@contentRow("Marital Status", person.p.ms)
-		@contentRow("Department", person.p.dpm)
-		@contentRow("Office", person.p.off)
-		@contentRow("Join Date", person.p.edat.get.toLocalDate().toString())
-		<dl class="dl-horizontal">
-			<dt><label>Work Day</label></dt>
-			<dd>
-				@if(person.wd.wd1==true) {Monday}
-				@if(person.wd.wd2==true) {Tuesday}
-				@if(person.wd.wd3==true) {Wednesday}
-				@if(person.wd.wd4==true) {Thursday}
-				@if(person.wd.wd5==true) {Friday}
-				@if(person.wd.wd6==true) {Saturday}
-				@if(person.wd.wd6==true) {Sunday}
-			</dd>
-		</dl>
-		@if(person.p.rl.toString!="List()") {
-			@contentRow("Role", person.p.rl.mkString(","))
+	@if(session.get("id").get == person.p.mgrid | session.get("id").get == person._id.stringify) {
+
+		@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+			@pageheader
+			<div class="tabbable">
+				<ul class="nav nav-tabs" id="myTab">
+					<li class="active">
+						<a data-toggle="tab" href="#home">
+							General
+						</a>
+					</li>
+		
+					<li class="">
+						<a data-toggle="tab" href="#messages">
+							Leave Profile(s)
+						</a>
+					</li>
+				</ul>
+		
+				<div class="tab-content">
+					<div id="home" class="tab-pane fade active in">
+						<div class="row">
+							<div class="col-sm-9">
+								@contentRow("First Name", person.p.fn)
+								@contentRow("Last Name", person.p.ln)
+								@contentRow("Email", person.p.em)
+								@contentRow("Position", person.p.pt)
+								@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
+								@contentRow("Gender", person.p.g)
+								@contentRow("Marital Status", person.p.ms)
+								@contentRow("Department", person.p.dpm)
+								@contentRow("Office", person.p.off)
+								@contentRow("Join Date", person.p.edat.get.toLocalDate().toString())
+								<dl class="dl-horizontal">
+									<dt><label>Work Day</label></dt>
+									<dd>
+										@if(person.wd.wd1==true) {Monday}
+										@if(person.wd.wd2==true) {Tuesday}
+										@if(person.wd.wd3==true) {Wednesday}
+										@if(person.wd.wd4==true) {Thursday}
+										@if(person.wd.wd5==true) {Friday}
+										@if(person.wd.wd6==true) {Saturday}
+										@if(person.wd.wd6==true) {Sunday}
+									</dd>
+								</dl>
+								@if(person.p.rl.toString!="List()") {
+									@contentRow("Role", person.p.rl.mkString(","))
+								}
+							</div>@** /.col-xs-9 **@
+							<div class="col-sm-3">
+								@vbuttons
+							</div>@** /.col-xs-3 **@
+						</div>@** /.row **@ 
+					</div>
+		
+					<div id="messages" class="tab-pane fade">
+						<div class="row">
+							<div class="col-sm-9">
+								<div class="table-responsive">
+									<table id="leavetable" class="table table-striped table-bordered table-hover">
+										<thead><tr>
+											<th>Leave Type</th>
+											<th>Entitlement</th>
+											<th>Earned</th>
+											<th>Adjustment</th>
+											<th>Carry Forward</th>
+											<th>Total Utilized</th>
+											<th>Total Expired</th>
+											<th>Pending Approval</th>
+											<th>Balance</th>
+											<th>Closing Balance</th>
+											<th width="100px">&nbsp;</th>
+										</tr></thead>
+										<tbody>
+											@leaveprofiles.map{ leaveprofile =>
+												<tr>
+													<td>@leaveprofile.lt</td>
+													<td>@leaveprofile.cal.ent</td>
+													<td>@leaveprofile.cal.ear</td>
+													<td>@leaveprofile.cal.adj</td>
+													<td>@leaveprofile.cal.cf</td>
+													<td>@(leaveprofile.cal.cfuti + leaveprofile.cal.uti)</td>
+													<td>@leaveprofile.cal.cfexp</td>
+													<td>@leaveprofile.cal.papr</td>
+													<td>@leaveprofile.cal.bal</td>
+													<td>@leaveprofile.cal.cbal</td>
+													<td>
+														<div class="btn-group">
+															<a class="btn btn-xs btn-success" title="View" href="@routes.LeaveProfileController.view(leaveprofile._id.stringify)">
+																<i class="ace-icon fa fa-search-plus bigger-120"></i>
+															</a>
+														</div>
+													</td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>@** /.table-responsive **@
+							</div>@** /.col-xs-9 **@
+							<div class="col-sm-3">
+								@vbuttons
+							</div>@** /.col-xs-3 **@
+						</div>@** /.row **@ 
+					</div>
+				</div>
+			</div>
+		}
+
+	} else {
+	
+		@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,vbuttons) {
+			@contentRow("First Name", person.p.fn)
+			@contentRow("Last Name", person.p.ln)
+			@contentRow("Email", person.p.em)
+			@contentRow("Position Type", person.p.pt)
+			@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
+			@contentRow("Gender", person.p.g)
+			@contentRow("Marital Status", person.p.ms)
+			@contentRow("Department", person.p.dpm)
+			@contentRow("Office", person.p.off)
+			@contentRow("Join Date", person.p.edat.get.toLocalDate().toString())
+			<dl class="dl-horizontal">
+				<dt><label>Work Day</label></dt>
+				<dd>
+					@if(person.wd.wd1==true) {Monday}
+					@if(person.wd.wd2==true) {Tuesday}
+					@if(person.wd.wd3==true) {Wednesday}
+					@if(person.wd.wd4==true) {Thursday}
+					@if(person.wd.wd5==true) {Friday}
+					@if(person.wd.wd6==true) {Saturday}
+					@if(person.wd.wd6==true) {Sunday}
+				</dd>
+			</dl>
+			@if(person.p.rl.toString!="List()") {
+				@contentRow("Role", person.p.rl.mkString(","))
+			}
 		}
 	}
 
