@@ -854,7 +854,7 @@ object LeaveProfileModel {
       0.0
     } else {
       val now = new DateTime
-      val cutoffdate = new DateTime(now.year().get(), p_leavesetting.cfm,1,0,0,0,0)
+      val cutoffdate = LeaveSettingModel.getPreviousCutOffDate(p_leavesetting.cfm)
       val carryforwardexpireddate = cutoffdate.plusMonths(p_leavepolicy.set.cexp)
       if (now.isAfter(carryforwardexpireddate)) p_leaveprofile.cal.cf - p_leaveprofile.cal.cfuti else 0.0
     }
