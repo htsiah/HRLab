@@ -210,8 +210,10 @@ object LeavePolicyController extends Controller with Secured {
                         e5=eligbleleaveentitlement(4)(1),
                         e5_cf=eligbleleaveentitlement(4)(2)
                     )
+                    
                 ), 
-                request)
+                request
+            )
             Future.successful(Redirect(routes.LeaveSettingController.index))
           }
       )

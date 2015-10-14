@@ -236,13 +236,46 @@ object LeavePolicyModel {
 	
   // Update document
   def update(p_query:BSONDocument,p_doc:LeavePolicy,p_request:RequestHeader) = {
-    val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
-    future.onComplete {
-      case Failure(e) => throw e
-      case Success(lastError) => {}
+    for { 
+      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("_id" -> p_doc._id), p_request)
+    } yield {
+      val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
+      future.onComplete {
+        case Failure(e) => throw e
+        case Success(lastError) => {
+          
+          // Update employee's leave profile
+          if (maybe_leavepolicy.get.set.acc != p_doc.set.acc) {
+            val gender = if (p_doc.set.g == "Applicable for all") {
+              BSONDocument("$or" -> BSONArray(BSONDocument("p.g"->"Female"),BSONDocument("p.g"->"Male")))  
+            } else if (p_doc.set.g == "Female only") {
+              BSONDocument("p.g"->"Female")
+            } else {
+              BSONDocument("p.g"->"Male")
+            }
+            val marital = if (p_doc.set.ms == "Applicable for all"){
+              BSONDocument("$or" -> BSONArray(BSONDocument("p.ms"->"Single"),BSONDocument("p.ms"->"Married")))
+            } else if (p_doc.set.ms == "Single only") {
+              BSONDocument("p.ms"->"Single")
+            } else {
+              BSONDocument("p.ms"->"Married")
+            }
+            PersonModel.find(BSONDocument("p.pt"->p_doc.pt)++(gender)++(marital), p_request).map { persons => 
+              persons.map { person => {
+                LeaveProfileModel.find(BSONDocument("pid" -> person._id.stringify, "lt" -> p_doc.lt)).map { leaveprofiles =>  
+                  leaveprofiles.map { leaveprofile => {
+                    LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile, p_request)
+                  } }
+                }
+              } }
+            }
+          }
+          
+        }
+      } 
     }
-  }
-  
+  }    
+            
   // Soft deletion by setting deletion flag in document
   def remove(p_query:BSONDocument, p_request:RequestHeader) = {
     for {
