@@ -307,6 +307,11 @@ object LeaveProfileModel {
   def find(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[LeaveProfile](ReadPreference.primary).collect[List]()
   }
+  
+  // Find and sort all documents using session
+  def find(p_query:BSONDocument, p_sort:BSONDocument, p_request:RequestHeader) = {
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).sort(p_sort).cursor[LeaveProfile](ReadPreference.primary).collect[List]()
+  }
 	
   // Find one document
   // Return the first found document

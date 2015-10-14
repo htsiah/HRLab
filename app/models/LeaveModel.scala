@@ -246,6 +246,11 @@ object LeaveModel {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Leave](ReadPreference.primary).collect[List]()
   }
 	
+  // Find and sort all documents using session
+  def find(p_query:BSONDocument, p_sort:BSONDocument, p_request:RequestHeader) = {
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).sort(p_sort).cursor[Leave](ReadPreference.primary).collect[List]()
+  }
+  
   // Find one document
   // Return the first found document
   def findOne(p_query:BSONDocument) = {
@@ -257,12 +262,7 @@ object LeaveModel {
   def findOne(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[Leave]
   }
-  
-  // Optional - Find all document with sorting
-  def find(p_query:BSONDocument, p_sort:BSONDocument, p_request:RequestHeader) = {
-    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get))).sort(p_sort).cursor[Leave](ReadPreference.primary).collect[List]()
-  }
-  
+    
   /** Custom Model Methods **/ 
   private def getAppliedDate(p_fdat:DateTime, p_tdat:DateTime) : List[DateTime] = {
     if(p_tdat.isAfter(p_fdat)){

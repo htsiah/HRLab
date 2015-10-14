@@ -55,7 +55,7 @@ object ReportController extends Controller with Secured {
     if(request.session.get("ismanager").get.contains("true")){
       for {
         persons <- PersonModel.find(BSONDocument("p.dpm"->request.session.get("department").get), request)
-        leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), request)
+        leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1), request)
       } yield {
         val leavesMap = leaves.map { leave => Map(
             "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
@@ -91,7 +91,7 @@ object ReportController extends Controller with Secured {
     if(request.session.get("ismanager").get.contains("true")){
       for {
         persons <- PersonModel.find(BSONDocument("p.dpm"->request.session.get("department").get), request)
-        leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), request)
+        leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1), request)
       } yield {
         val leavesMap = leaveprofiles.map { leaveprofile => Map(
             "name" -> Json.toJson(leaveprofile.pn),
@@ -124,7 +124,7 @@ object ReportController extends Controller with Secured {
   def allstaffleaverequestJSON = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       for {
-        leaves <- LeaveModel.find(BSONDocument(), request)
+        leaves <- LeaveModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
       } yield {
         val leavesMap = leaves.map { leave => Map(
             "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
@@ -159,7 +159,7 @@ object ReportController extends Controller with Secured {
   def allstaffleaveprofileJSON = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       for {
-        leaveprofiles <- LeaveProfileModel.find(BSONDocument(), request)
+        leaveprofiles <- LeaveProfileModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
       } yield {
         val leavesMap = leaveprofiles.map { leaveprofile => Map(
             "name" -> Json.toJson(leaveprofile.pn),
