@@ -54,7 +54,7 @@ object ReportController extends Controller with Secured {
   def myteamleaverequestJSON = withAuth { username => implicit request => { 
     if(request.session.get("ismanager").get.contains("true")){
       for {
-        persons <- PersonModel.find(BSONDocument("p.dpm"->request.session.get("department").get), request)
+        persons <- PersonModel.find(BSONDocument("p.mgrid"->request.session.get("id").get), request)
         leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1, "docnum" -> -1), request)
       } yield {
         val leavesMap = leaves.map { leave => Map(
@@ -90,7 +90,7 @@ object ReportController extends Controller with Secured {
   def myteamleaveprofileJSON = withAuth { username => implicit request => { 
     if(request.session.get("ismanager").get.contains("true")){
       for {
-        persons <- PersonModel.find(BSONDocument("p.dpm"->request.session.get("department").get), request)
+        persons <- PersonModel.find(BSONDocument("p.mgrid"->request.session.get("id").get), request)
         leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1), request)
       } yield {
         val leavesMap = leaveprofiles.map { leaveprofile => {
@@ -106,7 +106,7 @@ object ReportController extends Controller with Secured {
             "papr" -> Json.toJson(leaveprofile.cal.papr),
             "bal" -> Json.toJson(leaveprofile.cal.bal),
             "cbal" -> Json.toJson(leaveprofile.cal.cbal),
-            "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leaveprofilereport/view/" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>"),
+            "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leaveprofilereport/view?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>"),
             "a_link" -> Json.toJson(
                 "<div class='btn-group'>" + 
                 "<a class='btn btn-xs btn-success' title='View' href='/leaveprofilereport/view?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>" +
