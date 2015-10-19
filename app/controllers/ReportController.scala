@@ -93,8 +93,7 @@ object ReportController extends Controller with Secured {
         persons <- PersonModel.find(BSONDocument("p.mgrid"->request.session.get("id").get), request)
         leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1), request)
       } yield {
-        val leavesMap = leaveprofiles.map { leaveprofile => {
-          Map(
+        val leavesMap = leaveprofiles.map { leaveprofile => Map(
             "name" -> Json.toJson(leaveprofile.pn),
             "lt" -> Json.toJson(leaveprofile.lt),
             "ent" -> Json.toJson(leaveprofile.cal.ent),
@@ -114,9 +113,7 @@ object ReportController extends Controller with Secured {
                 "<a class='btn btn-xs btn-danger' title='Delete' href=" + '"' + "javascript:onDeleteLeaveProfile('" + leaveprofile._id.stringify + "','" + leaveprofile.lt + "','" + leaveprofile.pid + "')" + '"' + "><i class='ace-icon fa fa-trash-o bigger-120'></i></a>" +
                 "</div>"
             )
-            
-          )}
-        }
+        )}
         Ok(Json.toJson(leavesMap)).as("application/json")
       }  
     } else {
@@ -186,7 +183,14 @@ object ReportController extends Controller with Secured {
             "texp" -> Json.toJson(leaveprofile.cal.cfexp),
             "papr" -> Json.toJson(leaveprofile.cal.papr),
             "bal" -> Json.toJson(leaveprofile.cal.bal),
-            "cbal" -> Json.toJson(leaveprofile.cal.cbal)
+            "cbal" -> Json.toJson(leaveprofile.cal.cbal),
+            "a_link" -> Json.toJson(
+                "<div class='btn-group'>" + 
+                "<a class='btn btn-xs btn-success' title='View' href='/leaveprofilereport/view?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>" +
+                "<a class='btn btn-xs btn-info' title='Edit' href='/leaveprofilereport/edit?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-pencil bigger-120'></i></a>" +
+                "<a class='btn btn-xs btn-danger' title='Delete' href=" + '"' + "javascript:onDeleteLeaveProfile('" + leaveprofile._id.stringify + "','" + leaveprofile.lt + "','" + leaveprofile.pid + "')" + '"' + "><i class='ace-icon fa fa-trash-o bigger-120'></i></a>" +
+                "</div>"
+            )
         )}
         Ok(Json.toJson(leavesMap)).as("application/json")
       }

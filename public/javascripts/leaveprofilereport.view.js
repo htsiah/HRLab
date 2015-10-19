@@ -6,6 +6,9 @@ $(function(){
     case "/report/myteamleaveprofile":
     	$("#navMyTeamLeaveProfile").addClass("active");
         break;
+    case "/report/allstaffleaveprofile":
+    	$("#navAllStaffLeaveProfile").addClass("active");
+        break;
 	};
 		
 });

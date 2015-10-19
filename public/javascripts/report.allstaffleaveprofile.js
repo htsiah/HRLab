@@ -2,11 +2,31 @@ $(function(){
 	
     $("#navReports").addClass("active open");
     $("#navAllStaffLeaveProfile").addClass("active");
-				
+							
+    $.ajax({
+    	url: "/report/allstaffleaveprofileJSON",
+		dataType: "json",
+		success: function(data){
+			setupJqGrid(data);
+		},
+		error: function(xhr, status, error){
+			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+		}
+	});
+    		
+});
+
+//Failed to load pagination with group using json. There is a suggestion to disable sorting, but still not workable.
+//http://stackoverflow.com/questions/10977583/jqgrid-grouping-deactivating-client-side-sorting-on-page-navigation
+//Workaround is using local data type.
+//Future enhancement should do paging on server side.
+//http://stackoverflow.com/questions/29851892/server-side-pagination-in-jqgrid-no-grid-pager-parameters
+function setupJqGrid(data){
+	
 	$("#grid-table").jqGrid({
-	   	url:"/report/allstaffleaveprofileJSON",
-		datatype: 'json',
-	   	colNames:['Name','Leave Type','Entitlement','Earned','Adjustment','Carry Forward','Total Utilised','Total Expired','Balance'],
+		data: data,
+		datatype: "local",
+	   	colNames:['Name','Leave Type','Entitlement','Earned','Adjustment','Carry Forward','Total Utilised','Total Expired','Pending Approval','Balance','Closing Balance',''],
 	   	colModel:[
 			{name:'name',index:'name',width:100},
 			{name:'lt',index:'lt',width:100},
@@ -16,7 +36,10 @@ $(function(){
 			{name:'cf',index:'cf',width:100,sorttype:"float"},
 			{name:'tuti',index:'tuti',width:100,sorttype:"float"},
 			{name:'texp',index:'texp',width:100,sorttype:"float"},
-			{name:'bal',index:'bal',width:100,sorttype:"float"}
+			{name:'papr',index:'papr',width:120,sorttype:"float"},
+			{name:'bal',index:'bal',width:100,sorttype:"float"},
+			{name:'cbal',index:'cbal',width:120,sorttype:"float"},
+			{name:'a_link',index:'a_link',width:100,sortable:false}
 		],
 	   	rowNum:30,
 	   	rowList:[],
@@ -67,8 +90,8 @@ $(function(){
 	
 	//trigger window resize to make the grid get the correct size
 	$(window).triggerHandler('resize.jqGrid');
-		
-});
+	
+}
 
 //replace icons with FontAwesome icons like above
 function updatePagerIcons(table) {
@@ -90,4 +113,31 @@ function updatePagerIcons(table) {
 function enableTooltips(table) {
 	$('.navtable .ui-pg-button').tooltip({container:'body'});
 	$(table).find('.ui-pg-div').tooltip({container:'body'});
+}
+
+function onDeleteLeaveProfile(p_id, p_lt, p_pid) {
+
+	$( "#dialog-message" ).removeClass('hide').dialog({
+		resizable: false,
+		modal: true,
+		title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa fa-warning red'></i> Delete the document?</h4></div>",
+		title_html: true,
+		buttons: [
+			{
+				html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Delete",
+				"class" : "btn btn-danger btn-mini",
+				click: function() {
+					window.location = "/leaveprofilereport/delete/" + p_id + "/" + p_lt + "/" + p_pid;
+				}
+			},
+			{
+				html: "Cancel",
+				"class" : "btn btn-mini",
+				click: function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		]
+	});
+
 }
