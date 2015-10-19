@@ -67,7 +67,7 @@
 			</table>
 		</div>
 		@layout.ace.dialogbox("dialog-abort", Html("<div class='alert alert-info bigger-110'><p>You are not allow to delete an admin or manager which there are staffs reporting to him/her.</p></div>"))
-		@layout.ace.dialogbox("dialog-delete", Html("<div class='alert alert-info bigger-110'><p>Selected staff will be permanently removed from the system and cannot be recovered.</p><p>Notes:</p><ul><li>His/Her leave profile will be deleted.</li><li>His/Her leave will be locked.</li><li>No workflow action can be perform on lock document.</li></ul></div>"))
+		@layout.ace.dialogbox("dialog-delete", Html("<div class='alert alert-info bigger-110'><p>Selected staff will be permanently removed from the system and cannot be recovered.</p><p>Notes:</p><ul><li>His/Her leave profile will be deleted.</li><li>His/Her leave will be locked.</li><li>No actions can be perform on locked document.</li></ul></div>"))
 	}
 } else {
 	@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
