@@ -12,8 +12,8 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel}
-import utilities.{System, AlertUtility, Tools}
+import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, PersonModel, LeaveModel}
+import utilities.{System, Tools}
 
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument,BSONArray}
@@ -96,7 +96,7 @@ object LeaveProfileReportController extends Controller with Secured {
       maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request)
     } yield {
-      if(request.session.get("roles").get.contains("Admin") | request.session.get("id").get == maybeperson.get._id.stringify | request.session.get("id").get == maybeperson.get.p.mgrid){
+      if(request.session.get("roles").get.contains("Admin") | request.session.get("id").get == maybeperson.get.p.mgrid){
         maybeleaveprofile.map( leaveprofile => {
           Ok(views.html.leaveprofilereport.view(leaveprofile))
         }).getOrElse(NotFound)
@@ -113,7 +113,7 @@ object LeaveProfileReportController extends Controller with Secured {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request)
       } yield {
         maybeleaveprofile.map( leaveprofile => {
-            Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile), List(), leaveprofile.pid, "", p_id))
+            Ok(views.html.leaveprofilereport.form(leaveprofileform.fill(leaveprofile), List(), leaveprofile.pid, "", p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -129,7 +129,7 @@ object LeaveProfileReportController extends Controller with Secured {
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request) 
             } yield {
-              Ok(views.html.leaveprofile.form(formWithError, List(), maybeleaveprofile.get.pid, "", p_id))
+              Ok(views.html.leaveprofilereport.form(formWithError, List(), maybeleaveprofile.get.pid, "", p_id))
             }
           },
           formWithData => {
@@ -160,7 +160,7 @@ object LeaveProfileReportController extends Controller with Secured {
                   request),
                 Tools.db_timeout
             )
-            Future.successful(Redirect(routes.PersonController.view(formWithData.pid)))
+            Future.successful(Redirect(request.session.get("path").get))
           }
       )
     } else {
@@ -177,9 +177,5 @@ object LeaveProfileReportController extends Controller with Secured {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
-  
-  
-  
-  
   
 }
