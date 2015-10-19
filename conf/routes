@@ -65,6 +65,7 @@ GET		/leave/reject											controllers.LeaveController.reject(p_id:String)
 GET		/leave/cancel											controllers.LeaveController.cancel(p_id:String)
 GET		/leave/view/:p_id										controllers.LeaveController.view(p_id:String)
 GET		/leave/company/view/:p_id								controllers.LeaveController.companyview(p_id:String)
+GET		/leave/report/view/:p_id								controllers.LeaveController.reportview(p_id:String)
 GET		/leave/getapprovedleavejson/:p_type						controllers.LeaveController.getApprovedLeaveJSON(p_type)
 GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
 
@@ -133,6 +134,12 @@ GET		/report/allstaffleaverequest		controllers.ReportController.allstaffleavereq
 GET		/report/allstaffleaverequestJSON	controllers.ReportController.allstaffleaverequestJSON
 GET		/report/allstaffleaveprofile		controllers.ReportController.allstaffleaveprofile
 GET		/report/allstaffleaveprofileJSON	controllers.ReportController.allstaffleaveprofileJSON
+
+# Leave Profile Report
+GET		/leaveprofilereport/view						controllers.LeaveProfileReportController.view(p_id:String)
+GET		/leaveprofilereport/edit						controllers.LeaveProfileReportController.edit(p_id:String)
+POST	/leaveprofilereport/update						controllers.LeaveProfileReportController.update(p_id:String)
+GET		/leaveprofilereport/delete/:p_id/:p_lt/:p_pid	controllers.LeaveProfileReportController.delete(p_id:String, p_lt:String, p_pid:String)
 
 # Task
 GET		/task/dismiss/:p_lk				controllers.TaskController.dismiss(p_lk: String)

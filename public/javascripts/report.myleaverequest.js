@@ -6,7 +6,7 @@ $(function(){
 	$("#grid-table").jqGrid({
 	   	url:"/report/myleaverequestJSON",
 		datatype: 'json',
-	   	colNames:['', 'DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', "Carry Forward Utilized", 'Status', 'Approver'],
+	   	colNames:['', 'DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', 'Status', 'Approver',''],
 	   	colModel:[
 	   	    {name:'lock',index:'lock',width:20},
 			{name:'docnum',index:'docnum', width:70, sorttype:'int'},
@@ -15,12 +15,13 @@ $(function(){
 			{name:'fdat',index:'fdat',width:70,sortable:false},
 			{name:'tdat',index:'tdat',width:70,sortable:false},
 			{name:'uti',index:'uti',width:70, sorttype:"int"},
-			{name:'cfuti',index:'cfuti',width:130, sorttype:"int"},
 			{name:'wf_s',index:'wf_s',width:130},
-			{name:'wf_aprn',index:'wf_aprn',width:130}
+			{name:'wf_aprn',index:'wf_aprn',width:130},
+			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
-	   	rowNum:30,
-	   	rowList:[],
+	   	rowNum: 30,
+	   	rowList: [],
+	   	loadonce: true,
 	   	pager: '#grid-pager',
 	   	altRows: true,
 	   	height: 'auto',
@@ -29,6 +30,7 @@ $(function(){
 	   	sortname: 'docnum',
 	   	sortorder: "desc",
 	    viewrecords: true,
+	    gridview: true, // Only apply when not use treeGrid, subGrid, or the afterInsertRow event.
 	    caption:"",
 	    loadComplete : function() {
 			var table = this;

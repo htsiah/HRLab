@@ -3,10 +3,34 @@ $(function(){
     $("#navReports").addClass("active open");
     $("#navMyTeamLeaveProfile").addClass("active");
 				
+    $.ajax({
+    	url: "/report/myteamleaveprofileJSON",
+		dataType: "json",
+		success: function(data){
+			if (admin) {
+				setupJqGridForAdmin(data);
+			} else {
+				setupJqGrid(data);
+			};
+		},
+		error: function(xhr, status, error){
+			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+		}
+	});
+		
+});
+
+//Failed to load pagination with group using json. There is a suggestion to disable sorting, but still not workable.
+//http://stackoverflow.com/questions/10977583/jqgrid-grouping-deactivating-client-side-sorting-on-page-navigation
+//Workaround is using local data type.
+//Future enhancement should do paging on server side.
+//http://stackoverflow.com/questions/29851892/server-side-pagination-in-jqgrid-no-grid-pager-parameters
+function setupJqGrid(data){
+
 	$("#grid-table").jqGrid({
-	   	url:"/report/myteamleaveprofileJSON",
-		datatype: 'json',
-	   	colNames:['Name','Leave Type','Entitlement','Earned','Adjustment','Carry Forward','Total Utilised','Total Expired','Balance'],
+		data: data,
+		datatype: "local",
+	   	colNames:['Name','Leave Type','Entitlement','Earned','Adjustment','Carry Forward','Total Utilised','Total Expired','Pending Approval','Balance','Closing Balance',''],
 	   	colModel:[
 			{name:'name',index:'name',width:100},
 			{name:'lt',index:'lt',width:100},
@@ -16,7 +40,10 @@ $(function(){
 			{name:'cf',index:'cf',width:100,sorttype:"float"},
 			{name:'tuti',index:'tuti',width:100,sorttype:"float"},
 			{name:'texp',index:'texp',width:100,sorttype:"float"},
-			{name:'bal',index:'bal',width:100,sorttype:"float"}
+			{name:'papr',index:'papr',width:110,sorttype:"float"},
+			{name:'bal',index:'bal',width:100,sorttype:"float"},
+			{name:'cbal',index:'cbal',width:100,sorttype:"float"},
+			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
 	   	rowNum:30,
 	   	rowList:[],
@@ -67,8 +94,80 @@ $(function(){
 	
 	//trigger window resize to make the grid get the correct size
 	$(window).triggerHandler('resize.jqGrid');
-		
-});
+	
+}
+
+function setupJqGridForAdmin(data){
+
+	$("#grid-table").jqGrid({
+		data: data,
+		datatype: "local",
+	   	colNames:['Name','Leave Type','Entitlement','Earned','Adjustment','Carry Forward','Total Utilised','Total Expired','Pending Approval','Balance','Closing Balance',''],
+	   	colModel:[
+			{name:'name',index:'name',width:100},
+			{name:'lt',index:'lt',width:100},
+			{name:'ent',index:'ent',width:100,sorttype:"int"},
+			{name:'ear',index:'ear',width:100,sorttype:"float"},
+			{name:'adj',index:'adj',width:100,sorttype:"float"},
+			{name:'cf',index:'cf',width:100,sorttype:"float"},
+			{name:'tuti',index:'tuti',width:100,sorttype:"float"},
+			{name:'texp',index:'texp',width:100,sorttype:"float"},
+			{name:'papr',index:'papr',width:120,sorttype:"float"},
+			{name:'bal',index:'bal',width:100,sorttype:"float"},
+			{name:'cbal',index:'cbal',width:120,sorttype:"float"},
+			{name:'a_link',index:'a_link',width:100,sortable:false}
+		],
+	   	rowNum:30,
+	   	rowList:[],
+	   	pager: '#grid-pager',
+	   	altRows: true,
+	   	height: 'auto',
+	   	autowidth: true,
+	   	sortname: 'lt',
+	    viewrecords: true,
+	    grouping:true,
+   		groupingView : {
+   			groupField : ['name'],
+   			groupDataSorted : true,
+   			groupColumnShow : [false],
+   			groupText : ['<b>&nbsp{0} - {1} Leave Profile(s)</b>'],
+			plusicon : 'fa fa-plus-square-o bigger-110',
+			minusicon : 'fa fa-minus-square-o bigger-110'
+   		},
+	    caption:"",
+	    loadComplete : function() {
+			var table = this;
+			//setTimeout is for webkit only to give time for DOM changes and then redraw!!!
+			setTimeout(function(){
+				updatePagerIcons(table);
+				enableTooltips(table);
+			}, 0);			
+		}
+	    
+	});
+	
+	$("#grid-table").jqGrid('navGrid','#grid-pager',{
+		edit:false,
+		add:false,
+		del:false,
+		search: false,
+		refresh: false,
+	});
+	
+	$("#grid-table").jqGrid('navButtonAdd','#grid-pager',{
+		title:"Export to CSV",
+		caption:"",
+        buttonicon:"ace-icon fa fa-download bigger-140", 
+        onClickButton : function () { 
+        	alert("This feature is no available yet.");
+            // alert("Call server to generate CSV. Example: http://www.trirand.net/documentation/php/_32h0wow2v.htm");
+        } 
+    });
+	
+	//trigger window resize to make the grid get the correct size
+	$(window).triggerHandler('resize.jqGrid');
+	
+}
 
 //replace icons with FontAwesome icons like above
 function updatePagerIcons(table) {

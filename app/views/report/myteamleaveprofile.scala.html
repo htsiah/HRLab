@@ -6,6 +6,9 @@
 }
 
 @inlinejs = {
+	<script>
+		var admin = @if(session.get("roles").get.contains("Admin")) { true } else { false };
+	</script>
 	<script src="@routes.Assets.at("javascripts/report.myteamleaveprofile.js")" type="text/javascript"></script>
 }
 

@@ -3,10 +3,30 @@ $(function(){
     $("#navReports").addClass("active open");
     $("#navAllStaffLeaveRequest").addClass("active");
 				
+    $.ajax({
+    	url: "/report/allstaffleaverequestJSON",
+		dataType: "json",
+		success: function(data){
+			setupJqGrid(data);
+		},
+		error: function(xhr, status, error){
+			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+		}
+	});
+	
+});
+
+//Failed to load pagination with group using json. There is a suggestion to disable sorting, but still not workable.
+//http://stackoverflow.com/questions/10977583/jqgrid-grouping-deactivating-client-side-sorting-on-page-navigation
+//Workaround is using local data type.
+//Future enhancement should do paging on server side.
+//http://stackoverflow.com/questions/29851892/server-side-pagination-in-jqgrid-no-grid-pager-parameters
+function setupJqGrid(data){
+	
 	$("#grid-table").jqGrid({
-	   	url:"/report/allstaffleaverequestJSON",
-		datatype: 'json',
-		colNames:['Name', '', 'DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', "Carry Forward Utilized", 'Status', 'Approver'],
+		data: data,
+		datatype: "local",
+		colNames:['Name', '', 'DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', "Carry Forward Utilized", 'Status', 'Approver', ''],
 	   	colModel:[
 	   		{name:'name',index:'name',width:100},
 	   		{name:'lock',index:'lock',width:20},
@@ -18,7 +38,8 @@ $(function(){
 			{name:'uti',index:'uti',width:70, sorttype:"int"},
 			{name:'cfuti',index:'cfuti',width:130, sorttype:"int"},
 			{name:'wf_s',index:'wf_s',width:130},
-			{name:'wf_aprn',index:'wf_aprn',width:130}
+			{name:'wf_aprn',index:'wf_aprn',width:130},
+			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
 	   	rowNum:30,
 	   	rowList:[],
@@ -71,8 +92,8 @@ $(function(){
 	
 	//trigger window resize to make the grid get the correct size
 	$(window).triggerHandler('resize.jqGrid');
-		
-});
+	
+}
 
 //replace icons with FontAwesome icons like above
 function updatePagerIcons(table) {

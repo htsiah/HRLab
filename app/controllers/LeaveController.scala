@@ -248,6 +248,16 @@ object LeaveController extends Controller with Secured {
       ).getOrElse(NotFound(views.html.error.onhandlernotfound()))
     }
   }}
+  
+  def reportview(p_id:String) = withAuth { username => implicit request => {
+    for {
+      maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+    } yield {
+      maybeleave.map( leave => 
+        Ok(views.html.leave.reportview(leave))
+      ).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+    }
+  }}
 	
 	def reject(p_id:String) = withAuth { username => implicit request => {
     for {
