@@ -1,0 +1,62 @@
+@import utilities.Alert
+
+@(leave:Leave, alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		@if(leave.ld) {
+			<h1>Reports <small><i class="ace-icon fa fa-angle-double-right"></i> Leave (<i class="ace-icon fa fa-lock"></i>) <i class="ace-icon fa fa-angle-double-right"></i> @leave.pn</small></h1>
+		} else {
+			<h1>Reports <small><i class="ace-icon fa fa-angle-double-right"></i> Leave <i class="ace-icon fa fa-angle-double-right"></i> @leave.pn</small></h1>
+		}
+	</div>
+}
+
+@pluginjs = {}
+
+@inlinejs = {
+	<script>
+		var path = '@session.get("path").get';
+	</script>
+	<script src="@routes.Assets.at("javascripts/leavereport.view.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {}
+
+@inlinestyle = {}
+
+@buttons = {
+	@if(leave.wf.s=="Pending Approval" && session.get("id").get==leave.wf.aprid && !leave.ld) {
+		<a href="@routes.LeaveController.approve(leave._id.stringify)" class="btn btn-sm btn btn-block">Approve</a>	
+		<a href="@routes.LeaveController.reject(leave._id.stringify)" class="btn btn-sm btn btn-block">Reject</a>
+	}
+	@if((leave.wf.s=="Pending Approval" || leave.wf.s=="Approved") && (session.get("id").get==leave.pid || session.get("roles").get.contains("Admin")) && !leave.ld) {
+		<a href="@routes.LeaveController.cancel(leave._id.stringify)" class="btn btn-sm btn btn-block">Cancel Leave</a>
+	}
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@contentRow(label: String, contentVal: String, cssClass:String="") = {
+	@if(contentVal.trim() == "") {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp;</dd></dl>
+	} else {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">@contentVal</dd></dl>
+	}
+}
+
+@layout.ace.main93(session.get("company").get + " | HRSifu.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.alert(alert)
+	@contentRow("Doc Num", leave.docnum.toString())
+	@contentRow("Applicant", leave.pn)
+	@contentRow("Status", leave.wf.s)
+	@contentRow("Approver", leave.wf.aprn)
+	@contentRow("Leave Type", leave.lt)
+	@contentRow("Day Type", leave.dt)
+	@contentRow("Date From", leave.fdat.get.toLocalDate().toString())
+	@contentRow("Date To", leave.tdat.get.toLocalDate().toString())
+	@contentRow("Utilized", leave.uti.toString())
+	@contentRow("Carry Forward Utilized", leave.cfuti.toString())
+	@if(leave.r.toString()!="") {
+		@contentRow("Reason", leave.r)								
+	}
+}
