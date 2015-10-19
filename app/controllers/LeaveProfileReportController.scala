@@ -172,7 +172,7 @@ object LeaveProfileReportController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(LeaveProfileModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
       LeaveModel.setLockDown(BSONDocument("pid" -> p_pid, "lt" -> p_lt), request)
-      Future.successful(Redirect(routes.PersonController.view(p_pid)))
+      Future.successful(Redirect(request.session.get("path").get))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
