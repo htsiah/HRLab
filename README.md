@@ -1,6 +1,6 @@
 HRLab - Leave Management System
-
-This is a free online Leave Management System and currently hosted at <a href="http://www.hrsifu.com">http://www.hrsifu.com</a>. This application uses the following:
+=======================
+This application uses the following:
 
 <ul>
 <li>Play 2.4</li>
