@@ -314,19 +314,22 @@ object LeaveController extends Controller with Secured {
           Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
         }
                 
-        // Send Email
-        if (request.session.get("username").get == maybeapplicant.get.p.em){
-          if (request.session.get("username").get != maybemanager.get.p.em){ 
-            val recipients = List(maybemanager.get.p.em)
-            val replaceMap = Map("BY"->request.session.get("name").get, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-            MailUtility.sendEmailConfig(recipients, 6, replaceMap)
+        // No email if applicant does not email
+        if (!maybeapplicant.get.p.nem){
+          // Send Email
+          if (request.session.get("username").get == maybeapplicant.get.p.em){
+            if (request.session.get("username").get != maybemanager.get.p.em){ 
+              val recipients = List(maybemanager.get.p.em)
+              val replaceMap = Map("BY"->request.session.get("name").get, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+              MailUtility.sendEmailConfig(recipients, 6, replaceMap)
+            }
+          } else {
+            val recipients = List(maybeapplicant.get.p.em, maybemanager.get.p.em).filter(_ != request.session.get("username").get)
+            val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+            MailUtility.sendEmailConfig(recipients, 8, replaceMap)
           }
-        } else {
-          val recipients = List(maybeapplicant.get.p.em, maybemanager.get.p.em).filter(_ != request.session.get("username").get)
-          val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-          MailUtility.sendEmailConfig(recipients, 8, replaceMap)
         }
-        
+                
         Redirect(request.session.get("path").get)
       } else {
         Ok(views.html.error.unauthorized())
