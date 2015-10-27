@@ -34,7 +34,7 @@ GET		/person/insert							controllers.PersonController.insert
 POST	/person/insert							controllers.PersonController.insert
 GET		/person/edit							controllers.PersonController.edit(p_id:String)
 POST	/person/update							controllers.PersonController.update(p_id:String)
-GET		/person/delete/:p_id/:p_email				controllers.PersonController.delete(p_id:String, p_email:String)
+GET		/person/delete							controllers.PersonController.delete(p_id:String, p_email)
 GET		/person/getemploymenttypejson/:p_id		controllers.PersonController.getEmploymentTypeJSON(p_id:String)
 GET		/person/view/:p_id						controllers.PersonController.view(p_id:String)
 GET		/person/myprofile/view					controllers.PersonController.myprofileview

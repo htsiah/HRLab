@@ -40,6 +40,11 @@
 			<h4 class="green smaller lighter">Notes:</h4>
 			Updating position, gender, marital status and join date would re-compute leave profiles.
 		</div>
+	} else {
+		<div class="well">
+			<h4 class="green smaller lighter">Notes:</h4>
+			User without email address is unable login into the system. Administrator shall apply leaves on their behalf.
+		</div>
 	}
 	<a href="#" onclick="$('#personform').submit();" class="btn btn-sm btn btn-block">Save</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
@@ -70,18 +75,35 @@
 		@inputText(person("p")("ln"), '_label->"Last Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@if(oid=="") {	
 			@input(person("p")("em"), '_label->"Email", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
-    		<div class="input-group">
-    			<input type="text" name="@name" id="@id" class="form-control" value="@value" @toHtmlArgs(args)>
-				<span class="input-group-addon">
-					<i class="ace-icon fa fa-envelope"></i>
-				</span>
-			</div>
+				<div class="row">
+					<div class="col-xs-12 col-sm-8">
+    					<div class="input-group">
+    						<input type="text" name="@name" id="@id" class="form-control" value="@value" @toHtmlArgs(args)>
+							<span class="input-group-addon"><i class="ace-icon fa fa-envelope"></i></span>
+						</div>
+					</div>
+					<div class="col-xs-6 col-sm-4">
+						<div class="checkbox" style="display: inline-block;">
+							<label>
+								<input type="checkbox" value="true" name="p.nem" id="p_nem" class="ace" @radioSelected(person("p")("nem").value, "true")>
+								<span class="lbl"> No Email</span>
+							</label>
+						</div>
+					</div>
+				</div>
 			}
 		} else {
-			<dl class="dl-horizontal">
-				<dt><label>Email</label></dt>
-				<dd class="">@person("p")("em").value</dd>
-			</dl>
+			@if(person("p")("em").value.get=="") {
+				<dl class="dl-horizontal">
+					<dt><label>Email</label></dt>
+					<dd class="">N/A</dd>
+				</dl>
+			} else {
+				<dl class="dl-horizontal">
+					<dt><label>Email</label></dt>
+					<dd class="">@person("p")("em").value</dd>
+				</dl>
+			}
 		}
 		@select(person("p")("pt"), options = options(positions.map(position=>position)), '_label -> "Position",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("mgrid"), options=persons.map(person=>person._id.stringify->{person.p.fn + " " + person.p.ln}),
@@ -168,6 +190,7 @@
 
 		<div class="hidden">
 			@inputText(person("_id"),'type -> "hidden")
+			@inputText(person("p")("nem"),'type -> "hidden")
 			@inputText(person("p")("rl"),'type -> "hidden")
 			@inputText(person("sys")("eid"),'type -> "hidden")
 			@inputText(person("sys")("cdat"),'type -> "hidden")

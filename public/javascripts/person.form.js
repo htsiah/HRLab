@@ -12,14 +12,14 @@ $(function(){
 	.next().on(ace.click_event, function(){
 		$(this).prev().focus();
 	});
-	
+		
 	$("#personform").validate({
 		onkeyup: false,
 		rules: {
 			"p.fn": "required",
 			"p.ln": "required",
 			"p.em": {
-				required: true,
+				checkEmail: true,
 				email: true,
 				remote: {
 					url: "/signup/checkemail",
@@ -47,7 +47,7 @@ $(function(){
 			"p.fn": "Please enter first name.",
 			"p.ln": "Please enter last name.",
 			"p.em": {
-				required: "Please enter an email address.",
+				checkEmail: "Please enter an email address.",
 				email: "Please enter a valid email address.",
 				remote: "Someone already used this email. Try another one?"
 			},
@@ -63,9 +63,24 @@ $(function(){
 			}
 		},		 
 		submitHandler: function(form) {
+			$("#p_em").removeAttr("disabled");
 			form.submit();
 		 }
 	});
+	
+	$.validator.addMethod(
+		"checkEmail",
+		function(value,element){
+			var nemail = $("#p_nem").is(":checked");
+	
+			if (nemail==false && value=="") {
+				return false;
+			} else {
+				return true
+			};
+		},
+		"Please enter an email address."	
+	);
 	
 	$.validator.addMethod(
 		"date", 
@@ -75,6 +90,16 @@ $(function(){
 		"Please enter a valid date format yyyy-mm-dd."
 	);
 	
+});
+
+$("#p_nem").click(function(){
+	if(this.checked){
+		$("#p_em").val("");
+		$("#p_em-error").hide();
+		$("#p_em").attr("disabled", "disabled");
+	} else {
+		$("#p_em").removeAttr("disabled");
+	}
 });
 
 $("#rl_admin").click(function(){

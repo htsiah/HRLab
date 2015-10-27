@@ -71,7 +71,11 @@
 						<div class="col-sm-9">
 							@contentRow("First Name", person.p.fn)
 							@contentRow("Last Name", person.p.ln)
-							@contentRow("Email", person.p.em)
+							@if(person.p.em=="") {
+								@contentRow("Email", "N/A")
+							} else {
+								@contentRow("Email", person.p.em)
+							}
 							@contentRow("Position", person.p.pt)
 							@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
 							@contentRow("Gender", person.p.g)
@@ -188,7 +192,11 @@
 							<div class="col-sm-9">
 								@contentRow("First Name", person.p.fn)
 								@contentRow("Last Name", person.p.ln)
-								@contentRow("Email", person.p.em)
+								@if(person.p.em=="") {
+									@contentRow("Email", "N/A")
+								} else {
+									@contentRow("Email", person.p.em)
+								}
 								@contentRow("Position", person.p.pt)
 								@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
 								@contentRow("Gender", person.p.g)
@@ -276,7 +284,11 @@
 		@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,vbuttons) {
 			@contentRow("First Name", person.p.fn)
 			@contentRow("Last Name", person.p.ln)
-			@contentRow("Email", person.p.em)
+			@if(person.p.em=="") {
+				@contentRow("Email", "N/A")
+			} else {
+				@contentRow("Email", person.p.em)
+			}
 			@contentRow("Position Type", person.p.pt)
 			@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
 			@contentRow("Gender", person.p.g)

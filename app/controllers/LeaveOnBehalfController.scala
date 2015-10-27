@@ -157,9 +157,11 @@ object LeaveOnBehalfController extends Controller with Secured {
                 LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
                 
                 // Send Email
-                val recipients = List(maybeperson.get.p.em, maybemanager.get.p.em, request.session.get("username").get)
-                val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-                MailUtility.sendEmailConfig(recipients.distinct, 9, replaceMap)
+                if (!maybeperson.get.p.nem) {
+                  val recipients = List(maybeperson.get.p.em, maybemanager.get.p.em, request.session.get("username").get)
+                  val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+                  MailUtility.sendEmailConfig(recipients.distinct, 9, replaceMap)
+                }
 
                 Redirect(routes.DashboardController.index)
               }

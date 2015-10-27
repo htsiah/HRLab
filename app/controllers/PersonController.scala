@@ -25,6 +25,7 @@ object PersonController extends Controller with Secured{
               "fn" -> text,
               "ln" -> text,
               "em" -> text,
+              "nem" -> boolean,
               "pt" -> text,
               "mgrid" -> text,
               "g" -> text,
@@ -33,8 +34,8 @@ object PersonController extends Controller with Secured{
               "off" -> text,
               "edat" -> optional(jodaDate),
               "rl" -> text
-          ){(fn,ln,em,pt,mgrid,g,ms,dpm,off,edat,rl)=>Profile(fn,ln,em.toLowerCase().trim(),pt,mgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
-          {profile:Profile => Some(profile.fn,profile.ln,profile.em,profile.pt,profile.mgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
+          ){(fn,ln,em,nem,pt,mgrid,g,ms,dpm,off,edat,rl)=>Profile(fn,ln,em.toLowerCase().trim(),nem,pt,mgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
+          {profile:Profile => Some(profile.fn,profile.ln,profile.em,profile.nem,profile.pt,profile.mgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
           "wd" -> mapping(
               "wd1" -> boolean,
               "wd2" -> boolean,
@@ -110,25 +111,30 @@ object PersonController extends Controller with Secured{
             }
           },
           formWithData => {
-            val authentication_doc = Authentication(
-                _id = BSONObjectID.generate,
-                em = formWithData.p.em,
-                p = Random.alphanumeric.take(8).mkString,
-                r = Random.alphanumeric.take(8).mkString,
-                sys = None
-            )
+            
+            if (formWithData.p.nem==false) {
+              
+              val authentication_doc = Authentication(
+                  _id = BSONObjectID.generate,
+                  em = formWithData.p.em,
+                  p = Random.alphanumeric.take(8).mkString,
+                  r = Random.alphanumeric.take(8).mkString,
+                  sys = None
+              )
+              AuthenticationModel.insert(authentication_doc, p_request=request)
+              
+              // Send email
+              val replaceMap = Map(
+                  "FULLNAME" -> {formWithData.p.fn + " " + formWithData.p.ln},
+                  "ADMIN" -> request.session.get("name").get,
+                  "COMPANY" -> request.session.get("company").get,
+                  "URL" -> {Tools.hostname + "/set/" + authentication_doc.em  + "/" + authentication_doc.r}
+              )
+              MailUtility.sendEmailConfig(List(authentication_doc.em), 7, replaceMap)
+            
+            }
+
             PersonModel.insert(formWithData.copy(_id=BSONObjectID.generate), p_request=request)
-            AuthenticationModel.insert(authentication_doc, p_request=request)
-            
-            // Send email
-            val replaceMap = Map(
-                "FULLNAME" -> {formWithData.p.fn + " " + formWithData.p.ln},
-                "ADMIN" -> request.session.get("name").get,
-                "COMPANY" -> request.session.get("company").get,
-                "URL" -> {Tools.hostname + "/set/" + authentication_doc.em  + "/" + authentication_doc.r}
-            )
-            MailUtility.sendEmailConfig(List(authentication_doc.em), 7, replaceMap)
-            
             Future.successful(Redirect(routes.PersonController.index))
           }
       )
@@ -235,9 +241,13 @@ object PersonController extends Controller with Secured{
   def delete(p_id:String, p_email:String) = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(PersonModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
-      AuthenticationModel.remove(BSONDocument("em" -> p_email), request)
       LeaveProfileModel.remove(BSONDocument("pid" -> p_id), request)
       LeaveModel.setLockDown(BSONDocument("pid" -> p_id), request)
+      
+      if (p_email!="") {
+        AuthenticationModel.remove(BSONDocument("em" -> p_email), request)
+      }
+      
       Future.successful(Redirect(routes.PersonController.index))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))

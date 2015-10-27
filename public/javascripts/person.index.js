@@ -62,7 +62,7 @@ function onDeleteProceed(p_id, p_email){
 				html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Delete",
 				"class" : "btn btn-danger btn-mini",
 				click: function() {
-					window.location = "/person/delete/" + p_id + "/" + p_email;
+					window.location = "/person/delete?p_id=" + p_id + "&p_email=" + p_email;
 				}
 			},
 			{

@@ -24,6 +24,7 @@ case class Profile (
     fn: String,
     ln: String,
     em: String,
+    nem: Boolean,
     pt: String,
     mgrid: String,
     g: String,
@@ -64,6 +65,7 @@ object PersonModel {
           doc.getAs[String]("fn").get,
           doc.getAs[String]("ln").get,
           doc.getAs[String]("em").get,
+          doc.getAs[Boolean]("nem").getOrElse(false),
           doc.getAs[String]("pt").get,
           doc.getAs[String]("mgrid").get,
           doc.getAs[String]("g").get,
@@ -122,6 +124,7 @@ object PersonModel {
           "fn" -> profile.fn,
           "ln" -> profile.ln,
           "em" -> profile.em,
+          "nem" -> profile.nem,
           "pt" -> profile.pt,
           "mgrid" -> profile.mgrid,
           "g" -> profile.g,
@@ -172,7 +175,7 @@ object PersonModel {
   private val col = db.collection("person")
   val doc = Person(
       _id = BSONObjectID.generate,
-      p = Profile(fn="", ln="", em="", pt="", mgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime()), rl=List("")),
+      p = Profile(fn="", ln="", em="", nem=false, pt="", mgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime()), rl=List("")),
       wd = Workday(wd1=true, wd2=true, wd3=true, wd4=true, wd5=true, wd6=false, wd7=false),
       sys = None
   )

@@ -155,6 +155,7 @@ object SignUpController extends Controller {
                       fn = formWithData.fname, 
                       ln = formWithData.lname,
                       em = formWithData.email,
+                      nem = false,
                       pt = "Manager",
                       mgrid = person_objectID.stringify,
                       g = formWithData.gender,
