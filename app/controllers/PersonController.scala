@@ -81,7 +81,7 @@ object PersonController extends Controller with Secured{
   def create = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       for {
-        persons <- PersonModel.find(BSONDocument(), request)
+        persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
         maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
         maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
         offices <- OfficeModel.getAllOfficeName(request)
@@ -100,7 +100,7 @@ object PersonController extends Controller with Secured{
       personform.bindFromRequest.fold(
           formWithError => {
             for {
-              persons <- PersonModel.find(BSONDocument(), request)
+              persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
               maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
@@ -147,7 +147,7 @@ object PersonController extends Controller with Secured{
     if(request.session.get("roles").get.contains("Admin")){
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-        persons <- PersonModel.find(BSONDocument(), request)
+        persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
         maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
         maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
         offices <- OfficeModel.getAllOfficeName(request)
@@ -169,7 +169,7 @@ object PersonController extends Controller with Secured{
       personform.bindFromRequest.fold(
           formWithError => {
             for {
-              persons <- PersonModel.find(BSONDocument(), request)
+              persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
               maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
@@ -182,7 +182,7 @@ object PersonController extends Controller with Secured{
           },
           formWithData => {
             for {
-              persons <- PersonModel.find(BSONDocument(), request)
+              persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
               maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
@@ -284,7 +284,7 @@ object PersonController extends Controller with Secured{
     if(request.session.get("roles").get.contains("Admin")){
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
-        persons <- PersonModel.find(BSONDocument(), request)
+        persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
         maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
         maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
         offices <- OfficeModel.getAllOfficeName(request)
@@ -306,7 +306,7 @@ object PersonController extends Controller with Secured{
       personform.bindFromRequest.fold(
           formWithError => {
             for {
-              persons <- PersonModel.find(BSONDocument(), request)
+              persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
               maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
@@ -320,7 +320,7 @@ object PersonController extends Controller with Secured{
           formWithData => {
             for {
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
-              persons <- PersonModel.find(BSONDocument(), request)
+              persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
               maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
               maybe_positions <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               offices <- OfficeModel.getAllOfficeName(request)
