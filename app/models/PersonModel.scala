@@ -365,11 +365,17 @@ object PersonModel {
       future.onComplete {
         case Failure(e) => throw e
         case Success(lastError) => {
-          // Update name on leave and leave profile
+          // Update name on leave
           if (oldperson.get.p.fn != p_doc.p.fn || oldperson.get.p.ln != p_doc.p.ln) {
             LeaveModel.updateUsingBSON(BSONDocument("pid"->p_doc._id.stringify), BSONDocument("$set"->BSONDocument("pn"->(p_doc.p.fn + " " + p_doc.p.ln))))
             LeaveModel.updateUsingBSON(BSONDocument("w_aprid"->p_doc._id.stringify), BSONDocument("$set"->BSONDocument("w_aprn"->(p_doc.p.fn + " " + p_doc.p.ln))))
-            LeaveProfileModel.updateUsingBSON(BSONDocument("pid"->p_doc._id.stringify), BSONDocument("$set"->BSONDocument("pn"->(p_doc.p.fn + " " + p_doc.p.ln))))
+          }
+          
+          // Update leave profiles - recalculate leave entitlement
+          LeaveProfileModel.find(BSONDocument("pid" -> p_doc._id.stringify), p_request).map { leaveprofiles =>
+            leaveprofiles.foreach { leaveprofile => {
+                  LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile.copy(pn=p_doc.p.fn + " " + p_doc.p.ln), p_request)
+            } }
           }
         }
       }
