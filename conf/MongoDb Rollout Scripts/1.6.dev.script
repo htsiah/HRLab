@@ -1,0 +1,5 @@
+use d-hrsifu-directory
+db.person.update({},{ $set: {"p.nem": false }}, false, true)
+
+use hrsifu-directory
+db.person.update({},{ $set: {"p.nem": false }}, false, true)
