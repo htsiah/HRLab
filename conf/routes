@@ -126,7 +126,7 @@ GET		/office/isUsedJSON/:p_officename	controllers.OfficeController.isUsedJSON(p_
 GET		/report/myleaverequest				controllers.ReportController.myleaverequest
 GET		/report/myleaverequestcsv			controllers.ReportController.myleaverequestCSV
 GET		/report/myteamleaverequest			controllers.ReportController.myteamleaverequest
-GET		/report/myteamleaverequestJSON		controllers.ReportController.myteamleaverequestJSON
+GET		/report/myteamleaverequestcsv		controllers.ReportController.myteamleaverequestCSV
 GET		/report/myteamleaveprofile			controllers.ReportController.myteamleaveprofile
 GET		/report/myteamleaveprofileJSON		controllers.ReportController.myteamleaveprofileJSON
 GET		/report/allstaffleaverequest		controllers.ReportController.allstaffleaverequest

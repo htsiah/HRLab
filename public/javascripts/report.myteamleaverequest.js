@@ -4,7 +4,7 @@ $(function(){
     $("#navMyTeamLeaveRequest").addClass("active");
 				    
     $.ajax({
-    	url: "/report/myteamleaverequestJSON",
+    	url: "/report/myteamleaverequest",
 		dataType: "json",
 		success: function(data){
 			setupJqGrid(data);
@@ -84,9 +84,8 @@ function setupJqGrid(data){
 		title:"Export to CSV",
 		caption:"",
         buttonicon:"ace-icon fa fa-download bigger-140", 
-        onClickButton : function () { 
-        	alert("This feature is no available yet.");
-            // alert("Call server to generate CSV. Example: http://www.trirand.net/documentation/php/_32h0wow2v.htm");
+        onClickButton : function () {
+        	window.open("/report/myteamleaverequestcsv");
         } 
     });
 	
