@@ -170,48 +170,40 @@ object SignUpController extends Controller {
      
               val contentEmptyMap = Map(""->"")
               
-              // TODO Step 6: Add company staff
-              val lookupkey6 = (BSONObjectID.generate).stringify
-              val buttonMap6 = Map(
-                  "ADDLINK"->{routes.PersonController.create.toString}, 
-                  "SETTINGLINK"->{routes.PersonController.index.toString}, 
-                  "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey6 + "\")"}    
-              )
-              Await.result(TaskModel.insert(7, person_objectID.stringify, lookupkey6, contentEmptyMap, buttonMap6, eid), Tools.db_timeout)
-              
-              // TODO Step 5: Add company holiday
+              // TODO Step 5: Add company staff
               val lookupkey5 = (BSONObjectID.generate).stringify
               val buttonMap5 = Map(
-                  "ADDLINK"->{routes.CompanyHolidayController.create.toString}, 
-                  "SETTINGLINK"->{routes.CalendarController.company.toString}, 
+                  "ADDLINK"->{routes.PersonController.create.toString}, 
+                  "SETTINGLINK"->{routes.PersonController.index.toString}, 
                   "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey5 + "\")"}    
               )
               Await.result(TaskModel.insert(6, person_objectID.stringify, lookupkey5, contentEmptyMap, buttonMap5, eid), Tools.db_timeout)
               
-              // TODO Step 4: Update your person information and leave profiles
+              // TODO Step 4: Add company holiday
               val lookupkey4 = (BSONObjectID.generate).stringify
               val buttonMap4 = Map(
-                  "SETTINGLINK"->{routes.PersonController.view(person_objectID.stringify).toString}, 
+                  "ADDLINK"->{routes.CompanyHolidayController.create.toString}, 
+                  "SETTINGLINK"->{routes.CalendarController.company.toString}, 
                   "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey4 + "\")"}    
               )
               Await.result(TaskModel.insert(5, person_objectID.stringify, lookupkey4, contentEmptyMap, buttonMap4, eid), Tools.db_timeout)
-    
-              // TODO Step 3: Configure leave policy
+              
+              // TODO Step 3: Update your person information and leave profiles
               val lookupkey3 = (BSONObjectID.generate).stringify
               val buttonMap3 = Map(
-                  "SETTINGLINK"->{routes.LeaveSettingController.index.toString}, 
+                  "SETTINGLINK"->{routes.PersonController.view(person_objectID.stringify).toString}, 
                   "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey3 + "\")"}    
               )
               Await.result(TaskModel.insert(4, person_objectID.stringify, lookupkey3, contentEmptyMap, buttonMap3, eid), Tools.db_timeout)
-              
-              // TODO Step 2: Update keywords for department, leave types and position types
+    
+              // TODO Step 2: Configure leave policy
               val lookupkey2 = (BSONObjectID.generate).stringify
               val buttonMap2 = Map(
-                  "SETTINGLINK"->{routes.KeywordController.index.toString}, 
+                  "SETTINGLINK"->{routes.LeaveSettingController.index.toString}, 
                   "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey2 + "\")"}    
               )
               Await.result(TaskModel.insert(3, person_objectID.stringify, lookupkey2, contentEmptyMap, buttonMap2, eid), Tools.db_timeout)
-              
+                            
               // TODO Step 1: Update company profile
               val lookupkey1 = (BSONObjectID.generate).stringify
               val buttonMap1 = Map(
