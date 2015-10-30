@@ -322,40 +322,103 @@ object ReportController extends Controller with Secured {
   
   def allstaffleaveprofile = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
-      Future.successful(Ok(views.html.report.allstaffleaveprofile()).withSession(
-          (request.session - "path") + ("path"->((routes.ReportController.allstaffleaveprofile).toString))
-      )) 
+      for {
+        leaveprofiles <- LeaveProfileModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
+      } yield {
+        render {
+          case Accepts.Html() => {
+            Ok(views.html.report.allstaffleaveprofile()).withSession(
+                (request.session - "path") + ("path"->((routes.ReportController.allstaffleaveprofile).toString))
+            )
+          }
+          case Accepts.Json() => {
+            val leavesMap = leaveprofiles.map { leaveprofile => Map(
+                "name" -> Json.toJson(leaveprofile.pn),
+                "lt" -> Json.toJson(leaveprofile.lt),
+                "ent" -> Json.toJson(leaveprofile.cal.ent),
+                "ear" -> Json.toJson(leaveprofile.cal.ear),
+                "adj" -> Json.toJson(leaveprofile.cal.adj),
+                "cf" -> Json.toJson(leaveprofile.cal.cf),
+                "tuti" -> Json.toJson(leaveprofile.cal.uti + leaveprofile.cal.cfuti),
+                "texp" -> Json.toJson(leaveprofile.cal.cfexp),
+                "papr" -> Json.toJson(leaveprofile.cal.papr),
+                "bal" -> Json.toJson(leaveprofile.cal.bal),
+                "cbal" -> Json.toJson(leaveprofile.cal.cbal),
+                "a_link" -> Json.toJson(
+                    "<div class='btn-group'>" + 
+                    "<a class='btn btn-xs btn-success' title='View' href='/leaveprofilereport/view?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>" +
+                    "<a class='btn btn-xs btn-info' title='Edit' href='/leaveprofilereport/edit?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-pencil bigger-120'></i></a>" +
+                    "<a class='btn btn-xs btn-danger' title='Delete' href=" + '"' + "javascript:onDeleteLeaveProfile('" + leaveprofile._id.stringify + "','" + leaveprofile.lt + "','" + leaveprofile.pid + "')" + '"' + "><i class='ace-icon fa fa-trash-o bigger-120'></i></a>" +
+                    "</div>"
+                )
+            )}
+            Ok(Json.toJson(leavesMap)).as("application/json")
+          }
+        }
+      }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
   
-  def allstaffleaveprofileJSON = withAuth { username => implicit request => { 
+  def allstaffleaveprofilecsv = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       for {
         leaveprofiles <- LeaveProfileModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
       } yield {
-        val leavesMap = leaveprofiles.map { leaveprofile => Map(
-            "name" -> Json.toJson(leaveprofile.pn),
-            "lt" -> Json.toJson(leaveprofile.lt),
-            "ent" -> Json.toJson(leaveprofile.cal.ent),
-            "ear" -> Json.toJson(leaveprofile.cal.ear),
-            "adj" -> Json.toJson(leaveprofile.cal.adj),
-            "cf" -> Json.toJson(leaveprofile.cal.cf),
-            "tuti" -> Json.toJson(leaveprofile.cal.uti + leaveprofile.cal.cfuti),
-            "texp" -> Json.toJson(leaveprofile.cal.cfexp),
-            "papr" -> Json.toJson(leaveprofile.cal.papr),
-            "bal" -> Json.toJson(leaveprofile.cal.bal),
-            "cbal" -> Json.toJson(leaveprofile.cal.cbal),
-            "a_link" -> Json.toJson(
-                "<div class='btn-group'>" + 
-                "<a class='btn btn-xs btn-success' title='View' href='/leaveprofilereport/view?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>" +
-                "<a class='btn btn-xs btn-info' title='Edit' href='/leaveprofilereport/edit?p_id=" + leaveprofile._id.stringify + "'><i class='ace-icon fa fa-pencil bigger-120'></i></a>" +
-                "<a class='btn btn-xs btn-danger' title='Delete' href=" + '"' + "javascript:onDeleteLeaveProfile('" + leaveprofile._id.stringify + "','" + leaveprofile.lt + "','" + leaveprofile.pid + "')" + '"' + "><i class='ace-icon fa fa-trash-o bigger-120'></i></a>" +
-                "</div>"
-            )
-        )}
-        Ok(Json.toJson(leavesMap)).as("application/json")
+        val filename = "attachment; filename=" + "AllStaffLeaveProfile-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
+        val header = "Applicant,Leave Type,Entitlement,Earned,Adjustment,Utilized,Carry Forward,Carry Forward Utilized,Carry Forward Expired,Pending Approval,Balance,Closing Balance," + 
+        "Leave Earned Jan,Leave Earned Feb,Leave Earned Mar,Leave Earned Apr,Leave Earned May,Leave Earned Jun,Leave Earned Jul,Leave Earned Aug,Leave Earned Sep,Leave Earned Oct,Leave Earned Nov,Leave Earned Dec," +
+        "Eligible Leave Entitlement - Service Month 1,Eligible Leave Entitlement - Entitlement 1,Eligible Leave Entitlement - Carry Forward 1," +
+        "Eligible Leave Entitlement - Service Month 2,Eligible Leave Entitlement - Entitlement 2,Eligible Leave Entitlement - Carry Forward 2," +
+        "Eligible Leave Entitlement - Service Month 3,Eligible Leave Entitlement - Entitlement 3,Eligible Leave Entitlement - Carry Forward 3," +
+        "Eligible Leave Entitlement - Service Month 4,Eligible Leave Entitlement - Entitlement 4,Eligible Leave Entitlement - Carry Forward 4," +
+        "Eligible Leave Entitlement - Service Month 5,Eligible Leave Entitlement - Entitlement 5,Eligible Leave Entitlement - Carry Forward 5\n"
+        val data = leaveprofiles.map { leaveprofile => 
+          leaveprofile.pn + "," + 
+          leaveprofile.lt + "," + 
+          leaveprofile.cal.ent + "," + 
+          leaveprofile.cal.ear + "," + 
+          leaveprofile.cal.adj + "," + 
+          leaveprofile.cal.uti + "," + 
+          leaveprofile.cal.cf + "," + 
+          leaveprofile.cal.cfuti + "," + 
+          leaveprofile.cal.cfexp + "," + 
+          leaveprofile.cal.papr + "," + 
+          leaveprofile.cal.bal + "," + 
+          leaveprofile.cal.cbal + "," + 
+          leaveprofile.me.jan + "," + 
+          leaveprofile.me.feb + "," + 
+          leaveprofile.me.mar + "," + 
+          leaveprofile.me.apr + "," + 
+          leaveprofile.me.may + "," + 
+          leaveprofile.me.jun + "," + 
+          leaveprofile.me.jul + "," + 
+          leaveprofile.me.aug + "," + 
+          leaveprofile.me.sep + "," + 
+          leaveprofile.me.oct + "," + 
+          leaveprofile.me.nov + "," + 
+          leaveprofile.me.dec + "," + 
+          leaveprofile.set_ent.e1_s + "," + 
+          leaveprofile.set_ent.e1 + "," +
+          leaveprofile.set_ent.e1_cf + "," + 
+          leaveprofile.set_ent.e2_s + "," + 
+          leaveprofile.set_ent.e2 + "," +
+          leaveprofile.set_ent.e2_cf + "," + 
+          leaveprofile.set_ent.e3_s + "," + 
+          leaveprofile.set_ent.e3 + "," +
+          leaveprofile.set_ent.e3_cf + "," + 
+          leaveprofile.set_ent.e4_s + "," + 
+          leaveprofile.set_ent.e4 + "," +
+          leaveprofile.set_ent.e4_cf + "," + 
+          leaveprofile.set_ent.e5_s + "," + 
+          leaveprofile.set_ent.e5 + "," +
+          leaveprofile.set_ent.e5_cf
+        }
+        Ok(header + data.mkString("\n")).withHeaders(
+            CONTENT_TYPE -> "text/csv",
+            CONTENT_DISPOSITION -> filename
+        )
       }
     } else {
       Future.successful(Ok(Json.parse("""{"status":false}""")).as("application/json"))

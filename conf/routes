@@ -132,7 +132,7 @@ GET		/report/myteamleaveprofilecsv		controllers.ReportController.myteamleaveprof
 GET		/report/allstaffleaverequest		controllers.ReportController.allstaffleaverequest
 GET		/report/allstaffleaverequestcsv		controllers.ReportController.allstaffleaverequestcsv
 GET		/report/allstaffleaveprofile		controllers.ReportController.allstaffleaveprofile
-GET		/report/allstaffleaveprofileJSON	controllers.ReportController.allstaffleaveprofileJSON
+GET		/report/allstaffleaveprofilecsv		controllers.ReportController.allstaffleaveprofilecsv
 
 # Leave Report
 GET		/leavereport/view								controllers.LeaveReportController.view(p_id:String)
