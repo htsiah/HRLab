@@ -13,31 +13,64 @@ import reactivemongo.bson.{BSONObjectID, BSONDocument}
 import models.{LeaveModel, PersonModel, LeaveProfileModel}
 import utilities.{Tools}
 
+import org.joda.time.DateTime
+
 object ReportController extends Controller with Secured {
   
   def myleaverequest = withAuth { username => implicit request => { 
-    Future.successful(Ok(views.html.report.myleaverequest()).withSession(
-        (request.session - "path") + ("path"->((routes.ReportController.myleaverequest).toString))
-    ))
-  }}
-  
-  def myleaverequestJSON = withAuth { username => implicit request => { 
     for {
       leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get), BSONDocument("docnum" -> -1), request)
     } yield {
-      val leavesMap = leaves.map { leave => Map(
-          "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
-          "docnum" -> Json.toJson(leave.docnum),
-          "lt" -> Json.toJson(leave.lt),
-          "dt" -> Json.toJson(leave.dt),
-          "fdat" -> Json.toJson(leave.fdat.get.toLocalDate()),
-          "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
-          "uti" -> Json.toJson(leave.uti + leave.cfuti),
-          "wf_s" -> Json.toJson(leave.wf.s),
-          "wf_aprn" -> Json.toJson(leave.wf.aprn),
-          "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leavereport/view?p_id=" + leave._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
-      )}
-      Ok(Json.toJson(leavesMap)).as("application/json")
+      render {
+        case Accepts.Html() => {
+           Ok(views.html.report.myleaverequest()).withSession(
+               (request.session - "path") + ("path"->((routes.ReportController.myleaverequest).toString))
+           )
+         }
+         case Accepts.Json() => {
+           val leavesMap = leaves.map { leave => Map(
+               "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
+               "docnum" -> Json.toJson(leave.docnum),
+               "lt" -> Json.toJson(leave.lt),
+               "dt" -> Json.toJson(leave.dt),
+               "fdat" -> Json.toJson(leave.fdat.get.toLocalDate()),
+               "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
+               "uti" -> Json.toJson(leave.uti + leave.cfuti),
+               "wf_s" -> Json.toJson(leave.wf.s),
+               "wf_aprn" -> Json.toJson(leave.wf.aprn),
+               "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leavereport/view?p_id=" + leave._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
+           )}
+           Ok(Json.toJson(leavesMap)).as("application/json")  
+         }
+      }
+     }
+  }}
+    
+  def myleaverequestCSV = withAuth { username => implicit request => { 
+    for {
+      leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get), BSONDocument("docnum" -> -1), request)
+    } yield {
+      val filename = "attachment; filename=" + request.session.get("name").get.toString().replaceAll(" ", "") + "-LeaveRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
+      val header = "Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approver,Reason,Lock\n"
+      val data = leaves.map { leave => 
+        leave.docnum + "," + 
+        leave.lt + "," + 
+        leave.dt + "," + 
+        leave.sys.get.cdat.get.toLocalDate() + "," + 
+        leave.fdat.get.toLocalDate() + "," + 
+        leave.tdat.get.toLocalDate() + "," + 
+        leave.uti + "," + 
+        leave.cfuti + "," +
+        leave.wf.s + "," +
+        leave.wf.aprn + "," +
+        leave.r + "," +
+        leave.ld
+      }
+      
+      Ok(header + data.mkString("\n")).withHeaders(
+          CONTENT_TYPE -> "text/csv",
+          CONTENT_DISPOSITION -> filename
+      )
     }
   }}
   
