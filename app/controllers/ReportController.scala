@@ -189,38 +189,70 @@ object ReportController extends Controller with Secured {
   
   def allstaffleaverequest = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
-      Future.successful(Ok(views.html.report.allstaffleaverequest()).withSession(
-          (request.session - "path") + ("path"->((routes.ReportController.allstaffleaverequest).toString))
-      ))
+      for {
+        leaves <- LeaveModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
+      } yield {
+        render {
+          case Accepts.Html() => {
+            Ok(views.html.report.allstaffleaverequest()).withSession(
+                (request.session - "path") + ("path"->((routes.ReportController.allstaffleaverequest).toString))
+            )
+          }
+          case Accepts.Json() => {
+            val leavesMap = leaves.map { leave => Map(
+                "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
+                "name" -> Json.toJson(leave.pn),
+                "docnum" -> Json.toJson(leave.docnum),
+                "lt" -> Json.toJson(leave.lt),
+                "dt" -> Json.toJson(leave.dt),
+                "fdat" -> Json.toJson(leave.fdat.get.toLocalDate()),
+                "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
+                "uti" -> Json.toJson(leave.uti),
+                "cfuti" -> Json.toJson(leave.cfuti),
+                "wf_s" -> Json.toJson(leave.wf.s),
+                "wf_aprn" -> Json.toJson(leave.wf.aprn),
+                "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leavereport/view?p_id=" + leave._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
+            )}
+            Ok(Json.toJson(leavesMap)).as("application/json")
+          }
+         }
+      }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
-  
-  def allstaffleaverequestJSON = withAuth { username => implicit request => { 
-    if(request.session.get("roles").get.contains("Admin")){
-      for {
-        leaves <- LeaveModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
-      } yield {
-        val leavesMap = leaves.map { leave => Map(
-            "lock" -> Json.toJson(if(leave.ld){"(<i class='ace-icon fa fa-lock'></i>)"} else {""}),
-            "name" -> Json.toJson(leave.pn),
-            "docnum" -> Json.toJson(leave.docnum),
-            "lt" -> Json.toJson(leave.lt),
-            "dt" -> Json.toJson(leave.dt),
-            "fdat" -> Json.toJson(leave.fdat.get.toLocalDate()),
-            "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
-            "uti" -> Json.toJson(leave.uti),
-            "cfuti" -> Json.toJson(leave.cfuti),
-            "wf_s" -> Json.toJson(leave.wf.s),
-            "wf_aprn" -> Json.toJson(leave.wf.aprn),
-            "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leavereport/view?p_id=" + leave._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
-        )}
-        Ok(Json.toJson(leavesMap)).as("application/json")
-      }
-    } else {
-      Future.successful(Ok(Json.parse("""{"status":false}""")).as("application/json"))
-    }
+    
+  def allstaffleaverequestcsv = withAuth { username => implicit request => { 
+     if(request.session.get("roles").get.contains("Admin")){
+       for {
+         leaves <- LeaveModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
+       } yield {
+         val filename = "attachment; filename=" + "AllStaff-LeaveRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
+         val header = "Applicant,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approver,Reason,Lock\n"
+         val data = leaves.map { leave => 
+           leave.pn + "," + 
+           leave.docnum + "," + 
+           leave.lt + "," + 
+           leave.dt + "," + 
+           leave.sys.get.cdat.get.toLocalDate() + "," + 
+           leave.fdat.get.toLocalDate() + "," + 
+           leave.tdat.get.toLocalDate() + "," + 
+           leave.uti + "," + 
+           leave.cfuti + "," +
+           leave.wf.s + "," +
+           leave.wf.aprn + "," +
+           leave.r + "," +
+           leave.ld
+         }
+         
+         Ok(header + data.mkString("\n")).withHeaders(
+             CONTENT_TYPE -> "text/csv",
+             CONTENT_DISPOSITION -> filename
+         )
+       }
+     } else {
+       Future.successful(Ok(views.html.error.unauthorized()))
+     }
   }}
   
   def allstaffleaveprofile = withAuth { username => implicit request => { 
