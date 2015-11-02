@@ -4,7 +4,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(leaveprofile:Form[LeaveProfile], leavetypes:List[String], ppt:String, oid:String="", alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(leaveprofile:Form[LeaveProfile], leavetypes:List[String], oid:String="", alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -26,7 +26,6 @@
 @inlinejs = {
 	<script type="text/javascript">
 		var p_pid = '@session.get("id").get';
-		var p_position = "@ppt";
 	</script>
 	<script src="@routes.Assets.at("javascripts/common.loaderanimation.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/leaveprofile.myprofileform.js")" type="text/javascript"></script>

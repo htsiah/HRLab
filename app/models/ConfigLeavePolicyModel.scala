@@ -15,7 +15,6 @@ import org.joda.time.DateTime
 case class ConfigLeavePolicy (
     _id: BSONObjectID,
     lt: String,
-    pt: String,
     set: ConfigLeavePolicySetting,
     ent: ConfigEntitlement,
     sys: Option[System]
@@ -107,7 +106,6 @@ object ConfigLeavePolicyModel {
       ConfigLeavePolicy(
           doc.getAs[BSONObjectID]("_id").get,
           doc.getAs[String]("lt").get,
-          doc.getAs[String]("pt").get,
           doc.getAs[ConfigLeavePolicySetting]("set").get,
           doc.getAs[ConfigEntitlement]("ent").get,
           doc.getAs[System]("sys").map(o => o)

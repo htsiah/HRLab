@@ -61,17 +61,12 @@
 	) {
 	@if(oid==""){
 		@select(leavepolicy("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave Type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		@select(leavepolicy("pt"), options = options(positiontypes.map(positiontype=>positiontype)), '_label -> "Position Type",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(leavepolicy("set")("g"), options = Seq("Applicable for all"->"Applicable for all", "Male only"->"Male only", "Female only"->"Female only"), '_label -> "Gender", '_class->"dl-horizontal", 'class->"form-control")
 		@select(leavepolicy("set")("ms"), options = Seq("Applicable for all"->"Applicable for all", "Single only"->"Single only", "Married only"->"Married only"), '_label -> "Marital Status", '_class->"dl-horizontal", 'class->"form-control")
 	} else {
 		<dl class="dl-horizontal">
 			<dt><label>Leave Type</label></dt>
 			<dd class="">@leavepolicy("lt").value</dd>
-		</dl>
-		<dl class="dl-horizontal">
-			<dt><label>Position Type</label></dt>
-			<dd class="">@leavepolicy("pt").value</dd>
 		</dl>
 		<dl class="dl-horizontal">
 			<dt><label>Gender</label></dt>
@@ -320,7 +315,6 @@
 			@inputText(leavepolicy("sys")("ll"),'type -> "hidden")
 			if(oid!="") {
 				@inputText(leavepolicy("lt"),'type -> "hidden")
-				@inputText(leavepolicy("pt"),'type -> "hidden")
 				@inputText(leavepolicy("set.g"),'type -> "hidden")
 				@inputText(leavepolicy("set.ms"),'type -> "hidden")
 			}

@@ -194,7 +194,7 @@ object PersonController extends Controller with Secured{
               // Make sure after person update, all leave profile able link to leave policy.
               var LeaveTypesList = List[String]()
               leaveprofiles.map { leaveprofile => {
-                val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.pt, formWithData.p.g + " only", formWithData.p.ms + " only", request), Tools.db_timeout)
+                val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.g + " only", formWithData.p.ms + " only", request), Tools.db_timeout)
                 if ( isAvailable == false) {
                   LeaveTypesList = LeaveTypesList :+ leaveprofile.lt
                 }
@@ -332,7 +332,7 @@ object PersonController extends Controller with Secured{
               // Make sure after person update, leave profiles able link to leave policy.
               var LeaveTypesList = List[String]()
               leaveprofiles.map { leaveprofile => {
-                val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.pt, formWithData.p.g + " only", formWithData.p.ms + " only", request), Tools.db_timeout)
+                val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.g + " only", formWithData.p.ms + " only", request), Tools.db_timeout)
                 if ( isAvailable == false) {
                   LeaveTypesList = LeaveTypesList :+ leaveprofile.lt
                 }

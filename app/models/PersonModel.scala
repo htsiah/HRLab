@@ -313,7 +313,6 @@ object PersonModel {
         Thread sleep 3000  // Wait 3 second make sure leave policy and setting is created
         ConfigLeavePolicyModel.find(
             BSONDocument(
-                "pt" -> "Manager",
                 "$or" -> BSONArray(
                     BSONDocument("set.g"->(p_doc.p.g + " only")),
                     BSONDocument("set.g"->"Applicable for all")

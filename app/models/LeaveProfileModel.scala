@@ -331,7 +331,7 @@ object LeaveProfileModel {
   def insert(p_doc:LeaveProfile, p_eid:String="", p_request:RequestHeader=null)= {
     for {
       maybe_person <- if (p_eid=="") PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_doc.pid)), p_request) else PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_doc.pid), "sys.eid" -> p_eid))
-      maybe_leavepolicy <- if (p_eid=="") LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt ,"pt"->maybe_person.get.p.pt), p_request) else LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt ,"pt"->maybe_person.get.p.pt, "sys.eid" -> p_eid))
+      maybe_leavepolicy <- if (p_eid=="") LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt), p_request) else LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt, "sys.eid" -> p_eid))
       maybe_leavesetting <- if (p_eid=="") LeaveSettingModel.findOne(BSONDocument(), p_request) else LeaveSettingModel.findOne(BSONDocument("sys.eid" -> p_eid))
     } yield {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))
@@ -426,7 +426,7 @@ object LeaveProfileModel {
   def update(p_query:BSONDocument,p_doc:LeaveProfile,p_request:RequestHeader) = {
     for {
       maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_doc.pid)), p_request)
-      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt ,"pt"->maybe_person.get.p.pt), p_request)
+      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt), p_request)
       maybe_leavesetting <- LeaveSettingModel.findOne(BSONDocument(), p_request)
     } yield {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))
@@ -518,7 +518,7 @@ object LeaveProfileModel {
   def update(p_query:BSONDocument, p_doc:LeaveProfile, p_eid:String) = {
     for {
       maybe_person <- PersonModel.findOne(BSONDocument("_id"->BSONObjectID(p_doc.pid), "sys.eid"->p_eid))
-      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt, "pt"->maybe_person.get.p.pt, "sys.eid"->p_eid))
+      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt"->p_doc.lt, "sys.eid"->p_eid))
       maybe_leavesetting <- LeaveSettingModel.findOne(BSONDocument("sys.eid"->p_eid))
     } yield {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))

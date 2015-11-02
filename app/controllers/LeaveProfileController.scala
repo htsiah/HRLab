@@ -112,7 +112,7 @@ object LeaveProfileController extends Controller with Secured {
               pid = p_pid,
               pn = person.p.fn + " " + person.p.ln
           )
-          Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile_doc), leavepolicies, p_pid, person.p.pt))
+          Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile_doc), leavepolicies, p_pid))
         }).getOrElse(NotFound)
       }
     } else {
@@ -131,7 +131,7 @@ object LeaveProfileController extends Controller with Secured {
               }
             } yield {
               maybeperson.map( person => {
-                Ok(views.html.leaveprofile.form(formWithError, leavepolicies, p_pid, person.p.pt))
+                Ok(views.html.leaveprofile.form(formWithError, leavepolicies, p_pid))
               }).getOrElse(NotFound)
             }
           },
@@ -181,7 +181,7 @@ object LeaveProfileController extends Controller with Secured {
                 )
                 val alert = if ((maybe_alert.getOrElse(null))!=null) { maybe_alert.get.copy(m=Tools.replaceSubString(maybe_alert.get.m, replaceMap.toList)) } else { null }
                 maybeperson.map( person => {
-                  Ok(views.html.leaveprofile.form(leaveprofileform.fill(formWithData), leavepolicies, p_pid, person.p.pt, "", alert))
+                  Ok(views.html.leaveprofile.form(leaveprofileform.fill(formWithData), leavepolicies, p_pid, "", alert))
                 }).getOrElse(NotFound)
               }
             }
@@ -199,7 +199,7 @@ object LeaveProfileController extends Controller with Secured {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request)
       } yield {
         maybeleaveprofile.map( leaveprofile => {
-            Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile), List(), leaveprofile.pid, "", p_id))
+            Ok(views.html.leaveprofile.form(leaveprofileform.fill(leaveprofile), List(), leaveprofile.pid, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -215,7 +215,7 @@ object LeaveProfileController extends Controller with Secured {
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request) 
             } yield {
-              Ok(views.html.leaveprofile.form(formWithError, List(), maybeleaveprofile.get.pid, "", p_id))
+              Ok(views.html.leaveprofile.form(formWithError, List(), maybeleaveprofile.get.pid, p_id))
             }
           },
           formWithData => {
@@ -292,7 +292,7 @@ object LeaveProfileController extends Controller with Secured {
               pid = request.session.get("id").get,
               pn = person.p.fn + " " + person.p.ln
           )
-          Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(leaveprofile_doc), leavepolicies, person.p.pt))
+          Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(leaveprofile_doc), leavepolicies))
         }).getOrElse(NotFound)
       }
     } else {
@@ -311,7 +311,7 @@ object LeaveProfileController extends Controller with Secured {
               }
             } yield {
               maybeperson.map( person => {
-                Ok(views.html.leaveprofile.myprofileform(formWithError, leavepolicies, person.p.pt))
+                Ok(views.html.leaveprofile.myprofileform(formWithError, leavepolicies))
               }).getOrElse(NotFound)
             }
           },
@@ -361,7 +361,7 @@ object LeaveProfileController extends Controller with Secured {
                 )
                 val alert = if ((maybe_alert.getOrElse(null))!=null) { maybe_alert.get.copy(m=Tools.replaceSubString(maybe_alert.get.m, replaceMap.toList)) } else { null }
                 maybeperson.map( person => {
-                  Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(formWithData), leavepolicies, person.p.pt, "", alert))
+                  Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(formWithData), leavepolicies, "", alert))
                 }).getOrElse(NotFound)
               }
             }
@@ -379,7 +379,7 @@ object LeaveProfileController extends Controller with Secured {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
       } yield {
         maybeleaveprofile.map( leaveprofile => {
-          Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(leaveprofile), List(), "", p_id))
+          Ok(views.html.leaveprofile.myprofileform(leaveprofileform.fill(leaveprofile), List(), p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -395,7 +395,7 @@ object LeaveProfileController extends Controller with Secured {
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
             } yield {
-              Ok(views.html.leaveprofile.myprofileform(formWithError, List(), "", p_id))
+              Ok(views.html.leaveprofile.myprofileform(formWithError, List(), p_id))
             }
           },
           formWithData => {

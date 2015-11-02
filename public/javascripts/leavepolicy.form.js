@@ -30,12 +30,10 @@ $(function(){
 	$("#leavepolicyform").validate({
 		onkeyup: false,
 		rules: {
-			"lt": "required",
-			"pt": "required"
+			"lt": "required"
 		},
 		messages: {
-			"lt": "Please select leave type.",
-			"pt": "Please select position type."
+			"lt": "Please select leave type."
 		},		 
 		submitHandler: function(form) {
 		   form.submit();
