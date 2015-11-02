@@ -89,7 +89,7 @@ object LeaveController extends Controller with Secured {
 	        for {
 	          leavetypes <- LeaveProfileModel.getLeaveTypes(request.session.get("id").get, request)
 	          maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
-	          maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt, "pt" -> request.session.get("position").get), request)
+	          maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
 	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get))
 	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
             maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.wf.aprid)), request)
@@ -178,7 +178,7 @@ object LeaveController extends Controller with Secured {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
 	    maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
-	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt, "pt" -> maybeperson.get.p.pt), request)
+	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt), request)
 	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeperson.get.p.off))
 	    maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
 	    maybealert_notenoughtbalance <- AlertUtility.findOne(BSONDocument("k"->1008))
@@ -366,7 +366,7 @@ object LeaveController extends Controller with Secured {
         persons.map { person => {
           val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
           leaves.map { leave => {
-            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt, "pt"->person.p.pt), request), Tools.db_timeout)
+            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
             val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
             if (leavepolicy.set.scal) {
               val title = leave.pn + " (" + leave.lt + ")"
@@ -413,7 +413,7 @@ object LeaveController extends Controller with Secured {
         persons.map { person => {
           val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
           leaves.map { leave => {
-            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt, "pt"->person.p.pt), request), Tools.db_timeout)
+            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
             val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
             if (leavepolicy.set.scal) {
               val title = leave.pn + " (" + leave.lt + ")"

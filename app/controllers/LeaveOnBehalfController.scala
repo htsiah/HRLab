@@ -84,7 +84,7 @@ object LeaveOnBehalfController extends Controller with Secured {
             leavetypes <- LeaveProfileModel.getLeaveTypes(formWithData.pid, request)
             maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.pid)), request)
             maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
-            maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt, "pt" -> maybeperson.get.p.pt), request)
+            maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
             maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeperson.get.p.off))
             maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.mgrid)), request)
             maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
