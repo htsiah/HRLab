@@ -41,7 +41,6 @@
 @layout.ace.main93(session.get("company").get + " | HRSifu.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 
 	@contentRow("Name", companyholiday.n)
-	@contentRow("Country", companyholiday.ct)
 	@contentRow("State", companyholiday.st.mkString(", "))
 	@contentRow("Date From", companyholiday.fdat.get.toLocalDate().toString())
 	@contentRow("Date To", companyholiday.tdat.get.toLocalDate().toString())
