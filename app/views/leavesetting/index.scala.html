@@ -83,7 +83,6 @@
 			<thead>
 				<tr>
 					<th>Leave Type</th>
-					<th>Position Type</th>
 					<th>Gender</th>
 					<th>Marital Status</th>
 					<th>&nbsp;</th>
@@ -93,7 +92,6 @@
 				@leavepolicies.map{ leavepolicy =>
 					<tr>
 						<td>@leavepolicy.lt</td>
-						<td>@leavepolicy.pt</td>
 						<td>@leavepolicy.set.g</td>
 						<td>@leavepolicy.set.ms</td>
 						<td>
@@ -104,7 +102,7 @@
 								<a class="btn btn-xs btn-info" title="Edit" href="@routes.LeavePolicyController.edit(leavepolicy._id.stringify)">
 									<i class="ace-icon fa fa-pencil bigger-120"></i>
 								</a>
-								<a class="btn btn-xs btn-danger" href="javascript:onDelete('@leavepolicy._id.stringify', '@leavepolicy.lt', '@leavepolicy.pt')" title="Delete">
+								<a class="btn btn-xs btn-danger" href="javascript:onDelete('@leavepolicy._id.stringify', '@leavepolicy.lt')" title="Delete">
 									<i class="ace-icon fa fa-trash-o bigger-120"></i>
 								</a>
 							</div>

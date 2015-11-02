@@ -104,7 +104,7 @@ object LeaveProfileController extends Controller with Secured {
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request) 
         leavepolicies <- {
-          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
         }
       } yield {
         maybeperson.map( person => {
@@ -127,7 +127,7 @@ object LeaveProfileController extends Controller with Secured {
             for {
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request) 
               leavepolicies <- {
-                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
               }
             } yield {
               maybeperson.map( person => {
@@ -140,7 +140,7 @@ object LeaveProfileController extends Controller with Secured {
               leaveprofileunique <- LeaveProfileModel.isUnique(formWithData, request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
               leavepolicies <- {
-                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
               }
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid" ->formWithData.pid, "lt"->formWithData.lt), request)
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1005))
@@ -284,7 +284,7 @@ object LeaveProfileController extends Controller with Secured {
       for {
         maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
         leavepolicies <- {
-          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+          LeavePolicyModel.getLeavePolicies(maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
         }
       } yield {
         maybeperson.map( person => {
@@ -307,7 +307,7 @@ object LeaveProfileController extends Controller with Secured {
             for {
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request) 
               leavepolicies <- {
-                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
               }
             } yield {
               maybeperson.map( person => {
@@ -320,7 +320,7 @@ object LeaveProfileController extends Controller with Secured {
               leaveprofileunique <- LeaveProfileModel.isUnique(formWithData, request)
               maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
               leavepolicies <- {
-                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.pt, maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
+                LeavePolicyModel.getLeavePolicies(maybeperson.get.p.g + " only", maybeperson.get.p.ms + " only", request)
               }
               maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid" ->formWithData.pid, "lt"->formWithData.lt), request)
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1005))
@@ -459,10 +459,10 @@ object LeaveProfileController extends Controller with Secured {
     }
   }}
   
- def getValuesOnLeaveTypeChangeJSON(p_pid:String, p_lt:String, p_pt:String) = withAuth { username => implicit request => {
+ def getValuesOnLeaveTypeChangeJSON(p_pid:String, p_lt:String) = withAuth { username => implicit request => {
     for {
       maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
-      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt, "pt" -> p_pt), request)
+      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt), request)
       maybe_leavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
     } yield {
       val person = maybe_person.getOrElse(PersonModel.doc.copy(_id=BSONObjectID.generate))

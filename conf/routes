@@ -79,7 +79,7 @@ GET		/leaveprofile/edit											controllers.LeaveProfileController.edit(p_id:S
 POST	/leaveprofile/update										controllers.LeaveProfileController.update(p_id:String)
 GET		/leaveprofile/delete/:p_id/:p_lt/:p_pid						controllers.LeaveProfileController.delete(p_id:String, p_lt:String, p_pid:String)
 GET		/leaveprofile/view											controllers.LeaveProfileController.view(p_id:String)
-GET		/leaveprofile/getvaluesonleavetypechangejson/:p_id/:p_lt/:p_pt	controllers.LeaveProfileController.getValuesOnLeaveTypeChangeJSON(p_id:String, p_lt:String, p_pt:String)
+GET		/leaveprofile/getvaluesonleavetypechangejson/:p_id/:p_lt	controllers.LeaveProfileController.getValuesOnLeaveTypeChangeJSON(p_id:String, p_lt:String)
 GET		/leaveprofile/myprofile/create								controllers.LeaveProfileController.myprofilecreate
 POST	/leaveprofile/myprofile/insert								controllers.LeaveProfileController.myprofileinsert
 GET		/leaveprofile/myprofile/edit								controllers.LeaveProfileController.myprofileedit(p_id:String)
@@ -97,7 +97,7 @@ GET		/leavepolicy/create								controllers.LeavePolicyController.create
 POST	/leavepolicy/insert								controllers.LeavePolicyController.insert
 GET		/leavepolicy/edit								controllers.LeavePolicyController.edit(p_id:String)
 POST	/leavepolicy/update								controllers.LeavePolicyController.update(p_id:String)
-GET		/leavepolicy/delete/:p_id/:p_lt/:p_pt			controllers.LeavePolicyController.delete(p_id:String, p_lt:String, p_pt:String)
+GET		/leavepolicy/delete/:p_id/:p_lt				controllers.LeavePolicyController.delete(p_id:String, p_lt:String)
 GET		/leavepolicy/view								controllers.LeavePolicyController.view(p_id:String)
 # GET		/leavepolicy/getLeaveEntitlement/:p_lt/:p_pt	controllers.LeavePolicyController.getLeaveEntitlement(p_lt:String, p_pt:String)
 GET		/leavepolicy/getdaytypejson/:p_lt				controllers.LeavePolicyController.getDayTypeJSON(p_lt:String)

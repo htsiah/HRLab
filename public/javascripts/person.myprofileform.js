@@ -19,7 +19,6 @@ $(function(){
 		rules: {
 			"p.fn": "required",
 			"p.ln": "required",
-			"p.pt": "required",
 			"p.mgrid": "required",
 			"p.g": "required",
 			"p.ms": "required",
@@ -33,7 +32,6 @@ $(function(){
 		messages: {
 			"p.fn": "Please enter first name.",
 			"p.ln": "Please enter last name.",
-			"p.pt": "Please select position.",
 			"p.mgrid": "Please select manager.",
 			"p.g": "Please select gender.",
 			"p.ms": "Please select marital status.",

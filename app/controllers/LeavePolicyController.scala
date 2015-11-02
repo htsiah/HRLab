@@ -23,7 +23,6 @@ object LeavePolicyController extends Controller with Secured {
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
           "lt" -> text,
-          "pt" -> text,
           "set" -> mapping(
               "g" -> text,
               "acc" -> text,
@@ -59,8 +58,8 @@ object LeavePolicyController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))  
-      ){(_id,lt,pt,set,ent,sys)=>LeavePolicy(_id,lt,pt,set,ent,sys)}
-      {leavepolicy:LeavePolicy=>Some(leavepolicy._id, leavepolicy.lt, leavepolicy.pt, leavepolicy.set, leavepolicy.ent, leavepolicy.sys)}
+      ){(_id,lt,set,ent,sys)=>LeavePolicy(_id,lt,set,ent,sys)}
+      {leavepolicy:LeavePolicy=>Some(leavepolicy._id, leavepolicy.lt, leavepolicy.set, leavepolicy.ent, leavepolicy.sys)}
   ) 
   
   def view(p_id:String) = withAuth { username => implicit request => {
@@ -109,7 +108,7 @@ object LeavePolicyController extends Controller with Secured {
           formWithData => {
             for { 
               maybe_unique <- LeavePolicyModel.isUnique(formWithData, request)
-              maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt"->formWithData.lt, "pt"->formWithData.pt), request)
+              maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt"->formWithData.lt), request)
               maybe_leavetypes <- KeywordModel.findOne(BSONDocument("n" -> "Leave Type"), request)
               maybe_positiontypes <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1004))
@@ -222,21 +221,18 @@ object LeavePolicyController extends Controller with Secured {
     }
   }}
   
-  def delete(p_id:String, p_lt:String, p_pt:String) = withAuth { username => implicit request => {
+  def delete(p_id:String, p_lt:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       // Delete leave policy
       Await.result(LeavePolicyModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
       LeaveProfileModel.find(BSONDocument("lt" -> p_lt), request).map { leaveprofiles => 
         leaveprofiles.map { leaveprofile => {
           PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(leaveprofile.pid)), request).map { person =>
-            if (person.get.p.pt == p_pt) {
-              // Delete leave profile
-              LeaveProfileModel.remove(BSONDocument("_id" -> leaveprofile._id), request)
-              // Lockdown leave
-              LeaveModel.setLockDown(BSONDocument("pid" -> leaveprofile.pid, "lt" -> leaveprofile.lt), request)
-            }
+            // Delete leave profile
+            LeaveProfileModel.remove(BSONDocument("_id" -> leaveprofile._id), request)
+            // Lockdown leave
+            LeaveModel.setLockDown(BSONDocument("pid" -> leaveprofile.pid, "lt" -> leaveprofile.lt), request)
           }
-
         } }
       }
       Future.successful(Redirect(routes.LeaveSettingController.index))

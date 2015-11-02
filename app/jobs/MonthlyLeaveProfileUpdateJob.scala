@@ -112,7 +112,7 @@ object MonthlyLeaveProfileUpdateJob {
         
         // Only process accumulation is monthly and has carry expired
         if(leavepolicy.set.acc=="Monthly - utilisation based on earned" || leavepolicy.set.acc=="Monthly - utilisation based on closing balance" || leavepolicy.set.cexp>0) {
-          PersonModel.find(BSONDocument("p.pt"->leavepolicy.pt, "sys.eid"->p_eid)).map { persons => {
+          PersonModel.find(BSONDocument("sys.eid"->p_eid)).map { persons => {
             persons.map { person => {
               LeaveProfileModel.find(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => {
                 leaveprofiles.map { leaveprofile => {
@@ -141,7 +141,7 @@ object MonthlyLeaveProfileUpdateJob {
     
     LeavePolicyModel.find(BSONDocument("sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leavepolicies => {
       leavepolicies.map { leavepolicy => {
-        PersonModel.find(BSONDocument("p.pt"->leavepolicy.pt, "sys.eid"->p_eid)).map { persons => {
+        PersonModel.find(BSONDocument("sys.eid"->p_eid)).map { persons => {
           persons.map { person => {
             LeaveProfileModel.findOne(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => { 
               leaveprofiles.map { leaveprofile => {

@@ -16,7 +16,6 @@ import org.joda.time.DateTime
 case class LeavePolicy (
     _id: BSONObjectID,
     lt: String,
-    pt: String,
     set: LeavePolicySetting,
     ent: Entitlement,
     sys: Option[System]
@@ -108,7 +107,6 @@ object LeavePolicyModel {
       LeavePolicy(
           doc.getAs[BSONObjectID]("_id").get,
           doc.getAs[String]("lt").get,
-          doc.getAs[String]("pt").get,
           doc.getAs[LeavePolicySetting]("set").get,
           doc.getAs[Entitlement]("ent").get,
           doc.getAs[System]("sys").map(o => o)
@@ -172,7 +170,6 @@ object LeavePolicyModel {
       BSONDocument(
           "_id" -> leavepolicy._id,
           "lt" -> leavepolicy.lt,
-          "pt" -> leavepolicy.pt,
           "set" -> leavepolicy.set,
           "ent" -> leavepolicy.ent,
           "sys" -> leavepolicy.sys
@@ -191,7 +188,6 @@ object LeavePolicyModel {
   val doc = LeavePolicy(
       _id = BSONObjectID.generate,
       lt = "",
-      pt = "",
       LeavePolicySetting(g = "", acc = "", ms = "", dt = "", nwd = false, cexp = 0, scal = true),
       Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
       sys=None
@@ -260,7 +256,7 @@ object LeavePolicyModel {
             } else {
               BSONDocument("p.ms"->"Married")
             }
-            PersonModel.find(BSONDocument("p.pt"->p_doc.pt)++(gender)++(marital), p_request).map { persons => 
+            PersonModel.find((gender)++(marital), p_request).map { persons => 
               persons.map { person => {
                 LeaveProfileModel.find(BSONDocument("pid" -> person._id.stringify, "lt" -> p_doc.lt)).map { leaveprofiles =>  
                   leaveprofiles.map { leaveprofile => {
@@ -321,7 +317,7 @@ object LeavePolicyModel {
   /** Custom Model Methods **/ 
   def isUnique(p_doc:LeavePolicy, p_request:RequestHeader) = {
     for{
-      maybe_leavepolicy <- this.findOne(BSONDocument("lt"->p_doc.lt ,"pt"->p_doc.pt), p_request)
+      maybe_leavepolicy <- this.findOne(BSONDocument("lt"->p_doc.lt), p_request)
     } yield {
       if (maybe_leavepolicy.isEmpty) true else false
     }
@@ -349,11 +345,10 @@ object LeavePolicyModel {
     }
   }
   
-  def getLeavePolicies(p_pt:String, p_g: String, p_ms: String, p_request:RequestHeader) = { 
+  def getLeavePolicies(p_g: String, p_ms: String, p_request:RequestHeader) = { 
     for {
       maybe_leavetypes <- this.find(
         BSONDocument(
-            "pt"->p_pt, 
             "$or" -> BSONArray(
                 BSONDocument("set.g"->p_g),
                 BSONDocument("set.g"->"Applicable for all")

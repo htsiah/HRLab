@@ -261,7 +261,6 @@ object PersonModel {
         // Create person's leave profile from LEAVE POLICY
         LeavePolicyModel.find(            
             BSONDocument(
-                "pt" -> p_doc.p.pt,
                 "$or" -> BSONArray(
                     BSONDocument("set.g"->(p_doc.p.g + " only")),
                     BSONDocument("set.g"->"Applicable for all")

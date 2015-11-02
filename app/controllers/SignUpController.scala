@@ -71,7 +71,6 @@ object SignUpController extends Controller {
                       LeavePolicy(
                           BSONObjectID.generate,
                           configleavepolicy.lt,
-                          configleavepolicy.pt,
                           LeavePolicySetting(
                               configleavepolicy.set.g,
                               configleavepolicy.set.acc,
@@ -156,7 +155,7 @@ object SignUpController extends Controller {
                       ln = formWithData.lname,
                       em = formWithData.email,
                       nem = false,
-                      pt = "Manager",
+                      pt = "",
                       mgrid = person_objectID.stringify,
                       g = formWithData.gender,
                       ms = formWithData.marital,

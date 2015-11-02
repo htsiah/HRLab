@@ -42,7 +42,7 @@ $(function(){
 	$( "#lt" ).change(function() {
 		var selectedLT = $( "#lt option:selected" ).text();
 		$.ajax({
-			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + selectedLT + "/" + p_position,
+			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + selectedLT,
 			contentType: "application/json; charset=utf-8",
 			beforeSend: function(){
 				loader.on();

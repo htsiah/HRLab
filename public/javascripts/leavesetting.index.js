@@ -6,7 +6,7 @@ $(function(){
 	// Setup jquery dataTable
 	$('#leavepoliciestable').dataTable({
 		"aoColumnDefs": [
-	    	{ "bSortable": false, "sClass":"text-center", "aTargets": [ 4 ] }
+	    	{ "bSortable": false, "sClass":"text-center", "aTargets": [ 3 ] }
 	    ]
 	});
 	
@@ -97,7 +97,7 @@ $(function(){
 			    
 });
 
-function onDelete(p_id, p_lt, p_pt) {
+function onDelete(p_id, p_lt) {
 
 	$( "#dialog-message" ).removeClass('hide').dialog({
 		resizable: false,
@@ -109,7 +109,7 @@ function onDelete(p_id, p_lt, p_pt) {
 				html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Delete",
 				"class" : "btn btn-danger btn-mini",
 				click: function() {
-					window.location = "/leavepolicy/delete/" + p_id + "/" + p_lt + "/" + p_pt;
+					window.location = "/leavepolicy/delete/" + p_id + "/" + p_lt;
 				}
 			},
 			{

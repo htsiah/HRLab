@@ -32,7 +32,6 @@ $(function(){
 			        }
 				}
 			},
-			"p.pt": "required",
 			"p.mgrid": "required",
 			"p.g": "required",
 			"p.ms": "required",
@@ -51,7 +50,6 @@ $(function(){
 				email: "Please enter a valid email address.",
 				remote: "Someone already used this email. Try another one?"
 			},
-			"p.pt": "Please select position.",
 			"p.mgrid": "Please select manager.",
 			"p.g": "Please select gender.",
 			"p.ms": "Please select marital status.",
