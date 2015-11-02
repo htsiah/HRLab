@@ -92,7 +92,13 @@
 					@persons.map{ person =>
 						<tr>
 							<td>@(person.p.fn + " " + person.p.ln)</td>
-							<td>@person.p.em</td>
+							<td>
+								@if(person.p.em==""){
+									N/A
+								} else {
+									@person.p.em
+								}
+							</td>
 							<td>@person.p.dpm</td>
 							<td>@person.p.off</td>
 							<td class="center">
