@@ -421,7 +421,7 @@ object ReportController extends Controller with Secured {
         )
       }
     } else {
-      Future.successful(Ok(Json.parse("""{"status":false}""")).as("application/json"))
+      Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
 
