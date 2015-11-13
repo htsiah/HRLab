@@ -181,7 +181,6 @@ object LeaveController extends Controller with Secured {
 	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt), request)
 	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeperson.get.p.off))
 	    maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
-	    maybealert_notenoughtbalance <- AlertUtility.findOne(BSONDocument("k"->1008))
 	  } yield {
 	    // Check authorized
 	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==request.session.get("id").get && !maybeleave.get.ld) {
@@ -191,46 +190,41 @@ object LeaveController extends Controller with Secured {
 	        Ok(views.html.leave.view(maybeleave.get, alert=maybealert_missingleavepolicy.getOrElse(null)))
 	      } else {
 	        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
-	        val leavebalance = if (maybeleavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybeleaveprofile.get.cal.bal } else { maybeleaveprofile.get.cal.cbal }
-	        // Check enough leave balance
-	        if (leavebalance < appliedduration) {
-	          Ok(views.html.leave.view(maybeleave.get, alert=maybealert_notenoughtbalance.getOrElse(null)))
-	        } else {
-            val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
+          val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
             
-            // Update Leave
-            val leave_update = if (carryforward_bal <= 0)
+          // Update Leave
+          val leave_update = if (carryforward_bal <= 0)
               maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = appliedduration, cfuti = 0)
-              else if (carryforward_bal >= appliedduration)
-                maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = 0, cfuti = appliedduration)
-                else
-                  maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
-            LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
+            else if (carryforward_bal >= appliedduration)
+              maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = 0, cfuti = appliedduration)
+            else
+              maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
                 
-            // Update leave profile
-            val leaveprofile_update = if (carryforward_bal <= 0) 
+          LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
+          
+          // Update leave profile
+          val leaveprofile_update = if (carryforward_bal <= 0) 
+            maybeleaveprofile.get.copy(
+                cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
+            )
+            else if (carryforward_bal >= appliedduration)
               maybeleaveprofile.get.copy(
-                  cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
-              )
-              else if (carryforward_bal >= appliedduration)
-                maybeleaveprofile.get.copy(
                     cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
-                )
-              else
-                maybeleaveprofile.get.copy(
-                    cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal), papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
-                )
-            LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
+              )
+            else
+              maybeleaveprofile.get.copy(
+                  cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal), papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
+              )
+          LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
             
-            // Update Todo
-            Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
+          // Update Todo
+          Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
             
-            // Send Email
-            val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-            MailUtility.sendEmailConfig(List(maybeperson.get.p.em), 4, replaceMap)
-                
-	          Redirect(request.session.get("path").get)
-	        }
+          // Send Email
+          val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+          MailUtility.sendEmailConfig(List(maybeperson.get.p.em), 4, replaceMap)
+          
+          Redirect(request.session.get("path").get)
 	      }
 	      
 	    } else {
