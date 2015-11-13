@@ -92,11 +92,18 @@ $(function(){
 
 $("#p_nem").click(function(){
 	if(this.checked){
+		// Disable email field
 		$("#p_em").val("");
 		$("#p_em-error").hide();
 		$("#p_em").attr("disabled", "disabled");
+		
+		// Disable admin roles checkbox
+		$('#rl_admin').attr('checked', false);
+		$("#rl_admin").attr("disabled", "disabled");
+		$("#p_rl").val("");
 	} else {
 		$("#p_em").removeAttr("disabled");
+		$("#rl_admin").removeAttr("disabled");
 	}
 });
 

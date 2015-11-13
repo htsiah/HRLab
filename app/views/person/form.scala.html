@@ -172,21 +172,23 @@
 			</dd>
 		</dl>
 
-		<dl class="dl-horizontal">
-			<dt><label>Role</label></dt>
-			<dd>
-				@if(isLastAdmin) {
-					Only admin
-				} else {
-					<div class="checkbox" style="display: inline-block;">
-						<label>
-							<input type="checkbox" value="Admin" name="rl.admin" id="rl_admin" class="ace" @radioSelected(person("p")("rl").value, "Admin")>
-							<span class="lbl"> Admin</span>
-						</label>
-					</div>
-				}
-			</dd>
-		</dl>
+		@if(!(oid!="" && person("p")("em").value.get=="")) {
+			<dl class="dl-horizontal">
+				<dt><label>Role</label></dt>
+				<dd>
+					@if(isLastAdmin) {
+						Only admin
+					} else {
+						<div class="checkbox" style="display: inline-block;">
+							<label>
+								<input type="checkbox" value="Admin" name="rl.admin" id="rl_admin" class="ace" @radioSelected(person("p")("rl").value, "Admin")>
+								<span class="lbl"> Admin</span>
+							</label>
+						</div>
+					}
+				</dd>
+			</dl>
+		}
 
 		<div class="hidden">
 			@inputText(person("_id"),'type -> "hidden")
