@@ -48,7 +48,7 @@
 
 @if(session.get("roles").get.contains("Admin")) {
 
-	@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+	@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 		@pageheader
 		<div class="tabbable">
 			<ul class="nav nav-tabs" id="myTab">
@@ -169,7 +169,7 @@
 
 	@if(session.get("id").get == person.p.mgrid | session.get("id").get == person._id.stringify) {
 
-		@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+		@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 			@pageheader
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="myTab">
@@ -281,7 +281,7 @@
 
 	} else {
 	
-		@layout.ace.main93("Human Resources Software",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,vbuttons) {
+		@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,vbuttons) {
 			@contentRow("First Name", person.p.fn)
 			@contentRow("Last Name", person.p.ln)
 			@if(person.p.em=="") {

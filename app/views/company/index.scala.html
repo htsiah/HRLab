@@ -29,7 +29,7 @@
 }
 
 @if(session.get("roles").get.contains("Admin")) {
-	@layout.ace.main93(session.get("company").get + " | HRSifu.my",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 		<dl class="dl-horizontal">
 			<dt><label>Company Name</label></dt>
 			<dd>
@@ -84,7 +84,7 @@
 		@layout.ace.dialogbox("dialog-delete", Html("<div class='alert alert-info bigger-110'><p>Selected office will be permanently deleted and cannot be recovered.</p></div>"))
 	}
 } else {
-	@layout.ace.main(session.get("company").get + " | HRSifu.my",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+	@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 		@pageheader
 		<dl class="dl-horizontal">
 			<dt><label>Company Name</label></dt>
