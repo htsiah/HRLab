@@ -4,6 +4,7 @@ import scala.util.{Success, Failure,Try}
 import org.joda.time.DateTime
 
 import play.api.Play
+import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -109,7 +110,7 @@ object LeaveSettingModel {
   }
     
   def init() = {
-    println("Initialized Db Collection: " + col.name)
+    Logger.info("Initialized Db Collection: " + col.name)
   }
   
   def close() = {

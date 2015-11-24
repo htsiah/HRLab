@@ -6,6 +6,7 @@ import scala.concurrent.{Future,Await}
 import scala.concurrent.duration.Duration
 
 import play.api.Play
+import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import reactivemongo.api._
@@ -49,7 +50,6 @@ object DocNumUtility {
   
   private val dbname = Play.current.configuration.getString("mongodb_config").getOrElse("config")
   private val uri = Play.current.configuration.getString("mongodb_config_uri").getOrElse("mongodb://localhost")
-  // private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
   private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
@@ -58,7 +58,7 @@ object DocNumUtility {
   private val col = db.collection("docnum")
   	
   def init() = {
-    println("Initialized Db Collection: " + col.name)
+    Logger.info("Initialized Db Collection: " + col.name)
   }
   
   def close() = {

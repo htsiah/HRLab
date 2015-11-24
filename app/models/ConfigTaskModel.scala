@@ -1,6 +1,7 @@
 package models
 
 import play.api.Play
+import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -106,7 +107,7 @@ object ConfigTaskModel {
   }
   
   def init() = {
-    println("Initialized Db Collection: " + col.name)
+    Logger.info("Initialized Db Collection: " + col.name)
   }
   
   def close() = {

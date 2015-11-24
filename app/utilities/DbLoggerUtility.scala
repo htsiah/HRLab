@@ -2,6 +2,7 @@ package utilities
 
 import scala.util.{Success, Failure,Try}
 import play.api.Play
+import play.api.Logger
 import play.api.libs.concurrent._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc._
@@ -56,13 +57,12 @@ object DbLoggerUtility {
     }
   }
     
-  private val appname = Play.current.configuration.getString("application_name").getOrElse("hrlab")
+  private val appname = Play.current.configuration.getString("application_name").getOrElse("hrsifu")
   private val apprelease = Play.current.configuration.getString("application_release").getOrElse("")
   private val dbloggerApp = Play.current.configuration.getString("dblogger_application").getOrElse("OFF")
   private val dbloggerSec = Play.current.configuration.getString("dblogger_security").getOrElse("OFF")
   private val dbname = Play.current.configuration.getString("mongodb_dblogger").getOrElse("dblogger")
   private val uri = Play.current.configuration.getString("mongodb_dblogger_uri").getOrElse("mongodb://localhost")
-  // private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
   private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
@@ -72,8 +72,8 @@ object DbLoggerUtility {
   private val applicationCol = db.collection("application")
   
   def init() = {
-    println("Initialized Db Collection: " + authenticationCol.name)
-    println("Initialized Db Collection: " + applicationCol.name)
+    Logger.info("Initialized Db Collection: " + authenticationCol.name)
+    Logger.info("Initialized Db Collection: " + applicationCol.name)
   }
   
   def close() = {

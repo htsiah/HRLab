@@ -4,6 +4,7 @@ import org.joda.time.DateTime
 import scala.util.{Success, Failure,Try}
 
 import play.api.Play
+import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import reactivemongo.api._
@@ -57,7 +58,7 @@ object AlertUtility {
   private val col = db.collection("alert")
   
   def init() = {
-    println("Initialized Db Collection: " + col.name)
+    Logger.info("Initialized Db Collection: " + col.name)
   }
   
   def close() = {

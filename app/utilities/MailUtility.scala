@@ -4,6 +4,7 @@ import org.joda.time.DateTime
 import scala.util.{Success, Failure,Try}
 
 import play.api.Play
+import play.api.Logger
 import play.api.Play.current
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -55,7 +56,6 @@ object MailUtility {
   
   private val dbname = Play.current.configuration.getString("mongodb_config").getOrElse("config")
   private val uri = Play.current.configuration.getString("mongodb_config_uri").getOrElse("mongodb://localhost")
-  // private val driver = new MongoDriver(ActorSystem("DefaultMongoDbDriver"))
   private val driver = new MongoDriver()
   private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
     parsedUri => driver.connection(parsedUri)
@@ -64,7 +64,7 @@ object MailUtility {
   private val col = db.collection("mailtemplate")
   
   def init() = {
-    println("Initialized Db Collection: " + col.name)
+    Logger.info("Initialized Db Collection: " + col.name)
   }
   
   def close() = {
