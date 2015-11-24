@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 import models.TaskModel
 
-object TaskController extends Controller with Secured {
+class TaskController extends Controller with Secured {
   
   def dismiss(p_lk: String) = withAuth { username => implicit request => {
     for {

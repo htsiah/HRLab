@@ -20,7 +20,7 @@ case class Reset (email:String)
 case class Set (email:String,resetkey:String,npassword:String,cpassword:String)
 case class Change (password:String,npassword:String,cpassword:String)
 
-object AuthenticationController extends Controller with Secured {
+class AuthenticationController extends Controller with Secured {
     
   val authenticationform = Form(
       mapping(

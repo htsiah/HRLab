@@ -15,7 +15,7 @@ import reactivemongo.bson.BSONDocument
 
 case class DeleteApp (company:String)
 
-object DeleteAppController extends Controller with Secured {
+class DeleteAppController extends Controller with Secured {
   
   val deleteappform = Form(
       mapping(

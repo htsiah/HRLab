@@ -28,7 +28,7 @@ case class LeaveOnBehalf (
     r: String
 )
 
-object LeaveOnBehalfController extends Controller with Secured {
+class LeaveOnBehalfController extends Controller with Secured {
   
   val leaveonbehalfform = Form(
       mapping(

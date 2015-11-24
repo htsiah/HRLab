@@ -17,7 +17,7 @@ import utilities.{System, Tools}
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
-object CompanyHolidayController extends Controller with Secured {
+class CompanyHolidayController extends Controller with Secured {
   
   val companyholidayform = Form(
       mapping(

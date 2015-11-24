@@ -17,7 +17,7 @@ import utilities.{System, AlertUtility, Tools}
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
-object LeavePolicyController extends Controller with Secured {
+class LeavePolicyController extends Controller with Secured {
   
   val leavepolicyform = Form(
       mapping(

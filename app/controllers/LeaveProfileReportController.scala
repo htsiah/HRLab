@@ -18,7 +18,7 @@ import utilities.{System, Tools}
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument,BSONArray}
 
-object LeaveProfileReportController extends Controller with Secured {
+class LeaveProfileReportController extends Controller with Secured {
   
   val leaveprofileform = Form(
       mapping(

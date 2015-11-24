@@ -17,7 +17,7 @@ import utilities.{System, Tools}
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
-object OfficeController extends Controller with Secured {
+class OfficeController extends Controller with Secured {
   
   val officeform = Form(
       mapping(

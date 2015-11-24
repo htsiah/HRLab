@@ -19,7 +19,7 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
-object LeaveController extends Controller with Secured {
+class LeaveController extends Controller with Secured {
   
   val leaveform = Form(
       mapping(

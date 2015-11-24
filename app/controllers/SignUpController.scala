@@ -24,7 +24,7 @@ case class Signup (
     company: String  
 )
 
-object SignUpController extends Controller {
+class SignUpController extends Controller {
   
   val signupform = Form(
       mapping(

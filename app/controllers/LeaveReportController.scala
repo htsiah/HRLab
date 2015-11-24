@@ -8,7 +8,7 @@ import models.{LeaveModel}
 
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
-object LeaveReportController extends Controller with Secured {
+class LeaveReportController extends Controller with Secured {
 
     def view(p_id:String) = withAuth { username => implicit request => {
     for {

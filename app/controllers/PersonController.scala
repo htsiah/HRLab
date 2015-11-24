@@ -16,7 +16,7 @@ import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import models.LeavePolicyModel
 
-object PersonController extends Controller with Secured{
+class PersonController extends Controller with Secured{
   
   val personform = Form(
       mapping(

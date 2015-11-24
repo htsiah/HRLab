@@ -8,7 +8,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import models.{KeywordModel}
 import reactivemongo.bson.BSONDocument
 
-object CalendarController extends Controller with Secured {
+class CalendarController extends Controller with Secured {
 
   def company = withAuth { username => implicit request => {
     for {

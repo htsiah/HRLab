@@ -16,7 +16,7 @@ import utilities.System
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
-object KeywordController extends Controller with Secured {
+class KeywordController extends Controller with Secured {
   
   val keywordform = Form(
       mapping(

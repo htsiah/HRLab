@@ -8,7 +8,7 @@ import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import models.TaskModel
 
-object DashboardController extends Controller with Secured {
+class DashboardController extends Controller with Secured {
   
   def index = withAuth { username => implicit request => {
     for {

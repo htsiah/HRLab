@@ -20,7 +20,7 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument,BSONArray}
 
 case class LeaveProfileScope(n: String)
 
-object LeaveProfileController extends Controller with Secured {
+class LeaveProfileController extends Controller with Secured {
   
   val leaveprofileform = Form(
       mapping(

@@ -12,7 +12,7 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument,BSONDateTime}
 
 import play.api.mvc._
 
-object LeaveSettingController extends Controller with Secured {
+class LeaveSettingController extends Controller with Secured {
   
   def index = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){

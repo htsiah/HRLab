@@ -15,7 +15,7 @@ import utilities.{Tools}
 
 import org.joda.time.DateTime
 
-object ReportController extends Controller with Secured {
+class ReportController extends Controller with Secured {
   
   def myleaverequest = withAuth { username => implicit request => { 
     for {

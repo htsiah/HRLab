@@ -12,7 +12,7 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
 import play.api.mvc._
 
-object CompanyController extends Controller with Secured {
+class CompanyController extends Controller with Secured {
   
   def index = withAuth { username => implicit request => { 
     val f_docs = OfficeModel.find(BSONDocument(), request)
