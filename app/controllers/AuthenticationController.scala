@@ -6,6 +6,7 @@ import play.api.data.Forms._
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.mailer._
 
 import models.{AuthenticationModel, Authentication, PersonModel, CompanyModel, Person}
 import utilities.{System, AlertUtility, MailUtility, Tools}
@@ -15,12 +16,14 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import scala.concurrent.{Future,Await}
 import scala.util.Random
 
+import javax.inject.Inject
+
 case class Login (email:String,password:String)
 case class Reset (email:String)
 case class Set (email:String,resetkey:String,npassword:String,cpassword:String)
 case class Change (password:String,npassword:String,cpassword:String)
 
-class AuthenticationController extends Controller with Secured {
+class AuthenticationController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
     
   val authenticationform = Form(
       mapping(
@@ -137,7 +140,7 @@ class AuthenticationController extends Controller with Secured {
                 val modifier = BSONDocument("$set"->BSONDocument("r"->resetkey))
                 AuthenticationModel.updateUsingBSON(BSONDocument("em"->email, "sys.ddat"->BSONDocument("$exists"->false)), modifier)
                 val replaceMap = Map("URL"->(Tools.hostname+"/set/"+email+"/"+resetkey))
-                MailUtility.sendEmailConfig(List(email), 2, replaceMap)
+                MailUtility.getEmailConfig(List(email), 2, replaceMap).map { email => mailerClient.send(email) }
                 val alert =  Await.result(AlertUtility.findOne(BSONDocument("k"->2000)), Tools.db_timeout)
                 Redirect(routes.AuthenticationController.login()).flashing("success" -> alert.get.m) 
               }

@@ -8,6 +8,7 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
+import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
 
 import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel}
@@ -19,7 +20,9 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
-class LeaveController extends Controller with Secured {
+import javax.inject.Inject
+
+class LeaveController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
   
   val leaveform = Form(
       mapping(
@@ -153,8 +156,8 @@ class LeaveController extends Controller with Secured {
                 
                 // Send email
                 val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-                MailUtility.sendEmailConfig(List(maybemanager.get.p.em), 3, replaceMap)
-	              
+	              MailUtility.getEmailConfig(List(maybemanager.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
+                
 	              Redirect(routes.DashboardController.index)
 	            }
 	          }
@@ -222,7 +225,7 @@ class LeaveController extends Controller with Secured {
             
           // Send Email
           val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-          MailUtility.sendEmailConfig(List(maybeperson.get.p.em), 4, replaceMap)
+          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 4, replaceMap).map { email => mailerClient.send(email) }
           
           Redirect(request.session.get("path").get)
 	      }
@@ -267,7 +270,7 @@ class LeaveController extends Controller with Secured {
         
         // Send Email
         val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-        MailUtility.sendEmailConfig(List(maybeperson.get.p.em), 5, replaceMap)
+        MailUtility.getEmailConfig(List(maybeperson.get.p.em), 5, replaceMap).map { email => mailerClient.send(email) }
             
         Redirect(request.session.get("path").get)
       } else {
@@ -315,12 +318,12 @@ class LeaveController extends Controller with Secured {
             if (request.session.get("username").get != maybemanager.get.p.em){ 
               val recipients = List(maybemanager.get.p.em)
               val replaceMap = Map("BY"->request.session.get("name").get, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-              MailUtility.sendEmailConfig(recipients, 6, replaceMap)
+              MailUtility.getEmailConfig(recipients, 6, replaceMap).map { email => mailerClient.send(email) }
             }
           } else {
             val recipients = List(maybeapplicant.get.p.em, maybemanager.get.p.em).filter(_ != request.session.get("username").get)
             val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-            MailUtility.sendEmailConfig(recipients, 8, replaceMap)
+            MailUtility.getEmailConfig(recipients, 8, replaceMap).map { email => mailerClient.send(email) }
           }
         }
                 

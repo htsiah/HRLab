@@ -2,21 +2,27 @@ package controllers
 
 import scala.util.{Success, Failure,Try,Random}
 import scala.concurrent.{Future, Await}
+
 import org.joda.time.DateTime
+
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.cache.Cache
+import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel}
+
+import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel, LeavePolicyModel}
 import utilities.{System, MailUtility, Tools, AlertUtility}
+
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
-import models.LeavePolicyModel
 
-class PersonController extends Controller with Secured{
+import javax.inject.Inject
+
+class PersonController @Inject() (mailerClient: MailerClient) extends Controller with Secured{
   
   val personform = Form(
       mapping(
@@ -130,7 +136,7 @@ class PersonController extends Controller with Secured{
                   "COMPANY" -> request.session.get("company").get,
                   "URL" -> {Tools.hostname + "/set/" + authentication_doc.em  + "/" + authentication_doc.r}
               )
-              MailUtility.sendEmailConfig(List(authentication_doc.em), 7, replaceMap)
+              MailUtility.getEmailConfig(List(authentication_doc.em), 7, replaceMap).map { email => mailerClient.send(email) }
             
             }
 

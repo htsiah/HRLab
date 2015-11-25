@@ -73,7 +73,9 @@ object DbLoggerUtility {
   
   def init() = {
     Logger.info("Initialized Db Collection: " + authenticationCol.name)
-    Logger.info("Initialized Db Collection: " + applicationCol.name)
+    
+    // We are not using application currently
+    // Logger.info("Initialized Db Collection: " + applicationCol.name)
   }
   
   def close() = {

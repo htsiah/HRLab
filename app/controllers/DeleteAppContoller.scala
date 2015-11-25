@@ -6,6 +6,7 @@ import play.api.data.Forms._
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.libs.json._
+import play.api.libs.mailer._
 
 import scala.concurrent.{Future, Await}
 
@@ -13,9 +14,11 @@ import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Comp
 import utilities.{MailUtility, Tools}
 import reactivemongo.bson.BSONDocument
 
+import javax.inject.Inject
+
 case class DeleteApp (company:String)
 
-class DeleteAppController extends Controller with Secured {
+class DeleteAppController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
   
   val deleteappform = Form(
       mapping(
@@ -52,7 +55,9 @@ class DeleteAppController extends Controller with Secured {
             TaskModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             
             // Send email
-            MailUtility.sendEmail(List("support@hrsifu.my"), "System Notification: " + formWithData.company + " deleted.", formWithData.company + "(" + request.session.get("entity").get +  ") deleted by " + request.session.get("username").get + ".")
+            mailerClient.send(
+                MailUtility.getEmail(List("support@hrsifu.my"), "System Notification: " + formWithData.company + " deleted.", formWithData.company + "(" + request.session.get("entity").get +  ") deleted by " + request.session.get("username").get + ".")
+            )
             
             // return result
             val output = """{"status":"fail","url":"""" + Tools.hostname + """/deleteapp/success"}"""

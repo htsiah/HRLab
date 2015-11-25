@@ -4,6 +4,7 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.json._
+import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import models._
@@ -13,7 +14,10 @@ import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONArray}
 
 import scala.util.Random
 import scala.concurrent.{Future,Await}
+
 import org.joda.time.DateTime
+
+import javax.inject.Inject
 
 case class Signup (
     fname: String,
@@ -24,7 +28,7 @@ case class Signup (
     company: String  
 )
 
-class SignUpController extends Controller {
+class SignUpController @Inject() (mailerClient: MailerClient) extends Controller {
   
   val signupform = Form(
       mapping(
@@ -213,8 +217,10 @@ class SignUpController extends Controller {
                     
               // Send email
               val replaceMap = Map("URL"->(Tools.hostname+"/set/"+authentication_doc.em +"/"+authentication_doc.r), "BY"->(person_doc.p.fn+" "+person_doc.p.ln))
-              MailUtility.sendEmailConfig(List(authentication_doc.em), 1, replaceMap)
-              MailUtility.sendEmail(List("support@hrsifu.my"), "System Notification: New Sign Up - " + formWithData.company + ".", formWithData.company + "(" + eid +  ") sign up by " + formWithData.email + ".")
+              MailUtility.getEmailConfig(List(authentication_doc.em), 1, replaceMap).map { email => mailerClient.send(email) }
+              mailerClient.send(
+                  MailUtility.getEmail(List("support@hrsifu.my"), "System Notification: New Sign Up - " + formWithData.company + ".", formWithData.company + "(" + eid +  ") sign up by " + formWithData.email + ".")
+              )
                 
               Redirect(routes.AuthenticationController.login()).flashing(
                   "success" -> "Your registration was successful. An email with your logon detail has been sent."

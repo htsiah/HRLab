@@ -6,7 +6,7 @@ import scala.util.{Success, Failure,Try}
 import play.api.Play
 import play.api.Logger
 import play.api.Play.current
-import play.api.libs.mailer._
+import play.api.libs.mailer.Email
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
@@ -71,10 +71,62 @@ object MailUtility {
     driver.close()
   }
   
-  def findOne(p_query:BSONDocument) = {
+  private def findOne(p_query:BSONDocument) = {
     col.find(p_query).one[MailTemplate]
   }
   
+  // MailUtility.getEmail(List("htsiah@hotmail.com"), "Test", "Test")
+  def getEmail(p_recipient: Seq[String], p_subject: String, p_body: String):Email =  {
+    Email(
+        subject = p_subject,
+        from = "HRSifu <noreply@hrsifu.my>",
+        to = p_recipient,
+        bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
+    )
+  }
+  
+  // MailUtility.getEmail(List("htsiah@hotmail.com"), List("htsiah@hotmail.com"), "Test", "Test")
+  def getEmail(p_recipient: Seq[String], p_cc: Seq[String], p_subject: String, p_body: String):Email =  {
+    Email(
+        subject = p_subject,
+        from = "HRSifu <noreply@hrsifu.my>",
+        to = p_recipient,
+        cc = p_cc,
+        bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
+    )
+  }
+  
+  // MailUtility.getEmailConfig(List("htsiah@hotmail.com"), 1, Map[Something->Something])
+  def getEmailConfig(p_recipient: Seq[String], p_key: Int, p_replaceMap: Map[String, String]) =  {
+    for {
+      maybeEmail <- this.findOne(BSONDocument("k"->p_key))
+    } yield {
+      this.getEmail(
+          p_recipient, 
+          Tools.replaceSubString(maybeEmail.get.s,p_replaceMap.toList), 
+          Tools.replaceSubString(maybeEmail.get.b,p_replaceMap.toList)         
+      )
+    }
+  }
+      
+  // MailUtility.getEmailConfig(List("htsiah@hotmail.com"), List("htsiah@hotmail.com"), 1, Map[Something->Something])
+  def getEmailConfig(p_recipient: Seq[String], p_cc: Seq[String], p_key: Int, p_replaceMap: Map[String, String]) =  {
+    for {
+      maybeEmail <- this.findOne(BSONDocument("k"->p_key))
+    } yield {
+      this.getEmail(
+          p_recipient, 
+          p_cc, 
+          Tools.replaceSubString(maybeEmail.get.s,p_replaceMap.toList), 
+          Tools.replaceSubString(maybeEmail.get.b,p_replaceMap.toList)
+      )
+    }
+  }
+  
+  //*********** Obsolute v1.9 ***********//
+  
+  /**
+
   // MailUtility.sendEmail(List("htsiah@hotmail.com"), "Test", "Test")
   def sendEmail(p_recipient: Seq[String], p_subject: String, p_body: String) =  {
     val email = Email(
@@ -108,7 +160,7 @@ object MailUtility {
   
   // MailUtility.sendEmailConfig(List("htsiah@hotmail.com"), 1, Map[Something->Something])
   def sendEmailConfig(p_recipient: Seq[String], p_key: Int, p_replaceMap: Map[String, String]) =  {
-    val future = this.findOne(BSONDocument("k"->p_key))
+    val future = MailUtility.findOne(BSONDocument("k"->p_key))
     future.onComplete {
       case Failure(e) => throw e
       case Success(lastError) => {
@@ -123,7 +175,7 @@ object MailUtility {
   
   // MailUtility.sendEmailConfig(List("htsiah@hotmail.com"), 1, Map[Something->Something])
   def sendEmailConfig(p_recipient: Seq[String], p_cc: Seq[String], p_key: Int, p_replaceMap: Map[String, String]) =  {
-    val future = this.findOne(BSONDocument("k"->p_key))
+    val future = MailUtility.findOne(BSONDocument("k"->p_key))
     future.onComplete {
       case Failure(e) => throw e
       case Success(lastError) => {
@@ -135,4 +187,7 @@ object MailUtility {
       }
     }
   }
+
+  */
+  
 }

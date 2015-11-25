@@ -7,6 +7,7 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.Play.current
 import play.api.cache.Cache
+import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, LeavePolicyModel, OfficeModel}
@@ -18,6 +19,8 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
+import javax.inject.Inject
+
 case class LeaveOnBehalf (   
     docnum: Int,
     pid: String,
@@ -28,7 +31,7 @@ case class LeaveOnBehalf (
     r: String
 )
 
-class LeaveOnBehalfController extends Controller with Secured {
+class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
   
   val leaveonbehalfform = Form(
       mapping(
@@ -160,7 +163,7 @@ class LeaveOnBehalfController extends Controller with Secured {
                 if (!maybeperson.get.p.nem) {
                   val recipients = List(maybeperson.get.p.em, maybemanager.get.p.em, request.session.get("username").get)
                   val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-                  MailUtility.sendEmailConfig(recipients.distinct, 9, replaceMap)
+                  MailUtility.getEmailConfig(recipients.distinct, 9, replaceMap).map { email => mailerClient.send(email) }
                 }
 
                 Redirect(routes.DashboardController.index)
