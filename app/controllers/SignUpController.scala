@@ -165,7 +165,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                       ms = formWithData.marital,
                       dpm = "Information Technology",
                       off = "Main Office",
-                      edat = Some(new DateTime()),
+                      edat = Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)),
                       rl=List("Admin")
                   )
               )

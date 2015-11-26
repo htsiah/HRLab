@@ -176,7 +176,7 @@ object PersonModel {
   private val col = db.collection("person")
   val doc = Person(
       _id = BSONObjectID.generate,
-      p = Profile(fn="", ln="", em="", nem=false, pt="", mgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime()), rl=List("")),
+      p = Profile(fn="", ln="", em="", nem=false, pt="", mgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)), rl=List("")),
       wd = Workday(wd1=true, wd2=true, wd3=true, wd4=true, wd5=true, wd6=false, wd7=false),
       sys = None
   )
