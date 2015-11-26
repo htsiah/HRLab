@@ -81,7 +81,7 @@ object MailUtility {
         subject = p_subject,
         from = "HRSifu <noreply@hrsifu.my>",
         to = p_recipient,
-        bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
+        bodyHtml = Some(html.mail.defaultv2(Tools.hostname ,p_body).toString)
     )
   }
   
@@ -92,7 +92,7 @@ object MailUtility {
         from = "HRSifu <noreply@hrsifu.my>",
         to = p_recipient,
         cc = p_cc,
-        bodyHtml = Some(html.mail.default(Tools.hostname ,p_body).toString)
+        bodyHtml = Some(html.mail.defaultv2(Tools.hostname ,p_body).toString)
     )
   }
   
