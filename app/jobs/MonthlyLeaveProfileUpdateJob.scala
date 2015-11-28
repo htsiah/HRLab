@@ -87,7 +87,7 @@ object MonthlyLeaveProfileUpdateJob {
           companies.map { company => {
             LeaveSettingModel.findOne(BSONDocument("sys.eid" -> company.sys.get.eid.get)).map { leavesetting => {
               if (leavesetting.get.cfm==thismonth.get) {
-                LeaveModel.setLockDown(BSONDocument("sys.eid" -> company.sys.get.eid.get, "ld" -> false))
+                LeaveModel.setLockDown(BSONDocument("sys.eid" -> company.sys.get.eid.get))
                 this.yearlycut0ff(company.sys.get.eid.get, leavesetting.get)
               } else {
                 this.monthlyaccumulation(company.sys.get.eid.get, leavesetting.get)

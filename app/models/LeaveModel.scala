@@ -349,7 +349,7 @@ object LeaveModel {
   }
   
   def setLockDown(p_query:BSONDocument) = {
-    val f_leaves = this.find(p_query)
+    val f_leaves = this.find(p_query++(BSONDocument("ld"->false)))
     f_leaves.map { leaves => 
       leaves.map { leave => {
         this.update(BSONDocument("_id"->leave._id), leave.copy(ld=true))
@@ -359,7 +359,7 @@ object LeaveModel {
   }
   
   def setLockDown(p_query:BSONDocument, p_request:RequestHeader) = {
-    val f_leaves = this.find(p_query, p_request)
+    val f_leaves = this.find(p_query++(BSONDocument("ld"->false)), p_request)
     f_leaves.map { leaves => 
       leaves.map { leave => {
         this.update(BSONDocument("_id"->leave._id), leave.copy(ld=true), p_request)
