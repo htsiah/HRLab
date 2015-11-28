@@ -155,7 +155,20 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                 TaskModel.insert(1, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
                 
                 // Send email
-                val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+                val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
+                val replaceMap = Map(
+                    "MANAGER"->leave_update.wf.aprn, 
+                    "APPLICANT"->leave_update.pn, 
+                    "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+                    "LEAVETYPE"->leave_update.lt, 
+                    "DOCNUM"->leave_update.docnum.toString(), 
+                    "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), 
+                    "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                    "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                    "REASON"-> reason,
+                    "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
+                    "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
+                )
 	              MailUtility.getEmailConfig(List(maybemanager.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
                 
 	              Redirect(routes.DashboardController.index)
@@ -224,7 +237,17 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
           Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
             
           // Send Email
-          val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+          val replaceMap = Map(
+              "MANAGER"->leave_update.wf.aprn, 
+              "APPLICANT"->leave_update.pn, 
+              "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+              "LEAVETYPE"->leave_update.lt, 
+              "DOCNUM"->leave_update.docnum.toString(), 
+              "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "BALANCE" -> (leaveprofile_update.cal.cbal).toString(),
+              "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
+          )
           MailUtility.getEmailConfig(List(maybeperson.get.p.em), 4, replaceMap).map { email => mailerClient.send(email) }
           
           Redirect(request.session.get("path").get)
@@ -269,7 +292,17 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
         Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
         
         // Send Email
-        val replaceMap = Map("MANAGER"->leave_update.wf.aprn, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
+        val replaceMap = Map(
+              "MANAGER"->leave_update.wf.aprn, 
+              "APPLICANT"->leave_update.pn, 
+              "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+              "LEAVETYPE"->leave_update.lt, 
+              "DOCNUM"->leave_update.docnum.toString(), 
+              "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "BALANCE" -> (leaveprofile_update.cal.cbal + leave_update.cfuti + leave_update.uti).toString(),
+              "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
+        )
         MailUtility.getEmailConfig(List(maybeperson.get.p.em), 5, replaceMap).map { email => mailerClient.send(email) }
             
         Redirect(request.session.get("path").get)
@@ -314,17 +347,20 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
         // No email if applicant does not email
         if (!maybeapplicant.get.p.nem){
           // Send Email
-          if (request.session.get("username").get == maybeapplicant.get.p.em){
-            if (request.session.get("username").get != maybemanager.get.p.em){ 
-              val recipients = List(maybemanager.get.p.em)
-              val replaceMap = Map("BY"->request.session.get("name").get, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-              MailUtility.getEmailConfig(recipients, 6, replaceMap).map { email => mailerClient.send(email) }
-            }
-          } else {
-            val recipients = List(maybeapplicant.get.p.em, maybemanager.get.p.em).filter(_ != request.session.get("username").get)
-            val replaceMap = Map("BY"->request.session.get("name").get, "APPLICANT"->leave_update.pn, "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), "LEAVETYPE"->leave_update.lt.toLowerCase(), "DOCNUM"->leave_update.docnum.toString(), "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), "URL"->Tools.hostname)
-            MailUtility.getEmailConfig(recipients, 8, replaceMap).map { email => mailerClient.send(email) }
-          }
+          val recipients = List(maybeapplicant.get.p.em, maybemanager.get.p.em, request.session.get("username").get)
+          val replaceMap = Map(
+              "BY"->request.session.get("name").get, 
+              "APPLICANT"->leave_update.pn,
+              "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+              "LEAVETYPE"->leave_update.lt, 
+              "DOCNUM"->leave_update.docnum.toString(), 
+              "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
+              "BALANCE" -> (maybeleaveprofile.get.cal.cbal + leave_update.cfuti + leave_update.uti).toString(),
+              "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
+          )
+          MailUtility.getEmailConfig(recipients.distinct, 6, replaceMap).map { email => mailerClient.send(email) }
         }
                 
         Redirect(request.session.get("path").get)
