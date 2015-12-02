@@ -163,7 +163,6 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
                 val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
                 if (!maybeperson.get.p.nem) {
                   val recipients = List(maybeperson.get.p.em)
-                  val copy = List(maybemanager.get.p.em, request.session.get("username").get)
                   val replaceMap = Map(
                       "BY"->request.session.get("name").get, 
                       "APPLICANT"->leave_update.pn, 
@@ -177,7 +176,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
                       "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
                       "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
                   )
-                  MailUtility.getEmailConfig(recipients.distinct, copy.distinct, 9, replaceMap).map { email => mailerClient.send(email) }
+                  MailUtility.getEmailConfig(recipients.distinct, 9, replaceMap).map { email => mailerClient.send(email) }
                 }
 
                 Redirect(routes.DashboardController.index)
