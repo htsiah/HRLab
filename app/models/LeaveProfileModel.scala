@@ -565,6 +565,7 @@ object LeaveProfileModel {
           p_doc.copy(
               cal = p_doc.cal.copy(
                   ent = this.getEligibleEntitlement(p_doc, PersonModel.getServiceMonths(person)),
+                  ear = leaveearned,
                   bal = BigDecimal(balance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble,
                   cbal = BigDecimal(cbalance).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
               ),
