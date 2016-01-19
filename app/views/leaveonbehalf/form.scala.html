@@ -63,7 +63,7 @@
 		@select(leaveonbehalf("dt"), options = Seq("Full day"->"Full day", "1st half"->"1st half", "2nd half"->"2nd half"), '_label -> "Day Type", '_class->"dl-horizontal", 'class->"form-control")
 		@input(leaveonbehalf("fdat"), '_label->"Date From", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     	<div class="input-group">
-    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="yyyy-mm-dd" @toHtmlArgs(args)>
+    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="d-M-yyyy" @toHtmlArgs(args)>
 				<span class="input-group-addon">
 					<i class="fa fa-calendar bigger-110"></i>
 				</span>
@@ -71,7 +71,7 @@
 		}
 		@input(leaveonbehalf("tdat"), '_label->"Date To", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     	<div class="input-group">
-    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="yyyy-mm-dd" @toHtmlArgs(args)>
+    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="d-M-yyyy" @toHtmlArgs(args)>
 				<span class="input-group-addon">
 					<i class="fa fa-calendar bigger-110"></i>
 				</span>
