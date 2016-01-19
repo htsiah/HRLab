@@ -32,8 +32,8 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
           "pn" -> text,
           "lt" -> text,
           "dt" -> text,
-          "fdat" -> optional(jodaDate),
-          "tdat" -> optional(jodaDate),
+          "fdat" -> optional(jodaDate("dd-MMM-yyyy")),
+          "tdat" -> optional(jodaDate("dd-MMM-yyyy")),
           "r" -> text,
           "uti" -> of[Double],
           "cfuti" -> of[Double],
@@ -183,9 +183,9 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	  for {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
 	  } yield {
-	    maybeleave.map( leave => 
+	    maybeleave.map( leave => {
 	      Ok(views.html.leave.view(leave))
-	    ).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+      }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
 	  }
 	}}
 	

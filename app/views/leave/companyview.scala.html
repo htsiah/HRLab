@@ -49,8 +49,8 @@
 	@contentRow("Approver", leave.wf.aprn)
 	@contentRow("Leave Type", leave.lt)
 	@contentRow("Day Type", leave.dt)
-	@contentRow("Date From", leave.fdat.get.toLocalDate().toString())
-	@contentRow("Date To", leave.tdat.get.toLocalDate().toString())
+	@contentRow("Date From", leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString())
+	@contentRow("Date To", leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString())
 	@contentRow("Utilized", leave.uti.toString())
 	@contentRow("Carry Forward Utilized", leave.cfuti.toString())
 	@if(leave.r.toString()!="") {

@@ -51,11 +51,11 @@ $(function(){
 	})
 	
 	$.validator.addMethod(
-		"date", 
+		"customDate", 
 		function(value, element) {
-			return this.optional(element) || value.match(/^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$/);
+			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
 		}, 
-		"Please enter a valid date format yyyy-mm-dd."
+		"Please enter a valid date format dd-mmm-yyyy."
 	);
 	
 	$.validator.addMethod(
@@ -81,11 +81,11 @@ $(function(){
 			lt: "required",
 			fdat: {
 				required: true,
-				date: true
+				customDate: true
 			},
 			tdat: {
 				required: true,
-				date: true,
+				customDate: true,
 				checkDate: true
 			}
 		},
@@ -93,11 +93,11 @@ $(function(){
 			lt: "Please select a leave type",
 			fdat: {
 				required: "Please enter the date from.",
-				date: "Please enter a valid date format yyyy-mm-dd."
+				customDate: "Please enter a valid date format dd-mmm-yyyy."
 			},
 			tdat: {
 				required: "Please enter the date to.",
-				date: "Please enter a valid date format yyyy-mm-dd.",
+				customDate: "Please enter a valid date format dd-mmm-yyyy.",
 				checkDate: "Date to should greater than date from."
 			}
 		},
