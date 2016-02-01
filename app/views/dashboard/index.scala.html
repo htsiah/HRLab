@@ -90,8 +90,8 @@
 											<td>@leave.docnum</td>
 											<td>@leave.lt</td>
 											<td>@leave.dt</td>
-											<td>@leave.fdat.get.toLocalDate().toString()</td>
-											<td>@leave.tdat.get.toLocalDate().toString()</td>
+											<td>@{leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString()}</td>
+											<td>@{leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()}</td>
 											<td class="text-center">
 												<div class="btn-group">
 													<a class="btn btn-xs btn-success" title="View" href="@routes.LeaveController.view(leave._id.stringify)">
