@@ -33,8 +33,8 @@ class ReportController extends Controller with Secured {
                "docnum" -> Json.toJson(leave.docnum),
                "lt" -> Json.toJson(leave.lt),
                "dt" -> Json.toJson(leave.dt),
-               "fdat" -> Json.toJson(leave.fdat.get.toLocalDate()),
-               "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
+               "fdat" -> Json.toJson(leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString()),
+               "tdat" -> Json.toJson(leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()),
                "uti" -> Json.toJson(leave.uti + leave.cfuti),
                "wf_s" -> Json.toJson(leave.wf.s),
                "wf_aprn" -> Json.toJson(leave.wf.aprn),
@@ -56,9 +56,9 @@ class ReportController extends Controller with Secured {
         leave.docnum + "," + 
         leave.lt + "," + 
         leave.dt + "," + 
-        leave.sys.get.cdat.get.toLocalDate() + "," + 
-        leave.fdat.get.toLocalDate() + "," + 
-        leave.tdat.get.toLocalDate() + "," + 
+        leave.sys.get.cdat.get.dayOfMonth().getAsText + "-" + leave.sys.get.cdat.get.monthOfYear().getAsShortText + "-" + leave.sys.get.cdat.get.getYear.toString() + "," +
+        leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString() + "," + 
+        leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString() + "," + 
         leave.uti + "," + 
         leave.cfuti + "," +
         leave.wf.s + "," +
@@ -93,8 +93,8 @@ class ReportController extends Controller with Secured {
                 "docnum" -> Json.toJson(leave.docnum),
                 "lt" -> Json.toJson(leave.lt),
                 "dt" -> Json.toJson(leave.dt),
-                "fdat" -> Json.toJson(leave.fdat.get.toLocalDate()),
-                "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
+                "fdat" -> Json.toJson(leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString()),
+                "tdat" -> Json.toJson(leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()),
                 "uti" -> Json.toJson(leave.uti + leave.cfuti),
                 "wf_s" -> Json.toJson(leave.wf.s),
                 "wf_aprn" -> Json.toJson(leave.wf.aprn),
@@ -122,9 +122,9 @@ class ReportController extends Controller with Secured {
            leave.docnum + "," + 
            leave.lt + "," + 
            leave.dt + "," + 
-           leave.sys.get.cdat.get.toLocalDate() + "," + 
-           leave.fdat.get.toLocalDate() + "," + 
-           leave.tdat.get.toLocalDate() + "," + 
+           leave.sys.get.cdat.get.dayOfMonth().getAsText + "-" + leave.sys.get.cdat.get.monthOfYear().getAsShortText + "-" + leave.sys.get.cdat.get.getYear.toString() + "," +
+           leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString() + "," + 
+           leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString() + "," + 
            leave.uti + "," + 
            leave.cfuti + "," +
            leave.wf.s + "," +
@@ -270,8 +270,8 @@ class ReportController extends Controller with Secured {
                 "docnum" -> Json.toJson(leave.docnum),
                 "lt" -> Json.toJson(leave.lt),
                 "dt" -> Json.toJson(leave.dt),
-                "fdat" -> Json.toJson(leave.fdat.get.toLocalDate()),
-                "tdat" -> Json.toJson(leave.tdat.get.toLocalDate()),
+                "fdat" -> Json.toJson(leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString()),
+                "tdat" -> Json.toJson(leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()),
                 "uti" -> Json.toJson(leave.uti),
                 "cfuti" -> Json.toJson(leave.cfuti),
                 "wf_s" -> Json.toJson(leave.wf.s),
@@ -299,9 +299,9 @@ class ReportController extends Controller with Secured {
            leave.docnum + "," + 
            leave.lt + "," + 
            leave.dt + "," + 
-           leave.sys.get.cdat.get.toLocalDate() + "," + 
-           leave.fdat.get.toLocalDate() + "," + 
-           leave.tdat.get.toLocalDate() + "," + 
+           leave.sys.get.cdat.get.dayOfMonth().getAsText + "-" + leave.sys.get.cdat.get.monthOfYear().getAsShortText + "-" + leave.sys.get.cdat.get.getYear.toString() + "," +
+           leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString() + "," + 
+           leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString() + "," + 
            leave.uti + "," + 
            leave.cfuti + "," +
            leave.wf.s + "," +
