@@ -118,7 +118,7 @@
 		@select(person("p")("off"), options = options(offices.map(office=>office)), '_label -> "Office",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@input(person("p")("edat"), '_label->"Join Date", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     	<div class="input-group">
-    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="yyyy-mm-dd" @toHtmlArgs(args)>
+    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="d-M-yyyy" @toHtmlArgs(args)>
 				<span class="input-group-addon">
 					<i class="fa fa-calendar bigger-110"></i>
 				</span>

@@ -57,7 +57,7 @@ $(function(){
 			"p.off": "Please select Office.",
 			"p.edat": {
 				required: "Please enter employment start date.",
-				date: "Please enter a valid date format yyyy-mm-dd."
+				customDate: "Please enter a valid date format dd-mmm-yyyy."
 			}
 		},		 
 		submitHandler: function(form) {
@@ -81,13 +81,13 @@ $(function(){
 	);
 	
 	$.validator.addMethod(
-		"date", 
+		"customDate", 
 		function(value, element) {
-			return this.optional(element) || value.match(/^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$/);
+			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
 		}, 
-		"Please enter a valid date format yyyy-mm-dd."
+		"Please enter a valid date format dd-mmm-yyyy."
 	);
-	
+		
 });
 
 $("#p_nem").click(function(){

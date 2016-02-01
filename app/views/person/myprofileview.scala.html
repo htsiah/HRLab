@@ -66,7 +66,7 @@
 							@contentRow("Marital Status", person.p.ms)
 							@contentRow("Department", person.p.dpm)
 							@contentRow("Office", person.p.off)
-							@contentRow("Join Date", person.p.edat.get.toLocalDate().toString())
+							@contentRow("Join Date", person.p.edat.get.dayOfMonth().getAsText + "-" + person.p.edat.get.monthOfYear().getAsShortText + "-" + person.p.edat.get.getYear.toString())
 							<dl class="dl-horizontal">
 								<dt><label>Work Day</label></dt>
 								<dd>
@@ -99,7 +99,7 @@
 							@contentRow("Marital Status", person.p.ms)
 							@contentRow("Department", person.p.dpm)
 							@contentRow("Office", person.p.off)
-							@contentRow("Join Date", person.p.edat.get.toLocalDate().toString())
+							@contentRow("Join Date", person.p.edat.get.dayOfMonth().getAsText + "-" + person.p.edat.get.monthOfYear().getAsShortText + "-" + person.p.edat.get.getYear.toString())
 							<dl class="dl-horizontal">
 								<dt><label>Work Day</label></dt>
 								<dd>
