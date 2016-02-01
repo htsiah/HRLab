@@ -145,8 +145,8 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                     "APPLICANT"->leave_update.pn, 
                     "NUMDAY"->(leave_update.uti + leave_update.cfuti).toString(), 
                     "LEAVETYPE"->leave_update.lt.toLowerCase(), 
-                    "FDAT"->leave_update.fdat.get.toLocalDate().toString(), 
-                    "TDAT"->leave_update.tdat.get.toLocalDate().toString()
+                    "FDAT"->(leave_update.fdat.get.dayOfMonth().getAsText + "-" + leave_update.fdat.get.monthOfYear().getAsShortText + "-" + leave_update.fdat.get.getYear.toString()),
+                    "TDAT"->(leave_update.tdat.get.dayOfMonth().getAsText + "-" + leave_update.tdat.get.monthOfYear().getAsShortText + "-" + leave_update.tdat.get.getYear.toString())
                 )
                 val buttonMap = Map(
                     "APPROVELINK"->(Tools.hostname + "/leave/approve/" + leave_update._id.stringify), 
