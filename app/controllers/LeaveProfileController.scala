@@ -553,17 +553,11 @@ class LeaveProfileController extends Controller with Secured {
    
    if(request.session.get("roles").get.contains("Admin")){
      for {
-       leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid" -> p_pid), request)
+       leavetypes <- LeaveProfileModel.getLeaveTypesSelection(p_pid, request)
      } yield {
-       var list: List[LeaveProfileScope] = List()
        render {
          case Accepts.Html() => Ok(views.html.error.unauthorized())
-         case Accepts.Json() => {
-           leaveprofiles.map { leaveprofile => {
-             list = list ::: List(LeaveProfileScope(leaveprofile.lt))
-           }}
-           Ok(Json.toJson(list))
-         }
+         case Accepts.Json() => Ok(Json.toJson(leavetypes))
        }
      }
    } else {

@@ -31,7 +31,7 @@ $(function(){
     				$('#lt option').remove();
     				$('#lt').append( new Option("Please select","") );
     				$.each(data, function(key, val) {
-    					$('#lt').append( new Option(val.n,val.n) );
+    					$('#lt').append( new Option(val,key) );
     				});
     				$("#dt").removeAttr("disabled");
     				loader.off();
