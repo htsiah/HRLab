@@ -4,7 +4,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(leave:Form[Leave], leavetypes:List[String], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(leave:Form[Leave], leavetypes:Map[String, String], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -53,7 +53,7 @@
 			<dt><label for="s">Approver</label></dt>
 			<dd>@leave("wf.aprn").value</dd>
 		</dl>
-		@select(leave("lt"), options = options(leavetypes.map(leavetype=>leavetype)), '_label -> "Leave Type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leave("lt"), options = leavetypes.toSeq, '_label -> "Leave Type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(leave("dt"), options = Seq("Full day"->"Full day", "1st half"->"1st half", "2nd half"->"2nd half"), '_label -> "Day Type", '_class->"dl-horizontal", 'class->"form-control")
 		@input(leave("fdat"), '_label->"Date From", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
     	<div class="input-group">

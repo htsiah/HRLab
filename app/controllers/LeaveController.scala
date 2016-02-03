@@ -58,7 +58,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
   
 	def create = withAuth { username => implicit request => {
 	  for {
-	    leavetypes <- LeaveProfileModel.getLeaveTypes(request.session.get("id").get, request)
+      leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
 	    maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("managerid").get)), request)
 	  } yield{
 	    val docnum = DocNumUtility.getNumberText("leave", request.session.get("entity").get)
@@ -83,14 +83,14 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	  leaveform.bindFromRequest.fold(
 	      formWithError => {
 	        for {
-	          leavetypes <- LeaveProfileModel.getLeaveTypes(request.session.get("id").get, request)
+	          leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
 	        } yield{
 	          Ok(views.html.leave.form(formWithError,leavetypes))
 	        }
 	      },
 	      formWithData => {
 	        for {
-	          leavetypes <- LeaveProfileModel.getLeaveTypes(request.session.get("id").get, request)
+	          leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
 	          maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
 	          maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
 	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get))

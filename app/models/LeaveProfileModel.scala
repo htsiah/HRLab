@@ -1,5 +1,7 @@
 package models
 
+import scala.concurrent.{Await}
+
 import play.api.Play
 import play.api.Logger
 import play.api.mvc._
@@ -8,7 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System,SystemDataStore}
+import utilities.{System,SystemDataStore,Tools}
 
 import scala.util.{Success, Failure,Try}
 import scala.collection.mutable.ArrayBuffer
@@ -873,6 +875,26 @@ object LeaveProfileModel {
       var typesList = List[String]()
       maybe_leavetypes.foreach(leavetype => typesList = typesList :+ leavetype.lt)
       typesList
+    }
+  }
+  
+  def getLeaveTypesSelection(p_pid:String, p_request:RequestHeader) = {
+    for {
+      leavetypes <- this.find(BSONDocument("pid" -> p_pid), p_request)
+    } yield {
+      buildLeaveTypesSelection(leavetypes, Map[String, String](), p_request)
+    }
+  }
+  
+  // Recursive function to build Leave Type
+  private def buildLeaveTypesSelection(leavetypes:List[LeaveProfile], leavetypesselection:Map[String, String], p_request:RequestHeader):Map[String, String] = {
+    if (leavetypes.isEmpty) {
+      leavetypesselection
+    } else {
+      val leavetype = leavetypes.head
+      val leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt" -> leavetype.lt), p_request), Tools.db_timeout)
+      val leavebalance = if (leavepolicy.get.set.acc == "Monthly - utilisation based on earned") { leavetype.cal.bal } else { leavetype.cal.cbal }
+      buildLeaveTypesSelection(leavetypes.tail, leavetypesselection.++(Map(leavetype.lt -> (leavetype.lt + " (" + leavebalance.toString() + " days available)"))), p_request)
     }
   }
   
