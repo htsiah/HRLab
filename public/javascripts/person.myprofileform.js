@@ -12,7 +12,21 @@ $(function(){
 	.next().on(ace.click_event, function(){
 		$(this).prev().focus();
 	});
-	
+
+    // Disable empty date field after selecting current date
+    // http://stackoverflow.com/questions/24981072/bootstrap-datepicker-empties-field-after-selecting-current-date
+    $("#p_edat").on("show", function(e){
+    	$(this).data("stickyDate", e.date);
+    });
+
+    $("#p_edat").on("hide", function(e){
+        var stickyDate = $(this).data("stickyDate");
+        if ( !e.date && stickyDate ) {
+        	$(this).datepicker("setDate", stickyDate);
+            $(this).data("stickyDate", null);
+        }
+    });
+    
 	$("#personform").validate({
 		debug: true,
 		onkeyup: false,
@@ -39,7 +53,7 @@ $(function(){
 			"p.off": "Please select Office.",
 			"p.edat": {
 				required: "Please enter employment start date.",
-				customDate: "Please enter a valid date format dd-mmm-yyyy."
+				customDate: "Please enter a valid date format d-mmm-yyyy."
 			}
 		},		 
 		submitHandler: function(form) {
@@ -52,7 +66,7 @@ $(function(){
 		function(value, element) {
 			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
 		}, 
-		"Please enter a valid date format dd-mmm-yyyy."
+		"Please enter a valid date format d-mmm-yyyy."
 	);
 	
 });

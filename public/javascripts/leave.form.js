@@ -7,11 +7,39 @@ $(function(){
 		autoclose: true,
 		todayHighlight: true
 	})
-		
+			
 	//show datepicker when clicking on the icon
 	.next().on(ace.click_event, function(){
 		$(this).prev().focus();
 	});
+    
+	// To date can not earlier than From date
+	$("#tdat").datepicker("setStartDate", $("#fdat").val());
+	
+    // Disable empty date field after selecting current date
+    // http://stackoverflow.com/questions/24981072/bootstrap-datepicker-empties-field-after-selecting-current-date
+    $("#fdat, #tdat").on("show", function(e){
+    	$(this).data("stickyDate", e.date);
+    });
+
+    $("#tdat").on("hide", function(e){
+        var stickyDate = $(this).data("stickyDate");
+        if ( !e.date && stickyDate ) {
+        	$(this).datepicker("setDate", stickyDate);
+            $(this).data("stickyDate", null);
+        }
+    });
+    
+    $("#fdat").on("hide", function(e){
+        var stickyDate = $(this).data("stickyDate");
+        if ( !e.date && stickyDate ) {
+        	$(this).datepicker("setDate", stickyDate);
+            $(this).data("stickyDate", null);
+        } else {
+    		$("#tdat").datepicker("setStartDate", $(this).val());
+    		$("#tdat").datepicker("update", $(this).val());
+        }
+    });
     
     // Bind leave type field 
     $("#lt").change(function() {
@@ -40,22 +68,18 @@ $(function(){
 		if (seldatetype=="1st half" || seldatetype=="2nd half") {
 			$("#tdat").attr("disabled", "disabled");
 			$("#tdat").val($("#fdat").val());
+			$("#tdat").datepicker("update", $("#fdat").val());
 		} else {
 			$("#tdat").removeAttr("disabled");
 		}
 	})
-	
-	// Bind start date field 
-	$(document).on('change', '#fdat', function(e) {
-		$("#tdat").val($("#fdat").val());
-	})
-	
+		
 	$.validator.addMethod(
 		"customDate", 
 		function(value, element) {
 			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
 		}, 
-		"Please enter a valid date format dd-mmm-yyyy."
+		"Please enter a valid date format d-mmm-yyyy."
 	);
 	
 	$.validator.addMethod(
@@ -93,11 +117,11 @@ $(function(){
 			lt: "Please select a leave type",
 			fdat: {
 				required: "Please enter the date from.",
-				customDate: "Please enter a valid date format dd-mmm-yyyy."
+				customDate: "Please enter a valid date format d-mmm-yyyy."
 			},
 			tdat: {
 				required: "Please enter the date to.",
-				customDate: "Please enter a valid date format dd-mmm-yyyy.",
+				customDate: "Please enter a valid date format d-mmm-yyyy.",
 				checkDate: "Date to should greater than date from."
 			}
 		},

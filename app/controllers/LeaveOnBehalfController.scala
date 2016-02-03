@@ -39,8 +39,8 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
           "pid" -> text,
           "lt" -> text,
           "dt" -> text,
-          "fdat" -> optional(jodaDate("dd-MMM-yyyy")),
-          "tdat" -> optional(jodaDate("dd-MMM-yyyy")),
+          "fdat" -> optional(jodaDate("d-MMM-yyyy")),
+          "tdat" -> optional(jodaDate("d-MMM-yyyy")),
           "r" -> text
       )(LeaveOnBehalf.apply)(LeaveOnBehalf.unapply)
   )

@@ -26,8 +26,8 @@ class CompanyHolidayController extends Controller with Secured {
           "d" -> text,
           "ct" -> nonEmptyText,
           "st" -> text,
-          "fdat" -> optional(jodaDate),
-          "tdat" -> optional(jodaDate),
+          "fdat" -> optional(jodaDate("d-MMM-yyyy")),
+          "tdat" -> optional(jodaDate("d-MMM-yyyy")),
           "sys" -> optional(mapping(
                   "eid" -> optional(text),
                   "cdat" -> optional(jodaDate),

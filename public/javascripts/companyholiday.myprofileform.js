@@ -12,12 +12,35 @@ $(function(){
 	.next().on(ace.click_event, function(){
 		$(this).prev().focus();
 	});
+
+	// To date can not earlier than From date
+	$("#tdat").datepicker("setStartDate", $("#fdat").val());
 	
-	// Bind on start date
-	$(document).on('change', '#fdat', function(e) {
-		$("#tdat").val($("#fdat").val());
-	})
+    // Disable empty date field after selecting current date
+    // http://stackoverflow.com/questions/24981072/bootstrap-datepicker-empties-field-after-selecting-current-date
+    $("#fdat, #tdat").on("show", function(e){
+    	$(this).data("stickyDate", e.date);
+    });
+
+    $("#tdat").on("hide", function(e){
+        var stickyDate = $(this).data("stickyDate");
+        if ( !e.date && stickyDate ) {
+        	$(this).datepicker("setDate", stickyDate);
+            $(this).data("stickyDate", null);
+        }
+    });
     
+    $("#fdat").on("hide", function(e){
+        var stickyDate = $(this).data("stickyDate");
+        if ( !e.date && stickyDate ) {
+        	$(this).datepicker("setDate", stickyDate);
+            $(this).data("stickyDate", null);
+        } else {
+    		$("#tdat").datepicker("setStartDate", $(this).val());
+    		$("#tdat").datepicker("update", $(this).val());
+        }
+    });
+        
 	$("#companyholidayform").validate({
 		onkeyup: false,
 		rules: {
@@ -36,11 +59,11 @@ $(function(){
 			"n": "Please enter holiday name.",
 			"fdat": {
 				required: "Please enter date from (start).",
-				date: "Please enter a valid date format yyyy-mm-dd."
+				customDate: "Please enter a valid date format d-mmm-yyyy."
 			},
 			"tdat": {
 				required: "Please enter date to (end).",
-				date: "Please enter a valid date format yyyy-mm-dd.",
+				customDate: "Please enter a valid date format d-mmm-yyyy.",
 				checkDate: "Date to (end) should greater than date from (start)."
 			}
 		},		 
@@ -50,11 +73,11 @@ $(function(){
 	});
 	
 	$.validator.addMethod(
-		"date", 
+		"customDate", 
 		function(value, element) {
-			return this.optional(element) || value.match(/^\d{4}-((0\d)|(1[012]))-(([012]\d)|3[01])$/);
+			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
 		}, 
-		"Please enter a valid date format yyyy-mm-dd."
+		"Please enter a valid date format d-mmm-yyyy."
 	);
 	
 	$.validator.addMethod("checkDate", 
