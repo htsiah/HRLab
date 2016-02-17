@@ -67,8 +67,6 @@ GET		/leave/view/:p_id										controllers.LeaveController.view(p_id:String)
 GET		/leave/company/view/:p_id								controllers.LeaveController.companyview(p_id:String)
 GET		/leave/getapprovedleavejson/:p_type						controllers.LeaveController.getApprovedLeaveJSON(p_type)
 GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
-GET		/leave/getdaytypeandapplieddurationjson/:p_pid/:p_lt			controllers.LeaveController.getDayTypeAndAppliedDurationJSON(p_pid:String, p_lt:String)
-GET		/leave/getapplieddurationjson/:p_pid/:p_lt/:p_dt/:p_fdat/:p_tdat	controllers.LeaveController.getAppliedDurationJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String)
 
 # Leave - Apply On Behalf
 GET		/leaveonbehalf/create											controllers.LeaveOnBehalfController.create
