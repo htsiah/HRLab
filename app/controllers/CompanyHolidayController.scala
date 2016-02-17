@@ -168,7 +168,7 @@ class CompanyHolidayController extends Controller with Secured {
       var count = 0
       val fmt = ISODateTimeFormat.date()
       companyholidays.foreach(companyholiday => {
-        var title = companyholiday.n 
+        var title = companyholiday.n.replace("\t", "") // Temparary solution
         var url = "/companyholiday/view/" + companyholiday._id.stringify
         var start = fmt.print(companyholiday.fdat.get)
         var end = fmt.print(companyholiday.tdat.get.plusDays(1))
@@ -188,7 +188,7 @@ class CompanyHolidayController extends Controller with Secured {
       var count = 0
       val fmt = ISODateTimeFormat.date()
       companyholidays.foreach(companyholiday => {
-        var title = companyholiday.n 
+        var title = companyholiday.n.replace("\t", "") // Temparary solution 
         var url = "/companyholiday/myprofile/view/" + companyholiday._id.stringify
         var start = fmt.print(companyholiday.fdat.get)
         var end = fmt.print(companyholiday.tdat.get.plusDays(1))
