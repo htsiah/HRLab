@@ -47,11 +47,11 @@ $(function(){
 			"n": "required",
 			"fdat": {
 				required: true,
-				date: true
+				customDate: true
 			},
 			"tdat": {
 				required: true,
-				date: true,
+				customDate: true,
 				checkDate: true
 			}
 		},

@@ -40,7 +40,7 @@ $(function(){
 			"p.off": "required",
 			"p.edat": {
 				required: true,
-				date: true
+				customDate: true
 			}
 		},
 		messages: {
