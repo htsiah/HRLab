@@ -21,33 +21,95 @@ $(function(){
     $("#fdat, #tdat").on("show", function(e){
     	$(this).data("stickyDate", e.date);
     });
-
-    $("#tdat").on("hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
-        if ( !e.date && stickyDate ) {
-        	$(this).datepicker("setDate", stickyDate);
-            $(this).data("stickyDate", null);
-        }
-    });
     
     $("#fdat").on("hide", function(e){
         var stickyDate = $(this).data("stickyDate");
         if ( !e.date && stickyDate ) {
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
-        } else {
-    		$("#tdat").datepicker("setStartDate", $(this).val());
-    		$("#tdat").datepicker("update", $(this).val());
+        } else {   		
+    		// This bit only process if value change
+    		if (e.date.toLocaleDateString() !== stickyDate.toLocaleDateString()) {
+    	    	
+        		$("#tdat").datepicker("setStartDate", $(this).val());
+        		$("#tdat").datepicker("update", $(this).val());
+        		
+    			var selperson = $( "#pid option:selected" ).val();
+    	    	var sellt = $( "#lt option:selected" ).val();
+    			var seldt = $( "#dt option:selected" ).val();
+    			var fillfdat = $( "#fdat" ).val();
+    			var filltdat = $( "#tdat" ).val();
+    			        		
+        		$.ajax({
+        			url: "/leave/getapplieddurationjson/" + selperson + "/" + sellt + "/" + seldt + "/" + fillfdat + "/" + filltdat,
+        			dataType: "json",
+        			beforeSend: function(){
+        				loader.on();
+        			},
+        			success: function(data){
+        				if (parseFloat(data.balance) < 0 ){
+        					$("#btn-apply").html("Apply for " + data.applied + " day.<br>No enough leave balance.");
+        					$("#btn-apply").attr("disabled", "disabled");
+        				} else {
+        					$("#btn-apply").text("Apply for " + data.applied + " day");
+        				}
+        				loader.off();
+        			},
+        			error: function(xhr, status, error){
+        				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+        				loader.off();
+        			},
+        		});
+    		};
         }
     });
+    
+    $("#tdat").on("hide", function(e){
+        var stickyDate = $(this).data("stickyDate");
+        if ( !e.date && stickyDate ) {
+        	$(this).datepicker("setDate", stickyDate);
+            $(this).data("stickyDate", null);
+        } else {
+        	// This bit only process if value change
+    		if (e.date.toLocaleDateString() !== stickyDate.toLocaleDateString()) {
+    			var selperson = $( "#pid option:selected" ).val();
+    	    	var sellt = $( "#lt option:selected" ).val();
+    			var seldt = $( "#dt option:selected" ).val();
+    			var fillfdat = $( "#fdat" ).val();
+    			var filltdat = $( "#tdat" ).val();
+    			        		
+        		$.ajax({
+        			url: "/leave/getapplieddurationjson/" + selperson + "/" + sellt + "/" + seldt + "/" + fillfdat + "/" + filltdat,
+        			dataType: "json",
+        			beforeSend: function(){
+        				loader.on();
+        			},
+        			success: function(data){
+        				if (parseFloat(data.balance) < 0 ){
+        					$("#btn-apply").html("Apply for " + data.applied + " day.<br>No enough leave balance.");
+        					$("#btn-apply").attr("disabled", "disabled");
+        				} else {
+        					$("#btn-apply").text("Apply for " + data.applied + " day");
+        				}
+        				loader.off();
+        			},
+        			error: function(xhr, status, error){
+        				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+        				loader.off();
+        			},
+        		});
+    		};
+        }
+    });
+        	
+    // Set new form
+    resetForm();
     
     // Bind Applicant field 
     $(document).on('change', '#pid', function(e) {
     	var selperson = this.options[this.selectedIndex].value;
     	if (selperson == "") {
-			$('#lt option').remove();
-			$('#lt').append( new Option("Please select","") );
-    		$("#dt").removeAttr("disabled");
+			resetForm("applicant");
     	} else {
     		$.ajax({
     			url: "/leaveprofile/getleaveprofile/" + selperson,
@@ -56,12 +118,12 @@ $(function(){
     				loader.on();
     			},
     			success: function(data){
+    				$("#lt").removeAttr("disabled");
     				$('#lt option').remove();
     				$('#lt').append( new Option("Please select","") );
     				$.each(data, function(key, val) {
     					$('#lt').append( new Option(val,key) );
     				});
-    				$("#dt").removeAttr("disabled");
     				loader.off();
     			},
     			error: function(xhr, status, error){
@@ -71,25 +133,67 @@ $(function(){
     			
     		})
     	}
-    })
-
+    });
+    
     // Bind leave type field 
-    $("#lt").change(function() {
-    	var selectedApplicant = $( "#pid option:selected" ).val();
-    	var selectedLT = $( "#lt option:selected" ).text();
+    $(document).on('change', '#lt', function(e) {
+    	var selperson = $( "#pid option:selected" ).val();
+    	var sellt = $( "#lt option:selected" ).val();
+    	if (sellt == "") {
+    		resetForm("leave type - reset");
+    	} else {
+    		$.ajax({
+    			url: "/leave/getdaytypeandapplieddurationjson/" + selperson + "/" + sellt,
+    			dataType: "json",
+    			beforeSend: function(){
+    				loader.on();
+    			},
+    			success: function(data){
+    				if (data.daytype == "Full day only") {
+    					resetForm("leave type - full day only");
+    				} else {
+    					resetForm("leave type - all");
+    				};
+    				if (parseFloat(data.balance) < 0 ){
+    					$("#btn-apply").html("Apply for " + data.applied + " day.<br>No enough leave balance.");
+    					$("#btn-apply").attr("disabled", "disabled");
+    				} else {
+    					$("#btn-apply").text("Apply for " + data.applied + " day");
+    				}
+    				loader.off();
+    			},
+    			error: function(xhr, status, error){
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+    				loader.off();
+    			},
+    		});
+    	}
+    });
+    
+	// Bind day type field 
+	$(document).on('change', '#dt', function(e) {
+    	var selperson = $( "#pid option:selected" ).val();
+    	var sellt = $( "#lt option:selected" ).val();
+		var seldt = this.options[this.selectedIndex].value;
+		if (seldt=="1st half" || seldt=="2nd half") {
+			resetForm("day type - half day");
+		} else {
+			resetForm("day type - full day");
+		}
+		var fillfdat = $( "#fdat" ).val();
+		var filltdat = $( "#tdat" ).val();
 		$.ajax({
-			url: "/leavepolicy/getdaytype/" + selectedApplicant + "/" + selectedLT,
+			url: "/leave/getapplieddurationjson/" + selperson + "/" + sellt + "/" + seldt + "/" + fillfdat + "/" + filltdat,
 			dataType: "json",
 			beforeSend: function(){
 				loader.on();
 			},
 			success: function(data){
-				if (data.daytype == "Full day only") {
-					$("#dt").attr("disabled", "disabled");
-					$("#dt").val("Full day");
-					$("#tdat").removeAttr("disabled");
+				if (parseFloat(data.balance) < 0 ){
+					$("#btn-apply").html("Apply for " + data.applied + " day.<br>No enough leave balance.");
+					$("#btn-apply").attr("disabled", "disabled");
 				} else {
-					$("#dt").removeAttr("disabled");
+					$("#btn-apply").text("Apply for " + data.applied + " day");
 				}
 				loader.off();
 			},
@@ -98,19 +202,8 @@ $(function(){
 				loader.off();
 			},
 		});
-    });
-    
-	// Bind day type field 
-	$(document).on('change', '#dt', function(e) {
-		var seldatetype = this.options[this.selectedIndex].value;
-		if (seldatetype=="1st half" || seldatetype=="2nd half") {
-			$("#tdat").attr("disabled", "disabled");
-			$("#tdat").datepicker("update", $("#fdat").val());
-		} else {
-			$("#tdat").removeAttr("disabled");
-		}
 	})
-		
+    		
 	// Validation for form
 	$.validator.addMethod(
 		"customDate", 
@@ -172,6 +265,75 @@ $(function(){
 	});
 	
 });
+
+// Set Form
+function resetForm(opt){
+	switch (opt) {
+	case "applicant":
+		$("#lt option").remove();
+		$("#lt").append( new Option("Please select","") );
+		$("#dt").val("Full day");
+		$("#fdat").datepicker("setDate", new Date());
+		$("#tdat").datepicker("setStartDate", new Date());
+		$("#tdat").datepicker("setDate", new Date());
+		$("#lt").attr("disabled", "disabled");
+	    $("#dt").attr("disabled", "disabled");
+	    $("#fdat").attr("disabled", "disabled");
+	    $("#tdat").attr("disabled", "disabled");
+	    $("#btn-apply").text("Apply for 0 day");
+	    $("#btn-apply").attr("disabled", "disabled");
+	    break;
+	case "leave type - reset":
+		$("#dt").val("Full day");
+		$("#fdat").datepicker("setDate", new Date());
+		$("#tdat").datepicker("setStartDate", new Date());
+		$("#tdat").datepicker("setDate", new Date());
+	    $("#dt").attr("disabled", "disabled");
+	    $("#fdat").attr("disabled", "disabled");
+	    $("#tdat").attr("disabled", "disabled");
+	    $("#btn-apply").text("Apply for 0 day");
+	    $("#btn-apply").attr("disabled", "disabled");
+	    break;
+	case "leave type - all":
+		$("#dt").removeAttr("disabled");
+		$("#fdat").removeAttr("disabled");
+		$("#tdat").removeAttr("disabled");
+		$("#btn-apply").removeAttr("disabled");
+		$("#dt").val("Full day");
+		$("#fdat").datepicker("setDate", new Date());
+		$("#tdat").datepicker("setStartDate", new Date());
+		$("#tdat").datepicker("setDate", new Date());
+	    break;
+	case "leave type - full day only":
+		$("#fdat").removeAttr("disabled");
+		$("#tdat").removeAttr("disabled");
+		$("#btn-apply").removeAttr("disabled");
+		$("#dt").val("Full day");
+		$("#fdat").datepicker("setDate", new Date());
+		$("#tdat").datepicker("setStartDate", new Date());
+		$("#tdat").datepicker("setDate", new Date());
+	    $("#dt").attr("disabled", "disabled");
+	    break;
+	case "day type - half day":
+		$("#tdat").removeAttr("disabled");
+		$("#fdat").datepicker("setDate", new Date());
+		$("#tdat").datepicker("setStartDate", new Date());
+		$("#tdat").datepicker("setDate", new Date());
+	    $("#tdat").attr("disabled", "disabled");
+	    break;
+	case "day type - full day":
+		$("#tdat").removeAttr("disabled");
+		$("#fdat").datepicker("setDate", new Date());
+		$("#tdat").datepicker("setStartDate", new Date());
+		$("#tdat").datepicker("setDate", new Date());
+	    break;
+	default: // New form
+		$("#lt").attr("disabled", "disabled");
+		$("#dt").attr("disabled", "disabled");
+		$("#fdat").attr("disabled", "disabled");
+		$("#tdat").attr("disabled", "disabled");
+	}
+}
 
 // Form submit function
 var handleSubmit = function() {
