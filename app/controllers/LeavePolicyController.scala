@@ -264,7 +264,7 @@ class LeavePolicyController extends Controller with Secured {
   
   def getDayTypeJSON(p_lt:String) = withAuth { username => implicit request => {
     for {
-      maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt, "pt" -> request.session.get("position").get), request)
+      maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt), request)
     } yield {
       maybeleavepolicy.map( leavepolicy => {
         val json = Json.parse("{\"daytype\":\"" + leavepolicy.set.dt + "\"}");
@@ -276,10 +276,9 @@ class LeavePolicyController extends Controller with Secured {
     }
   } }
   
-  def getDayType(p_pid:String, p_lt:String) = withAuth { username => implicit request => {
+  def getDayType(p_lt:String) = withAuth { username => implicit request => {
     for {
-      maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
-      maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt, "pt" -> maybe_person.get.p.pt), request)
+      maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt), request)
     } yield {
       render {
          case Accepts.Html() => Ok(views.html.error.unauthorized())

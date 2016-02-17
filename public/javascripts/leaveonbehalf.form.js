@@ -75,29 +75,30 @@ $(function(){
 
     // Bind leave type field 
     $("#lt").change(function() {
-    	var selectedApplicant = $( "#pid option:selected" ).val();
-    	var selectedLT = $( "#lt option:selected" ).text();
-		$.ajax({
-			url: "/leavepolicy/getdaytype/" + selectedApplicant + "/" + selectedLT,
-			dataType: "json",
-			beforeSend: function(){
-				loader.on();
-			},
-			success: function(data){
-				if (data.daytype == "Full day only") {
-					$("#dt").attr("disabled", "disabled");
-					$("#dt").val("Full day");
-					$("#tdat").removeAttr("disabled");
-				} else {
-					$("#dt").removeAttr("disabled");
-				}
-				loader.off();
-			},
-			error: function(xhr, status, error){
-				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
-				loader.off();
-			},
-		});
+    	var selectedLT = $( "#lt option:selected" ).val();
+    	if (selectedLT != "") {
+    		$.ajax({
+    			url: "/leavepolicy/getdaytype/" + selectedLT,
+    			dataType: "json",
+    			beforeSend: function(){
+    				loader.on();
+    			},
+    			success: function(data){
+    				if (data.daytype == "Full day only") {
+    					$("#dt").attr("disabled", "disabled");
+    					$("#dt").val("Full day");
+    					$("#tdat").removeAttr("disabled");
+    				} else {
+    					$("#dt").removeAttr("disabled");
+    				}
+    				loader.off();
+    			},
+    			error: function(xhr, status, error){
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+    				loader.off();
+    			},
+    		});	
+    	}
     });
     
 	// Bind day type field 
