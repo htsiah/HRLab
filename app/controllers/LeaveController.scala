@@ -464,4 +464,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
     }
   }}
   
+  // Return: {0,0}
+  def getApplyDay(p_pid:String, p_lt:String, p_dt:String, p_datf:String, p_datt:String) = TODO
+  
 }
