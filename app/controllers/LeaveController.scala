@@ -98,7 +98,6 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
             maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.wf.aprid)), request)
 	          maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
-	          maybealert_notenoughtbalance <- AlertUtility.findOne(BSONDocument("k"->1007))
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
             maybealert_requestdateconflict <- AlertUtility.findOne(BSONDocument("k"->1014))
 	        } yield {
@@ -118,64 +117,59 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
               Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_requestdateconflict.getOrElse(null)))
             } else {
 	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
-              val leavebalance = if (maybeleavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybeleaveprofile.get.cal.bal } else { maybeleaveprofile.get.cal.cbal } 
-	            if (leavebalance < appliedduration) {
-	              // No enough leave balance
-	              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_notenoughtbalance.getOrElse(null)))
-	            } else {
-                val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
+              //val leavebalance = if (maybeleavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybeleaveprofile.get.cal.bal } else { maybeleaveprofile.get.cal.cbal } 
+
+              val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
 	                           
-                // Add Leave
-                val leave_update = if (carryforward_bal <= 0) 
-                  formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration, cfuti = 0)
-                  else if (carryforward_bal >= appliedduration)
-                    formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = 0, cfuti = appliedduration)
-                    else
-                      formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
-                LeaveModel.insert(leave_update, p_request=request)
+              // Add Leave
+              val leave_update = if (carryforward_bal <= 0) 
+                formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration, cfuti = 0)
+                else if (carryforward_bal >= appliedduration)
+                  formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = 0, cfuti = appliedduration)
+                  else
+                    formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
+                    
+              LeaveModel.insert(leave_update, p_request=request)
+              // Update leave profile
+              val leaveprofile_update = maybeleaveprofile.get.copy(
+                  cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr + leave_update.uti + leave_update.cfuti)
+              )
+              LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
                 
-                // Update leave profile
-                val leaveprofile_update = maybeleaveprofile.get.copy(
-                    cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr + leave_update.uti + leave_update.cfuti)
-                )
-                LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
+              // Add ToDo
+              val contentMap = Map(
+                  "DOCUNUM"->leave_update.docnum.toString(), 
+                  "APPLICANT"->leave_update.pn, 
+                  "NUMDAY"->(leave_update.uti + leave_update.cfuti).toString(), 
+                  "LEAVETYPE"->leave_update.lt.toLowerCase(), 
+                  "FDAT"->(leave_update.fdat.get.dayOfMonth().getAsText + "-" + leave_update.fdat.get.monthOfYear().getAsShortText + "-" + leave_update.fdat.get.getYear.toString()),
+                  "TDAT"->(leave_update.tdat.get.dayOfMonth().getAsText + "-" + leave_update.tdat.get.monthOfYear().getAsShortText + "-" + leave_update.tdat.get.getYear.toString())
+              )
+              val buttonMap = Map(
+                  "APPROVELINK"->(Tools.hostname + "/leave/approve/" + leave_update._id.stringify), 
+                  "DOCLINK"->(Tools.hostname + "/leave/view/" + leave_update._id.stringify)    
+              )
+              TaskModel.insert(1, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
                 
-	              // Add ToDo
-	              val contentMap = Map(
-                    "DOCUNUM"->leave_update.docnum.toString(), 
-                    "APPLICANT"->leave_update.pn, 
-                    "NUMDAY"->(leave_update.uti + leave_update.cfuti).toString(), 
-                    "LEAVETYPE"->leave_update.lt.toLowerCase(), 
-                    "FDAT"->(leave_update.fdat.get.dayOfMonth().getAsText + "-" + leave_update.fdat.get.monthOfYear().getAsShortText + "-" + leave_update.fdat.get.getYear.toString()),
-                    "TDAT"->(leave_update.tdat.get.dayOfMonth().getAsText + "-" + leave_update.tdat.get.monthOfYear().getAsShortText + "-" + leave_update.tdat.get.getYear.toString())
-                )
-                val buttonMap = Map(
-                    "APPROVELINK"->(Tools.hostname + "/leave/approve/" + leave_update._id.stringify), 
-                    "DOCLINK"->(Tools.hostname + "/leave/view/" + leave_update._id.stringify)    
-                )
-                TaskModel.insert(1, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
-                
-                // Send email
-                val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
-                val replaceMap = Map(
-                    "MANAGER"->leave_update.wf.aprn, 
-                    "APPLICANT"->leave_update.pn, 
-                    "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
-                    "LEAVETYPE"->leave_update.lt, 
-                    "DOCNUM"->leave_update.docnum.toString(), 
-                    "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), 
-                    "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-                    "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-                    "REASON"-> reason,
-                    "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
-                    "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
-                )
-	              MailUtility.getEmailConfig(List(maybemanager.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
-                
-	              Redirect(routes.DashboardController.index)
-	            }
-	          }
-	        }
+              // Send email
+              val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
+              val replaceMap = Map(
+                  "MANAGER"->leave_update.wf.aprn, 
+                  "APPLICANT"->leave_update.pn, 
+                  "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+                  "LEAVETYPE"->leave_update.lt, 
+                  "DOCNUM"->leave_update.docnum.toString(), 
+                  "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), 
+                  "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                  "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                  "REASON"-> reason,
+                  "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
+                  "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
+              )
+              MailUtility.getEmailConfig(List(maybemanager.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
+              Redirect(routes.DashboardController.index)
+            }
+          }
         }
 	  )
 	}}

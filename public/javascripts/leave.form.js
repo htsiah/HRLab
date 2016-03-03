@@ -1,66 +1,3 @@
-var Calendar = {
-
-	companyholidaysource:{
-		url: '/companyholiday/getcompanyholidayjson',
-		type: 'GET',
-		cache: false,
-		error: function() {
-			alert('There was an error while fetching company holiday!');
-		},
-		className: 'label-success'
-	},
-	
-	myapprovedleavessource:{
-		url: '/leave/getapprovedleaveforcompanyviewjson/my',
-		type: 'GET',
-		cache: false,
-		error: function() {
-			alert('There was an error while fetching your leave!');
-		},
-		color: 'blue',   // a non-ajax option
-		textColor: 'white' // a non-ajax option
-	},
-	
-	deptleavesurl:{},
-	
-	deptleavessource:{},
-	
-	initCalendar:function(){
-		var date = new Date();
-		var d = date.getDate();
-		var m = date.getMonth();
-		var y = date.getFullYear();
-		$('#calendar').fullCalendar({});	
-	},
-
-	removeEvents:function(p_source){
-		$('#calendar').fullCalendar( 'removeEventSource', p_source )
-	},
-
-	showCompanyHoliday:function(){
-		$('#calendar').fullCalendar('addEventSource',this.companyholidaysource);
-	},
-	
-	showMyLeave:function(){
-		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
-	},
-	
-	showDeptCalendar:function(){
-		this.deptleavessource = {
-			url: this.deptleavesurl,
-			type: 'GET',
-			cache: false,
-			error: function() {
-				alert('There was an error while fetching department leave!');
-			},
-			color: 'blue',   // a non-ajax option
-			textColor: 'white' // a non-ajax option
-		}
-		$('#calendar').fullCalendar('addEventSource',this.deptleavessource);
-	}
-
-}
-
 $(function(){
     
     $("#navProfile").addClass("active open");
@@ -91,6 +28,7 @@ $(function(){
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
         }
+        setApplyBtn(true);
     });
     
     $("#fdat").on("hide", function(e){
@@ -102,6 +40,7 @@ $(function(){
     		$("#tdat").datepicker("setStartDate", $(this).val());
     		$("#tdat").datepicker("update", $(this).val());
         }
+        setApplyBtn(true);
     });
         
     // Bind leave type field 
@@ -122,6 +61,7 @@ $(function(){
     				} else {
     					$("#dt").removeAttr("disabled");
     				}
+    				setApplyBtn(false);
     				loader.off();
     			},
     			error: function(xhr, status, error){
@@ -129,7 +69,9 @@ $(function(){
     				loader.off();
     			},
     		});	
-    	}
+    	} else {
+    		setApplyBtn(true);
+    	};
     });
     
 	// Bind date type field 
@@ -142,6 +84,7 @@ $(function(){
 		} else {
 			$("#tdat").removeAttr("disabled");
 		}
+		setApplyBtn(true);
 	})
 		
 	$.validator.addMethod(
@@ -207,6 +150,109 @@ $(function(){
 	Calendar.showCompanyHoliday();
 	
 });
+
+var Calendar = {
+	companyholidaysource:{
+		url: '/companyholiday/getcompanyholidayjson',
+		type: 'GET',
+		cache: false,
+		error: function() {
+			alert('There was an error while fetching company holiday!');
+		},
+		className: 'label-success'
+	},
+		
+	myapprovedleavessource:{
+		url: '/leave/getapprovedleaveforcompanyviewjson/my',
+		type: 'GET',
+		cache: false,
+		error: function() {
+			alert('There was an error while fetching your leave!');
+		},
+		color: 'blue',   // a non-ajax option
+		textColor: 'white' // a non-ajax option
+	},
+		
+	deptleavesurl:{},
+		
+	deptleavessource:{},
+		
+	initCalendar:function(){
+		var date = new Date();
+		var d = date.getDate();
+		var m = date.getMonth();
+		var y = date.getFullYear();
+		$('#calendar').fullCalendar({});	
+	},
+
+	removeEvents:function(p_source){
+		$('#calendar').fullCalendar( 'removeEventSource', p_source )
+	},
+
+	showCompanyHoliday:function(){
+		$('#calendar').fullCalendar('addEventSource',this.companyholidaysource);
+	},
+		
+	showMyLeave:function(){
+		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
+	},
+		
+	showDeptCalendar:function(){
+		this.deptleavessource = {
+			url: this.deptleavesurl,
+			type: 'GET',
+			cache: false,
+			error: function() {
+				alert('There was an error while fetching department leave!');
+			},
+			color: 'blue',   // a non-ajax option
+			textColor: 'white' // a non-ajax option
+		}
+		$('#calendar').fullCalendar('addEventSource',this.deptleavessource);
+	}
+
+};
+
+function setApplyBtn(p_loader) {
+	
+	var selPerson = $("#pid").val();
+	var selLT = $("#lt").val();
+	var selDT = $("#dt").val();
+	var selFDat = $("#fdat").val();
+	var selTDat = $("#tdat").val();
+	
+	if (selPerson=="" || selLT=="" || selDT=="" || selFDat=="" || selTDat=="") {
+		$("#btnApply").text("Apply for 0 day");
+		$("#btnApply").attr("disabled", "disabled");
+	} else {
+		
+		$.ajax({
+			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat,
+			dataType: "json",
+			beforeSend: function(){
+				if (p_loader) { loader.on() };
+			},
+			success: function(data){
+				if (data.a <= 0) {
+					$("#btnApply").text("Apply for 0 day");
+					$("#btnApply").attr("disabled", "disabled");
+				} else if (data.b < 0) {
+					$("#btnApply").html("Apply for " + data.a + " day(s) <br /> No enough leave balance");
+					$("#btnApply").attr("disabled", "disabled");
+				} else {
+					$("#btnApply").html("Apply for " + data.a + " day(s) <br />" + data.b + " day(s) remaining balance");
+					$("#btnApply").removeAttr("disabled");
+				}
+				if (p_loader) { loader.off() };
+			},
+			error: function(xhr, status, error){
+				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+				if (p_loader) { loader.off() };
+			}
+		});	
+
+	}
+};
 
 // Form submit function
 var handleSubmit = function() {
