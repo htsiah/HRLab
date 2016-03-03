@@ -34,7 +34,7 @@ $(function(){
 
 var Calendar = {
 	companyholidaysource:{
-		url: '/companyholiday/getcompanyholidayjson',
+		url: '/companyholiday/getcompanyholidayjson/y',
 		type: 'GET',
 		cache: false,
 		error: function() {

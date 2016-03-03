@@ -160,7 +160,7 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
    
-  def getCompanyHolidayJSON = withAuth { username => implicit request => {
+  def getCompanyHolidayJSON(p_withLink:String) = withAuth { username => implicit request => {
     for {
       companyholidays <- CompanyHolidayModel.find(BSONDocument(), request)
     } yield {
@@ -169,7 +169,7 @@ class CompanyHolidayController extends Controller with Secured {
       val fmt = ISODateTimeFormat.date()
       companyholidays.foreach(companyholiday => {
         var title = companyholiday.n.replace("\t", "") // Temparary solution
-        var url = "/companyholiday/view/" + companyholiday._id.stringify
+        var url = if (p_withLink=="y") "/companyholiday/view/" + companyholiday._id.stringify else ""
         var start = fmt.print(companyholiday.fdat.get)
         var end = fmt.print(companyholiday.tdat.get.plusDays(1))
         if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","

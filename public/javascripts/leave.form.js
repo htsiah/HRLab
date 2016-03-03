@@ -148,12 +148,14 @@ $(function(){
 	// Show calendar
 	Calendar.initCalendar();
 	Calendar.showCompanyHoliday();
+	Calendar.showMyLeave();
+	Calendar.showOtherLeave();
 	
 });
 
 var Calendar = {
 	companyholidaysource:{
-		url: '/companyholiday/getcompanyholidayjson',
+		url: '/companyholiday/getcompanyholidayjson/n',
 		type: 'GET',
 		cache: false,
 		error: function() {
@@ -163,7 +165,7 @@ var Calendar = {
 	},
 		
 	myapprovedleavessource:{
-		url: '/leave/getapprovedleaveforcompanyviewjson/my',
+		url: '/leave/getapprovedleavejson/my/n',
 		type: 'GET',
 		cache: false,
 		error: function() {
@@ -173,16 +175,27 @@ var Calendar = {
 		textColor: 'white' // a non-ajax option
 	},
 		
-	deptleavesurl:{},
-		
-	deptleavessource:{},
+	otherapprovedleavessource:{
+		url: '/leave/getapprovedleavejson/allexceptmy/n',
+		type: 'GET',
+		cache: false,
+		error: function() {
+			alert('There was an error while fetching your leave!');
+		},
+		color: 'blue',   // a non-ajax option
+		textColor: 'white' // a non-ajax option
+	},
 		
 	initCalendar:function(){
 		var date = new Date();
 		var d = date.getDate();
 		var m = date.getMonth();
 		var y = date.getFullYear();
-		$('#calendar').fullCalendar({});	
+		$('#calendar').fullCalendar({
+		     eventRender: function(event, element) {
+		    	 $(element).tooltip({title: event.tip});
+		     }
+		});	
 	},
 
 	removeEvents:function(p_source){
@@ -196,21 +209,10 @@ var Calendar = {
 	showMyLeave:function(){
 		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
 	},
-		
-	showDeptCalendar:function(){
-		this.deptleavessource = {
-			url: this.deptleavesurl,
-			type: 'GET',
-			cache: false,
-			error: function() {
-				alert('There was an error while fetching department leave!');
-			},
-			color: 'blue',   // a non-ajax option
-			textColor: 'white' // a non-ajax option
-		}
-		$('#calendar').fullCalendar('addEventSource',this.deptleavessource);
+	
+	showOtherLeave:function(){
+		$('#calendar').fullCalendar('addEventSource',this.otherapprovedleavessource);
 	}
-
 };
 
 function setApplyBtn(p_loader) {
