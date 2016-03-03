@@ -11,7 +11,18 @@ var Calendar = {
 	},
 	
 	myapprovedleavessource:{
-		url: '/leave/getapprovedleavejson/my',
+		url: '/leave/getapprovedleavejson/my/y',
+		type: 'GET',
+		cache: false,
+		error: function() {
+			alert('There was an error while fetching your leave!');
+		},
+		color: 'blue',   // a non-ajax option
+		textColor: 'white' // a non-ajax option
+	},
+	
+	otherapprovedleavessource:{
+		url: '/leave/getapprovedleavejson/allexceptmy/y',
 		type: 'GET',
 		cache: false,
 		error: function() {
@@ -26,7 +37,11 @@ var Calendar = {
 		var d = date.getDate();
 		var m = date.getMonth();
 		var y = date.getFullYear();
-		$('#calendar').fullCalendar({});	
+		$('#calendar').fullCalendar({
+		     eventRender: function(event, element) {
+		    	 $(element).tooltip({title: event.tip});
+		     }
+		});	
 	},
 
 	removeEvents:function(){
@@ -40,18 +55,21 @@ var Calendar = {
 	showMyLeave:function(){
 		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
 	},
+	
+	showOtherLeave:function(){
+		$('#calendar').fullCalendar('addEventSource',this.otherapprovedleavessource);
+	},
 
 }
 
 $(function(){
-	
     $("#navProfile").addClass("active open");
     $("#navDashboard").addClass("active");
     
     Calendar.initCalendar();
 	Calendar.showMyCalendar();
 	Calendar.showMyLeave();
-
+	Calendar.showOtherLeave();
 });
 
 function dismissTask(p_lk){

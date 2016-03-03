@@ -65,8 +65,8 @@ GET		/leave/reject											controllers.LeaveController.reject(p_id:String)
 GET		/leave/cancel											controllers.LeaveController.cancel(p_id:String)
 GET		/leave/view/:p_id										controllers.LeaveController.view(p_id:String)
 GET		/leave/company/view/:p_id								controllers.LeaveController.companyview(p_id:String)
-GET		/leave/getapprovedleavejson/:p_type						controllers.LeaveController.getApprovedLeaveJSON(p_type)
-GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
+GET		/leave/getapprovedleavejson/:p_type/:p_withlink			controllers.LeaveController.getApprovedLeaveJSON(p_type, p_withlink)
+# GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
 GET		/leave/getapplyday/:p_pid/:p_lt/:p_dt/:p_fdat/:p_tdat	controllers.LeaveController.getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String)
 
 # Leave - Apply On Behalf
@@ -100,7 +100,6 @@ GET		/leavepolicy/edit								controllers.LeavePolicyController.edit(p_id:String
 POST	/leavepolicy/update								controllers.LeavePolicyController.update(p_id:String)
 GET		/leavepolicy/delete/:p_id/:p_lt				controllers.LeavePolicyController.delete(p_id:String, p_lt:String)
 GET		/leavepolicy/view								controllers.LeavePolicyController.view(p_id:String)
-# GET		/leavepolicy/getLeaveEntitlement/:p_lt/:p_pt	controllers.LeavePolicyController.getLeaveEntitlement(p_lt:String, p_pt:String)
 GET		/leavepolicy/getdaytypejson/:p_lt				controllers.LeavePolicyController.getDayTypeJSON(p_lt:String)
 GET		/leavepolicy/getdaytype/:p_lt			controllers.LeavePolicyController.getDayType(p_lt:String)
 

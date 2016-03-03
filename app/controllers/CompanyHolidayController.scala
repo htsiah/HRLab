@@ -173,7 +173,7 @@ class CompanyHolidayController extends Controller with Secured {
         var start = fmt.print(companyholiday.fdat.get)
         var end = fmt.print(companyholiday.tdat.get.plusDays(1))
         if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
-        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
+        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.st.mkString(", ") + ")" + "\"}"
         count = count + 1
       })
       Ok(Json.parse("[" + companyholidayJSONStr + "]")).as("application/json")
@@ -193,7 +193,7 @@ class CompanyHolidayController extends Controller with Secured {
         var start = fmt.print(companyholiday.fdat.get)
         var end = fmt.print(companyholiday.tdat.get.plusDays(1))
         if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
-        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"
+        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.st.mkString(", ") + ")" + "\"}"
         count = count + 1
       })
       Ok(Json.parse("[" + companyholidayJSONStr + "]")).as("application/json")
