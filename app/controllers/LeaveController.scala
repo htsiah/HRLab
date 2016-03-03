@@ -392,13 +392,17 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
         leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$ne" -> request.session.get("id").get), "wf.s"->"Approved"), request)
       } yield {
         leaves.map ( leave => {
-          val title = leave.pn + " (" + leave.lt + ")"
-          val url = if ((leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
-          val start = fmt.print(leave.fdat.get)
-          val end = fmt.print(leave.tdat.get.plusDays(1))
-          if (count > 0) leavejsonstr = leavejsonstr + ","
-          leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
-          count = count + 1   
+          val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
+          val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+          if (leavepolicy.set.scal) {
+            val title = leave.pn + " (" + leave.lt + ")"
+            val url = if ((leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
+              val start = fmt.print(leave.fdat.get)
+              val end = fmt.print(leave.tdat.get.plusDays(1))
+              if (count > 0) leavejsonstr = leavejsonstr + ","
+              leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
+              count = count + 1
+          }
         })
         Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
       }
@@ -414,6 +418,72 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
             if (leavepolicy.set.scal) {
               val title = leave.pn + " (" + leave.lt + ")"
               val url = if ((leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
+              val start = fmt.print(leave.fdat.get)
+              val end = fmt.print(leave.tdat.get.plusDays(1))
+              if (count > 0) leavejsonstr = leavejsonstr + ","
+              leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
+              count = count + 1
+            }
+          } }
+        } }
+        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
+      }
+    }
+  }}
+  
+    // Parameter:
+  // p_type: my / [department name]
+  def getApprovedLeaveForCompanyViewJSON(p_type:String) = withAuth { username => implicit request => {
+    var leavejsonstr = ""
+    var count = 0
+    val fmt = ISODateTimeFormat.date()
+        
+    if (p_type=="my") {
+      for {
+        leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
+      } yield {
+        leaves.map ( leave => {
+          val title = leave.pn + " (" + leave.lt + ")"
+          val url = "/leave/company/view/" + leave._id.stringify
+          val start = fmt.print(leave.fdat.get)
+          val end = fmt.print(leave.tdat.get.plusDays(1))
+          if (count > 0) leavejsonstr = leavejsonstr + ","
+          leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
+          count = count + 1   
+        })
+        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
+      }
+    } else if (p_type=="allexceptmy") {
+      for {
+        leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$ne" -> request.session.get("id").get), "wf.s"->"Approved"), request)
+      } yield {
+        leaves.map ( leave => {
+          val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
+          val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+          if (leavepolicy.set.scal) {
+            val title = leave.pn + " (" + leave.lt + ")"
+            val url = if (leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
+            val start = fmt.print(leave.fdat.get)
+            val end = fmt.print(leave.tdat.get.plusDays(1))
+            if (count > 0) leavejsonstr = leavejsonstr + ","
+            leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
+            count = count + 1
+          }
+        })
+        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
+      }
+    } else {
+      for {
+        persons <- PersonModel.find(BSONDocument("p.dpm"->p_type), request)
+      } yield {
+        persons.map { person => {
+          val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
+          leaves.map { leave => {
+            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
+            val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+            if (leavepolicy.set.scal) {
+              val title = leave.pn + " (" + leave.lt + ")"
+              val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","

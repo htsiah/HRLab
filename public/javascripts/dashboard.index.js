@@ -1,5 +1,14 @@
-var Calendar = {
+$(function(){
+    $("#navProfile").addClass("active open");
+    $("#navDashboard").addClass("active");
+    
+    Calendar.initCalendar();
+	Calendar.showMyCalendar();
+	Calendar.showMyLeave();
+	Calendar.showOtherLeave();
+});
 
+var Calendar = {
 	companyholidaysource:{
 		url: '/companyholiday/getcompanyholidaymyprofilejson',
 		type: 'GET',
@@ -9,7 +18,7 @@ var Calendar = {
 		},
 		className: 'label-success'
 	},
-	
+		
 	myapprovedleavessource:{
 		url: '/leave/getapprovedleavejson/my/y',
 		type: 'GET',
@@ -20,7 +29,7 @@ var Calendar = {
 		color: 'blue',   // a non-ajax option
 		textColor: 'white' // a non-ajax option
 	},
-	
+		
 	otherapprovedleavessource:{
 		url: '/leave/getapprovedleavejson/allexceptmy/y',
 		type: 'GET',
@@ -31,7 +40,7 @@ var Calendar = {
 		color: 'blue',   // a non-ajax option
 		textColor: 'white' // a non-ajax option
 	},
-	
+		
 	initCalendar:function(){
 		var date = new Date();
 		var d = date.getDate();
@@ -51,26 +60,16 @@ var Calendar = {
 	showMyCalendar:function(){
 		$('#calendar').fullCalendar('addEventSource',this.companyholidaysource);
 	},
-	
+		
 	showMyLeave:function(){
 		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
 	},
-	
+		
 	showOtherLeave:function(){
 		$('#calendar').fullCalendar('addEventSource',this.otherapprovedleavessource);
 	},
 
-}
-
-$(function(){
-    $("#navProfile").addClass("active open");
-    $("#navDashboard").addClass("active");
-    
-    Calendar.initCalendar();
-	Calendar.showMyCalendar();
-	Calendar.showMyLeave();
-	Calendar.showOtherLeave();
-});
+};
 
 function dismissTask(p_lk){
 	$.getJSON("/task/dismiss/" + p_lk, function(data){
