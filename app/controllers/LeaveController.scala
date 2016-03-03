@@ -19,6 +19,7 @@ import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.format.DateTimeFormat
 
 import javax.inject.Inject
 
@@ -464,7 +465,36 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
     }
   }}
   
-  // Return: {0,0}
-  def getApplyDay(p_pid:String, p_lt:String, p_dt:String, p_datf:String, p_datt:String) = TODO
+  // Return: {"a":0,"b":0}
+  def getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String) = withAuth { username => implicit request => {
+    for {
+      maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
+      maybe_office <- OfficeModel.findOne(BSONDocument("n" -> maybe_person.get.p.off))
+      maybe_leaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->p_pid , "lt"->p_lt), request)
+      maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt), request)
+    } yield {
+      render {
+         case Accepts.Html() => Ok(views.html.error.unauthorized())
+         case Accepts.Json() => {
+           maybe_leavepolicy.map( leavepolicy => {
+             val dtf = DateTimeFormat.forPattern("d-MMM-yyyy");
+             val leave_doc = LeaveModel.doc.copy(
+                 pid = p_pid,
+                 dt = p_dt,
+                 fdat = Some(new DateTime(dtf.parseLocalDate(p_fdat).toDateTimeAtStartOfDay())),
+                 tdat = Some(new DateTime(dtf.parseLocalDate(p_tdat).toDateTimeAtStartOfDay()))
+             )
+             val appliedduration = LeaveModel.getAppliedDuration(leave_doc, maybe_leavepolicy.get, maybe_person.get, maybe_office.get, request)
+             val leavebalance = if (maybe_leavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybe_leaveprofile.get.cal.bal } else { maybe_leaveprofile.get.cal.cbal }             
+             val json = Json.obj("a" -> appliedduration.toString(), "b" -> (leavebalance - appliedduration).toString())
+             Ok(json).as("application/json")
+           }).getOrElse({        
+             val json = Json.obj("daytype" -> "error")
+             Ok(json).as("application/json")
+           })
+         }
+      }
+    }
+  }}
   
 }

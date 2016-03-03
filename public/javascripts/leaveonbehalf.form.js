@@ -27,7 +27,8 @@ $(function(){
         if ( !e.date && stickyDate ) {
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
-        }
+        };
+        setApplyBtn(true);
     });
     
     $("#fdat").on("hide", function(e){
@@ -38,7 +39,8 @@ $(function(){
         } else {
     		$("#tdat").datepicker("setStartDate", $(this).val());
     		$("#tdat").datepicker("update", $(this).val());
-        }
+        };
+        setApplyBtn(true);
     });
     
     // Bind Applicant field 
@@ -70,7 +72,8 @@ $(function(){
     			}
     			
     		})
-    	}
+    	};
+    	setApplyBtn(true);
     })
 
     // Bind leave type field 
@@ -91,7 +94,7 @@ $(function(){
     				} else {
     					$("#dt").removeAttr("disabled");
     				}
-    				getApplyDay(false);
+    				setApplyBtn(false);
     				loader.off();
     			},
     			error: function(xhr, status, error){
@@ -100,7 +103,7 @@ $(function(){
     			},
     		});	
     	} else {
-    		getApplyDay(true);
+    		setApplyBtn(true);
     	};
     });
     
@@ -113,6 +116,7 @@ $(function(){
 		} else {
 			$("#tdat").removeAttr("disabled");
 		}
+		setApplyBtn(true);
 	})
 		
 	// Validation for form
@@ -244,13 +248,44 @@ var Calendar = {
 
 };
 
-function getApplyDay(p_loader) {
-	if ($("#pid").val()=="" || $("#lt").val()=="" || $("#dt").val()=="" || $("#fdat").val()=="" || $("#tdat").val()=="") {
+function setApplyBtn(p_loader) {
+	
+	var selPerson = $("#pid").val();
+	var selLT = $("#lt").val();
+	var selDT = $("#dt").val();
+	var selFDat = $("#fdat").val();
+	var selTDat = $("#tdat").val();
+	
+	if (selPerson=="" || selLT=="" || selDT=="" || selFDat=="" || selTDat=="") {
 		$("#btnApply").text("Apply for 0 day");
 		$("#btnApply").attr("disabled", "disabled");
 	} else {
-		$("#btnApply").text("Apply for x day(s)");
-		$("#btnApply").removeAttr("disabled");
+		
+		$.ajax({
+			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat,
+			dataType: "json",
+			beforeSend: function(){
+				if (p_loader) { loader.on() };
+			},
+			success: function(data){
+				if (data.a <= 0) {
+					$("#btnApply").text("Apply for 0 day");
+					$("#btnApply").attr("disabled", "disabled");
+				} else if (data.b < 0) {
+					$("#btnApply").html("Apply for " + data.a + " day(s) <br /> No enough leave balance");
+					$("#btnApply").attr("disabled", "disabled");
+				} else {
+					$("#btnApply").html("Apply for " + data.a + " day(s) <br />" + data.b + " day(s) remaining balance");
+					$("#btnApply").removeAttr("disabled");
+				}
+				if (p_loader) { loader.off() };
+			},
+			error: function(xhr, status, error){
+				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+				if (p_loader) { loader.off() };
+			}
+		});	
+
 	}
 };
 

@@ -49,7 +49,7 @@ GET		/companyholiday/create								controllers.CompanyHolidayController.create
 POST	/companyholiday/insert								controllers.CompanyHolidayController.insert
 GET		/companyholiday/edit								controllers.CompanyHolidayController.edit(p_id:String)
 POST	/companyholiday/update								controllers.CompanyHolidayController.update(p_id:String)
-GET		/companyholiday/delete/:p_id								controllers.CompanyHolidayController.delete(p_id:String)
+GET		/companyholiday/delete/:p_id						controllers.CompanyHolidayController.delete(p_id:String)
 GET		/companyholiday/view/:p_id							controllers.CompanyHolidayController.view(p_id:String)
 GET		/companyholiday/myprofile/view/:p_id				controllers.CompanyHolidayController.myprofileview(p_id:String)
 GET		/companyholiday/myprofile/edit						controllers.CompanyHolidayController.myprofileedit(p_id:String)
@@ -67,6 +67,7 @@ GET		/leave/view/:p_id										controllers.LeaveController.view(p_id:String)
 GET		/leave/company/view/:p_id								controllers.LeaveController.companyview(p_id:String)
 GET		/leave/getapprovedleavejson/:p_type						controllers.LeaveController.getApprovedLeaveJSON(p_type)
 GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
+GET		/leave/getapplyday/:p_pid/:p_lt/:p_dt/:p_fdat/:p_tdat	controllers.LeaveController.getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String)
 
 # Leave - Apply On Behalf
 GET		/leaveonbehalf/create											controllers.LeaveOnBehalfController.create
