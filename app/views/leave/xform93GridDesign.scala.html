@@ -1,0 +1,110 @@
+@import helper._
+@import reactivemongo.bson.BSONObjectID
+@import utilities.Alert
+@import play.api.Play.current
+@import play.api.i18n.Messages.Implicits._
+
+@(leave:Form[Leave], leavetypes:Map[String, String], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>My Profile <small><i class="ace-icon fa fa-angle-double-right"></i> Dashboard <i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Leave <i class="ace-icon fa fa-angle-double-right"></i> New</small></h1>
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/ace/js/spin.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/jquery.spin.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/ace/js/date-time/bootstrap-datepicker.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
+	<script src="@routes.Assets.at("layout/jquery.fullcalendar/moment.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.min.js")" type="text/javascript"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/common.loaderanimation.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/leave.form.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("stylesheets/common.loaderanimation.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("layout/ace/css/datepicker.min.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {}
+
+@buttons = {
+	<div id="calendar"></div><br />
+	<a id="btnApply" href="javascript:handleSubmit();" class="btn btn-sm btn btn-block" disabled>Apply for 0 day</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	
+	@layout.ace.alert(alert)
+	@helper.form(
+		action = routes.LeaveController.insert(),
+		'id -> "leaveform"
+	) {
+	
+		<dl class="dl-horizontal">
+			<dt><label for="s">Doc Num</label></dt>
+			<dd>@leave("docnum").value</dd>
+		</dl>
+		<dl class="dl-horizontal">
+			<dt><label for="s">Status</label></dt>
+			<dd>@leave("wf.s").value</dd>
+		</dl>
+		<dl class="dl-horizontal">
+			<dt><label for="s">Approver</label></dt>
+			<dd>@leave("wf.aprn").value</dd>
+		</dl>
+		@select(leave("lt"), options = leavetypes.toSeq, '_label -> "Leave Type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
+		@select(leave("dt"), options = Seq("Full day"->"Full day", "1st half"->"1st half", "2nd half"->"2nd half"), '_label -> "Day Type", '_class->"dl-horizontal", 'class->"form-control")
+		@input(leave("fdat"), '_label->"Date From", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+    	<div class="input-group">
+    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="d-M-yyyy" @toHtmlArgs(args)>
+				<span class="input-group-addon">
+					<i class="fa fa-calendar bigger-110"></i>
+				</span>
+			</div>
+		}
+		@input(leave("tdat"), '_label->"Date To", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+    	<div class="input-group">
+    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="d-M-yyyy" @toHtmlArgs(args)>
+				<span class="input-group-addon">
+					<i class="fa fa-calendar bigger-110"></i>
+				</span>
+			</div>
+		}
+		<dl class="dl-horizontal">
+			<dt><label for="s">Supporting Document</label></dt>
+			<dd>
+				<label class="ace-file-input"><input type="file" id="id-input-file-2"><span class="ace-file-container" data-title="Choose"><span class="ace-file-name" data-title="No File ..."><i class=" ace-icon fa fa-upload"></i>
+			</dd>
+		</dl>
+		@textarea(leave("r"), '_label->"Reason", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control", 'rows-> 3, 'cols->80)
+
+		<div class="hidden">
+			@inputText(leave("_id"),'type -> "hidden")
+			@inputText(leave("docnum"),'type -> "hidden")
+			@inputText(leave("pid"),'type -> "hidden")
+			@inputText(leave("pn"),'type -> "hidden")
+			@inputText(leave("uti"),'type -> "hidden")
+			@inputText(leave("cfuti"),'type -> "hidden")
+			@inputText(leave("wf.s"),'type -> "hidden")
+			@inputText(leave("wf.aprid"),'type -> "hidden")
+			@inputText(leave("wf.aprn"),'type -> "hidden")
+			@inputText(leave("sys")("eid"),'type -> "hidden")
+			@inputText(leave("sys")("cdat"),'type -> "hidden")
+			@inputText(leave("sys")("mdat"),'type -> "hidden")
+			@inputText(leave("sys")("mby"),'type -> "hidden")
+			@inputText(leave("sys")("ddat"),'type -> "hidden")
+			@inputText(leave("sys")("dby"),'type -> "hidden")
+			@inputText(leave("sys")("ll"),'type -> "hidden")
+		</div>
+	}
+	
+}

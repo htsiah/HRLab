@@ -1,0 +1,99 @@
+@import helper._
+@import reactivemongo.bson.BSONObjectID
+@import utilities.Alert
+@import play.api.Play.current
+@import play.api.i18n.Messages.Implicits._
+
+@(leaveonbehalf:Form[LeaveOnBehalf], persons:List[Person], leavetypes:List[String], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>My Profile <small><i class="ace-icon fa fa-angle-double-right"></i> Dashboard <i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Apply Leave For Other Staff</small></h1>
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/ace/js/spin.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/jquery.spin.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/ace/js/date-time/bootstrap-datepicker.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
+	<script src="@routes.Assets.at("layout/jquery.fullcalendar/moment.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.min.js")" type="text/javascript"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/common.loaderanimation.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/leaveonbehalf.form.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("stylesheets/common.loaderanimation.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("layout/ace/css/datepicker.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {}
+
+@buttons = {
+	<div id="calendar"></div><br />
+	<a id="btnApply" href="javascript:handleSubmit();" class="btn btn-sm btn btn-block" disabled>Apply for 0 day</a>
+	<a href="@routes.DashboardController.index" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	
+	@layout.ace.alert(alert)
+	@helper.form(
+		action = routes.LeaveOnBehalfController.insert(),
+		'id -> "leaveonbehalfform"
+	) {
+		<dl class="dl-horizontal">
+			<dt><label for="s">Doc Num</label></dt>
+			<dd>@leaveonbehalf("docnum").value</dd>
+		</dl>
+		@select(leaveonbehalf("pid"), options=persons.map(person=>person._id.stringify->{person.p.fn + " " + person.p.ln}),
+			'_default -> "Please select",
+			'_label -> "Applicant",
+			'_showConstraints -> false,
+			'_class->"dl-horizontal", 
+			'class->"form-control")	
+		@select(leaveonbehalf("lt"), options = options(leavetypes.map(leavetype=>leavetype)),
+			'_default -> "Please select",
+			'_label -> "Leave Type",
+			'_showConstraints -> false,
+			'_class->"dl-horizontal", 
+			'class->"form-control")
+		@select(leaveonbehalf("dt"), options = Seq("Full day"->"Full day", "1st half"->"1st half", "2nd half"->"2nd half"), '_label -> "Day Type", '_class->"dl-horizontal", 'class->"form-control")
+		@input(leaveonbehalf("fdat"), '_label->"Date From", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+    	<div class="input-group">
+    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="d-M-yyyy" @toHtmlArgs(args)>
+				<span class="input-group-addon">
+					<i class="fa fa-calendar bigger-110"></i>
+				</span>
+			</div>
+		}
+		@input(leaveonbehalf("tdat"), '_label->"Date To", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+    	<div class="input-group">
+    		<input type="text" name="@name" id="@id" class="form-control date-picker" value="@value" data-date-format="d-M-yyyy" @toHtmlArgs(args)>
+				<span class="input-group-addon">
+					<i class="fa fa-calendar bigger-110"></i>
+				</span>
+			</div>
+		}
+		<dl class="dl-horizontal">
+			<dt><label for="s">Supporting Document</label></dt>
+			<dd>
+				<label class="ace-file-input"><input type="file" id="id-input-file-2"><span class="ace-file-container" data-title="Choose"><span class="ace-file-name" data-title="No File ..."><i class=" ace-icon fa fa-upload"></i></span></span></label>
+			</dd>
+		</dl>
+		
+		@textarea(leaveonbehalf("r"), '_label->"Reason", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control", 'rows-> 3, 'cols->80)
+		
+		<div class="hidden">
+			@inputText(leaveonbehalf("_id"),'type -> "hidden")
+			@inputText(leaveonbehalf("docnum"),'type -> "hidden")
+		</div>
+	}
+	
+}
