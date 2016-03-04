@@ -84,7 +84,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
         formWithData => {
           for {
             persons <- PersonModel.find(BSONDocument(), request) 
-            leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
+            leavetypes <- LeaveProfileModel.getLeaveTypesSelection(formWithData.pid, request)
             maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.pid)), request)
             maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
             maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
