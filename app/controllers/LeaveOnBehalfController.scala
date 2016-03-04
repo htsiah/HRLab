@@ -61,7 +61,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
           Some(new DateTime()),
           ""
         ))
-        Ok(views.html.leaveonbehalf.form(filledForm, persons, List()))
+        Ok(views.html.leaveonbehalf.form(filledForm, persons, Map()))
       }
         
     } else {
@@ -76,7 +76,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
         formWithError => {
           for {
             persons <- PersonModel.find(BSONDocument(), request) 
-            leavetypes <- LeaveProfileModel.getLeaveTypes(formWithError.get.pid, request)
+            leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
           } yield{
             Ok(views.html.leaveonbehalf.form(formWithError, persons, leavetypes))
           }
@@ -84,7 +84,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
         formWithData => {
           for {
             persons <- PersonModel.find(BSONDocument(), request) 
-            leavetypes <- LeaveProfileModel.getLeaveTypes(formWithData.pid, request)
+            leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
             maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.pid)), request)
             maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
             maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
