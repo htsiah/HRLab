@@ -69,9 +69,14 @@ GET		/leave/getapprovedleavejson/:p_type/:p_withlink			controllers.LeaveControll
 GET		/leave/getapprovedleaveforcompanyviewjson/:p_type		controllers.LeaveController.getApprovedLeaveForCompanyViewJSON(p_type)
 GET		/leave/getapplyday/:p_pid/:p_lt/:p_dt/:p_fdat/:p_tdat	controllers.LeaveController.getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String)
 
+# Leave File
+POST		/leavefile/insert				controllers.LeaveFileController.insert(p_lk: String)
+GET			/leavefile/view					controllers.LeaveFileController.view(p_id: String)
+GET			/leavefile/delete				controllers.LeaveFileController.delete(p_id: String)
+
 # Leave - Apply On Behalf
-GET		/leaveonbehalf/create											controllers.LeaveOnBehalfController.create
-POST	/leaveonbehalf/insert											controllers.LeaveOnBehalfController.insert
+GET		/leaveonbehalf/create								controllers.LeaveOnBehalfController.create
+POST	/leaveonbehalf/insert								controllers.LeaveOnBehalfController.insert
 
 # Leave Profile
 GET		/leaveprofile/create										controllers.LeaveProfileController.create(p_pid:String)
@@ -94,14 +99,14 @@ GET		/leavesetting					controllers.LeaveSettingController.index
 GET		/leavesetting/updatecfm/:p_mnth	controllers.LeaveSettingController.updateCFM(p_mnth:String)
 
 # Leave Policy
-GET		/leavepolicy/create								controllers.LeavePolicyController.create
-POST	/leavepolicy/insert								controllers.LeavePolicyController.insert
-GET		/leavepolicy/edit								controllers.LeavePolicyController.edit(p_id:String)
-POST	/leavepolicy/update								controllers.LeavePolicyController.update(p_id:String)
-GET		/leavepolicy/delete/:p_id/:p_lt				controllers.LeavePolicyController.delete(p_id:String, p_lt:String)
-GET		/leavepolicy/view								controllers.LeavePolicyController.view(p_id:String)
-GET		/leavepolicy/getdaytypejson/:p_lt				controllers.LeavePolicyController.getDayTypeJSON(p_lt:String)
-GET		/leavepolicy/getdaytype/:p_lt			controllers.LeavePolicyController.getDayType(p_lt:String)
+GET		/leavepolicy/create					controllers.LeavePolicyController.create
+POST	/leavepolicy/insert					controllers.LeavePolicyController.insert
+GET		/leavepolicy/edit					controllers.LeavePolicyController.edit(p_id:String)
+POST	/leavepolicy/update					controllers.LeavePolicyController.update(p_id:String)
+GET		/leavepolicy/delete/:p_id/:p_lt		controllers.LeavePolicyController.delete(p_id:String, p_lt:String)
+GET		/leavepolicy/view					controllers.LeavePolicyController.view(p_id:String)
+GET		/leavepolicy/getdaytypejson/:p_lt	controllers.LeavePolicyController.getDayTypeJSON(p_lt:String)
+GET		/leavepolicy/getdaytype/:p_lt		controllers.LeavePolicyController.getDayType(p_lt:String)
 
 # Keyword
 GET		/keyword					controllers.KeywordController.index
