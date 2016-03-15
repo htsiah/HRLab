@@ -85,7 +85,55 @@ $(function(){
 			$("#tdat").removeAttr("disabled");
 		}
 		setApplyBtn(true);
-	})
+	});
+	
+	// Binder on supporting document field
+	$(document).on('change', '#file', function(e) {
+		
+		// Create a new FormData object for file upload.
+		var formfile = new FormData();
+		
+		// Get upload file
+		var file = e.target.files[0];
+		
+		// Add the file to the request.
+		formfile.append("file", file, file.name);
+		
+		// Upload using AJAX
+	    $.ajax({
+	        url: "/leavefile/insert?p_lk=" + $("#docnum").val(),
+	        type: "POST",
+	        data: formfile,
+	        cache: false,
+	        dataType: "json",
+	        processData: false, // Don't process the files
+	        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+			beforeSend: function(){
+				$("#file-input-control").addClass("hidden");
+				$("#file-error").addClass("hidden");
+				$("#file-loader").removeClass("hidden");
+			},
+	        success: function(data, textStatus, jqXHR){
+		        if (data.status == "exceed file size limit") {
+		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 1 MB file size limit.</label>");
+		        	$("#file-loader").addClass("hidden");
+		        	$("#file-input-control").removeClass("hidden");
+		        	$("#file-error").removeClass("hidden");
+		        } else {
+					$("#file-loader").addClass("hidden");
+					$("#file-view").html("<a href='/leavefile/viewByLK?p_lk=" + $("#docnum").val() + "' target='_blank'>" + file.name + "</a> &nbsp <a class='remove' href=javascript:onDelete('" + $("#docnum").val() + "') title='Delete'><i class='ace-icon fa fa-trash'></i></a>");
+					$("#file-view").removeClass("hidden");
+		        };
+		        
+	        },
+	        error: function(jqXHR, textStatus, errorThrown){
+	        	$("#file-loader").addClass("hidden");
+	        	$("#file-view").removeClass("file-input-control");
+	        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+	        }
+	    });	
+		
+	});
 		
 	$.validator.addMethod(
 		"customDate", 
@@ -260,3 +308,20 @@ function setApplyBtn(p_loader) {
 var handleSubmit = function() {
 	$('#leaveform').submit();	
 }
+
+// On delete file
+var onDelete = function(p_lk) {
+
+    $.ajax({
+        url: "/leavefile/deleteByLK?p_lk=" + $("#docnum").val(),
+        dataType: "json",
+        success: function(data, textStatus, jqXHR){
+        	$("#file-view").addClass("hidden");
+        	$("#file-input-control").removeClass("hidden");
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+        }
+    });
+    
+} 

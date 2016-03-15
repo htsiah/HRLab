@@ -30,11 +30,11 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
   def insert(p_lk: String) = withAuth (parse.maxLength(1 * 1014 * 1024, gridFSBodyParser(LeaveFileModel.gridFS))) { username => implicit request => {
     
     request.body match {
-      case Left(MaxSizeExceeded(length)) => {  
-                
+      case Left(MaxSizeExceeded(length)) => {     
+        
         // Return error
         Future(Ok(Json.obj("status" -> "exceed file size limit")).as("application/json"))
-            
+        
       }
       case Right(multipartForm) => {
         
@@ -57,15 +57,14 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
           updateResult <- {        
             LeaveFileModel.gridFS.files.update(
                 Json.obj("_id" -> file.id),
-                Json.obj("$set" -> Json.obj("folder" -> "supporting-doc", "metadata" -> Json.obj("lk" -> p_lk, "mdat" -> new DateTime(), "mby" -> request.session.get("username"))))
+                Json.obj("$set" -> Json.obj("metadata" -> Json.obj("eid" -> request.session.get("entity"), "lk" -> p_lk, "f" -> "leave", "cby" -> request.session.get("username"))))
             )
           }
-          
         } yield updateResult
         
         // Return success
-        futureUpdate.map { _ =>
-          Ok(Json.obj("status" -> "success")).as("application/json")
+        futureUpdate.map { s =>
+          Ok(Json.obj("status"->"success")).as("application/json")
         }.recover {
           case err => {
             err.printStackTrace();
@@ -84,7 +83,15 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
     serve[JsString, JSONReadFile](LeaveFileModel.gridFS)(file)
     
   }}
-
+  
+  def viewByLK(p_lk: String) = Action.async { request => {
+    
+    // find the matching attachment, if any, and streams it to the client
+    val file = LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> p_lk, "metadata.f" -> "leave"))
+    serve[JsString, JSONReadFile](LeaveFileModel.gridFS)(file)
+    
+  }}
+    
   def delete(p_id:String) = withAuth { username => implicit request => {
     
     LeaveFileModel.gridFS.remove(Json toJson p_id).map(_ => 
@@ -95,6 +102,17 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
         Ok(Json.obj("status" -> "error")).as("application/json")
       }
     }
+    
+  }}
+  
+  def deleteByLK(p_lk:String) = withAuth { username => implicit request => {
+    
+    LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> p_lk, "metadata.f" -> "leave")).collect[List]().map { files =>
+      val filesWithId = files.map { file => {
+        LeaveFileModel.gridFS.remove(Json toJson file.id)
+      }}
+    }
+    Future(Ok(Json.obj("status" -> "success")).as("application/json"))
     
   }}
 
