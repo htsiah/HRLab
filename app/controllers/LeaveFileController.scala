@@ -57,7 +57,12 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
           updateResult <- {        
             LeaveFileModel.gridFS.files.update(
                 Json.obj("_id" -> file.id),
-                Json.obj("$set" -> Json.obj("metadata" -> Json.obj("eid" -> request.session.get("entity"), "lk" -> p_lk, "f" -> "leave", "cby" -> request.session.get("username"))))
+                Json.obj("$set" -> Json.obj("metadata" -> Json.obj(
+                    "eid" -> request.session.get("entity"), 
+                    "lk" -> p_lk, 
+                    "f" -> "leave", 
+                    "cby" -> request.session.get("username")
+                )))
             )
           }
         } yield updateResult
@@ -87,7 +92,7 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
   def viewByLK(p_lk: String) = Action.async { request => {
     
     // find the matching attachment, if any, and streams it to the client
-    val file = LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> p_lk, "metadata.f" -> "leave"))
+    val file = LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> p_lk, "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false)))
     serve[JsString, JSONReadFile](LeaveFileModel.gridFS)(file)
     
   }}
@@ -106,12 +111,23 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
   }}
   
   def deleteByLK(p_lk:String) = withAuth { username => implicit request => {
-    
-    LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> p_lk, "metadata.f" -> "leave")).collect[List]().map { files =>
+        
+    LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> p_lk, "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]().map { files =>
       val filesWithId = files.map { file => {
-        LeaveFileModel.gridFS.remove(Json toJson file.id)
+        LeaveFileModel.gridFS.files.update(
+            Json.obj("_id" -> file.id),
+            Json.obj("$set" -> Json.obj("metadata" -> Json.obj(     
+                "eid" -> file.metadata.value.get("eid").get,
+                "lk" -> file.metadata.value.get("lk").get,
+                "f" -> file.metadata.value.get("f").get,
+                "cby" -> file.metadata.value.get("cby").get,
+                "ddat" -> BSONDateTime(new DateTime().getMillis),
+                "dby" -> request.session.get("username")
+            )))
+        )
       }}
     }
+    
     Future(Ok(Json.obj("status" -> "success")).as("application/json"))
     
   }}
