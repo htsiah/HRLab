@@ -20,6 +20,7 @@ object LeaveFileModel {
   }
   private val db = connection.get.db(dbname)
   val gridFS = this.getGridFS
+  val gridFSBSON = GridFS(db)
 
   // let's build an index on our gridfs chunks collection if none
   gridFS.ensureIndex().onComplete {

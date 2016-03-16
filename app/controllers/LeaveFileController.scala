@@ -59,6 +59,7 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
                 Json.obj("_id" -> file.id),
                 Json.obj("$set" -> Json.obj("metadata" -> Json.obj(
                     "eid" -> request.session.get("entity"), 
+                    "filename" -> file.filename, 
                     "lk" -> p_lk, 
                     "f" -> "leave", 
                     "cby" -> request.session.get("username")
@@ -118,6 +119,7 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
             Json.obj("_id" -> file.id),
             Json.obj("$set" -> Json.obj("metadata" -> Json.obj(     
                 "eid" -> file.metadata.value.get("eid").get,
+                "filename" -> file.metadata.value.get("filename").get,
                 "lk" -> file.metadata.value.get("lk").get,
                 "f" -> file.metadata.value.get("f").get,
                 "cby" -> file.metadata.value.get("cby").get,

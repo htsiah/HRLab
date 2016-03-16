@@ -1,6 +1,6 @@
 @import utilities.Alert
 
-@(leave:Leave, alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(leave:Leave, filename:String, alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -53,6 +53,9 @@
 	@contentRow("Date To", leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString())
 	@contentRow("Utilized", leave.uti.toString())
 	@contentRow("Carry Forward Utilized", leave.cfuti.toString())
+	@if(filename !=""){
+		<dl class='dl-horizontal'><dt><label>Supporting Document</label></dt><dd><a href='@routes.LeaveFileController.viewByLK(leave.docnum.toString())' target='_blank'>@filename</a></dd></dl>
+	}
 	@if(leave.r.toString()!="") {
 		@contentRow("Reason", leave.r)								
 	}	

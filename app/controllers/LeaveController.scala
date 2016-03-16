@@ -10,12 +10,20 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.json.{ Json, JsObject, JsString }
 
-import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel}
+import play.modules.reactivemongo.{
+  MongoController, ReactiveMongoApi, ReactiveMongoComponents
+}
+import play.modules.reactivemongo.json._
+
+import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import reactivemongo.api.gridfs._
+import reactivemongo.api.gridfs.Implicits._
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -23,8 +31,11 @@ import org.joda.time.format.DateTimeFormat
 
 import javax.inject.Inject
 
-class LeaveController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
-  
+class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerClient: MailerClient) extends Controller with MongoController with ReactiveMongoComponents with Secured {
+      
+  import MongoController.readFileReads
+  type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
+    
   val leaveform = Form(
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
@@ -177,9 +188,11 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	def view(p_id:String) = withAuth { username => implicit request => {
 	  for {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	  } yield {
 	    maybeleave.map( leave => {
-	      Ok(views.html.leave.view(leave))
+        val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }        
+        Ok(views.html.leave.view(leave, filename.toString().replaceAll("\"", "")))
       }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
 	  }
 	}}
@@ -192,13 +205,15 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt), request)
 	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeperson.get.p.off))
 	    maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
+      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	  } yield {
 	    // Check authorized
 	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==request.session.get("id").get && !maybeleave.get.ld) {
 	      
 	      // Check leave policy existence
 	      if (maybeleavepolicy.isDefined == false) {
-	        Ok(views.html.leave.view(maybeleave.get, alert=maybealert_missingleavepolicy.getOrElse(null)))
+          val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }   
+	        Ok(views.html.leave.view(maybeleave.get, filename.toString().replaceAll("\"", ""), alert=maybealert_missingleavepolicy.getOrElse(null)))
 	      } else {
 	        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
           val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
@@ -257,10 +272,12 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
   def companyview(p_id:String) = withAuth { username => implicit request => {
     for {
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
     } yield {
-      maybeleave.map( leave => 
-        Ok(views.html.leave.companyview(leave))
-      ).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+      maybeleave.map( leave => {
+        val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }   
+        Ok(views.html.leave.companyview(leave, filename.toString().replaceAll("\"", "")))
+      }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
     }
   }}
   	
