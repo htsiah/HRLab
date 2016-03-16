@@ -73,7 +73,14 @@
 				<dl class="dl-horizontal">
 					<dt><label for="s">Supporting Document</label></dt>
 					<dd>
-						<label class="ace-file-input"><input type="file" id="id-input-file-2"><span class="ace-file-container" data-title="Choose"><span class="ace-file-name" data-title="No File ..."><i class=" ace-icon fa fa-upload"></i></span></span></label>
+						<div id="file-input-control">
+							 <input type="file" name="file" id="file" />
+						</div>
+						<div id="file-loader" class="smaller lighter grey hidden">
+							<i class="ace-icon fa fa-spinner fa-spin orange bigger-125"></i> Uploading
+						</div>
+						<div id="file-view" class="hidden"></div>
+						<div id="file-error" class="hidden"></div>
 					</dd>
 				</dl>		
 				@textarea(leaveonbehalf("r"), '_label->"Reason", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control", 'rows-> 3, 'cols->80)

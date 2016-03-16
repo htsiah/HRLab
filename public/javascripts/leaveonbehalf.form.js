@@ -43,6 +43,34 @@ $(function(){
         setApplyBtn(true);
     });
     
+    // Setup input file field
+    $('#file').ace_file_input({
+    	maxSize: 1000000, //1 MB
+        allowExt:  ['jpg', 'jpeg', 'tif', 'tiff', 'gif', 'bmp', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'txt']
+    }).on('file.error.ace', function(event, info) {
+    	//info.file_count > number of files selected
+    	//info.invalid_count > number of invalid files
+    	//info.error_count['ext'] > number of files with invalid extension (only if allowExt or denyExt is set)
+    	//info.error_count['mime'] > number of files with invalid mime type (only if allowMime or denyMime is set)
+    	//info.error_count['size'] > number of files with invalid size (only if maxSize option is set)
+    	//info.error_list['ext'] > list of file names with invalid extension
+    	//info.error_list['mime'] > ...
+    	//info.error_list['size'] > ...
+    	//info.dropped > true if files have been selected by drag & drop
+    	
+    	if (info.error_count['ext'] > 0) {
+        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Invalid file extension. Allowed file extensions are jpg, jpeg, tif, tiff, gif, bmp, png, pdf, doc, docx, xls, xlsx, ppt, pptx, csv and txt.</label>");
+        	$("#file-error").removeClass("hidden");
+    	} else if (info.error_count['size'] > 0) {
+        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 1 MB file size limit.</label>");
+        	$("#file-error").removeClass("hidden");
+    	};
+    	
+    	//if you do this
+    	event.preventDefault();
+    	//it will reset (empty) file input, i.e. no files selected
+     }); 
+    
     // Bind Applicant field 
     $(document).on('change', '#pid', function(e) {
     	var selperson = this.options[this.selectedIndex].value;
@@ -117,7 +145,54 @@ $(function(){
 			$("#tdat").removeAttr("disabled");
 		}
 		setApplyBtn(true);
-	})
+	});
+	
+	// Binder on supporting document field
+	$(document).on('change', '#file', function(e) {
+		
+		// Create a new FormData object for file upload.
+		var formfile = new FormData();
+		
+		// Get upload file
+		var file = e.target.files[0];
+		
+		// Add the file to the request.
+		formfile.append("file", file, file.name);
+		
+		// Upload using AJAX
+	    $.ajax({
+	        url: "/leavefile/insert?p_lk=" + $("#docnum").val(),
+	        type: "POST",
+	        data: formfile,
+	        cache: false,
+	        dataType: "json",
+	        processData: false, // Don't process the files
+	        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+			beforeSend: function(){
+				$("#file-input-control").addClass("hidden");
+				$("#file-error").addClass("hidden");
+				$("#file-loader").removeClass("hidden");
+			},
+	        success: function(data, textStatus, jqXHR){
+		        if (data.status == "exceed file size limit") {
+		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 1 MB file size limit.</label>");
+		        	$("#file-loader").addClass("hidden");
+		        	$("#file-input-control").removeClass("hidden");
+		        	$("#file-error").removeClass("hidden");
+		        } else {
+					$("#file-loader").addClass("hidden");
+					$("#file-view").html("<a href='/leavefile/viewByLK?p_lk=" + $("#docnum").val() + "' target='_blank'>" + file.name + "</a> &nbsp <a class='remove' href=javascript:onDelete('" + $("#docnum").val() + "') title='Delete'><i class='ace-icon fa fa-trash'></i></a>");
+					$("#file-view").removeClass("hidden");
+		        }; 
+	        },
+	        error: function(jqXHR, textStatus, errorThrown){
+	        	$("#file-loader").addClass("hidden");
+	        	$("#file-view").removeClass("file-input-control");
+	        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+	        }
+	    });	
+		
+	});
 		
 	// Validation for form
 	$.validator.addMethod(
@@ -294,3 +369,21 @@ function setApplyBtn(p_loader) {
 var handleSubmit = function() {
 	$('#leaveonbehalfform').submit();	
 };
+
+//On delete file
+var onDelete = function(p_lk) {
+
+    $.ajax({
+        url: "/leavefile/deleteByLK?p_lk=" + $("#docnum").val(),
+        dataType: "json",
+        success: function(data, textStatus, jqXHR){
+        	$('#file').ace_file_input('reset_input');
+        	$("#file-view").addClass("hidden");
+        	$("#file-input-control").removeClass("hidden");
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+        }
+    });
+    
+} 
