@@ -277,7 +277,7 @@ object LeaveModel {
     val isvalidonnonworkday = p_leavepolicy.set.nwd
     val applieddates = this.getAppliedDate(p_leave.fdat.get , p_leave.tdat.get)
     var appliedduration : Double = 0
-    
+
     applieddates.map( applieddate => {
      val iscompanyholiday =  Await.result(CompanyHolidayModel.isCompanyHoliday(applieddate, p_office.ct, p_office.st, p_request), Tools.db_timeout)
      val isOnleave =  Await.result(this.isOnleave(p_leave.pid, p_leave.dt, applieddate, p_request), Tools.db_timeout)
@@ -302,8 +302,9 @@ object LeaveModel {
   
   def isOnleave(p_id:String, p_dt:String, p_date: DateTime, p_request:RequestHeader) = {
     for {
-      leave <- this.findOne(BSONDocument("pid"->p_id, "dt"->BSONDocument("$in"-> List("Full day",p_dt)), "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
+      leave <- this.findOne(BSONDocument("pid"->p_id, "dt"->p_dt, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
     } yield {
+      println("Parameter " + p_dt)
       if (leave.isEmpty) false else true
     }
   }
