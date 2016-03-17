@@ -253,7 +253,10 @@ function setApplyBtn(p_loader) {
 				if (p_loader) { loader.on() };
 			},
 			success: function(data){
-				if (data.a <= 0) {
+				if (data.msg == "overlap") {
+					$("#btnApply").html("Conflict with other leave application <br /> Please select to other date");
+					$("#btnApply").attr("disabled", "disabled");
+				} else if (data.a <= 0) {
 					$("#btnApply").text("Apply for 0 day");
 					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.b < 0) {
