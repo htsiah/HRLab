@@ -302,7 +302,7 @@ object LeaveModel {
   
   def isOnleave(p_id:String, p_dt:String, p_date: DateTime, p_request:RequestHeader) = {
     for {
-      leave <- this.findOne(BSONDocument("pid"->p_id, "dt"->p_dt, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
+      leave <- this.findOne(BSONDocument("pid"->p_id, "dt"->BSONDocument("$in"-> List("Full day",p_dt)), "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
     } yield {
       if (leave.isEmpty) false else true
     }
