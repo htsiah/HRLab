@@ -162,64 +162,6 @@ $(function(){
 	    });	
 		
 	});
-		
-	$.validator.addMethod(
-		"customDate", 
-		function(value, element) {
-			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
-		}, 
-		"Please enter a valid date format d-mmm-yyyy."
-	);
-	
-	$.validator.addMethod(
-		"checkDate",
-		function(value,element){
-			var fdat = new Date($("#fdat").val());
-			var tdat = new Date($("#tdat").val());
-			
-			if (fdat>tdat) {
-				return false;
-			} else {
-				return true
-			};
-		},
-		"Date to should greater than date from."
-	);
-	
-	// Validation for form
-	$("#leaveform").validate({
-		debug: false,
-		onkeyup: false,
-		rules: {
-			lt: "required",
-			fdat: {
-				required: true,
-				customDate: true
-			},
-			tdat: {
-				required: true,
-				customDate: true,
-				checkDate: true
-			}
-		},
-		messages: {
-			lt: "Please select a leave type",
-			fdat: {
-				required: "Please enter the date from.",
-				customDate: "Please enter a valid date format d-mmm-yyyy."
-			},
-			tdat: {
-				required: "Please enter the date to.",
-				customDate: "Please enter a valid date format d-mmm-yyyy.",
-				checkDate: "Date to should greater than date from."
-			}
-		},
-		submitHandler: function(form) {
-			$("#dt").removeAttr("disabled");
-		 	$("#tdat").removeAttr("disabled");
-		 	form.submit();
-		}
-	});
 	
 	// Show calendar
 	Calendar.initCalendar();
@@ -334,8 +276,10 @@ function setApplyBtn(p_loader) {
 
 // Form submit function
 var handleSubmit = function() {
-	$('#leaveform').submit();	
-}
+	$("#dt").removeAttr("disabled");
+ 	$("#tdat").removeAttr("disabled");
+	$('#leaveform').submit();
+};
 
 // On delete file
 var onDelete = function(p_lk) {
