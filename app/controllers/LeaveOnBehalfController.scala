@@ -9,12 +9,20 @@ import play.api.Play.current
 import play.api.cache.Cache
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.{ Json, JsObject, JsString }
 
-import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, LeavePolicyModel, OfficeModel}
+import play.modules.reactivemongo.{
+  MongoController, ReactiveMongoApi, ReactiveMongoComponents
+}
+import play.modules.reactivemongo.json._
+
+import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, LeavePolicyModel, OfficeModel, LeaveFileModel}
 import utilities.{AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import reactivemongo.api.gridfs._
+import reactivemongo.api.gridfs.Implicits._
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -31,8 +39,11 @@ case class LeaveOnBehalf (
     r: String
 )
 
-class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
+class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerClient: MailerClient) extends Controller with MongoController with ReactiveMongoComponents with Secured {
   
+  import MongoController.readFileReads
+  type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
+    
   val leaveonbehalfform = Form(
       mapping(
           "docnum" -> number,
@@ -93,6 +104,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
             maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1017))
             maybealert_requestdateconflict <- AlertUtility.findOne(BSONDocument("k"->1014))
+            maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> formWithData.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
           } yield {
             val leaveWithData = LeaveModel.doc.copy(
                 _id = BSONObjectID.generate,
@@ -110,9 +122,10 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
                     aprn = request.session.get("name").get        
                 )
             )
+            val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
             if (!maybeleavepolicy.isDefined) {
               // Missing leave policy.
-              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, alert=maybealert_missingleavepolicy.getOrElse(null)))
+              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, filename.toString().replaceAll("\"", ""), alert=maybealert_missingleavepolicy.getOrElse(null)))
             } else if (maybeperson.get.p.edat.get.isAfter(formWithData.fdat.get.plusDays(1))) {
               // restricted apply leave before employment start date.
               val fmt = ISODateTimeFormat.date()
@@ -120,10 +133,10 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
                   "DATE"-> (fmt.print(maybeperson.get.p.edat.get))
               )
               val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
-              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, alert=alert))
+              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, filename.toString().replaceAll("\"", ""), alert=alert))
             } else if (LeaveModel.isOverlap(leaveWithData, request)) {
               // Request date conflict (Overlap).
-              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, alert=maybealert_requestdateconflict.getOrElse(null)))
+              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, filename.toString().replaceAll("\"", ""), alert=maybealert_requestdateconflict.getOrElse(null)))
             } else {
               
               val appliedduration = LeaveModel.getAppliedDuration(leaveWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)              

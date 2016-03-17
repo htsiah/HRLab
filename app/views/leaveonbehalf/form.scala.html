@@ -4,7 +4,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(leaveonbehalf:Form[LeaveOnBehalf], persons:List[Person], leavetypes:Map[String, String], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(leaveonbehalf:Form[LeaveOnBehalf], persons:List[Person], leavetypes:Map[String, String], filename:String="", alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pluginjs = {
 	<script src="@routes.Assets.at("layout/ace/js/spin.min.js")" type="text/javascript"></script>
@@ -70,15 +70,27 @@
 				}
 				<dl class="dl-horizontal">
 					<dt><label for="s">Supporting Document</label></dt>
-					<dd>
-						<div id="file-input-control">
-							 <input type="file" name="file" id="file" />
-						</div>
-						<div id="file-loader" class="smaller lighter grey hidden">
-							<i class="ace-icon fa fa-spinner fa-spin orange bigger-125"></i> Uploading
-						</div>
-						<div id="file-view" class="hidden"></div>
-						<div id="file-error" class="hidden"></div>
+					<dd>@if(filename == "") {
+							<div id="file-input-control">
+								 <input type="file" name="file" id="file" />
+							</div>
+							<div id="file-loader" class="smaller lighter grey hidden">
+								<i class="ace-icon fa fa-spinner fa-spin orange bigger-125"></i> Uploading
+							</div>
+							<div id="file-view" class="hidden"></div>
+							<div id="file-error" class="hidden"></div>
+						} else {
+							<div id="file-input-control" class=hidden>
+								 <input type="file" name="file" id="file" />
+							</div>
+							<div id="file-loader" class="smaller lighter grey hidden">
+								<i class="ace-icon fa fa-spinner fa-spin orange bigger-125"></i> Uploading
+							</div>
+							<div id="file-view">
+								<a href='/leavefile/viewByLK?p_lk=@leaveonbehalf("docnum").value' target='_blank'>@filename</a> &nbsp <a class='remove' href=javascript:onDelete('@leaveonbehalf("docnum").value') title='Delete'><i class='ace-icon fa fa-trash'></i></a>
+							</div>
+							<div id="file-error" class="hidden"></div>
+						}
 					</dd>
 				</dl>		
 				@textarea(leaveonbehalf("r"), '_label->"Reason", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control", 'rows-> 3, 'cols->80)

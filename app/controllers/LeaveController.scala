@@ -111,10 +111,12 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	          maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1006))
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
             maybealert_requestdateconflict <- AlertUtility.findOne(BSONDocument("k"->1014))
+            maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> formWithData.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	        } yield {
+            val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
 	          if (!maybeleavepolicy.isDefined) {
               // Missing leave policy.
-              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_missingleavepolicy.getOrElse(null)))
+              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, filename.toString().replaceAll("\"", ""), alert=maybealert_missingleavepolicy.getOrElse(null)))
             } else if (maybeperson.get.p.edat.get.isAfter(formWithData.fdat.get.plusDays(1))) {
               // restricted apply leave before employment start date.
               val fmt = ISODateTimeFormat.date()
@@ -122,10 +124,10 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                   "DATE"-> (fmt.print(maybeperson.get.p.edat.get))
               )
               val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
-              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=alert))
+              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, filename.toString().replaceAll("\"", ""), alert=alert))
             } else if (LeaveModel.isOverlap(formWithData, request)) {
               // Request date conflict (Overlap).
-              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, alert=maybealert_requestdateconflict.getOrElse(null)))
+              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, filename.toString().replaceAll("\"", ""), alert=maybealert_requestdateconflict.getOrElse(null)))
             } else {
 	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
               //val leavebalance = if (maybeleavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybeleaveprofile.get.cal.bal } else { maybeleaveprofile.get.cal.cbal } 
