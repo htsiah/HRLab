@@ -396,7 +396,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         leaves.map ( leave => {
           val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
           val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
-          if (leavepolicy.set.scal) {
+          if (leavepolicy.set.scal) {            
             val reason = if (leave.r != "") { " - " + leave.r } else { "" }
             val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
             val url = if ((leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
