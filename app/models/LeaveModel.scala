@@ -304,7 +304,6 @@ object LeaveModel {
     for {
       leave <- this.findOne(BSONDocument("pid"->p_id, "dt"->p_dt, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
     } yield {
-      println("Parameter " + p_dt)
       if (leave.isEmpty) false else true
     }
   }
