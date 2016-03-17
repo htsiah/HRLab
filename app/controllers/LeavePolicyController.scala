@@ -296,4 +296,23 @@ class LeavePolicyController extends Controller with Secured {
     }
   } }
   
+  def getSupportingDocument(p_lt:String) = withAuth { username => implicit request => {
+    for {
+      maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt), request)
+    } yield {
+      render {
+         case Accepts.Html() => Ok(views.html.error.unauthorized())
+         case Accepts.Json() => {
+           maybeleavepolicy.map( leavepolicy => {
+             val json = Json.obj("supportingdocument" -> leavepolicy.set.msd)
+             Ok(json).as("application/json")
+           }).getOrElse({        
+             val json = Json.obj("daytype" -> "error")
+             Ok(json).as("application/json")
+           })
+         }
+      }
+    }
+  } }
+  
 }

@@ -276,9 +276,39 @@ function setApplyBtn(p_loader) {
 
 // Form submit function
 var handleSubmit = function() {
-	$("#dt").removeAttr("disabled");
- 	$("#tdat").removeAttr("disabled");
-	$('#leaveform').submit();
+	
+	// Check on mandatory upload supporting document
+	$.ajax({
+		url: "/leavepolicy/getsupportingdocument/" + $( "#lt option:selected" ).val(),
+		dataType: "json",
+		beforeSend: function(){
+			loader.on();
+		},
+		success: function(data){
+			if (data.supportingdocument == false) {
+				$("#dt").removeAttr("disabled");
+			 	$("#tdat").removeAttr("disabled");
+				$('#leaveform').submit();
+			} else {
+				if ($("#file").val() == "" && $("#file-view").hasClass("hidden")) {
+		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Please upload a supporting document.</label>");
+		        	$("#file-loader").addClass("hidden");
+		        	$("#file-input-control").removeClass("hidden");
+		        	$("#file-error").removeClass("hidden");
+				} else {
+					$("#dt").removeAttr("disabled");
+				 	$("#tdat").removeAttr("disabled");
+					$('#leaveform').submit();
+				}
+			}
+			loader.off();
+		},
+		error: function(xhr, status, error){
+			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+			loader.off();
+		},
+	});	
+	
 };
 
 // On delete file
