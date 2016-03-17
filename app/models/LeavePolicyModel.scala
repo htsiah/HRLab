@@ -29,7 +29,8 @@ case class LeavePolicySetting (
     dt: String,
     nwd: Boolean,
     cexp: Int,
-    scal: Boolean
+    scal: Boolean,
+    msd: Boolean
 )
 
 case class Entitlement (
@@ -76,7 +77,8 @@ object LeavePolicyModel {
           doc.getAs[String]("dt").get,
           doc.getAs[Boolean]("nwd").get,
           doc.getAs[Int]("cexp").get,
-          doc.getAs[Boolean]("scal").get
+          doc.getAs[Boolean]("scal").get,
+          doc.getAs[Boolean]("msd").getOrElse(false)
       )
     }
   }
@@ -139,7 +141,8 @@ object LeavePolicyModel {
           "dt" -> leavepolicysetting.dt,
           "nwd" -> leavepolicysetting.nwd,
           "cexp" -> leavepolicysetting.cexp,
-          "scal" -> leavepolicysetting.scal
+          "scal" -> leavepolicysetting.scal,
+          "msd" -> leavepolicysetting.msd
       )     
     }
   }
@@ -189,7 +192,7 @@ object LeavePolicyModel {
   val doc = LeavePolicy(
       _id = BSONObjectID.generate,
       lt = "",
-      LeavePolicySetting(g = "", acc = "", ms = "", dt = "", nwd = false, cexp = 0, scal = true),
+      LeavePolicySetting(g = "", acc = "", ms = "", dt = "", nwd = false, cexp = 0, scal = true, msd = false),
       Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
       sys=None
   )

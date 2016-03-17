@@ -30,7 +30,8 @@ class LeavePolicyController extends Controller with Secured {
               "dt" -> text,
               "nwd" -> boolean,
               "cexp" -> number,
-              "scal" -> boolean
+              "scal" -> boolean,
+              "msd" -> boolean
           )(LeavePolicySetting.apply)(LeavePolicySetting.unapply), 
           "ent" -> mapping(
               "e1" -> number,

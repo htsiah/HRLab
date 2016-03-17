@@ -28,7 +28,8 @@ case class ConfigLeavePolicySetting (
     dt: String,
     nwd: Boolean,
     cexp: Int,
-    scal: Boolean
+    scal: Boolean,
+    msd: Boolean
 )
 
 case class ConfigEntitlement (
@@ -75,7 +76,8 @@ object ConfigLeavePolicyModel {
           doc.getAs[String]("dt").get,
           doc.getAs[Boolean]("nwd").get,
           doc.getAs[Int]("cexp").get,
-          doc.getAs[Boolean]("scal").get
+          doc.getAs[Boolean]("scal").get,
+          doc.getAs[Boolean]("msd").get
       )
     }
   }

@@ -82,7 +82,8 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                               configleavepolicy.set.dt,
                               configleavepolicy.set.nwd,
                               configleavepolicy.set.cexp,
-                              configleavepolicy.set.scal
+                              configleavepolicy.set.scal,
+                              configleavepolicy.set.msd
                           ),
                           Entitlement(
                               configleavepolicy.ent.e1,
