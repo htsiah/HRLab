@@ -7,19 +7,34 @@ import play.api.Play.current
 import play.api.cache.Cache
 import play.api.libs.json._
 import play.api.libs.mailer._
+import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.json.{ Json, JsObject, JsString }
+import play.modules.reactivemongo.{
+  MongoController, ReactiveMongoApi, ReactiveMongoComponents
+}
+import play.modules.reactivemongo.json._
 
 import scala.concurrent.{Future, Await}
 
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, CompanyHolidayModel, LeavePolicyModel, LeaveProfileModel, LeaveSettingModel, LeaveModel, CompanyModel, TaskModel}
+import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, CompanyHolidayModel, LeavePolicyModel, LeaveProfileModel, LeaveSettingModel, LeaveModel, CompanyModel, TaskModel, LeaveFileModel}
 import utilities.{MailUtility, Tools}
-import reactivemongo.bson.BSONDocument
+
+import reactivemongo.api._
+import reactivemongo.bson._
+import reactivemongo.api.gridfs._
+import reactivemongo.api.gridfs.Implicits._
+
+import org.joda.time.DateTime
 
 import javax.inject.Inject
 
 case class DeleteApp (company:String)
 
-class DeleteAppController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
+class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerClient: MailerClient) extends Controller with MongoController with ReactiveMongoComponents with Secured {
   
+  import MongoController.readFileReads
+  type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
+    
   val deleteappform = Form(
       mapping(
           "company" -> text
@@ -53,6 +68,22 @@ class DeleteAppController @Inject() (mailerClient: MailerClient) extends Control
             KeywordModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             CompanyHolidayModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             TaskModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
+            LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity").get, "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]().map { files =>
+              val filesWithId = files.map { file => {
+                LeaveFileModel.gridFS.files.update(
+                    Json.obj("_id" -> file.id),
+                    Json.obj("$set" -> Json.obj("metadata" -> Json.obj(     
+                        "eid" -> file.metadata.value.get("eid").get,
+                        "filename" -> file.metadata.value.get("filename").get,
+                        "lk" -> file.metadata.value.get("lk").get,
+                        "f" -> file.metadata.value.get("f").get,
+                        "cby" -> file.metadata.value.get("cby").get,
+                        "ddat" -> BSONDateTime(new DateTime().getMillis),
+                        "dby" -> request.session.get("username")
+                    )))
+                )
+              }}
+            }
             
             // Send email
             mailerClient.send(
