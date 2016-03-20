@@ -378,7 +378,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
       } yield {
         leaves.map ( leave => {
-          val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+          // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+          val reason = ""
           val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
           val url = if (p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
           val start = fmt.print(leave.fdat.get)
@@ -397,7 +398,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
           val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
           val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
           if (leavepolicy.set.scal) {            
-            val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+            // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+            val reason = "" 
             val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
             val url = if ((leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
@@ -419,7 +421,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
             val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
             if (leavepolicy.set.scal) {
-              val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+              // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+              val reason = ""
               val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
               val url = if ((leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
@@ -447,7 +450,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
       } yield {
         leaves.map ( leave => {
-          val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+          // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+          val reason = ""
           val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
           val url = "/leave/company/view/" + leave._id.stringify
           val start = fmt.print(leave.fdat.get)
@@ -466,7 +470,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
           val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
           val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
           if (leavepolicy.set.scal) {
-            val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+            // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+            val reason = ""
             val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
             val url = if (leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
             val start = fmt.print(leave.fdat.get)
@@ -488,7 +493,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
             val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
             if (leavepolicy.set.scal) {
-              val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+              // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
+              val reason = ""
               val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
               val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
