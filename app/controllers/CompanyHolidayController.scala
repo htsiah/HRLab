@@ -43,7 +43,11 @@ class CompanyHolidayController extends Controller with Secured {
   
   def create = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
-      Future.successful(Ok(views.html.companyholiday.form(companyholidayform.fill(CompanyHolidayModel.doc), CompanyHolidayModel.doc.st)))
+      val filledForm = companyholidayform.fill(CompanyHolidayModel.doc.copy(
+          fdat = Some(new DateTime()),
+          tdat = Some(new DateTime())
+      ))
+      Future.successful(Ok(views.html.companyholiday.form(filledForm, CompanyHolidayModel.doc.st)))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }

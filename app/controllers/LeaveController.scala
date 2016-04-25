@@ -80,6 +80,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	            docnum = docnum.toInt,
 	            pid = request.session.get("id").get,
 	            pn = request.session.get("name").get,
+              fdat = Some(new DateTime()),
+              tdat = Some(new DateTime()),
               wf = Workflow(
                   s = "New",
                   aprid = manager._id.stringify,
