@@ -154,8 +154,12 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                   "APPROVELINK"->(Tools.hostname + "/leave/approve/" + leave_update._id.stringify), 
                   "DOCLINK"->(Tools.hostname + "/leave/view/" + leave_update._id.stringify)    
               )
-              TaskModel.insert(1, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
-                
+              if (leave_update.fdat.get == leave_update.tdat.get) {
+                TaskModel.insert(7, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
+              } else {
+                TaskModel.insert(1, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
+              }
+ 
               // Send email
               val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
               val replaceMap = Map(
