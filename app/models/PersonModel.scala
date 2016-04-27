@@ -8,7 +8,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System, SystemDataStore}
+import utilities.{System, SystemDataStore, Tools}
+
+import scala.concurrent.{Await}
 
 import scala.util.{Success, Failure,Try}
 import org.joda.time.DateTime
@@ -425,6 +427,16 @@ object PersonModel {
       } else {
         false
       }
+    }
+  }
+  
+  def isManagerFor(p_id:String, p_mid:String, p_request:RequestHeader) = {
+    val maybe_person = Await.result(PersonModel.findOne(BSONDocument("_id"->BSONObjectID(p_id)), p_request), Tools.db_timeout)
+    val person = maybe_person.getOrElse(PersonModel.doc)
+    if ( person.p.mgrid == p_mid) {
+      true
+    } else {
+      false
     }
   }
   

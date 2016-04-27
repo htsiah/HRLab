@@ -403,7 +403,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
             val reason = "" 
             val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-            val url = if ((leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
+            val url = if (( PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -426,7 +426,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
               val reason = ""
               val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-              val url = if ((leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
+              val url = if ((leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -475,7 +475,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
             val reason = ""
             val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-            val url = if (leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
+            val url = if (PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
             val start = fmt.print(leave.fdat.get)
             val end = fmt.print(leave.tdat.get.plusDays(1))
             if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -498,7 +498,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
               val reason = ""
               val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-              val url = if (leave.pid==request.session.get("id").get || leave.wf.aprid==request.session.get("id").get || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
+              val url = if (leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","
