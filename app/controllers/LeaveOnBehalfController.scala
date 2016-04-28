@@ -177,7 +177,11 @@ class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi,
                     "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
                     "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
                 )
-                MailUtility.getEmailConfig(recipients.distinct, 9, replaceMap).map { email => mailerClient.send(email) }
+                if (leave_update.fdat.get == leave_update.tdat.get) {
+                  MailUtility.getEmailConfig(recipients.distinct, 14, replaceMap).map { email => mailerClient.send(email) }
+                } else {
+                  MailUtility.getEmailConfig(recipients.distinct, 9, replaceMap).map { email => mailerClient.send(email) }
+                }
               }
               
               Redirect(routes.DashboardController.index)

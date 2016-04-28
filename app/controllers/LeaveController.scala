@@ -146,7 +146,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                   "DOCUNUM"->leave_update.docnum.toString(), 
                   "APPLICANT"->leave_update.pn, 
                   "NUMDAY"->(leave_update.uti + leave_update.cfuti).toString(), 
-                  "LEAVETYPE"->leave_update.lt.toLowerCase(), 
+                  "LEAVETYPE"->leave_update.lt, 
                   "FDAT"->(leave_update.fdat.get.dayOfMonth().getAsText + "-" + leave_update.fdat.get.monthOfYear().getAsShortText + "-" + leave_update.fdat.get.getYear.toString()),
                   "TDAT"->(leave_update.tdat.get.dayOfMonth().getAsText + "-" + leave_update.tdat.get.monthOfYear().getAsShortText + "-" + leave_update.tdat.get.getYear.toString())
               )
@@ -175,7 +175,11 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                   "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
                   "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
               )
-              MailUtility.getEmailConfig(List(maybemanager.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
+              if (leave_update.fdat.get == leave_update.tdat.get) {
+                MailUtility.getEmailConfig(List(maybemanager.get.p.em), 10, replaceMap).map { email => mailerClient.send(email) }
+              } else {
+                MailUtility.getEmailConfig(List(maybemanager.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
+              }
               Redirect(routes.DashboardController.index)
             }
           }
@@ -250,7 +254,11 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             "BALANCE" -> (leaveprofile_update.cal.cbal).toString(),
             "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)           
         )
-        MailUtility.getEmailConfig(List(maybeperson.get.p.em), 4, replaceMap).map { email => mailerClient.send(email) }
+        if (leave_update.fdat.get == leave_update.tdat.get) {
+          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 11, replaceMap).map { email => mailerClient.send(email) }
+        } else {
+          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 4, replaceMap).map { email => mailerClient.send(email) }
+        }
         Redirect(request.session.get("path").get)
 	      
 	    } else {
@@ -305,7 +313,11 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               "BALANCE" -> (leaveprofile_update.cal.cbal + leave_update.cfuti + leave_update.uti).toString(),
               "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
         )
-        MailUtility.getEmailConfig(List(maybeperson.get.p.em), 5, replaceMap).map { email => mailerClient.send(email) }
+        if (leave_update.fdat.get == leave_update.tdat.get) {
+          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 12, replaceMap).map { email => mailerClient.send(email) }
+        } else {
+          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 5, replaceMap).map { email => mailerClient.send(email) }
+        }
             
         Redirect(request.session.get("path").get)
       } else {
@@ -362,7 +374,11 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               "BALANCE" -> (maybeleaveprofile.get.cal.cbal + leave_update.cfuti + leave_update.uti).toString(),
               "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
           )
-          MailUtility.getEmailConfig(recipients.distinct, 6, replaceMap).map { email => mailerClient.send(email) }
+          if (leave_update.fdat.get == leave_update.tdat.get) {
+            MailUtility.getEmailConfig(recipients.distinct, 13, replaceMap).map { email => mailerClient.send(email) }
+          } else {
+            MailUtility.getEmailConfig(recipients.distinct, 6, replaceMap).map { email => mailerClient.send(email) }
+          }
         }
                 
         Redirect(request.session.get("path").get)
