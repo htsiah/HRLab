@@ -11,7 +11,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System,SystemDataStore}
+import utilities.{System, SystemDataStore, DbLoggerUtility}
 
 case class Authentication (
     _id: BSONObjectID,
@@ -183,15 +183,12 @@ object AuthenticationModel {
     col.find(BSONDocument("em"->p_email, "r"->p_resetkey, "sys.ddat"->BSONDocument("$exists"->false))).one[Authentication]
   }
   
-  def logon(p_email:String) = {
-    val future = this.findOneByEmail(p_email)
-    future.map( doc => {
-      val future = col.update(BSONDocument("em"->p_email, "sys.ddat"->BSONDocument("$exists"->false)), doc.get.copy(r="",sys=SystemDataStore.logonWithSystem(doc.get.sys.get)))
-      future.onComplete {
-        case Failure(e) => throw e
-        case Success(lastError) => {}
-      }
-    })
+  def logon(p_doc:Authentication) = {
+    val future = col.update(BSONDocument("em"->p_doc.em, "sys.ddat"->BSONDocument("$exists"->false)), p_doc.copy(r="",sys=SystemDataStore.logonWithSystem(p_doc.sys.get)))
+    future.onComplete {
+      case Failure(e) => throw e
+      case Success(lastError) => {}
+    }
   }
   
   def resetPassword(p_doc:Authentication, p_newpassword:String) = {

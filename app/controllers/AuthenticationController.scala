@@ -79,7 +79,7 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
                   
                   // Updating login history records
                   CompanyModel.logon(auth_doc.get.sys.get.eid.get)
-                  AuthenticationModel.logon(auth_doc.get.em)
+                  AuthenticationModel.logon(auth_doc.get)
                   
                   // Create Person Profile Cache
                   Cache.remove("PersonProfile." + auth_doc.get.em)
