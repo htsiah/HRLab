@@ -14,7 +14,6 @@ case class DbLogger (
      a: Option[String],
      r: Option[String],
      pe: Option[String],
-     pn: Option[String],
      mh: Option[String],
      p: Option[String],
      ra: Option[String],
@@ -46,7 +45,6 @@ object DbLoggerUtility {
           "a" -> dblogger.a,
           "r" -> dblogger.r,
           "pe" -> dblogger.pe,
-          "pn" -> dblogger.pn,
           "mh" -> dblogger.mh,
           "p" -> dblogger.p,
           "ra" -> dblogger.ra,
@@ -91,7 +89,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=Some(p_request.session.get("email").get),
-	                pn=Some(p_request.session.get("username").get),
 	                mh=Some(p_request.method),
 	                p=Some(p_request.path),
 	                ra=Some(p_request.remoteAddress),
@@ -107,7 +104,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=None,
-	                pn=None,
 	                mh=Some(p_request.method),
 	                p=Some(p_request.path),
 	                ra=Some(p_request.remoteAddress),
@@ -123,7 +119,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=None,
-	                pn=None,
 	                mh=None,
 	                p=None,
 	                ra=None,
@@ -149,7 +144,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=Some(p_request.session.get("email").get),
-	                pn=Some(p_request.session.get("username").get),
 	                mh=Some(p_request.method),
 	                p=Some(p_request.path),
 	                ra=Some(p_request.remoteAddress),
@@ -165,7 +159,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=None,
-	                pn=None,
 	                mh=Some(p_request.method),
 	                p=Some(p_request.path),
 	                ra=Some(p_request.remoteAddress),
@@ -181,7 +174,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=None,
-	                pn=None,
 	                mh=None,
 	                p=None,
 	                ra=None,
@@ -207,7 +199,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=Some(p_request.session.get("email").get),
-	                pn=Some(p_request.session.get("username").get),
 	                mh=Some(p_request.method),
 	                p=Some(p_request.path),
 	                ra=Some(p_request.remoteAddress),
@@ -223,7 +214,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=None,
-	                pn=None,
 	                mh=Some(p_request.method),
 	                p=Some(p_request.path),
 	                ra=Some(p_request.remoteAddress),
@@ -239,7 +229,6 @@ object DbLoggerUtility {
 	                a=Some(appname),
 	                r=Some(apprelease),
 	                pe=None,
-	                pn=None,
 	                mh=None,
 	                p=None,
 	                ra=None,
@@ -256,47 +245,27 @@ object DbLoggerUtility {
     }    
   }
   
-  def auth(p_login:Boolean,p_request:RequestHeader=null) = {
-     if (dbloggerSec=="ON") {
-       val msg = if (p_login == true) "Login" else "Logout"
-       val future = if (p_request != null) {
-	         authenticationCol.insert(
-	             DbLogger(
-	                 _id=BSONObjectID.generate,
-	                 a=Some(appname),
-	                 r=Some(apprelease),
-	                 pe=Some(p_request.session.get("email").get),
-	                 pn=Some(p_request.session.get("username").get),
-	                 mh=Some(p_request.method),
-	                 p=Some(p_request.path),
-	                 ra=Some(p_request.remoteAddress),
-	                 b=Some(p_request.headers.get("user-agent").get),
-	                 m=Some(msg),
-	                 sys = SystemDataStore.creation(p_request=p_request)
-	             )
-	         )
-	       } else {
-	         authenticationCol.insert(
-	             DbLogger(
-	                 _id=BSONObjectID.generate,
-	                 a=Some(appname),
-	                 r=Some(apprelease),
-	                 pe=None,
-	                 pn=None,
-	                 mh=None,
-	                 p=None,
-	                 ra=None,
-	                 b=None,
-	                 m=Some(msg),
-	                 sys = SystemDataStore.creation(p_request=p_request)
-	             )
-	         )
-	       }
-       future.onComplete {
-         case Failure(e) => throw e
-         case Success(lastError) => {}
-       }
-     }
+  def auth(p_eid:String, p_email:String, p_request:RequestHeader=null) = {
+    if (dbloggerSec=="ON") {
+      val future = authenticationCol.insert(
+          DbLogger(
+              _id=BSONObjectID.generate,
+              a=Some(appname),
+              r=Some(apprelease),
+              pe=Some(p_email),
+              mh=Some(p_request.method),
+              p=Some(p_request.path),
+              ra=Some(p_request.remoteAddress),
+              b=Some(p_request.headers.get("user-agent").get),
+              m=Some("Login"),
+              sys = SystemDataStore.creation(p_eid=p_eid)
+          ) 
+      )
+      future.onComplete {
+        case Failure(e) => throw e
+        case Success(lastError) => {}
+      }
+    }
   }
   
 }

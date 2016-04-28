@@ -9,7 +9,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer._
 
 import models.{AuthenticationModel, Authentication, PersonModel, CompanyModel, Person}
-import utilities.{System, AlertUtility, MailUtility, Tools}
+import utilities.{System, AlertUtility, MailUtility, Tools, DbLoggerUtility}
 
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 
@@ -76,6 +76,9 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
             auth_doc.isDefined match {
               case true => {
                 if (auth_doc.get.p == formWithData.password) {
+                  
+                  // Create authentication log
+                  DbLoggerUtility.auth(auth_doc.get.sys.get.eid.get, auth_doc.get.em, request)
                   
                   // Updating login history records
                   CompanyModel.logon(auth_doc.get.sys.get.eid.get)
