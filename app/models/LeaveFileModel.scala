@@ -21,16 +21,22 @@ object LeaveFileModel {
   private val db = connection.get.db(dbname)
   val gridFS = this.getGridFS
   val gridFSBSON = GridFS(db)
-
-  // let's build an index on our gridfs chunks collection if none
-  gridFS.ensureIndex().onComplete {
-    case index =>
-      Logger.info(s"Checked index, result is $index")
-  }
   
   private def getGridFS = {
     import play.modules.reactivemongo.json.collection._
     GridFS[JSONSerializationPack.type](db)
   }
-
+  
+  def init() = {
+    // let's build an index on our gridfs chunks collection if none
+    gridFS.ensureIndex().onComplete {
+      case index =>
+        Logger.info(s"Checked index, result is $index")
+    }
+  }
+  
+  def close() = {
+    driver.close()
+  }
+    
 }

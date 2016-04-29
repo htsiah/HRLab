@@ -27,7 +27,7 @@
     <logger name="play" level="INFO" />
     
     <!-- # Logger provided to your application -->
-  	<logger name="application" level="DEBUG" />
+  	<logger name="application" level="INFO" />
   
     <root level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
