@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 
 object Tools {
   
-  val hostname = Play.current.configuration.getString("domain_name").getOrElse("http://www.hrlab.my")
+  val hostname = Play.current.configuration.getString("domain_name").getOrElse("https://www.hrsifu.my")
   val db_timeout = Duration(Play.current.configuration.getInt("mongodb_timeout").getOrElse(5000), "millis")
   
   // Search a value in List's value 1 with #value# and replace with List value 2 
