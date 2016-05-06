@@ -1,11 +1,10 @@
 package utilities
 
 import org.joda.time.DateTime
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import scala.concurrent.{Future,Await}
 import scala.concurrent.duration.Duration
 
-import play.api.Play
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -48,23 +47,8 @@ object DocNumUtility {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_config").getOrElse("config")
-  private val uri = Play.current.configuration.getString("mongodb_config_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("docnum")
-  	
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-  
+  private val col = DbConnUtility.config_db.collection("docnum")
+  	  
   def findOne(p_query:BSONDocument) = {
     col.find(p_query).one[DocNum]
   }

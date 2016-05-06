@@ -1,8 +1,7 @@
 package models
 
-import scala.concurrent.{Await}
+import scala.concurrent.Await
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -10,9 +9,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System,SystemDataStore,Tools}
+import utilities.{System,SystemDataStore,Tools,DbConnUtility}
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import scala.collection.mutable.ArrayBuffer
 import org.joda.time.DateTime
 import org.joda.time.Months
@@ -234,14 +233,8 @@ object LeaveProfileModel {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_leave").getOrElse("leave")
-  private val uri = Play.current.configuration.getString("mongodb_leave_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("leaveprofile")
+  private val col = DbConnUtility.leave_db.collection("leaveprofile")
+  
   val doc = LeaveProfile(
       _id = BSONObjectID.generate,
       pid = "",
@@ -272,15 +265,7 @@ object LeaveProfileModel {
     ) 
     sys_doc
   }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-  
+    
   // Soft deletion by setting deletion flag in document
   def remove(p_query:BSONDocument, p_request:RequestHeader) = {
     for {

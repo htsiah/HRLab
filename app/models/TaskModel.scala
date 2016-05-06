@@ -1,6 +1,5 @@
 package models
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -8,10 +7,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
-import utilities.{System, SystemDataStore, Tools}
+import utilities.{System, SystemDataStore, Tools, DbConnUtility}
 
 case class Task (
     _id: BSONObjectID,
@@ -83,14 +82,8 @@ object TaskModel {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_admin").getOrElse("admin")
-  private val uri = Play.current.configuration.getString("mongodb_admin_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("task")
+  private val col = DbConnUtility.admin_db.collection("task")
+  
   val doc = Task(
       _id = BSONObjectID.generate,
       pid = "",
@@ -120,15 +113,7 @@ object TaskModel {
     ) 
     sys_doc
   }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-    
+        
   // Update document
   def update(p_query:BSONDocument,p_doc:Task,p_request:RequestHeader) = {
     val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))

@@ -1,6 +1,5 @@
 package models
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -8,9 +7,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System,SystemDataStore,Tools}
+import utilities.{System, SystemDataStore, Tools, DbConnUtility}
 
-import scala.util.{Success,Failure,Try}
+import scala.util.{Success,Failure}
 import scala.util.control.Breaks._
 import scala.concurrent.{Future,Await}
 import scala.collection.mutable.ArrayBuffer
@@ -133,14 +132,8 @@ object LeaveModel {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_leave").getOrElse("leave")
-  private val uri = Play.current.configuration.getString("mongodb_leave_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("leave")
+  private val col = DbConnUtility.leave_db.collection("leave")
+  
   val doc = Leave(
       _id = BSONObjectID.generate,
       docnum = 0,
@@ -181,15 +174,7 @@ object LeaveModel {
     ) 
     sys_doc
   }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-  
+    
   // Insert new document
   def insert(p_doc:Leave, p_eid:String="", p_request:RequestHeader=null)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))

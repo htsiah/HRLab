@@ -1,6 +1,5 @@
 package models
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -8,10 +7,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
-import utilities.{System,SystemDataStore}
+import utilities.{System, SystemDataStore, DbConnUtility}
 
 case class ConfigTask (
     _id: BSONObjectID,
@@ -77,14 +76,7 @@ object ConfigTaskModel {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_config").getOrElse("config")
-  private val uri = Play.current.configuration.getString("mongodb_config_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("task")
+  private val col = DbConnUtility.config_db.collection("task")
   
   private def updateSystem(p_doc:ConfigTask) = {
     val eid = p_doc.sys.get.eid.getOrElse(None)
@@ -105,15 +97,7 @@ object ConfigTaskModel {
     ) 
     sys_doc
   }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-  
+    
   def find(p_query:BSONDocument) = {
     col.find(p_query).cursor[ConfigTask](ReadPreference.primary).collect[List]()
   }

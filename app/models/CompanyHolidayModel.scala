@@ -1,6 +1,5 @@
 package models
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -8,9 +7,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System,SystemDataStore}
+import utilities.{System, SystemDataStore, DbConnUtility}
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
 case class CompanyHoliday (
@@ -86,14 +85,8 @@ object CompanyHolidayModel {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_calendar").getOrElse("calendar")
-  private val uri = Play.current.configuration.getString("mongodb_calendar_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("companyholiday")
+  private val col = DbConnUtility.calendar_db.collection("companyholiday")
+  
   val doc = CompanyHoliday(
       _id = BSONObjectID.generate,
       n = "",
@@ -124,15 +117,7 @@ object CompanyHolidayModel {
     ) 
     sys_doc
   }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-  
+    
   def insert(p_doc:CompanyHoliday, p_eid:String="", p_request:RequestHeader=null)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
     future.onComplete {

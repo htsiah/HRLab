@@ -1,6 +1,5 @@
 package models
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -8,11 +7,11 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System, SystemDataStore, Tools}
+import utilities.{System, SystemDataStore, Tools, DbConnUtility}
 
-import scala.concurrent.{Await}
+import scala.concurrent.Await
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 import org.joda.time.Months
 
@@ -167,15 +166,9 @@ object PersonModel {
       )     
     }
   }
-
-  private val dbname = Play.current.configuration.getString("mongodb_directory").getOrElse("directory")
-  private val uri = Play.current.configuration.getString("mongodb_directory_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("person")
+    
+  private val col = DbConnUtility.dir_db.collection("person")
+  
   val doc = Person(
       _id = BSONObjectID.generate,
       p = Profile(fn="", ln="", em="", nem=false, pt="", mgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)), rl=List("")),
@@ -202,15 +195,7 @@ object PersonModel {
     ) 
     sys_doc
   }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-      
+        
   // Soft deletion by setting deletion flag in document
   def remove(p_query:BSONDocument, p_request:RequestHeader) = {
     for {

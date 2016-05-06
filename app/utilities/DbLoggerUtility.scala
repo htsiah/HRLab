@@ -1,7 +1,7 @@
 package utilities
 
-import scala.util.{Success, Failure,Try}
 import play.api.Play
+import scala.util.{Success, Failure}
 import play.api.Logger
 import play.api.libs.concurrent._
 import play.api.libs.concurrent.Execution.Implicits._
@@ -59,27 +59,9 @@ object DbLoggerUtility {
   private val apprelease = Play.current.configuration.getString("application_release").getOrElse("")
   private val dbloggerApp = Play.current.configuration.getString("dblogger_application").getOrElse("OFF")
   private val dbloggerSec = Play.current.configuration.getString("dblogger_security").getOrElse("OFF")
-  private val dbname = Play.current.configuration.getString("mongodb_dblogger").getOrElse("dblogger")
-  private val uri = Play.current.configuration.getString("mongodb_dblogger_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val authenticationCol = db.collection("authentication")
-  private val applicationCol = db.collection("application")
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + authenticationCol.name)
+  private val authenticationCol = DbConnUtility.logger_db.collection("authentication")
+  private val applicationCol = DbConnUtility.logger_db.collection("application")
     
-    // We are not using application currently
-    // Logger.info("Initialized Db Collection: " + applicationCol.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-  
   def debug(p_msg:String, p_request:RequestHeader=null) = {
     if (dbloggerApp=="DEBUG") {
       val future = if (p_request != null && !(p_request.session.isEmpty)) {

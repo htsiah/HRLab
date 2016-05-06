@@ -1,6 +1,5 @@
 package models
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -8,9 +7,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System,SystemDataStore}
+import utilities.{System, SystemDataStore, DbConnUtility}
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
 case class ConfigLeavePolicy (
@@ -116,14 +115,7 @@ object ConfigLeavePolicyModel {
     }
   }
 
-  private val dbname = Play.current.configuration.getString("mongodb_config").getOrElse("config")
-  private val uri = Play.current.configuration.getString("mongodb_config_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("leavepolicy")
+  private val col = DbConnUtility.config_db.collection("leavepolicy")
 
   private def updateSystem(p_doc:ConfigLeavePolicy) = {
     val eid = p_doc.sys.get.eid.getOrElse(None)
@@ -143,14 +135,6 @@ object ConfigLeavePolicyModel {
         ll= if (ll!=None) {Some(p_doc.sys.get.ll.get)} else {None}
     ) 
     sys_doc
-  }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
   }
   
   def find(p_query:BSONDocument) = {

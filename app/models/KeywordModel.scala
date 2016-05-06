@@ -1,6 +1,5 @@
 package models
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -8,11 +7,11 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import scala.concurrent.Await
 import org.joda.time.DateTime
 
-import utilities.{System, SystemDataStore, Tools}
+import utilities.{System, SystemDataStore, Tools, DbConnUtility}
 
 case class Keyword (
      _id: BSONObjectID,
@@ -78,14 +77,8 @@ object KeywordModel {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_admin").getOrElse("admin")
-  private val uri = Play.current.configuration.getString("mongodb_admin_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("keyword")
+  private val col = DbConnUtility.admin_db.collection("keyword")
+  
   val doc = Keyword(
       _id = BSONObjectID.generate,
       n = "",
@@ -112,14 +105,6 @@ object KeywordModel {
         ll= if (ll!=None) {Some(p_doc.sys.get.ll.get)} else {None}
     ) 
     sys_doc
-  }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
   }
     
   // Insert new document
@@ -224,6 +209,4 @@ object KeywordModel {
     
   }
   
-  
-
 }

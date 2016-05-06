@@ -1,9 +1,8 @@
 package jobs
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
-import play.api.Play
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -11,6 +10,7 @@ import reactivemongo.api._
 import reactivemongo.bson._
 
 import models.{CompanyModel, LeaveSettingModel, LeavePolicyModel, LeaveProfileModel, LeaveModel, LeaveProfile, LeaveSetting, LeavePolicy, PersonModel}
+import utilities.DbConnUtility
 
 case class MonthlyLeaveProfileUpdateLog (
     _id: BSONObjectID,
@@ -42,14 +42,8 @@ object MonthlyLeaveProfileUpdateJob {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_job").getOrElse("job")
-  private val uri = Play.current.configuration.getString("mongodb_job_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("monthlyleaveprofileupdatelog")
+  private val col = DbConnUtility.job_db.collection("monthlyleaveprofileupdatelog")
+  
   val doc = MonthlyLeaveProfileUpdateLog(
       _id = BSONObjectID.generate,
       month = "",

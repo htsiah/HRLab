@@ -1,9 +1,8 @@
 package models
 
-import scala.util.{Success, Failure,Try}
+import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
-import play.api.Play
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -11,7 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System, SystemDataStore, DbLoggerUtility}
+import utilities.{System, SystemDataStore, DbLoggerUtility, DbConnUtility}
 
 case class Authentication (
     _id: BSONObjectID,
@@ -77,14 +76,8 @@ object AuthenticationModel {
     }
   }
   
-  private val dbname = Play.current.configuration.getString("mongodb_directory").getOrElse("directory")
-  private val uri = Play.current.configuration.getString("mongodb_directory_uri").getOrElse("mongodb://localhost")
-  private val driver = new MongoDriver()
-  private val connection: Try[MongoConnection] = MongoConnection.parseURI(uri).map { 
-    parsedUri => driver.connection(parsedUri)
-  }
-  private val db = connection.get.db(dbname)
-  private val col = db.collection("authentication")
+  private val col = DbConnUtility.dir_db.collection("authentication")
+  
   val doc = Authentication(
       _id = BSONObjectID.generate,
       em = "",
@@ -112,15 +105,7 @@ object AuthenticationModel {
     ) 
     sys_doc
   }
-  
-  def init() = {
-    Logger.info("Initialized Db Collection: " + col.name)
-  }
-  
-  def close() = {
-    driver.close()
-  }
-  
+    
   def insert(p_doc:Authentication, p_eid:String="", p_request:RequestHeader=null)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
     future.onComplete {
