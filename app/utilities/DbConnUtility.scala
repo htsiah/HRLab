@@ -5,7 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import reactivemongo.api.{MongoDriver, MongoConnection}
 
-import scala.util.{Try}
+import scala.util.Try
 
 object DbConnUtility {
   
