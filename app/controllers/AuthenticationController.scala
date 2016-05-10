@@ -246,7 +246,6 @@ trait Secured {
   def username(request: RequestHeader) = request.session.get(Security.username)
   
   def onUnauthorized(request: RequestHeader) = {
-    println(request.uri)
     Results.Redirect(routes.AuthenticationController.login(p_redirect=request.uri))
   }
   
