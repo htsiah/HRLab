@@ -18,7 +18,7 @@ import scala.util.Random
 
 import javax.inject.Inject
 
-case class Login (email:String,password:String)
+case class Login (email:String,password:String,redirect:String)
 case class Reset (email:String)
 case class Set (email:String,resetkey:String,npassword:String,cpassword:String)
 case class Change (password:String,npassword:String,cpassword:String)
@@ -28,7 +28,8 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
   val authenticationform = Form(
       mapping(
           "email" -> nonEmptyText,
-          "password" -> nonEmptyText
+          "password" -> nonEmptyText,
+          "redirect" -> text
       )(Login.apply)(Login.unapply)
   )
   
@@ -55,8 +56,8 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
       )(Change.apply)(Change.unapply)
   )
   
-  def login(p_email:String) = Action { implicit request =>
-    val login_doc = Login(email=p_email,password="")
+  def login(p_email:String, p_redirect:String) = Action { implicit request =>
+    val login_doc = Login(email=p_email,password="",redirect=p_redirect)
     Ok(views.html.authentication.login(authenticationform.fill(login_doc)))
   }
   
@@ -94,20 +95,37 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
                   val isManager = if(maybe_IsManager.isEmpty) "false" else "true"       
                   
                   val company_doc = Await.result(CompanyModel.findOneByEId(auth_doc.get.sys.get.eid.get), Tools.db_timeout)
-                  Redirect(routes.DashboardController.index).withSession(
-                      "entity"->person_doc.get.sys.get.eid.get,
-                      "id"->person_doc.get._id.stringify,
-                      "username"->person_doc.get.p.em,
-                      "name"->(person_doc.get.p.fn+" "+person_doc.get.p.ln),
-                      "company"->company_doc.get.c,
-                      "department"->person_doc.get.p.dpm,
-                      "position"->person_doc.get.p.pt,
-                      "office"->person_doc.get.p.off,
-                      "roles"->person_doc.get.p.rl.mkString(","),
-                      "managerid"->person_doc.get.p.mgrid,
-                      "path"->(routes.DashboardController.index).toString,
-                      "ismanager"->isManager
-                  )
+                  if (formWithData.redirect!="") {
+                    Redirect(formWithData.redirect).withSession(
+                        "entity"->person_doc.get.sys.get.eid.get,
+                        "id"->person_doc.get._id.stringify,
+                        "username"->person_doc.get.p.em,
+                        "name"->(person_doc.get.p.fn+" "+person_doc.get.p.ln),
+                        "company"->company_doc.get.c,
+                        "department"->person_doc.get.p.dpm,
+                        "position"->person_doc.get.p.pt,
+                        "office"->person_doc.get.p.off,
+                        "roles"->person_doc.get.p.rl.mkString(","),
+                        "managerid"->person_doc.get.p.mgrid,
+                        "path"->(routes.DashboardController.index).toString,
+                        "ismanager"->isManager
+                    ) 
+                  } else {
+                    Redirect(routes.DashboardController.index).withSession(
+                        "entity"->person_doc.get.sys.get.eid.get,
+                        "id"->person_doc.get._id.stringify,
+                        "username"->person_doc.get.p.em,
+                        "name"->(person_doc.get.p.fn+" "+person_doc.get.p.ln),
+                        "company"->company_doc.get.c,
+                        "department"->person_doc.get.p.dpm,
+                        "position"->person_doc.get.p.pt,
+                        "office"->person_doc.get.p.off,
+                        "roles"->person_doc.get.p.rl.mkString(","),
+                        "managerid"->person_doc.get.p.mgrid,
+                        "path"->(routes.DashboardController.index).toString,
+                        "ismanager"->isManager
+                    ) 
+                  }
                 } else { 
                   val alert =  Await.result(AlertUtility.findOne(BSONDocument("k"->1000)), Tools.db_timeout)
                   Ok(views.html.authentication.login(authenticationform.fill(formWithData),alert.getOrElse(null)))
@@ -228,7 +246,8 @@ trait Secured {
   def username(request: RequestHeader) = request.session.get(Security.username)
   
   def onUnauthorized(request: RequestHeader) = {
-    Results.Redirect(routes.AuthenticationController.login())
+    println(request.uri)
+    Results.Redirect(routes.AuthenticationController.login(p_redirect=request.uri))
   }
   
   // check user have authenticated

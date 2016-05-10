@@ -168,6 +168,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                   "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
                   "LEAVETYPE"->leave_update.lt, 
                   "DOCNUM"->leave_update.docnum.toString(), 
+                  "APPROVEURL"->(Tools.hostname+"/leave/approve/"+leave_update._id.stringify+"?p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") approved."),
+                  "REJECTURL"->(Tools.hostname+"/leave/reject?p_id="+leave_update._id.stringify+"&p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") rejected."), 
                   "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), 
                   "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
                   "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
@@ -199,7 +201,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	  }
 	}}
 	
-	def approve(p_id:String) = withAuth { username => implicit request => {
+	def approve(p_id:String, p_msg:String) = withAuth { username => implicit request => {
 	  for {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
@@ -259,7 +261,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         } else {
           MailUtility.getEmailConfig(List(maybeperson.get.p.em), 4, replaceMap).map { email => mailerClient.send(email) }
         }
-        Redirect(request.session.get("path").get)
+        Redirect(request.session.get("path").get).flashing("success" -> p_msg)
 	      
 	    } else {
 	      Ok(views.html.error.unauthorized())
@@ -279,7 +281,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
     }
   }}
   	
-	def reject(p_id:String) = withAuth { username => implicit request => {
+	def reject(p_id:String, p_msg:String) = withAuth { username => implicit request => {
     for {
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
@@ -319,7 +321,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
           MailUtility.getEmailConfig(List(maybeperson.get.p.em), 5, replaceMap).map { email => mailerClient.send(email) }
         }
             
-        Redirect(request.session.get("path").get)
+        Redirect(request.session.get("path").get).flashing("success" -> p_msg)
       } else {
         Ok(views.html.error.unauthorized())
       }
