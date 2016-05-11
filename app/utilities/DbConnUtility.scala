@@ -22,6 +22,7 @@ object DbConnUtility {
   private val leave_db_dbname = Play.current.configuration.getString("mongodb_leave").getOrElse("leave")
   private val leave_file_db_name = Play.current.configuration.getString("mongodb_leave_file").getOrElse("leave_file")
   private val job_db_name = Play.current.configuration.getString("mongodb_job").getOrElse("job")
+  private val audit_log_db_name = Play.current.configuration.getString("mongodb_audit_log").getOrElse("audit_log")
   
   val dir_db = connection.get.db(dir_db_name)
   val config_db = connection.get.db(config_db_name)
@@ -31,6 +32,7 @@ object DbConnUtility {
   val leave_db = connection.get.db(leave_db_dbname)
   val leave_file_db = connection.get.db(leave_file_db_name)
   val job_db = connection.get.db(job_db_name)
+  val audit_log_db = connection.get.db(audit_log_db_name)
 
   def close() = {
     driver.close()

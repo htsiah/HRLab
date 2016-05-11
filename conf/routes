@@ -154,6 +154,9 @@ GET		/leaveprofilereport/delete/:p_id/:p_lt/:p_pid	controllers.LeaveProfileRepor
 # Task
 GET		/task/dismiss/:p_lk				controllers.TaskController.dismiss(p_lk: String)
 
+# Audit Log
+GET		/auditlog/:p_lk				controllers.AuditLogController.getAuditlog(p_lk: String)
+
 # Delete Application
 POST	/deleteapp/delete			controllers.DeleteAppController.delete
 GET		/deleteapp/success			controllers.DeleteAppController.success
