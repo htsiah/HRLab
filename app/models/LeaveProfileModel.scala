@@ -59,176 +59,176 @@ object LeaveProfileModel {
 
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object LeaveProfileMonthEarnBSONReader extends BSONDocumentReader[LeaveProfileMonthEarn] {
-    def read(doc: BSONDocument): LeaveProfileMonthEarn = {
+    def read(p_doc: BSONDocument): LeaveProfileMonthEarn = {
       LeaveProfileMonthEarn(
-          doc.getAs[Double]("jan").get,
-          doc.getAs[Double]("feb").get,
-          doc.getAs[Double]("mar").get,
-          doc.getAs[Double]("apr").get,
-          doc.getAs[Double]("may").get,
-          doc.getAs[Double]("jun").get,
-          doc.getAs[Double]("jul").get,
-          doc.getAs[Double]("aug").get,
-          doc.getAs[Double]("sep").get,
-          doc.getAs[Double]("oct").get,
-          doc.getAs[Double]("nov").get,
-          doc.getAs[Double]("dec").get
+          p_doc.getAs[Double]("jan").get,
+          p_doc.getAs[Double]("feb").get,
+          p_doc.getAs[Double]("mar").get,
+          p_doc.getAs[Double]("apr").get,
+          p_doc.getAs[Double]("may").get,
+          p_doc.getAs[Double]("jun").get,
+          p_doc.getAs[Double]("jul").get,
+          p_doc.getAs[Double]("aug").get,
+          p_doc.getAs[Double]("sep").get,
+          p_doc.getAs[Double]("oct").get,
+          p_doc.getAs[Double]("nov").get,
+          p_doc.getAs[Double]("dec").get
       )
     }
   }
   
   implicit object EntitlementBSONReader extends BSONDocumentReader[Entitlement] {
-    def read(doc: BSONDocument): Entitlement = {
+    def read(p_doc: BSONDocument): Entitlement = {
       Entitlement(
-          doc.getAs[Int]("e1").get,
-          doc.getAs[Int]("e1_s").get,
-          doc.getAs[Int]("e1_cf").get,
-          doc.getAs[Int]("e2").get,
-          doc.getAs[Int]("e2_s").get,
-          doc.getAs[Int]("e2_cf").get,
-          doc.getAs[Int]("e3").get,
-          doc.getAs[Int]("e3_s").get,
-          doc.getAs[Int]("e3_cf").get,
-          doc.getAs[Int]("e4").get,
-          doc.getAs[Int]("e4_s").get,
-          doc.getAs[Int]("e4_cf").get,
-          doc.getAs[Int]("e5").get,
-          doc.getAs[Int]("e5_s").get,
-          doc.getAs[Int]("e5_cf").get
+          p_doc.getAs[Int]("e1").get,
+          p_doc.getAs[Int]("e1_s").get,
+          p_doc.getAs[Int]("e1_cf").get,
+          p_doc.getAs[Int]("e2").get,
+          p_doc.getAs[Int]("e2_s").get,
+          p_doc.getAs[Int]("e2_cf").get,
+          p_doc.getAs[Int]("e3").get,
+          p_doc.getAs[Int]("e3_s").get,
+          p_doc.getAs[Int]("e3_cf").get,
+          p_doc.getAs[Int]("e4").get,
+          p_doc.getAs[Int]("e4_s").get,
+          p_doc.getAs[Int]("e4_cf").get,
+          p_doc.getAs[Int]("e5").get,
+          p_doc.getAs[Int]("e5_s").get,
+          p_doc.getAs[Int]("e5_cf").get
       )
     }
   }
   
   implicit object LeaveProfileCalculationBSONReader extends BSONDocumentReader[LeaveProfileCalculation] {
-    def read(doc: BSONDocument): LeaveProfileCalculation = {
+    def read(p_doc: BSONDocument): LeaveProfileCalculation = {
       LeaveProfileCalculation(
-          doc.getAs[Int]("ent").get,
-          doc.getAs[Double]("ear").get,
-          doc.getAs[Double]("adj").get,
-          doc.getAs[Double]("uti").get,
-          doc.getAs[Double]("cf").get,
-          doc.getAs[Double]("cfuti").get,
-          doc.getAs[Double]("cfexp").get,
-          doc.getAs[Double]("papr").get,
-          doc.getAs[Double]("bal").get,
-          doc.getAs[Double]("cbal").get
+          p_doc.getAs[Int]("ent").get,
+          p_doc.getAs[Double]("ear").get,
+          p_doc.getAs[Double]("adj").get,
+          p_doc.getAs[Double]("uti").get,
+          p_doc.getAs[Double]("cf").get,
+          p_doc.getAs[Double]("cfuti").get,
+          p_doc.getAs[Double]("cfexp").get,
+          p_doc.getAs[Double]("papr").get,
+          p_doc.getAs[Double]("bal").get,
+          p_doc.getAs[Double]("cbal").get
       )
     }
   }
   
   implicit object LeaveProfileBSONReader extends BSONDocumentReader[LeaveProfile] {
-    def read(doc: BSONDocument): LeaveProfile = {
+    def read(p_doc: BSONDocument): LeaveProfile = {
       LeaveProfile(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("pid").get,
-          doc.getAs[String]("pn").get,
-          doc.getAs[String]("lt").get,
-          doc.getAs[LeaveProfileCalculation]("cal").get,
-          doc.getAs[LeaveProfileMonthEarn]("me").get,
-          doc.getAs[Entitlement]("set_ent").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("pid").get,
+          p_doc.getAs[String]("pn").get,
+          p_doc.getAs[String]("lt").get,
+          p_doc.getAs[LeaveProfileCalculation]("cal").get,
+          p_doc.getAs[LeaveProfileMonthEarn]("me").get,
+          p_doc.getAs[Entitlement]("set_ent").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
   
   implicit object EntitlementBSONWriter extends BSONDocumentWriter[Entitlement] {
-    def write(entitlement: Entitlement): BSONDocument = {
+    def write(p_doc: Entitlement): BSONDocument = {
       BSONDocument(
-          "e1" -> entitlement.e1,
-          "e1_s" -> entitlement.e1_s,
-          "e1_cf" -> entitlement.e1_cf,
-          "e2" -> entitlement.e2,
-          "e2_s" -> entitlement.e2_s,
-          "e2_cf" -> entitlement.e2_cf,
-          "e3" -> entitlement.e3,
-          "e3_s" -> entitlement.e3_s,
-          "e3_cf" -> entitlement.e3_cf,
-          "e4" -> entitlement.e4,
-          "e4_s" -> entitlement.e4_s,
-          "e4_cf" -> entitlement.e4_cf,
-          "e5" -> entitlement.e5,
-          "e5_s" -> entitlement.e5_s,
-          "e5_cf" -> entitlement.e5_cf
+          "e1" -> p_doc.e1,
+          "e1_s" -> p_doc.e1_s,
+          "e1_cf" -> p_doc.e1_cf,
+          "e2" -> p_doc.e2,
+          "e2_s" -> p_doc.e2_s,
+          "e2_cf" -> p_doc.e2_cf,
+          "e3" -> p_doc.e3,
+          "e3_s" -> p_doc.e3_s,
+          "e3_cf" -> p_doc.e3_cf,
+          "e4" -> p_doc.e4,
+          "e4_s" -> p_doc.e4_s,
+          "e4_cf" -> p_doc.e4_cf,
+          "e5" -> p_doc.e5,
+          "e5_s" -> p_doc.e5_s,
+          "e5_cf" -> p_doc.e5_cf
       )     
     }
   }
 
   implicit object LeaveProfileMonthEarnBSONWriter extends BSONDocumentWriter[LeaveProfileMonthEarn] {
-    def write(leaveprofilemonthearn: LeaveProfileMonthEarn): BSONDocument = {
+    def write(p_doc: LeaveProfileMonthEarn): BSONDocument = {
       BSONDocument(
-          "jan" -> leaveprofilemonthearn.jan,
-          "feb" -> leaveprofilemonthearn.feb,
-          "mar" -> leaveprofilemonthearn.mar,
-          "apr" -> leaveprofilemonthearn.apr,
-          "may" -> leaveprofilemonthearn.may,
-          "jun" -> leaveprofilemonthearn.jun,
-          "jul" -> leaveprofilemonthearn.jul,
-          "aug" -> leaveprofilemonthearn.aug,
-          "sep" -> leaveprofilemonthearn.sep,
-          "oct" -> leaveprofilemonthearn.oct,
-          "nov" -> leaveprofilemonthearn.nov,
-          "dec" -> leaveprofilemonthearn.dec
+          "jan" -> p_doc.jan,
+          "feb" -> p_doc.feb,
+          "mar" -> p_doc.mar,
+          "apr" -> p_doc.apr,
+          "may" -> p_doc.may,
+          "jun" -> p_doc.jun,
+          "jul" -> p_doc.jul,
+          "aug" -> p_doc.aug,
+          "sep" -> p_doc.sep,
+          "oct" -> p_doc.oct,
+          "nov" -> p_doc.nov,
+          "dec" -> p_doc.dec
       )     
     }
   }
   
   implicit object LeaveProfileCalculationBSONWriter extends BSONDocumentWriter[LeaveProfileCalculation] {
-    def write(leaveprofilecalculation: LeaveProfileCalculation): BSONDocument = {
+    def write(p_doc: LeaveProfileCalculation): BSONDocument = {
       BSONDocument(
-          "ent" -> leaveprofilecalculation.ent,
-          "ear" -> leaveprofilecalculation.ear,
-          "adj" -> leaveprofilecalculation.adj,
-          "uti" -> leaveprofilecalculation.uti,
-          "cf" -> leaveprofilecalculation.cf,
-          "cfuti" -> leaveprofilecalculation.cfuti,
-          "cfexp" -> leaveprofilecalculation.cfexp,
-          "papr" -> leaveprofilecalculation.papr,
-          "bal" -> leaveprofilecalculation.bal,
-          "cbal" -> leaveprofilecalculation.cbal
+          "ent" -> p_doc.ent,
+          "ear" -> p_doc.ear,
+          "adj" -> p_doc.adj,
+          "uti" -> p_doc.uti,
+          "cf" -> p_doc.cf,
+          "cfuti" -> p_doc.cfuti,
+          "cfexp" -> p_doc.cfexp,
+          "papr" -> p_doc.papr,
+          "bal" -> p_doc.bal,
+          "cbal" -> p_doc.cbal
       )     
     }
   }
       
   implicit object LeaveProfileBSONWriter extends BSONDocumentWriter[LeaveProfile] {
-    def write(leaveprofile: LeaveProfile): BSONDocument = {
+    def write(p_doc: LeaveProfile): BSONDocument = {
       BSONDocument(
-          "_id" -> leaveprofile._id,
-          "pid" -> leaveprofile.pid,
-          "pn" -> leaveprofile.pn,
-          "lt" -> leaveprofile.lt,
-          "cal" -> leaveprofile.cal,
-          "me" -> leaveprofile.me,
-          "set_ent" -> leaveprofile.set_ent,
-          "sys" -> leaveprofile.sys
+          "_id" -> p_doc._id,
+          "pid" -> p_doc.pid,
+          "pn" -> p_doc.pn,
+          "lt" -> p_doc.lt,
+          "cal" -> p_doc.cal,
+          "me" -> p_doc.me,
+          "set_ent" -> p_doc.set_ent,
+          "sys" -> p_doc.sys
       )     
     }
   }

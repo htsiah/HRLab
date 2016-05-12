@@ -53,64 +53,64 @@ object ConfigLeavePolicyModel {
 
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object ConfigLeavePolicySettingBSONReader extends BSONDocumentReader[ConfigLeavePolicySetting] {
-    def read(doc: BSONDocument): ConfigLeavePolicySetting = {
+    def read(p_doc: BSONDocument): ConfigLeavePolicySetting = {
       ConfigLeavePolicySetting(
-          doc.getAs[String]("g").get,
-          doc.getAs[String]("acc").get,
-          doc.getAs[String]("ms").get,
-          doc.getAs[String]("dt").get,
-          doc.getAs[Boolean]("nwd").get,
-          doc.getAs[Int]("cexp").get,
-          doc.getAs[Boolean]("scal").get,
-          doc.getAs[Boolean]("msd").get
+          p_doc.getAs[String]("g").get,
+          p_doc.getAs[String]("acc").get,
+          p_doc.getAs[String]("ms").get,
+          p_doc.getAs[String]("dt").get,
+          p_doc.getAs[Boolean]("nwd").get,
+          p_doc.getAs[Int]("cexp").get,
+          p_doc.getAs[Boolean]("scal").get,
+          p_doc.getAs[Boolean]("msd").get
       )
     }
   }
   
   implicit object ConfigEntitlementBSONReader extends BSONDocumentReader[ConfigEntitlement] {
-    def read(doc: BSONDocument): ConfigEntitlement = {
+    def read(p_doc: BSONDocument): ConfigEntitlement = {
       ConfigEntitlement(
-          doc.getAs[Int]("e1").get,
-          doc.getAs[Int]("e1_s").get,
-          doc.getAs[Int]("e1_cf").get,
-          doc.getAs[Int]("e2").get,
-          doc.getAs[Int]("e2_s").get,
-          doc.getAs[Int]("e2_cf").get,
-          doc.getAs[Int]("e3").get,
-          doc.getAs[Int]("e3_s").get,
-          doc.getAs[Int]("e3_cf").get,
-          doc.getAs[Int]("e4").get,
-          doc.getAs[Int]("e4_s").get,
-          doc.getAs[Int]("e4_cf").get,
-          doc.getAs[Int]("e5").get,
-          doc.getAs[Int]("e5_s").get,
-          doc.getAs[Int]("e5_cf").get
+          p_doc.getAs[Int]("e1").get,
+          p_doc.getAs[Int]("e1_s").get,
+          p_doc.getAs[Int]("e1_cf").get,
+          p_doc.getAs[Int]("e2").get,
+          p_doc.getAs[Int]("e2_s").get,
+          p_doc.getAs[Int]("e2_cf").get,
+          p_doc.getAs[Int]("e3").get,
+          p_doc.getAs[Int]("e3_s").get,
+          p_doc.getAs[Int]("e3_cf").get,
+          p_doc.getAs[Int]("e4").get,
+          p_doc.getAs[Int]("e4_s").get,
+          p_doc.getAs[Int]("e4_cf").get,
+          p_doc.getAs[Int]("e5").get,
+          p_doc.getAs[Int]("e5_s").get,
+          p_doc.getAs[Int]("e5_cf").get
       )
     }
   }
   
   implicit object ConfigLeavePolicyBSONReader extends BSONDocumentReader[ConfigLeavePolicy] {
-    def read(doc: BSONDocument): ConfigLeavePolicy = {
+    def read(p_doc: BSONDocument): ConfigLeavePolicy = {
       ConfigLeavePolicy(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("lt").get,
-          doc.getAs[ConfigLeavePolicySetting]("set").get,
-          doc.getAs[ConfigEntitlement]("ent").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("lt").get,
+          p_doc.getAs[ConfigLeavePolicySetting]("set").get,
+          p_doc.getAs[ConfigEntitlement]("ent").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }

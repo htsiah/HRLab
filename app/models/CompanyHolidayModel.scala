@@ -27,60 +27,60 @@ object CompanyHolidayModel {
 
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object CompanyHolidayBSONReader extends BSONDocumentReader[CompanyHoliday] {
-    def read(doc: BSONDocument): CompanyHoliday = {
+    def read(p_doc: BSONDocument): CompanyHoliday = {
       CompanyHoliday(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("n").get,
-          doc.getAs[String]("d").get,
-          doc.getAs[String]("ct").get,
-          doc.getAs[List[String]]("st").get,
-          doc.getAs[BSONDateTime]("fdat").map(dt => new DateTime(dt.value )),
-          doc.getAs[BSONDateTime]("tdat").map(dt => new DateTime(dt.value )),
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("n").get,
+          p_doc.getAs[String]("d").get,
+          p_doc.getAs[String]("ct").get,
+          p_doc.getAs[List[String]]("st").get,
+          p_doc.getAs[BSONDateTime]("fdat").map(dt => new DateTime(dt.value )),
+          p_doc.getAs[BSONDateTime]("tdat").map(dt => new DateTime(dt.value )),
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
   
   implicit object CompanyHolidayBSONWriter extends BSONDocumentWriter[CompanyHoliday] {
-    def write(companyholiday: CompanyHoliday): BSONDocument = {
+    def write(p_doc: CompanyHoliday): BSONDocument = {
       BSONDocument(
-          "_id" -> companyholiday._id,
-          "n" -> companyholiday.n,
-          "d" -> companyholiday.d,
-          "ct" -> companyholiday.ct,
-          "st" -> companyholiday.st,
-          "fdat" -> companyholiday.fdat.map(date => BSONDateTime(date.getMillis)),
-          "tdat" -> companyholiday.tdat.map(date => BSONDateTime(date.getMillis)),
-          "sys" -> companyholiday.sys
+          "_id" -> p_doc._id,
+          "n" -> p_doc.n,
+          "d" -> p_doc.d,
+          "ct" -> p_doc.ct,
+          "st" -> p_doc.st,
+          "fdat" -> p_doc.fdat.map(date => BSONDateTime(date.getMillis)),
+          "tdat" -> p_doc.tdat.map(date => BSONDateTime(date.getMillis)),
+          "sys" -> p_doc.sys
       )     
     }
   }

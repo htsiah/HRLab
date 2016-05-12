@@ -42,92 +42,92 @@ object LeaveModel {
 
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object WorkflowBSONReader extends BSONDocumentReader[Workflow] {
-    def read(doc: BSONDocument): Workflow = {
+    def read(p_doc: BSONDocument): Workflow = {
       Workflow(
-          doc.getAs[String]("s").get,
-          doc.getAs[String]("aprid").get,
-          doc.getAs[String]("aprn").get
+          p_doc.getAs[String]("s").get,
+          p_doc.getAs[String]("aprid").get,
+          p_doc.getAs[String]("aprn").get
       )
     }
   }
     
   implicit object LeaveBSONReader extends BSONDocumentReader[Leave] {
-    def read(doc: BSONDocument): Leave = {
+    def read(p_doc: BSONDocument): Leave = {
       Leave(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[Int]("docnum").get,
-          doc.getAs[String]("pid").get,
-          doc.getAs[String]("pn").get,
-          doc.getAs[String]("lt").get,
-          doc.getAs[String]("dt").get,
-          doc.getAs[BSONDateTime]("fdat").map(dt => new DateTime(dt.value )),
-          doc.getAs[BSONDateTime]("tdat").map(dt => new DateTime(dt.value )),
-          doc.getAs[String]("r").get,
-          doc.getAs[Double]("uti").get,
-          doc.getAs[Double]("cfuti").get,
-          doc.getAs[Boolean]("ld").getOrElse(true),
-          doc.getAs[Workflow]("wf").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[Int]("docnum").get,
+          p_doc.getAs[String]("pid").get,
+          p_doc.getAs[String]("pn").get,
+          p_doc.getAs[String]("lt").get,
+          p_doc.getAs[String]("dt").get,
+          p_doc.getAs[BSONDateTime]("fdat").map(dt => new DateTime(dt.value )),
+          p_doc.getAs[BSONDateTime]("tdat").map(dt => new DateTime(dt.value )),
+          p_doc.getAs[String]("r").get,
+          p_doc.getAs[Double]("uti").get,
+          p_doc.getAs[Double]("cfuti").get,
+          p_doc.getAs[Boolean]("ld").getOrElse(true),
+          p_doc.getAs[Workflow]("wf").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
   
   implicit object WorkflowBSONWriter extends BSONDocumentWriter[Workflow] {
-    def write(wf: Workflow): BSONDocument = {
+    def write(p_doc: Workflow): BSONDocument = {
       BSONDocument(
-          "s" -> wf.s,
-          "aprid" -> wf.aprid,
-          "aprn" -> wf.aprn
+          "s" -> p_doc.s,
+          "aprid" -> p_doc.aprid,
+          "aprn" -> p_doc.aprn
       )     
     }
   }
   
   implicit object LeaveBSONWriter extends BSONDocumentWriter[Leave] {
-    def write(leave: Leave): BSONDocument = {
+    def write(p_doc: Leave): BSONDocument = {
       BSONDocument(
-          "_id" -> leave._id,
-          "docnum" -> leave.docnum,
-          "pid" -> leave.pid,
-          "pn" -> leave.pn,
-          "lt" -> leave.lt,
-          "dt" -> leave.dt,
-          "fdat" -> leave.fdat.map(date => BSONDateTime(date.getMillis)),
-          "tdat" -> leave.tdat.map(date => BSONDateTime(date.getMillis)),
-          "r" -> leave.r,
-          "uti" -> leave.uti,
-          "cfuti" -> leave.cfuti,
-          "ld" -> leave.ld,
-          "wf" -> leave.wf,
-          "sys" -> leave.sys
+          "_id" -> p_doc._id,
+          "docnum" -> p_doc.docnum,
+          "pid" -> p_doc.pid,
+          "pn" -> p_doc.pn,
+          "lt" -> p_doc.lt,
+          "dt" -> p_doc.dt,
+          "fdat" -> p_doc.fdat.map(date => BSONDateTime(date.getMillis)),
+          "tdat" -> p_doc.tdat.map(date => BSONDateTime(date.getMillis)),
+          "r" -> p_doc.r,
+          "uti" -> p_doc.uti,
+          "cfuti" -> p_doc.cfuti,
+          "ld" -> p_doc.ld,
+          "wf" -> p_doc.wf,
+          "sys" -> p_doc.sys
       )     
     }
   }

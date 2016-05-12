@@ -24,54 +24,54 @@ object AuthenticationModel {
   
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
     
   implicit object AuthenticationBSONReader extends BSONDocumentReader[Authentication] {
-    def read(doc: BSONDocument): Authentication = {
+    def read(p_doc: BSONDocument): Authentication = {
       Authentication(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("em").get,
-          doc.getAs[String]("p").get,
-          doc.getAs[String]("r").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("em").get,
+          p_doc.getAs[String]("p").get,
+          p_doc.getAs[String]("r").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
     
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
     
   implicit object AuthenticationBSONWriter extends BSONDocumentWriter[Authentication] {
-    def write(authentication: Authentication): BSONDocument = {
+    def write(p_doc: Authentication): BSONDocument = {
       BSONDocument(
-          "_id" -> authentication._id,
-          "em" -> authentication.em,
-          "p" -> authentication.p,
-          "r" -> authentication.r,
-          "sys" -> authentication.sys 
+          "_id" -> p_doc._id,
+          "em" -> p_doc.em,
+          "p" -> p_doc.p,
+          "r" -> p_doc.r,
+          "sys" -> p_doc.sys 
       )     
     }
   }

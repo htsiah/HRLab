@@ -22,22 +22,22 @@ object MonthlyLeaveProfileUpdateJob {
   
   // Use Reader to deserialize document automatically
   implicit object MonthlyLeaveProfileUpdateLogBSONReader extends BSONDocumentReader[MonthlyLeaveProfileUpdateLog] {
-    def read(doc: BSONDocument): MonthlyLeaveProfileUpdateLog = {
+    def read(p_doc: BSONDocument): MonthlyLeaveProfileUpdateLog = {
       MonthlyLeaveProfileUpdateLog(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("month").get,
-          doc.getAs[String]("year").get
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("month").get,
+          p_doc.getAs[String]("year").get
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object MonthlyLeaveProfileUpdateLogBSONWriter extends BSONDocumentWriter[MonthlyLeaveProfileUpdateLog] {
-    def write(monthlyleaveprofileupdatelog: MonthlyLeaveProfileUpdateLog): BSONDocument = {
+    def write(p_doc: MonthlyLeaveProfileUpdateLog): BSONDocument = {
       BSONDocument(
-          "_id" -> monthlyleaveprofileupdatelog._id,
-          "month" -> monthlyleaveprofileupdatelog.month,
-          "year" -> monthlyleaveprofileupdatelog.year
+          "_id" -> p_doc._id,
+          "month" -> p_doc.month,
+          "year" -> p_doc.year
       )     
     }
   }

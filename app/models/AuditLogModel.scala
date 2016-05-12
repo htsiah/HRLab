@@ -25,56 +25,56 @@ object AuditLogModel {
 
     // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object AuditLogBSONReader extends BSONDocumentReader[AuditLog] {
-    def read(doc: BSONDocument): AuditLog = {
+    def read(p_doc: BSONDocument): AuditLog = {
       AuditLog(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("pid").get,
-          doc.getAs[String]("pn").get,
-          doc.getAs[String]("lk").get,
-          doc.getAs[String]("c").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("pid").get,
+          p_doc.getAs[String]("pn").get,
+          p_doc.getAs[String]("lk").get,
+          p_doc.getAs[String]("c").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(doc: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> doc.eid,
-          "cdat" -> doc.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> doc.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> doc.mby,
-          "ddat" -> doc.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> doc.dby,
-          "ll" -> doc.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
   
   implicit object AuditLogBSONWriter extends BSONDocumentWriter[AuditLog] {
-    def write(doc: AuditLog): BSONDocument = {
+    def write(p_doc: AuditLog): BSONDocument = {
       BSONDocument(
-          "_id" -> doc._id,
-          "pid" -> doc.pid,
-          "pn" -> doc.pn,
-          "lk" -> doc.lk,
-          "c" -> doc.c,
-          "sys" -> doc.sys
+          "_id" -> p_doc._id,
+          "pid" -> p_doc.pid,
+          "pn" -> p_doc.pn,
+          "lk" -> p_doc.lk,
+          "c" -> p_doc.c,
+          "sys" -> p_doc.sys
       )     
     }
   }

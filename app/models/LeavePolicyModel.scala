@@ -54,128 +54,128 @@ object LeavePolicyModel {
 
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object LeavePolicySettingBSONReader extends BSONDocumentReader[LeavePolicySetting] {
-    def read(doc: BSONDocument): LeavePolicySetting = {
+    def read(p_doc: BSONDocument): LeavePolicySetting = {
       LeavePolicySetting(
-          doc.getAs[String]("g").get,
-          doc.getAs[String]("acc").get,
-          doc.getAs[String]("ms").get,
-          doc.getAs[String]("dt").get,
-          doc.getAs[Boolean]("nwd").get,
-          doc.getAs[Int]("cexp").get,
-          doc.getAs[Boolean]("scal").get,
-          doc.getAs[Boolean]("msd").getOrElse(false)
+          p_doc.getAs[String]("g").get,
+          p_doc.getAs[String]("acc").get,
+          p_doc.getAs[String]("ms").get,
+          p_doc.getAs[String]("dt").get,
+          p_doc.getAs[Boolean]("nwd").get,
+          p_doc.getAs[Int]("cexp").get,
+          p_doc.getAs[Boolean]("scal").get,
+          p_doc.getAs[Boolean]("msd").getOrElse(false)
       )
     }
   }
   
   implicit object EntitlementBSONReader extends BSONDocumentReader[Entitlement] {
-    def read(doc: BSONDocument): Entitlement = {
+    def read(p_doc: BSONDocument): Entitlement = {
       Entitlement(
-          doc.getAs[Int]("e1").get,
-          doc.getAs[Int]("e1_s").get,
-          doc.getAs[Int]("e1_cf").get,
-          doc.getAs[Int]("e2").get,
-          doc.getAs[Int]("e2_s").get,
-          doc.getAs[Int]("e2_cf").get,
-          doc.getAs[Int]("e3").get,
-          doc.getAs[Int]("e3_s").get,
-          doc.getAs[Int]("e3_cf").get,
-          doc.getAs[Int]("e4").get,
-          doc.getAs[Int]("e4_s").get,
-          doc.getAs[Int]("e4_cf").get,
-          doc.getAs[Int]("e5").get,
-          doc.getAs[Int]("e5_s").get,
-          doc.getAs[Int]("e5_cf").get
+          p_doc.getAs[Int]("e1").get,
+          p_doc.getAs[Int]("e1_s").get,
+          p_doc.getAs[Int]("e1_cf").get,
+          p_doc.getAs[Int]("e2").get,
+          p_doc.getAs[Int]("e2_s").get,
+          p_doc.getAs[Int]("e2_cf").get,
+          p_doc.getAs[Int]("e3").get,
+          p_doc.getAs[Int]("e3_s").get,
+          p_doc.getAs[Int]("e3_cf").get,
+          p_doc.getAs[Int]("e4").get,
+          p_doc.getAs[Int]("e4_s").get,
+          p_doc.getAs[Int]("e4_cf").get,
+          p_doc.getAs[Int]("e5").get,
+          p_doc.getAs[Int]("e5_s").get,
+          p_doc.getAs[Int]("e5_cf").get
       )
     }
   }
   
   implicit object LeavePolicyBSONReader extends BSONDocumentReader[LeavePolicy] {
-    def read(doc: BSONDocument): LeavePolicy = {
+    def read(p_doc: BSONDocument): LeavePolicy = {
       LeavePolicy(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("lt").get,
-          doc.getAs[LeavePolicySetting]("set").get,
-          doc.getAs[Entitlement]("ent").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("lt").get,
+          p_doc.getAs[LeavePolicySetting]("set").get,
+          p_doc.getAs[Entitlement]("ent").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
     
   implicit object LeavePolicySettingBSONWriter extends BSONDocumentWriter[LeavePolicySetting] {
-    def write(leavepolicysetting: LeavePolicySetting): BSONDocument = {
+    def write(p_doc: LeavePolicySetting): BSONDocument = {
       BSONDocument(
-          "g" -> leavepolicysetting.g,
-          "acc" -> leavepolicysetting.acc,
-          "ms" -> leavepolicysetting.ms,
-          "dt" -> leavepolicysetting.dt,
-          "nwd" -> leavepolicysetting.nwd,
-          "cexp" -> leavepolicysetting.cexp,
-          "scal" -> leavepolicysetting.scal,
-          "msd" -> leavepolicysetting.msd
+          "g" -> p_doc.g,
+          "acc" -> p_doc.acc,
+          "ms" -> p_doc.ms,
+          "dt" -> p_doc.dt,
+          "nwd" -> p_doc.nwd,
+          "cexp" -> p_doc.cexp,
+          "scal" -> p_doc.scal,
+          "msd" -> p_doc.msd
       )     
     }
   }
   
   implicit object EntitlementBSONWriter extends BSONDocumentWriter[Entitlement] {
-    def write(entitlement: Entitlement): BSONDocument = {
+    def write(p_doc: Entitlement): BSONDocument = {
       BSONDocument(
-          "e1" -> entitlement.e1,
-          "e1_s" -> entitlement.e1_s,
-          "e1_cf" -> entitlement.e1_cf,
-          "e2" -> entitlement.e2,
-          "e2_s" -> entitlement.e2_s,
-          "e2_cf" -> entitlement.e2_cf,
-          "e3" -> entitlement.e3,
-          "e3_s" -> entitlement.e3_s,
-          "e3_cf" -> entitlement.e3_cf,
-          "e4" -> entitlement.e4,
-          "e4_s" -> entitlement.e4_s,
-          "e4_cf" -> entitlement.e4_cf,
-          "e5" -> entitlement.e5,
-          "e5_s" -> entitlement.e5_s,
-          "e5_cf" -> entitlement.e5_cf
+          "e1" -> p_doc.e1,
+          "e1_s" -> p_doc.e1_s,
+          "e1_cf" -> p_doc.e1_cf,
+          "e2" -> p_doc.e2,
+          "e2_s" -> p_doc.e2_s,
+          "e2_cf" -> p_doc.e2_cf,
+          "e3" -> p_doc.e3,
+          "e3_s" -> p_doc.e3_s,
+          "e3_cf" -> p_doc.e3_cf,
+          "e4" -> p_doc.e4,
+          "e4_s" -> p_doc.e4_s,
+          "e4_cf" -> p_doc.e4_cf,
+          "e5" -> p_doc.e5,
+          "e5_s" -> p_doc.e5_s,
+          "e5_cf" -> p_doc.e5_cf
       )     
     }
   }
   
   implicit object LeavePolicyBSONWriter extends BSONDocumentWriter[LeavePolicy] {
-    def write(leavepolicy: LeavePolicy): BSONDocument = {
+    def write(p_doc: LeavePolicy): BSONDocument = {
       BSONDocument(
-          "_id" -> leavepolicy._id,
-          "lt" -> leavepolicy.lt,
-          "set" -> leavepolicy.set,
-          "ent" -> leavepolicy.ent,
-          "sys" -> leavepolicy.sys
+          "_id" -> p_doc._id,
+          "lt" -> p_doc.lt,
+          "set" -> p_doc.set,
+          "ent" -> p_doc.ent,
+          "sys" -> p_doc.sys
       )     
     }
   }

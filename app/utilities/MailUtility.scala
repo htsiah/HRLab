@@ -28,27 +28,27 @@ object MailUtility {
   
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object MailTemplateBSONReader extends BSONDocumentReader[MailTemplate] {
-    def read(doc: BSONDocument): MailTemplate = {
+    def read(p_doc: BSONDocument): MailTemplate = {
       MailTemplate(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[BSONInteger]("k").get.value,
-          doc.getAs[String]("s").get,
-          doc.getAs[String]("b").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[BSONInteger]("k").get.value,
+          p_doc.getAs[String]("s").get,
+          p_doc.getAs[String]("b").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }

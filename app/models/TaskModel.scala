@@ -26,58 +26,58 @@ object TaskModel {
   
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object TaskBSONReader extends BSONDocumentReader[Task] {
-    def read(doc: BSONDocument): Task = {
+    def read(p_doc: BSONDocument): Task = {
       Task(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("pid").get,
-          doc.getAs[String]("lk").get,
-          doc.getAs[String]("ct").get,
-          doc.getAs[String]("bt").get,
-          doc.getAs[Boolean]("cf").getOrElse(false),
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("pid").get,
+          p_doc.getAs[String]("lk").get,
+          p_doc.getAs[String]("ct").get,
+          p_doc.getAs[String]("bt").get,
+          p_doc.getAs[Boolean]("cf").getOrElse(false),
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
   
   implicit object TaskBSONWriter extends BSONDocumentWriter[Task] {
-    def write(task: Task): BSONDocument = {
+    def write(p_doc: Task): BSONDocument = {
       BSONDocument(
-          "_id" -> task._id,
-          "pid" -> task.pid,
-          "lk" -> task.lk,
-          "ct" -> task.ct,
-          "bt" -> task.bt,
-          "cf" -> task.cf,
-          "sys" -> task.sys
+          "_id" -> p_doc._id,
+          "pid" -> p_doc.pid,
+          "lk" -> p_doc.lk,
+          "ct" -> p_doc.ct,
+          "bt" -> p_doc.bt,
+          "cf" -> p_doc.cf,
+          "sys" -> p_doc.sys
       )     
     }
   }

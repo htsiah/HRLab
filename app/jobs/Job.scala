@@ -23,24 +23,24 @@ object Job {
   
   // Use Reader to deserialize document automatically
   implicit object JobBSONReader extends BSONDocumentReader[Job] {
-    def read(doc: BSONDocument): Job = {
+    def read(p_doc: BSONDocument): Job = {
       Job(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("_id").get,
-          doc.getAs[BSONDateTime]("sdat").map(dt => new DateTime(dt.value )),
-          doc.getAs[BSONDateTime]("edat").map(dt => new DateTime(dt.value ))
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("_id").get,
+          p_doc.getAs[BSONDateTime]("sdat").map(dt => new DateTime(dt.value )),
+          p_doc.getAs[BSONDateTime]("edat").map(dt => new DateTime(dt.value ))
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object JobBSONWriter extends BSONDocumentWriter[Job] {
-    def write(job: Job): BSONDocument = {
+    def write(p_doc: Job): BSONDocument = {
       BSONDocument(
-          "_id" -> job._id,
-          "n" -> job.n,
-          "sdat" -> job.sdat.map(date => BSONDateTime(date.getMillis)),
-          "edat" -> job.edat.map(date => BSONDateTime(date.getMillis))
+          "_id" -> p_doc._id,
+          "n" -> p_doc.n,
+          "sdat" -> p_doc.sdat.map(date => BSONDateTime(date.getMillis)),
+          "edat" -> p_doc.edat.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }

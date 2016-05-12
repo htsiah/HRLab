@@ -26,31 +26,31 @@ object DbLoggerUtility {
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "_eid" -> system.eid,
-          "_cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "_mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "_mby" -> system.mby,
-          "_ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "_dby" -> system.dby
+          "_eid" -> p_doc.eid,
+          "_cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "_mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "_mby" -> p_doc.mby,
+          "_ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "_dby" -> p_doc.dby
       )     
     }
   }
     
   implicit object DbLoggerBSONWriter extends BSONDocumentWriter[DbLogger] {
-    def write(dblogger: DbLogger): BSONDocument = {
+    def write(p_doc: DbLogger): BSONDocument = {
       BSONDocument(
-          "_id" -> dblogger._id,
-          "a" -> dblogger.a,
-          "r" -> dblogger.r,
-          "pe" -> dblogger.pe,
-          "mh" -> dblogger.mh,
-          "p" -> dblogger.p,
-          "ra" -> dblogger.ra,
-          "b" -> dblogger.b,
-          "m" -> dblogger.m,
-          "sys" -> dblogger.sys 
+          "_id" -> p_doc._id,
+          "a" -> p_doc.a,
+          "r" -> p_doc.r,
+          "pe" -> p_doc.pe,
+          "mh" -> p_doc.mh,
+          "p" -> p_doc.p,
+          "ra" -> p_doc.ra,
+          "b" -> p_doc.b,
+          "m" -> p_doc.m,
+          "sys" -> p_doc.sys 
       )     
     }
   }

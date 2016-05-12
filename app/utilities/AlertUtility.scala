@@ -21,27 +21,27 @@ object AlertUtility {
 
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object AuthenticationBSONReader extends BSONDocumentReader[Alert] {
-    def read(doc: BSONDocument): Alert = {
+    def read(p_doc: BSONDocument): Alert = {
       Alert(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[BSONInteger]("k").get.value,
-          doc.getAs[String]("m").get,
-          doc.getAs[String]("js").map(v => v),
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[BSONInteger]("k").get.value,
+          p_doc.getAs[String]("m").get,
+          p_doc.getAs[String]("js").map(v => v),
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }

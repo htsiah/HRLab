@@ -51,118 +51,118 @@ object PersonModel {
   
   // Use Reader to deserialize document automatically
   implicit object PersonBSONReader extends BSONDocumentReader[Person] {
-    def read(doc: BSONDocument): Person = {
+    def read(p_doc: BSONDocument): Person = {
       Person(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[Profile]("p").get,
-          doc.getAs[Workday]("wd").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[Profile]("p").get,
+          p_doc.getAs[Workday]("wd").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   implicit object ProfileBSONReader extends BSONDocumentReader[Profile] {
-    def read(doc: BSONDocument): Profile = {
+    def read(p_doc: BSONDocument): Profile = {
       Profile(
-          doc.getAs[String]("fn").get,
-          doc.getAs[String]("ln").get,
-          doc.getAs[String]("em").get,
-          doc.getAs[Boolean]("nem").getOrElse(false),
-          doc.getAs[String]("pt").get,
-          doc.getAs[String]("mgrid").get,
-          doc.getAs[String]("g").get,
-          doc.getAs[String]("ms").get,
-          doc.getAs[String]("dpm").get,
-          doc.getAs[String]("off").get,
-          doc.getAs[BSONDateTime]("edat").map(dt => new DateTime(dt.value )),
-          doc.getAs[List[String]]("rl").get
+          p_doc.getAs[String]("fn").get,
+          p_doc.getAs[String]("ln").get,
+          p_doc.getAs[String]("em").get,
+          p_doc.getAs[Boolean]("nem").getOrElse(false),
+          p_doc.getAs[String]("pt").get,
+          p_doc.getAs[String]("mgrid").get,
+          p_doc.getAs[String]("g").get,
+          p_doc.getAs[String]("ms").get,
+          p_doc.getAs[String]("dpm").get,
+          p_doc.getAs[String]("off").get,
+          p_doc.getAs[BSONDateTime]("edat").map(dt => new DateTime(dt.value )),
+          p_doc.getAs[List[String]]("rl").get
       )
     }
   }
   
   implicit object WorkdayBSONReader extends BSONDocumentReader[Workday] {
-    def read(doc: BSONDocument): Workday = {
+    def read(p_doc: BSONDocument): Workday = {
       Workday(
-          doc.getAs[Boolean]("wd1").getOrElse(true),
-          doc.getAs[Boolean]("wd2").getOrElse(true),
-          doc.getAs[Boolean]("wd3").getOrElse(true),
-          doc.getAs[Boolean]("wd4").getOrElse(true),
-          doc.getAs[Boolean]("wd5").getOrElse(true),
-          doc.getAs[Boolean]("wd6").getOrElse(false),
-          doc.getAs[Boolean]("wd7").getOrElse(false)  
+          p_doc.getAs[Boolean]("wd1").getOrElse(true),
+          p_doc.getAs[Boolean]("wd2").getOrElse(true),
+          p_doc.getAs[Boolean]("wd3").getOrElse(true),
+          p_doc.getAs[Boolean]("wd4").getOrElse(true),
+          p_doc.getAs[Boolean]("wd5").getOrElse(true),
+          p_doc.getAs[Boolean]("wd6").getOrElse(false),
+          p_doc.getAs[Boolean]("wd7").getOrElse(false)  
       )
     }
   }
   
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object PersonBSONWriter extends BSONDocumentWriter[Person] {
-    def write(person: Person): BSONDocument = {
+    def write(p_doc: Person): BSONDocument = {
       BSONDocument(
-          "_id" -> person._id,
-          "p" -> person.p,
-          "wd" -> person.wd,
-          "sys" -> person.sys
+          "_id" -> p_doc._id,
+          "p" -> p_doc.p,
+          "wd" -> p_doc.wd,
+          "sys" -> p_doc.sys
       )     
     }
   }
   
   implicit object ProfileBSONWriter extends BSONDocumentWriter[Profile] {
-    def write(profile: Profile): BSONDocument = {
+    def write(p_doc: Profile): BSONDocument = {
       BSONDocument(
-          "fn" -> profile.fn,
-          "ln" -> profile.ln,
-          "em" -> profile.em,
-          "nem" -> profile.nem,
-          "pt" -> profile.pt,
-          "mgrid" -> profile.mgrid,
-          "g" -> profile.g,
-          "ms" -> profile.ms,
-          "dpm" -> profile.dpm,
-          "off" -> profile.off,
-          "edat" -> profile.edat.map(date => BSONDateTime(date.getMillis)),
-          "rl" -> profile.rl
+          "fn" -> p_doc.fn,
+          "ln" -> p_doc.ln,
+          "em" -> p_doc.em,
+          "nem" -> p_doc.nem,
+          "pt" -> p_doc.pt,
+          "mgrid" -> p_doc.mgrid,
+          "g" -> p_doc.g,
+          "ms" -> p_doc.ms,
+          "dpm" -> p_doc.dpm,
+          "off" -> p_doc.off,
+          "edat" -> p_doc.edat.map(date => BSONDateTime(date.getMillis)),
+          "rl" -> p_doc.rl
       )     
     }
   }
   
   implicit object WorkdayBSONWriter extends BSONDocumentWriter[Workday] {
-    def write(workday: Workday): BSONDocument = {
+    def write(p_doc: Workday): BSONDocument = {
       BSONDocument(
-          "wd1" -> workday.wd1,
-          "wd2" -> workday.wd2,
-          "wd3" -> workday.wd3,
-          "wd4" -> workday.wd4,
-          "wd5" -> workday.wd5,
-          "wd6" -> workday.wd6,
-          "wd7" -> workday.wd7
+          "wd1" -> p_doc.wd1,
+          "wd2" -> p_doc.wd2,
+          "wd3" -> p_doc.wd3,
+          "wd4" -> p_doc.wd4,
+          "wd5" -> p_doc.wd5,
+          "wd6" -> p_doc.wd6,
+          "wd7" -> p_doc.wd7
       )     
     }
   }
     
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }

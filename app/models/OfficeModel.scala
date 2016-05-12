@@ -29,64 +29,64 @@ object OfficeModel {
 
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
-    def read(doc: BSONDocument): System = {
+    def read(p_doc: BSONDocument): System = {
       System(
-          doc.getAs[String]("eid").map(v => v),
-          doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("mby").map(v => v),
-          doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
-          doc.getAs[String]("dby").map(v => v),
-          doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
+          p_doc.getAs[String]("eid").map(v => v),
+          p_doc.getAs[BSONDateTime]("cdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[BSONDateTime]("mdat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("mby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ddat").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("dby").map(v => v),
+          p_doc.getAs[BSONDateTime]("ll").map(dt => new DateTime(dt.value))
       )
     }
   }
   
   implicit object OfficeBSONReader extends BSONDocumentReader[Office] {
-    def read(doc: BSONDocument): Office = {
+    def read(p_doc: BSONDocument): Office = {
       Office(
-          doc.getAs[BSONObjectID]("_id").get,
-          doc.getAs[String]("n").get,
-          doc.getAs[String]("ad1").map(v => v),
-          doc.getAs[String]("ad2").map(v => v),
-          doc.getAs[String]("ad3").map(v => v),
-          doc.getAs[String]("pc").map(v => v),
-          doc.getAs[String]("ct").get,
-          doc.getAs[String]("st").get,
-          doc.getAs[Boolean]("df").get,
-          doc.getAs[System]("sys").map(o => o)
+          p_doc.getAs[BSONObjectID]("_id").get,
+          p_doc.getAs[String]("n").get,
+          p_doc.getAs[String]("ad1").map(v => v),
+          p_doc.getAs[String]("ad2").map(v => v),
+          p_doc.getAs[String]("ad3").map(v => v),
+          p_doc.getAs[String]("pc").map(v => v),
+          p_doc.getAs[String]("ct").get,
+          p_doc.getAs[String]("st").get,
+          p_doc.getAs[Boolean]("df").get,
+          p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
   // Use Writer to serialize document automatically
   implicit object SystemBSONWriter extends BSONDocumentWriter[System] {
-    def write(system: System): BSONDocument = {
+    def write(p_doc: System): BSONDocument = {
       BSONDocument(
-          "eid" -> system.eid,
-          "cdat" -> system.cdat.map(date => BSONDateTime(date.getMillis)),
-          "mdat" -> system.mdat.map(date => BSONDateTime(date.getMillis)),
-          "mby" -> system.mby,
-          "ddat" -> system.ddat.map(date => BSONDateTime(date.getMillis)),
-          "dby" -> system.dby,
-          "ll" -> system.ll.map(date => BSONDateTime(date.getMillis))
+          "eid" -> p_doc.eid,
+          "cdat" -> p_doc.cdat.map(date => BSONDateTime(date.getMillis)),
+          "mdat" -> p_doc.mdat.map(date => BSONDateTime(date.getMillis)),
+          "mby" -> p_doc.mby,
+          "ddat" -> p_doc.ddat.map(date => BSONDateTime(date.getMillis)),
+          "dby" -> p_doc.dby,
+          "ll" -> p_doc.ll.map(date => BSONDateTime(date.getMillis))
       )     
     }
   }
     
   implicit object OfficeBSONWriter extends BSONDocumentWriter[Office] {
-    def write(office: Office): BSONDocument = {
+    def write(p_doc: Office): BSONDocument = {
       BSONDocument(
-          "_id" -> office._id,
-          "n" -> office.n,
-          "ad1" -> office.ad1,
-          "ad2" -> office.ad2,
-          "ad3" -> office.ad3,
-          "pc" -> office.pc,
-          "ct" -> office.ct,
-          "st" -> office.st,
-          "df" -> office.df,
-          "sys" -> office.sys
+          "_id" -> p_doc._id,
+          "n" -> p_doc.n,
+          "ad1" -> p_doc.ad1,
+          "ad2" -> p_doc.ad2,
+          "ad3" -> p_doc.ad3,
+          "pc" -> p_doc.pc,
+          "ct" -> p_doc.ct,
+          "st" -> p_doc.st,
+          "df" -> p_doc.df,
+          "sys" -> p_doc.sys
       )     
     }
   }
