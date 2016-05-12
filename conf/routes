@@ -125,7 +125,7 @@ GET 	/office/create						controllers.OfficeController.create
 POST	/office/insert						controllers.OfficeController.insert
 GET		/office/edit/:p_id					controllers.OfficeController.edit(p_id:String)
 POST	/office/update						controllers.OfficeController.update(p_id:String)
-GET		/office/delete/:p_officename		controllers.OfficeController.delete(p_officename:String)
+GET		/office/delete/:p_id				controllers.OfficeController.delete(p_id:String)
 GET		/office/view						controllers.OfficeController.view(p_id:String)
 GET		/office/checkoffice					controllers.OfficeController.checkoffice(p_id:String, p_officename:String)
 GET		/office/isUsedJSON/:p_officename	controllers.OfficeController.isUsedJSON(p_officename:String)

@@ -10,7 +10,7 @@ import play.api.data.format.Formats._
 
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{KeywordModel,Keyword}
+import models.{KeywordModel,Keyword,AuditLogModel}
 import utilities.System
 
 import reactivemongo.api._
@@ -76,6 +76,7 @@ class KeywordController extends Controller with Secured {
           },
           formWithData => {
             KeywordModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
             Future.successful(Redirect(routes.KeywordController.index))
           }
       )

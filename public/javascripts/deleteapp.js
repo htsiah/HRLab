@@ -3,7 +3,7 @@
 function delApp() {
 	
 	bootbox.dialog({
-        title: "<i class='ace-icon fa fa-warning red'></i> Delete Application (" + $("#header-company-name").text() + ")",
+        title: "<div class='blue'><i class='ace-icon fa fa-warning red'></i> Delete Application (" + $("#header-company-name").text() + ")</div>",
         title_html: true,
         message: '<span class="help-block">Deleting your HR Application is irreversible. Enter your company name below to confirm you want to permanently delete it.</span>' +
         '<input id="company" name="company" type="text" class="form-control">',

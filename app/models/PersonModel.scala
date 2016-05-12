@@ -261,8 +261,9 @@ object PersonModel {
             p_request
         ).map(leavepolicies => {
           leavepolicies.map( leavepolicy => {
+            val doc_objectID = BSONObjectID.generate
             val leaveprofile_doc = LeaveProfileModel.doc.copy(
-                _id = BSONObjectID.generate,
+                _id = doc_objectID,
                 pid = p_doc._id.stringify,
                 pn = p_doc.p.fn + " " + p_doc.p.ln,
                 lt = leavepolicy.lt,
@@ -285,6 +286,7 @@ object PersonModel {
                 )
             )
             LeaveProfileModel.insert(leaveprofile_doc, p_eid, p_request)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid="", pn="System", lk=doc_objectID.stringify, c="Create document."), p_request=p_request)
           })
         })
       }
@@ -312,8 +314,9 @@ object PersonModel {
             )
         ).map(configleavepolicies => {
           configleavepolicies.map( configleavepolicy => {
+            val leaveprofile_objectID = BSONObjectID.generate
             val leaveprofile_doc = LeaveProfileModel.doc.copy(
-                _id = BSONObjectID.generate,
+                _id = leaveprofile_objectID,
                 pid = p_doc._id.stringify,
                 pn = p_doc.p.fn + " " + p_doc.p.ln,
                 lt = configleavepolicy.lt,
@@ -336,6 +339,7 @@ object PersonModel {
                 )
             )
             LeaveProfileModel.insert(leaveprofile_doc, p_eid)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=leaveprofile_objectID.stringify, c="Create document."), p_eid=p_eid)
           })
         })
       }

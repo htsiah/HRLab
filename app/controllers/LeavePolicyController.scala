@@ -11,7 +11,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeavePolicyModel, KeywordModel, Keyword, LeavePolicy, LeavePolicySetting, Entitlement, LeaveProfileModel, LeaveModel, PersonModel}
+import models.{LeavePolicyModel, KeywordModel, Keyword, LeavePolicy, LeavePolicySetting, Entitlement, LeaveProfileModel, LeaveModel, PersonModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools}
 
 import reactivemongo.api._
@@ -115,10 +115,11 @@ class LeavePolicyController extends Controller with Secured {
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1004))
             } yield {
               if (maybe_unique) {
+                val doc_objectID = BSONObjectID.generate
                 val eligbleleaveentitlement = LeavePolicyModel.sortEligbleLeaveEntitlement(formWithData, request)
                 LeavePolicyModel.insert(
                     formWithData.copy(
-                        _id=BSONObjectID.generate, 
+                        _id=doc_objectID, 
                         ent=Entitlement(
                             e1_s=eligbleleaveentitlement(0)(0),
                             e1=eligbleleaveentitlement(0)(1),
@@ -139,6 +140,7 @@ class LeavePolicyController extends Controller with Secured {
                     ),
                     p_request=request
                 )
+                AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create document."), p_request=request)
                 Redirect(routes.LeaveSettingController.index)
               } else {
                 val leavetypes = maybe_leavetypes.getOrElse(KeywordModel.doc)
@@ -210,10 +212,10 @@ class LeavePolicyController extends Controller with Secured {
                         e5=eligbleleaveentitlement(4)(1),
                         e5_cf=eligbleleaveentitlement(4)(2)
                     )
-                    
                 ), 
                 request
             )
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
             Future.successful(Redirect(routes.LeaveSettingController.index))
           }
       )
@@ -226,14 +228,14 @@ class LeavePolicyController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       // Delete leave policy
       Await.result(LeavePolicyModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
+      AuditLogModel.remove(BSONDocument("lk"->p_id), request)
       LeaveProfileModel.find(BSONDocument("lt" -> p_lt), request).map { leaveprofiles => 
         leaveprofiles.map { leaveprofile => {
-          PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(leaveprofile.pid)), request).map { person =>
-            // Delete leave profile
-            LeaveProfileModel.remove(BSONDocument("_id" -> leaveprofile._id), request)
-            // Lockdown leave
-            LeaveModel.setLockDown(BSONDocument("pid" -> leaveprofile.pid, "lt" -> leaveprofile.lt), request)
-          }
+          // Delete leave profile          
+          LeaveProfileModel.remove(BSONDocument("_id" -> leaveprofile._id), request)
+          AuditLogModel.remove(BSONDocument("lk"->leaveprofile._id), request)
+          // Lockdown leave
+          LeaveModel.setLockDown(BSONDocument("pid" -> leaveprofile.pid, "lt" -> leaveprofile.lt), request)
         } }
       }
       Future.successful(Redirect(routes.LeaveSettingController.index))

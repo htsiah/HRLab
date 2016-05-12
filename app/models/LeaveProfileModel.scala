@@ -896,4 +896,20 @@ object LeaveProfileModel {
     }
   }
   
+  // Soft deletion by setting deletion flag in document on leave profile and audit log.
+  def removeWithAuditLog(p_query:BSONDocument, p_request:RequestHeader) = {
+    for {
+      docs <- this.find(p_query, p_request)
+    } yield {
+      docs.map { doc => 
+        val future = col.update(BSONDocument("_id" -> doc._id, "sys.ddat"->BSONDocument("$exists"->false)), doc.copy(sys = SystemDataStore.setDeletionFlag(this.updateSystem(doc), p_request)))
+        AuditLogModel.remove(BSONDocument("lk"->doc._id.stringify), p_request)
+        future.onComplete {
+          case Failure(e) => throw e
+          case Success(lastError) => {}
+        }
+      }
+    }
+  }
+  
 }

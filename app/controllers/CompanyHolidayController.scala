@@ -11,7 +11,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{CompanyHolidayModel, CompanyHoliday}
+import models.{CompanyHolidayModel, AuditLogModel, CompanyHoliday}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
@@ -62,7 +62,9 @@ class CompanyHolidayController extends Controller with Secured {
             }) 
           },
           formWithData => {
-            CompanyHolidayModel.insert(formWithData.copy(_id=BSONObjectID.generate), p_request=request)
+            val doc_objectID = BSONObjectID.generate
+            CompanyHolidayModel.insert(formWithData.copy(_id=doc_objectID), p_request=request)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create document."), p_request=request)
             Future.successful(Redirect(routes.CalendarController.company))
           }
       )
@@ -85,7 +87,7 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
   
-  def update(id:String) = withAuth { username => implicit request => {
+  def update(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       companyholidayform.bindFromRequest.fold(
         formWithError => {
@@ -94,7 +96,8 @@ class CompanyHolidayController extends Controller with Secured {
           }) 
         },
         formWithData => {
-          CompanyHolidayModel.update(BSONDocument("_id" -> BSONObjectID(id)), formWithData.copy(_id=BSONObjectID(id)), request)
+          CompanyHolidayModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
+          AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)  
           Future.successful(Redirect(routes.CalendarController.company))
         }
       )
@@ -106,6 +109,7 @@ class CompanyHolidayController extends Controller with Secured {
   def delete(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(CompanyHolidayModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
+      AuditLogModel.remove(BSONDocument("lk"->p_id), request)
       Future.successful(Redirect(request.session.get("path").getOrElse(routes.DashboardController.index).toString))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -136,7 +140,7 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
   
-  def myprofileupdate(id:String) = withAuth { username => implicit request => {
+  def myprofileupdate(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       companyholidayform.bindFromRequest.fold(
           formWithError => {
@@ -145,7 +149,8 @@ class CompanyHolidayController extends Controller with Secured {
             }) 
           },
           formWithData => {
-            CompanyHolidayModel.update(BSONDocument("_id" -> BSONObjectID(id)), formWithData.copy(_id=BSONObjectID(id)), request)
+            CompanyHolidayModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
             Future.successful(Redirect(routes.DashboardController.index))
           }
       )

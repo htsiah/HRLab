@@ -339,6 +339,7 @@ object LeaveModel {
       leaves.map { leave => {
         this.update(BSONDocument("_id"->leave._id), leave.copy(ld=true))
         TaskModel.remove(BSONDocument("lk"->leave._id.stringify))
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=leave._id.stringify, c="Lock document. No action can be performed further."), leave.sys.get.eid.get)
       }}
     }
   }
@@ -349,6 +350,7 @@ object LeaveModel {
       leaves.map { leave => {
         this.update(BSONDocument("_id"->leave._id), leave.copy(ld=true), p_request)
         TaskModel.remove(BSONDocument("lk"->leave._id.stringify), p_request)
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=p_request.session.get("id").get, pn=p_request.session.get("name").get, lk=leave._id.stringify, c="Lock document. No action can be performed further."), p_request=p_request)
       }}
     }
   }

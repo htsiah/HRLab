@@ -15,6 +15,7 @@
 
 @inlinejs = {
 	<script src="@routes.Assets.at("javascripts/keyword.form.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/common.auditlog.js")" type="text/javascript"></script>
 }
 
 @pluginstyle = {}
@@ -23,6 +24,7 @@
 
 @buttons = {
 	<a href="javascript:$('#keywordForm').submit()" class="btn btn-sm btn btn-block">Save</a>
+	<a href="javascript:displayAuditLog('@oid')" class="btn btn-sm btn btn-block">Audit Log</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
 

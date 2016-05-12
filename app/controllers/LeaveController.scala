@@ -17,7 +17,7 @@ import play.modules.reactivemongo.{
 }
 import play.modules.reactivemongo.json._
 
-import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel}
+import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.api._
@@ -127,14 +127,19 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
 	                           
               // Add Leave
+              val leave_objectID = BSONObjectID.generate
               val leave_update = if (carryforward_bal <= 0) 
-                formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration, cfuti = 0)
+                formWithData.copy(_id = leave_objectID, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration, cfuti = 0)
                 else if (carryforward_bal >= appliedduration)
                   formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = 0, cfuti = appliedduration)
                   else
                     formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
                     
               LeaveModel.insert(leave_update, p_request=request)
+              
+              // Insert Audit Log
+              AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=leave_objectID.stringify, c="Apply leave request."), p_request=request)
+              
               // Update leave profile
               val leaveprofile_update = maybeleaveprofile.get.copy(
                   cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr + leave_update.uti + leave_update.cfuti)
@@ -226,6 +231,9 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                       
         LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
         
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Approve leave request."), p_request=request)
+        
         // Update leave profile
         val leaveprofile_update = if (carryforward_bal <= 0) 
           maybeleaveprofile.get.copy(
@@ -294,6 +302,9 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy( s = "Rejected"))
         LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
         
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject leave request."), p_request=request)
+        
         // Update leave profile
         val leaveprofile_update = maybeleaveprofile.get.copy(
             cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr - leave_update.uti - leave_update.cfuti)
@@ -340,6 +351,9 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         // Update Leave
         val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy( s = "Cancelled"))
         LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
+        
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Cancel leave request."), p_request=request)
         
         if (maybeleave.get.wf.s=="Approved") {
           // Update Leave Profile

@@ -16,7 +16,7 @@ import play.modules.reactivemongo.json._
 
 import scala.concurrent.{Future, Await}
 
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, CompanyHolidayModel, LeavePolicyModel, LeaveProfileModel, LeaveSettingModel, LeaveModel, CompanyModel, TaskModel, LeaveFileModel}
+import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, CompanyHolidayModel, LeavePolicyModel, LeaveProfileModel, LeaveSettingModel, LeaveModel, CompanyModel, TaskModel, LeaveFileModel, AuditLogModel}
 import utilities.{MailUtility, Tools}
 
 import reactivemongo.api._
@@ -68,6 +68,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
             KeywordModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             CompanyHolidayModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             TaskModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
+            AuditLogModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity").get, "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]().map { files =>
               val filesWithId = files.map { file => {
                 LeaveFileModel.gridFS.files.update(

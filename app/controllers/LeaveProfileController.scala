@@ -12,7 +12,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel}
+import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools}
 
 import reactivemongo.api._
@@ -146,11 +146,12 @@ class LeaveProfileController extends Controller with Secured {
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1005))
             } yield {
               if (leaveprofileunique) {
+                val doc_objectID = BSONObjectID.generate
                 val eligbleleaveentitlement = LeaveProfileModel.sortEligbleLeaveEntitlement(formWithData, request)
                 Await.result(
                   LeaveProfileModel.insert(                  
                       formWithData.copy(
-                          _id=BSONObjectID.generate, 
+                          _id=doc_objectID, 
                           set_ent=Entitlement(
                               e1_s=eligbleleaveentitlement(0)(0),
                               e1=eligbleleaveentitlement(0)(1),
@@ -172,6 +173,7 @@ class LeaveProfileController extends Controller with Secured {
                       p_request=request),
                   Tools.db_timeout
                 )
+                AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create document."), p_request=request)
                 Redirect(routes.PersonController.view(p_pid))
               } else {
                 val replaceMap = Map(
@@ -246,6 +248,7 @@ class LeaveProfileController extends Controller with Secured {
                   request),
                 Tools.db_timeout
             )
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
             Future.successful(Redirect(routes.PersonController.view(formWithData.pid)))
           }
       )
@@ -258,6 +261,7 @@ class LeaveProfileController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(LeaveProfileModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
       LeaveModel.setLockDown(BSONDocument("pid" -> p_pid, "lt" -> p_lt), request)
+      AuditLogModel.remove(BSONDocument("lk"->p_id), request)
       Future.successful(Redirect(routes.PersonController.view(p_pid)))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -326,11 +330,12 @@ class LeaveProfileController extends Controller with Secured {
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1005))
             } yield {
               if (leaveprofileunique) {
+                val doc_objectID = BSONObjectID.generate
                 val eligbleleaveentitlement = LeaveProfileModel.sortEligbleLeaveEntitlement(formWithData, request)
                 Await.result(
                   LeaveProfileModel.insert(                  
                       formWithData.copy(
-                          _id=BSONObjectID.generate, 
+                          _id=doc_objectID, 
                           set_ent=Entitlement(
                               e1_s=eligbleleaveentitlement(0)(0),
                               e1=eligbleleaveentitlement(0)(1),
@@ -352,6 +357,7 @@ class LeaveProfileController extends Controller with Secured {
                       p_request=request),
                   Tools.db_timeout
                 )
+                AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create document."), p_request=request)
                 Redirect(routes.PersonController.myprofileview)
               } else {
                 val replaceMap = Map(
@@ -426,6 +432,7 @@ class LeaveProfileController extends Controller with Secured {
                   request),
                 Tools.db_timeout
             )
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
             Future.successful(Redirect(routes.PersonController.myprofileview))
           }
       )
@@ -453,6 +460,7 @@ class LeaveProfileController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(LeaveProfileModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
       LeaveModel.setLockDown(BSONDocument("pid" -> p_pid, "lt" -> p_lt), request)
+      AuditLogModel.remove(BSONDocument("lk"->p_id), request)
       Future.successful(Redirect(routes.PersonController.myprofileview))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))

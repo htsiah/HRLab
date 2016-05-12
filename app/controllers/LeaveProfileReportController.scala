@@ -12,7 +12,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, PersonModel, LeaveModel}
+import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, PersonModel, LeaveModel, AuditLogModel}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
@@ -160,6 +160,7 @@ class LeaveProfileReportController extends Controller with Secured {
                   request),
                 Tools.db_timeout
             )
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
             Future.successful(Redirect(request.session.get("path").get))
           }
       )
@@ -172,6 +173,7 @@ class LeaveProfileReportController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(LeaveProfileModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
       LeaveModel.setLockDown(BSONDocument("pid" -> p_pid, "lt" -> p_lt), request)
+      AuditLogModel.remove(BSONDocument("lk"->p_id), request)
       Future.successful(Redirect(request.session.get("path").get))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))

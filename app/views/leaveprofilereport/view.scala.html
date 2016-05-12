@@ -13,6 +13,7 @@
 		var path = '@session.get("path").get';
 	</script>
 	<script src="@routes.Assets.at("javascripts/leaveprofilereport.view.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/common.auditlog.js")" type="text/javascript"></script>
 }
 
 @pluginstyle = {}
@@ -23,6 +24,7 @@
 	@if(session.get("roles").get.contains("Admin")) {
 		<a href="@routes.LeaveProfileReportController.edit(leaveprofile._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
 	}
+	<a href="javascript:displayAuditLog('@leaveprofile._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
 

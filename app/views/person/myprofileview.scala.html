@@ -8,6 +8,7 @@
 @inlinejs = {
 	<script src="@routes.Assets.at("javascripts/common.dialogbox.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/person.myprofileview.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/common.auditlog.js")" type="text/javascript"></script>
 }
 
 @pluginstyle = {
@@ -17,11 +18,14 @@
 @inlinestyle = {}
 
 @pbuttons = {
-	<a href="@routes.PersonController.myprofileedit" class="btn btn-sm btn btn-block">Edit</a>	
+	@if(session.get("roles").get.contains("Admin")) {
+		<a href="@routes.PersonController.myprofileedit" class="btn btn-sm btn btn-block">Edit</a>
+	}
+	<a href="javascript:displayAuditLog('@person._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
 }
 
 @lbuttons = {
-	<a href="@routes.LeaveProfileController.myprofilecreate" class="btn btn-sm btn btn-block">Add Leave Profile</a>	
+	<a href="@routes.LeaveProfileController.myprofilecreate" class="btn btn-sm btn btn-block">Add Leave Profile</a>
 }
 
 @contentRow(label: String, contentVal: String, cssClass:String="") = {
@@ -54,70 +58,38 @@
 
 		<div class="tab-content">
 			<div id="home" class="tab-pane fade active in">
-				@if(session.get("roles").get.contains("Admin")) {
-					<div class="row">
-						<div class="col-sm-9">
-							@contentRow("First Name", person.p.fn)
-							@contentRow("Last Name", person.p.ln)
-							@contentRow("Email", person.p.em)
-							@if(person.p.pt!="") { @contentRow("Position", person.p.pt) }
-							@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
-							@contentRow("Gender", person.p.g)
-							@contentRow("Marital Status", person.p.ms)
-							@contentRow("Department", person.p.dpm)
-							@contentRow("Office", person.p.off)
-							@contentRow("Join Date", person.p.edat.get.dayOfMonth().getAsText + "-" + person.p.edat.get.monthOfYear().getAsShortText + "-" + person.p.edat.get.getYear.toString())
-							<dl class="dl-horizontal">
-								<dt><label>Work Day</label></dt>
-								<dd>
-									@if(person.wd.wd1==true) {Monday}
-									@if(person.wd.wd2==true) {Tuesday}
-									@if(person.wd.wd3==true) {Wednesday}
-									@if(person.wd.wd4==true) {Thursday}
-									@if(person.wd.wd5==true) {Friday}
-									@if(person.wd.wd6==true) {Saturday}
-									@if(person.wd.wd6==true) {Sunday}
-								</dd>
-							</dl>
-							@if(person.p.rl.toString!="List()") {
-								@contentRow("Role", person.p.rl.mkString(","))
-							}
-						</div>@** /.col-xs-9 **@
-						<div class="col-sm-3">
-							@pbuttons
-						</div>@** /.col-xs-3 **@
-					</div>@** /.row **@ 
-				} else {
-					<div class="row">
-						<div class="col-sm-12">
-							@contentRow("First Name", person.p.fn)
-							@contentRow("Last Name", person.p.ln)
-							@contentRow("Email", person.p.em)
-							@if(person.p.pt!="") { @contentRow("Position", person.p.pt) }
-							@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
-							@contentRow("Gender", person.p.g)
-							@contentRow("Marital Status", person.p.ms)
-							@contentRow("Department", person.p.dpm)
-							@contentRow("Office", person.p.off)
-							@contentRow("Join Date", person.p.edat.get.dayOfMonth().getAsText + "-" + person.p.edat.get.monthOfYear().getAsShortText + "-" + person.p.edat.get.getYear.toString())
-							<dl class="dl-horizontal">
-								<dt><label>Work Day</label></dt>
-								<dd>
-									@if(person.wd.wd1==true) {Monday}
-									@if(person.wd.wd2==true) {Tuesday}
-									@if(person.wd.wd3==true) {Wednesday}
-									@if(person.wd.wd4==true) {Thursday}
-									@if(person.wd.wd5==true) {Friday}
-									@if(person.wd.wd6==true) {Saturday}
-									@if(person.wd.wd6==true) {Sunday}
-								</dd>
-							</dl>
-							@if(person.p.rl.toString!="List()") {
-								@contentRow("Role", person.p.rl.mkString(","))
-							}
-						</div>@** /.col-xs-12 **@
-					</div>@** /.row **@ 
-				}
+				<div class="row">
+					<div class="col-sm-9">
+						@contentRow("First Name", person.p.fn)
+						@contentRow("Last Name", person.p.ln)
+						@contentRow("Email", person.p.em)
+						@if(person.p.pt!="") { @contentRow("Position", person.p.pt) }
+						@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
+						@contentRow("Gender", person.p.g)
+						@contentRow("Marital Status", person.p.ms)
+						@contentRow("Department", person.p.dpm)
+						@contentRow("Office", person.p.off)
+						@contentRow("Join Date", person.p.edat.get.dayOfMonth().getAsText + "-" + person.p.edat.get.monthOfYear().getAsShortText + "-" + person.p.edat.get.getYear.toString())
+						<dl class="dl-horizontal">
+							<dt><label>Work Day</label></dt>
+							<dd>
+								@if(person.wd.wd1==true) {Monday}
+								@if(person.wd.wd2==true) {Tuesday}
+								@if(person.wd.wd3==true) {Wednesday}
+								@if(person.wd.wd4==true) {Thursday}
+								@if(person.wd.wd5==true) {Friday}
+								@if(person.wd.wd6==true) {Saturday}
+								@if(person.wd.wd6==true) {Sunday}
+							</dd>
+						</dl>
+						@if(person.p.rl.toString!="List()") {
+							@contentRow("Role", person.p.rl.mkString(","))
+						}
+					</div>@** /.col-xs-9 **@
+					<div class="col-sm-3">
+						@pbuttons
+					</div>@** /.col-xs-3 **@
+				</div>@** /.row **@ 
 			</div>
 
 			<div id="messages" class="tab-pane fade">

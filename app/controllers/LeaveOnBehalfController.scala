@@ -16,7 +16,7 @@ import play.modules.reactivemongo.{
 }
 import play.modules.reactivemongo.json._
 
-import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, LeavePolicyModel, OfficeModel, LeaveFileModel}
+import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, LeavePolicyModel, OfficeModel, LeaveFileModel, AuditLogModel}
 import utilities.{AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.api._
@@ -134,15 +134,19 @@ class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi,
               val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
                 
               // Add Leave
+              val leave_objectID = BSONObjectID.generate
               val leave_update = if (carryforward_bal <= 0) 
-                leaveWithData.copy(_id = BSONObjectID.generate, wf = leaveWithData.wf.copy(s = "Approved"), uti = appliedduration, cfuti = 0)
+                leaveWithData.copy(_id = leave_objectID, wf = leaveWithData.wf.copy(s = "Approved"), uti = appliedduration, cfuti = 0)
                 else if (carryforward_bal >= appliedduration)
-                  leaveWithData.copy(_id = BSONObjectID.generate, wf = leaveWithData.wf.copy(s = "Approved"), uti = 0, cfuti = appliedduration)
+                  leaveWithData.copy(_id = leave_objectID, wf = leaveWithData.wf.copy(s = "Approved"), uti = 0, cfuti = appliedduration)
                   else
-                    leaveWithData.copy(_id = BSONObjectID.generate, wf = leaveWithData.wf.copy(s = "Approved"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
+                    leaveWithData.copy(_id = leave_objectID, wf = leaveWithData.wf.copy(s = "Approved"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
                     
               LeaveModel.insert(leave_update, p_request=request)
                 
+              // Insert Audit Log
+              AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=leave_objectID.stringify, c="Apply leave request on behalf of " + maybeperson.get.p.fn + " " + maybeperson.get.p.ln + "."), p_request=request)
+              
               // Update leave profile
               val leaveprofile_update = if (carryforward_bal <= 0) {
                 maybeleaveprofile.get.copy(

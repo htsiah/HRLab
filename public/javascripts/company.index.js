@@ -37,7 +37,7 @@ $(function(){
 	
 });
 
-function onDelete(p_officename) {
+function onDelete(p_officename,p_id) {
 
 	$.ajax({
 		url: "/office/isUsedJSON/" + p_officename,
@@ -47,7 +47,7 @@ function onDelete(p_officename) {
 			if(data.status){
 				onDeleteAbort()
 			} else {
-				onDeleteProceed(p_officename)
+				onDeleteProceed(p_id)
 			}		
         },
         error: function(xhr, textStatus, errorThrown) {
@@ -77,7 +77,7 @@ function onDeleteAbort(){
 	
 }
 
-function onDeleteProceed(p_officename){
+function onDeleteProceed(p_id){
 	
 	$( "#dialog-delete" ).removeClass('hide').dialog({
 		resizable: false,
@@ -89,7 +89,7 @@ function onDeleteProceed(p_officename){
 				html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Delete",
 				"class" : "btn btn-danger btn-mini",
 				click: function() {
-					window.location = "/office/delete/" + p_officename;
+					window.location = "/office/delete/" + p_id;
 				}
 			},
 			{

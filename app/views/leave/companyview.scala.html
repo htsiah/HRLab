@@ -16,6 +16,7 @@
 
 @inlinejs = {
 	<script src="@routes.Assets.at("javascripts/leave.companyview.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/common.auditlog.js")" type="text/javascript"></script>
 }
 
 @pluginstyle = {}
@@ -30,6 +31,7 @@
 	@if((leave.wf.s=="Pending Approval" || leave.wf.s=="Approved") && (session.get("id").get==leave.pid || session.get("roles").get.contains("Admin")) && !leave.ld) {
 		<a href="@routes.LeaveController.cancel(leave._id.stringify)" class="btn btn-sm btn btn-block">Cancel Leave</a>
 	}
+	<a href="javascript:displayAuditLog('@leave._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
 

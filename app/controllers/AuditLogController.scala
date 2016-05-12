@@ -21,28 +21,20 @@ class AuditLogController extends Controller with Secured {
     } yield {
       render {
         case Accepts.Html() => {
-          
-          //Ok(views.html.error.unauthorized())
-          val dtf = DateTimeFormat.forPattern("d-MMM-yyyy HH:mm:ss");
-          val htmlheader = "<table class='table  table-bordered table-hover'><tr><th>Date</th><th>By</th><th>Message</th></tr>"
-          val htmlbody = auditlogs.map( auditlog => {
-            "<tr><td>" + auditlog.sys.get.cdat.get.dayOfMonth().getAsText + "-" +
-            auditlog.sys.get.cdat.get.monthOfYear().getAsShortText + "-" +
-            auditlog.sys.get.cdat.get.getYear().toString + " " +
-            auditlog.sys.get.cdat.get +
-            auditlog.sys.get.cdat.get.dayOfMonth().getAsText +
-            "</td><td>" + auditlog.pn + "</td><td>" + auditlog.c + "</td></tr>"
-          })
-          val htmlcloser = "</table>"
-
-          Ok(Json.parse("""{"auditlog":""""+ htmlheader + htmlbody.mkString("") + htmlcloser + """"}""")).as("application/json")
+          Ok(views.html.error.unauthorized())
         }
         case Accepts.Json() => {
-          val htmlheader = "<table><tr><th>Date</th><th>By</th><th>Message</th></tr>"
-          val htmlbody = ""
-          val htmlcloser = "</table>"
-                 
-          Ok(Json.parse("""{"auditlog":" + htmlheader + htmlbody + htmlcloser + "}""")).as("application/json")
+          if (auditlogs.length == 0) {
+            Ok(Json.parse("""{"auditlog":"No audit log."}""")).as("application/json")
+          } else {
+            val dtf = DateTimeFormat.forPattern("d-MMM-yyyy HH:mm:ss");
+            val htmlheader = "<table class='table  table-bordered table-hover'><tr><th>Date</th><th>By</th><th>Message</th></tr>"
+            val htmlbody = auditlogs.map( auditlog => {
+              "<tr><td>" + auditlog.sys.get.cdat.get.toDateTime().toString(dtf) + "</td><td>" + auditlog.pn + "</td><td>" + auditlog.c + "</td></tr>"
+            })
+            val htmlcloser = "</table>"
+            Ok(Json.parse("""{"auditlog":""""+ htmlheader + htmlbody.mkString("") + htmlcloser + """"}""")).as("application/json")
+          }
         }
       }
     }

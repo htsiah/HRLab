@@ -71,9 +71,10 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               // Create leave policy
               ConfigLeavePolicyModel.find(BSONDocument()).map( configleavepolicies => 
                 configleavepolicies.map( configleavepolicy => {
+                  val leavepolicy_objectID = BSONObjectID.generate
                   LeavePolicyModel.insert(
                       LeavePolicy(
-                          BSONObjectID.generate,
+                          leavepolicy_objectID,
                           configleavepolicy.lt,
                           LeavePolicySetting(
                               configleavepolicy.set.g,
@@ -106,6 +107,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                       ), 
                       eid
                   )
+                  AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=leavepolicy_objectID.stringify, c="Create document."), p_eid=eid)
                 })
               )
               
@@ -134,22 +136,26 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               CompanyModel.insert(company_doc, eid)
               
               // Create Office record
+              val office_objectID = BSONObjectID.generate
               val office_doc = OfficeModel.doc.copy(
-                  _id = BSONObjectID.generate,
+                  _id = office_objectID,
                   n = "Main Office",
                   ct = "Malaysia",
                   st = "Kuala Lumpur"
               )
               OfficeModel.insert(office_doc, eid)
+              AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=office_objectID.stringify, c="Create document."), p_eid=eid)
               
               // Create keyword record
               ConfigKeywordModel.find(BSONDocument()).map( configkeywords => 
-                configkeywords.map( configkeyword => 
+                configkeywords.map( configkeyword => {
+                  val keyword_objectID = BSONObjectID.generate
                   KeywordModel.insert(
-                      Keyword(_id = BSONObjectID.generate, n = configkeyword.n, v = configkeyword.v, s = configkeyword.s, sys = None),
+                      Keyword(_id = keyword_objectID, n = configkeyword.n, v = configkeyword.v, s = configkeyword.s, sys = None),
                       eid              
-                  ) 
-                )
+                  )
+                  AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=keyword_objectID.stringify, c="Create document."), p_eid=eid)
+                })
               )
                         
               // Create person record          
@@ -171,6 +177,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                   )
               )
               PersonModel.insertOnNewSignUp(person_doc, eid)
+              AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=person_objectID.stringify, c="Create document."), p_eid=eid)
      
               val contentEmptyMap = Map(""->"")
               

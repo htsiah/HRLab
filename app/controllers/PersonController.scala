@@ -14,7 +14,7 @@ import play.api.cache.Cache
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel, LeavePolicyModel}
+import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel, LeavePolicyModel, AuditLogModel}
 import utilities.{System, MailUtility, Tools, AlertUtility}
 
 import reactivemongo.api._
@@ -139,8 +139,9 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
               MailUtility.getEmailConfig(List(authentication_doc.em), 7, replaceMap).map { email => mailerClient.send(email) }
             
             }
-
-            PersonModel.insert(formWithData.copy(_id=BSONObjectID.generate), p_request=request)
+            val person_objectID = BSONObjectID.generate
+            PersonModel.insert(formWithData.copy(_id=person_objectID), p_request=request)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=person_objectID.stringify, c="Create document."), p_request=request)
             Future.successful(Redirect(routes.PersonController.index))
           }
       )
@@ -208,6 +209,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
               
               if (LeaveTypesList.isEmpty) {
                 Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request), Tools.db_timeout)
+                AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
                 
                 if (request.session.get("id").get==p_id) {
                   // Update session when update own record.
@@ -247,7 +249,8 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
   def delete(p_id:String, p_email:String) = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       Await.result(PersonModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
-      LeaveProfileModel.remove(BSONDocument("pid" -> p_id), request)
+      AuditLogModel.remove(BSONDocument("lk"->p_id), request)
+      LeaveProfileModel.removeWithAuditLog(BSONDocument("pid" -> p_id), request)
       LeaveModel.setLockDown(BSONDocument("pid" -> p_id), request)
       
       if (p_email!="") {
@@ -347,7 +350,8 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
               
               if (LeaveTypesList.isEmpty) {
                 Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), formWithData.copy(_id=BSONObjectID(request.session.get("id").get)), request), Tools.db_timeout)
-                                
+                AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=request.session.get("id").get, c="Modify document."), p_request=request)
+                
                 val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
                 val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
                 Redirect(routes.PersonController.myprofileview).withSession(
