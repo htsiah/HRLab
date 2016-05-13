@@ -30,9 +30,9 @@
 	@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 		<div class="form-group">
 			<select class="form-control" id="calendardisplaytypes">
-				<option value="Company Calendar">Company Calendar (Display company holiday and all employee's leave application)</option>
-				<option value="My Calendar">My Calendar (Display company holiday and @session.get("name").get's leave application)</option>
-				@departments.map{ department=> <option value="@department">@department (Display company holiday and selected department's leave application)</option> }
+				<option value="Company Calendar">Company Calendar (Display company holiday and all employee's leave request)</option>
+				<option value="My Calendar">My Calendar (Display company holiday and @session.get("name").get's leave request)</option>
+				@departments.map{ department=> <option value="@department">@department (Display company holiday and selected department's leave request)</option> }
 			</select>		
 		</div>
 		<div id="calendar"></div>
@@ -42,9 +42,9 @@
 		@pageheader
 		<div class="form-group">
 			<select class="form-control" id="calendardisplaytypes">
-				<option value="Company Calendar">Company Calendar (Display company holiday and all employee's leave application)</option>
-				<option value="My Calendar">My Calendar (Display company holiday and @session.get("name").get's leave application)</option>
-				@departments.map{ department=> <option value="@department">@department (Display company holiday and selected department's leave application)</option> }
+				<option value="Company Calendar">Company Calendar (Display company holiday and all employee's leave request)</option>
+				<option value="My Calendar">My Calendar (Display company holiday and @session.get("name").get's leave request)</option>
+				@departments.map{ department=> <option value="@department">@department (Display company holiday and selected department's leave request)</option> }
 			</select>		
 		</div>
 		<div id="calendar"></div>
