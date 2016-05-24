@@ -34,14 +34,15 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
               "nem" -> boolean,
               "pt" -> text,
               "mgrid" -> text,
+              "smgrid" -> text,
               "g" -> text,
               "ms" -> text,
               "dpm" -> text,
               "off" -> text,
               "edat" -> optional(jodaDate("d-MMM-yyyy")),
               "rl" -> text
-          ){(fn,ln,em,nem,pt,mgrid,g,ms,dpm,off,edat,rl)=>Profile(fn,ln,em.toLowerCase().trim(),nem,pt,mgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
-          {profile:Profile => Some(profile.fn,profile.ln,profile.em,profile.nem,profile.pt,profile.mgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
+          ){(fn,ln,em,nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl)=>Profile(fn,ln,em.toLowerCase().trim(),nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
+          {profile:Profile => Some(profile.fn,profile.ln,profile.em,profile.nem,profile.pt,profile.mgrid,profile.smgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
           "wd" -> mapping(
               "wd1" -> boolean,
               "wd2" -> boolean,
@@ -265,24 +266,40 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
   
   def view(p_id:String) = withAuth { username => implicit request => {   
     for { 
-      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)  
+      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.mgrid)), request)
       leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid" -> p_id), request)
     } yield {
       maybeperson.map( person => {
-        Ok(views.html.person.view(person, maybemanager.get, leaveprofiles))
+        val managername = {
+          val manager = maybemanager.getOrElse(PersonModel.doc)
+          manager.p.fn + " " + manager.p.ln
+        }
+        val smanagername = if (person.p.smgrid=="") { "" } else {
+          val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid)), request), Tools.db_timeout)
+          smanager.get.p.fn + " " + smanager.get.p.ln
+        }
+        Ok(views.html.person.view(person, managername, smanagername, leaveprofiles))
       }).getOrElse(NotFound)
     }
   }}
   
   def myprofileview = withAuth { username => implicit request => {   
     for { 
-      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)  
+      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
       maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.mgrid)), request)
       leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid" -> request.session.get("id").get), request)
     } yield {
       maybeperson.map( person => {
-        Ok(views.html.person.myprofileview(person, maybemanager.get, leaveprofiles)).withSession(
+        val managername = {
+          val manager = maybemanager.getOrElse(PersonModel.doc)
+          manager.p.fn + " " + manager.p.ln
+        }
+        val smanagername = if (person.p.smgrid=="") { "" } else {
+          val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid)), request), Tools.db_timeout)
+          smanager.get.p.fn + " " + smanager.get.p.ln
+        }
+        Ok(views.html.person.myprofileview(person, managername, smanagername, leaveprofiles)).withSession(
             (request.session - "path") + ("path"->((routes.PersonController.myprofileview).toString))
         )
       }).getOrElse(NotFound)

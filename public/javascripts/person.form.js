@@ -47,6 +47,9 @@ $(function(){
 				}
 			},
 			"p.mgrid": "required",
+			"p.smgrid" : {
+				checkSManagerid: true
+			},
 			"p.g": "required",
 			"p.ms": "required",
 			"p.dpm": "required",
@@ -65,6 +68,7 @@ $(function(){
 				remote: "Someone already used this email. Try another one?"
 			},
 			"p.mgrid": "Please select manager.",
+			"p.smgrid": "Substitute Manager can not same with Manager.",
 			"p.g": "Please select gender.",
 			"p.ms": "Please select marital status.",
 			"p.dpm": "Please select department.",
@@ -88,7 +92,7 @@ $(function(){
 			if (nemail==false && value=="") {
 				return false;
 			} else {
-				return true
+				return true;
 			};
 		},
 		"Please enter an email address."	
@@ -100,6 +104,19 @@ $(function(){
 			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
 		}, 
 		"Please enter a valid date format d-mmm-yyyy."
+	);
+	
+	$.validator.addMethod(
+		"checkSManagerid",
+		function(value,element){
+			var managerid = $("#p_mgrid").val();
+			if (value == managerid) {
+				return false;
+			} else {
+				return true;
+			}
+		},
+		"Substitute Manager can not same with Manager."
 	);
 		
 });

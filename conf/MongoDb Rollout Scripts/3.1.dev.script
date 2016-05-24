@@ -1,5 +1,13 @@
 use d-hrsifu-leave
 db.leavesetting.update({},{ $set: {"aprmthd": "Only manager can approve leave request" }}, false, true)
 
+use d-hrsifu-directory
+db.person.update({},{ $set: {"p.smgrid": "" }}, false, true)
+
+
+
 use hrsifu-leave
 db.leavesetting.update({},{ $set: {"aprmthd": "Only manager can approve leave request" }}, false, true)
+
+use hrsifu-directory
+db.person.update({},{ $set: {"p.smgrid": "" }}, false, true)

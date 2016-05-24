@@ -112,6 +112,12 @@
 			'_showConstraints -> false,
 			'_class->"dl-horizontal", 
 			'class->"form-control")	
+		@select(person("p")("smgrid"), options=persons.map(person=>person._id.stringify->{person.p.fn + " " + person.p.ln}),
+			'_default -> "Please select",
+			'_label -> "Substitute Manager",
+			'_showConstraints -> false,
+			'_class->"dl-horizontal", 
+			'class->"form-control")	
 		@select(person("p")("g"), options = Seq("Male"->"Male","Female"->"Female"), '_label -> "Gender",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("ms"), options = Seq("Single"->"Single","Married"->"Married"), '_label -> "Marital Status",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 		@select(person("p")("dpm"), options = options(departments.map(department=>department)), '_label -> "Department",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")

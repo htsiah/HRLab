@@ -29,6 +29,7 @@ case class Profile (
     nem: Boolean,
     pt: String,
     mgrid: String,
+    smgrid:String,
     g: String,
     ms: String,
     dpm: String,
@@ -70,6 +71,7 @@ object PersonModel {
           p_doc.getAs[Boolean]("nem").getOrElse(false),
           p_doc.getAs[String]("pt").get,
           p_doc.getAs[String]("mgrid").get,
+          p_doc.getAs[String]("smgrid").get,
           p_doc.getAs[String]("g").get,
           p_doc.getAs[String]("ms").get,
           p_doc.getAs[String]("dpm").get,
@@ -129,6 +131,7 @@ object PersonModel {
           "nem" -> p_doc.nem,
           "pt" -> p_doc.pt,
           "mgrid" -> p_doc.mgrid,
+          "smgrid" -> p_doc.smgrid,
           "g" -> p_doc.g,
           "ms" -> p_doc.ms,
           "dpm" -> p_doc.dpm,
@@ -171,7 +174,7 @@ object PersonModel {
   
   val doc = Person(
       _id = BSONObjectID.generate,
-      p = Profile(fn="", ln="", em="", nem=false, pt="", mgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)), rl=List("")),
+      p = Profile(fn="", ln="", em="", nem=false, pt="", mgrid="", smgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)), rl=List("")),
       wd = Workday(wd1=true, wd2=true, wd3=true, wd4=true, wd5=true, wd6=false, wd7=false),
       sys = None
   )
