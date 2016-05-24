@@ -16,6 +16,7 @@ case class LeaveSetting (
     _id: BSONObjectID,
     cfm: Int,
     cflr: Option[DateTime],
+    aprmthd: String,
     sys: Option[System]
 )
 
@@ -42,6 +43,7 @@ object LeaveSettingModel {
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[Int]("cfm").get,
           p_doc.getAs[BSONDateTime]("cflr").map(dt => new DateTime(dt.value)),
+          p_doc.getAs[String]("aprmthd").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
     }
@@ -68,6 +70,7 @@ object LeaveSettingModel {
           "_id" -> p_doc._id,
           "cfm" -> p_doc.cfm,
           "cflr" -> p_doc.cflr.map(date => BSONDateTime(date.getMillis)),
+          "aprmthd" -> p_doc.aprmthd,
           "sys" -> p_doc.sys
       )     
     }
@@ -79,6 +82,7 @@ object LeaveSettingModel {
       _id = BSONObjectID.generate,
       cfm = 1,
       cflr = Some(new DateTime()),
+      aprmthd = "Only manager can approve leave request",
       sys = None
   )
   

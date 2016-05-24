@@ -20,7 +20,7 @@ class LeaveSettingController extends Controller with Secured {
         leavepolicies <- LeavePolicyModel.find(BSONDocument(), request)
         leavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
       } yield {
-        Ok(views.html.leavesetting.index(leavepolicies, leavesetting.get.cfm)).withSession(
+        Ok(views.html.leavesetting.index(leavepolicies, leavesetting.get)).withSession(
             (request.session - "path") + ("path"->((routes.LeaveSettingController.index).toString))
         )
       }
@@ -61,6 +61,32 @@ class LeaveSettingController extends Controller with Secured {
       }
     } else {
       Future.successful(Ok(Json.parse("""{"status":false}""")).as("application/json"))
+    }
+  }}
+  
+  def updateAprMthd(p_aprmthd:String) = withAuth { username => implicit request => { 
+    if(request.session.get("roles").get.contains("Admin")){
+      for { 
+        maybe_leavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
+      } yield {
+        render {
+          case Accepts.Html() => Ok(views.html.error.unauthorized())
+          case Accepts.Json() => {
+            val leavesetting = maybe_leavesetting.get
+            LeaveSettingModel.update(
+               BSONDocument(), 
+               leavesetting.copy(
+                   _id=leavesetting._id,
+                   aprmthd=p_aprmthd
+               ), 
+               request
+            )
+            Ok(Json.parse("""{"status":true}""")).as("application/json")
+          }
+        }
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
   

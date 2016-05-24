@@ -1,0 +1,5 @@
+use d-hrsifu-leave
+db.leavesetting.update({},{ $set: {"aprmthd": "Only manager can approve leave request" }}, false, true)
+
+use hrsifu-leave
+db.leavesetting.update({},{ $set: {"aprmthd": "Only manager can approve leave request" }}, false, true)

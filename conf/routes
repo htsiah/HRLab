@@ -97,8 +97,9 @@ GET		/leaveprofile/myprofile/delete/:p_id/:p_lt/:p_pid			controllers.LeaveProfil
 GET		/leaveprofile/getleaveprofile/:p_pid						controllers.LeaveProfileController.getLeaveProfile(p_pid:String)
 
 # Leave Setting
-GET		/leavesetting					controllers.LeaveSettingController.index
-GET		/leavesetting/updatecfm/:p_mnth	controllers.LeaveSettingController.updateCFM(p_mnth:String)
+GET		/leavesetting							controllers.LeaveSettingController.index
+GET		/leavesetting/updatecfm/:p_mnth			controllers.LeaveSettingController.updateCFM(p_mnth:String)
+GET		/leavesetting/updateaprmthd/:p_aprmthd	controllers.LeaveSettingController.updateAprMthd(p_aprmthd:String)
 
 # Leave Policy
 GET		/leavepolicy/create							controllers.LeavePolicyController.create

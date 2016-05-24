@@ -10,6 +10,7 @@ $(function(){
 	    ]
 	});
 	
+	// Leave cut off
 	$("#leave-cut-off-pencil").click(function(){
 		$("#leave-cut-off-view").hide();
 		$("#leave-cut-off-edit").show();
@@ -94,7 +95,34 @@ $(function(){
 			]
 		});
 	});
-			    
+	
+	// Leave approval method
+	$("#approval-method-pencil").click(function(){
+		$("#approval-method-view").hide();
+		$("#approval-method-edit").show();
+	});
+
+	$("#approval-method-times").click(function(){
+		$("#approval-method-edit").hide();
+		$("#approval-method-view").show();
+	});
+	
+	$("#approval-method-check").click(function(){
+		$.ajax({
+			url: "/leavesetting/updateaprmthd/" + $("#approval-method-field").val(),
+			type: 'GET',
+			dataType: "json",
+			success: function(result){
+				$('#approval-method-value').text($("#approval-method-field").val());
+				$("#approval-method-edit").hide();
+            	$("#approval-method-view").show();
+            },
+            error: function(xhr, textStatus, errorThrown) {
+            	alert("Update approval method failed!!!");
+			}
+		});
+	});
+	
 });
 
 function onDelete(p_id, p_lt) {
