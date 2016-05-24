@@ -34,33 +34,37 @@ class LeaveSettingController extends Controller with Secured {
       for { 
         maybe_leavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
       } yield {
-        val leavesetting = maybe_leavesetting.get
-        LeaveSettingModel.update(
-            BSONDocument(), 
-            leavesetting.copy(
-                _id=leavesetting._id,
-                cfm=p_mnth.toInt
-            ), 
-            request
-        )
+        render {
+          case Accepts.Html() => Ok(views.html.error.unauthorized())
+          case Accepts.Json() => {
+            val leavesetting = maybe_leavesetting.get
+            LeaveSettingModel.update(
+                BSONDocument(), 
+                leavesetting.copy(
+                    _id=leavesetting._id,
+                    cfm=p_mnth.toInt
+                ), 
+                request
+            )
         
-        // Update employee's leave profile
-        if (leavesetting.cfm != p_mnth.toInt) {
-          PersonModel.find(BSONDocument(), request).map { persons => 
-            persons.map { person => {
-              LeaveProfileModel.find(BSONDocument("pid" -> person._id.stringify)).map { leaveprofiles =>  
-                leaveprofiles.map { leaveprofile => {
-                  LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile, request)
+            // Update employee's leave profile
+            if (leavesetting.cfm != p_mnth.toInt) {
+              PersonModel.find(BSONDocument(), request).map { persons => 
+                persons.map { person => {
+                  LeaveProfileModel.find(BSONDocument("pid" -> person._id.stringify)).map { leaveprofiles =>  
+                    leaveprofiles.map { leaveprofile => {
+                      LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile, request)
+                    } }
+                  }
                 } }
               }
-            } }
+            }
+            Ok(Json.parse("""{"status":true}""")).as("application/json")
           }
         }
-        
-        Ok(Json.parse("""{"status":true}""")).as("application/json")
       }
     } else {
-      Future.successful(Ok(Json.parse("""{"status":false}""")).as("application/json"))
+      Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
   
