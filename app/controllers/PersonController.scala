@@ -256,6 +256,12 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
       
       if (p_email!="") {
         AuthenticationModel.remove(BSONDocument("em" -> p_email), request)
+        
+        // Remove substitute manager
+        PersonModel.updateUsingBSON(
+            BSONDocument("p.smgrid" -> p_id, "sys.eid" -> request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)),
+            BSONDocument("$set"->BSONDocument("p.smgrid"->""))
+        )
       }
       
       Future.successful(Redirect(routes.PersonController.index))
