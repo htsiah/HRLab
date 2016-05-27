@@ -85,9 +85,7 @@
 							}
 							@if(person.p.pt!="") { @contentRow("Position", person.p.pt) }					
 							@contentRow("Manager", manager)
-							@if(smanager!=""){
-								@contentRow("Substitute Manager", smanager)
-							}
+							@if(smanager!=""){ @contentRow("Substitute Manager", smanager) }
 							@contentRow("Gender", person.p.g)
 							@contentRow("Marital Status", person.p.ms)
 							@contentRow("Department", person.p.dpm)
@@ -177,7 +175,7 @@
 
 } else {
 
-	@if(session.get("id").get == person.p.mgrid | session.get("id").get == person._id.stringify) {
+	@if(session.get("id").get == person.p.mgrid | session.get("id").get == person.p.smgrid | session.get("id").get == person._id.stringify) {
 
 		@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 			@pageheader

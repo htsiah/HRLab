@@ -50,7 +50,15 @@
 				</dl>
 				<dl class="dl-horizontal">
 					<dt><label for="s">Approver</label></dt>
-					<dd>@leave("wf.aprn").value</dd>
+					<dd>
+						@leave("wf.aprn").indexes.map { v => 
+							@leave("wf.aprn")("[" + v + "]").value@if(leave("wf.aprn").indexes.max != v){, }
+						}	
+					</dd>
+				</dl>
+				<dl class="dl-horizontal">
+					<dt><label for="s">Approval Method</label></dt>
+					<dd>@leave("wf.aprmthd").value</dd>
 				</dl>
 				@select(leave("lt"), options = leavetypes.toSeq, '_label -> "Leave Type", '_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
 				@select(leave("dt"), options = Seq("Full day"->"Full day", "1st half"->"1st half", "2nd half"->"2nd half"), '_label -> "Day Type", '_class->"dl-horizontal", 'class->"form-control")
@@ -103,8 +111,15 @@
 					@inputText(leave("uti"),'type -> "hidden")
 					@inputText(leave("cfuti"),'type -> "hidden")
 					@inputText(leave("wf.s"),'type -> "hidden")
-					@inputText(leave("wf.aprid"),'type -> "hidden")
-					@inputText(leave("wf.aprn"),'type -> "hidden")
+					@repeat(leave("wf.aprid")) { apridField => @inputText(apridField,'type -> "hidden") }
+					@repeat(leave("wf.aprn")) { aprnField => @inputText(aprnField,'type -> "hidden") }
+					@repeat(leave("wf.aprbyid")) { aprbyidField => @inputText(aprbyidField,'type -> "hidden") }
+					@repeat(leave("wf.aprbyn")) { aprbynField => @inputText(aprbynField,'type -> "hidden") }
+					@inputText(leave("wf.rjtbyid"),'type -> "hidden")
+					@inputText(leave("wf.rjtbyn"),'type -> "hidden")
+					@inputText(leave("wf.cclbyid"),'type -> "hidden")
+					@inputText(leave("wf.cclbyn"),'type -> "hidden")
+					@inputText(leave("wf.aprmthd"),'type -> "hidden")
 					@inputText(leave("sys")("eid"),'type -> "hidden")
 					@inputText(leave("sys")("cdat"),'type -> "hidden")
 					@inputText(leave("sys")("mdat"),'type -> "hidden")

@@ -432,6 +432,16 @@ object PersonModel {
     }
   }
   
+  def isSubstituteManagerFor(p_id:String, p_smid:String, p_request:RequestHeader) = {
+    val maybe_person = Await.result(PersonModel.findOne(BSONDocument("_id"->BSONObjectID(p_id)), p_request), Tools.db_timeout)
+    val person = maybe_person.getOrElse(PersonModel.doc)
+    if ( person.p.smgrid == p_smid) {
+      true
+    } else {
+      false
+    }
+  }
+  
   // Notes:
   // 1 p_modifier format: 
   //   1.1 Replace - BSONDocument

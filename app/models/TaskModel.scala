@@ -213,4 +213,25 @@ object TaskModel {
     }
   }
   
+  // Do it using asynchronous as multiple may take longer time.
+  def setCompletedMulti(p_lk:String, p_request:RequestHeader) = {
+    for {
+      maybetask <- this.find(BSONDocument("lk"->p_lk), p_request)
+    } yield {
+      maybetask.map { task => {
+          this.update(BSONDocument("_id"->task._id), task.copy(cf=true), p_request)
+      } }
+    }
+  }
+  
+  def setCompleted(p_pid:String, p_lk:String, p_request:RequestHeader) = {
+    for {
+      maybetask <- this.findOne(BSONDocument("pid"->p_pid, "lk"->p_lk), p_request)
+    } yield {
+      maybetask.map { task => (
+          this.update(BSONDocument("pid"->p_pid, "lk"->p_lk), task.copy(cf=true), p_request)
+      ) }
+    }
+  }
+  
 }
