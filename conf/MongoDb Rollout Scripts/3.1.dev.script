@@ -8,7 +8,7 @@ db.leave.find().snapshot().forEach(
     }
 );
 
-#Backup leave approver name
+# Backup leave approver name
 db.leave.find().snapshot().forEach(
     function (elem) {
     	db.leave.update({_id: elem._id}, {$push: { "wf.aprnbackup": elem.wf.aprn }});
@@ -17,7 +17,7 @@ db.leave.find().snapshot().forEach(
 
 # Update on approved leave.
 # Create List(aprbyid), List(aprbyn).
-db.leave.find("wf.s":"Approved").snapshot().forEach(
+db.leave.find({"wf.s":"Approved"}).snapshot().forEach(
     function (elem) {
     	elem.wf.aprbyid = elem.wf.apridbackup;
     	elem.wf.aprbyn = elem.wf.aprnbackup;
@@ -27,7 +27,7 @@ db.leave.find("wf.s":"Approved").snapshot().forEach(
 
 # Update on rejected leave.
 # Create rjtbyid, rjtbyn.
-db.leave.find("wf.s":"Rejected").snapshot().forEach(
+db.leave.find({"wf.s":"Rejected"}).snapshot().forEach(
     function (elem) {
     	elem.wf.rjtbyid = elem.wf.aprid;
     	elem.wf.rjtbyn = elem.wf.aprn;
@@ -37,7 +37,7 @@ db.leave.find("wf.s":"Rejected").snapshot().forEach(
 
 # Update on cancelled leave.
 # Create cclbyid, cclbyn.
-db.leave.find("wf.s":"Cancelled").snapshot().forEach(
+db.leave.find({"wf.s":"Cancelled"}).snapshot().forEach(
     function (elem) {
     	elem.wf.cclbyid = elem.wf.aprid;
     	elem.wf.cclbyn = elem.wf.aprn;
@@ -58,9 +58,9 @@ db.leave.find().snapshot().forEach(
     }
 );
 
-db.leave.update({},{ $set: {"aprmthd": "Only manager can approve leave request" }}, false, true)
+db.leave.update({},{ $set: {"wf.aprmthd": "Only manager can approve leave request" }}, false, true)
 
-db.leave.update({"pid":""},{ $set: {"aprmthd": "Automatically approved" }}, false, true)
+db.leave.update({"pid":"5749b28f52452b8a01dcbcd3"},{ $set: {"wf.aprmthd": "Automatically approved" }}, false, true)
 
 use d-hrsifu-directory
 db.person.update({},{ $set: {"p.smgrid": "" }}, false, true)
