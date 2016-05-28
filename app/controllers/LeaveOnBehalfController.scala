@@ -123,7 +123,7 @@ class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi,
                     rjtbyn = None,
                     cclbyid = None,
                     cclbyn = None,
-                    aprmthd = "Automatic approved"
+                    aprmthd = "Automatically approved"
                 )
             )
             val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
