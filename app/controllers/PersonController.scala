@@ -285,7 +285,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
           val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid)), request), Tools.db_timeout)
           smanager.get.p.fn + " " + smanager.get.p.ln
         }
-        Ok(views.html.person.view(person, managername, smanagername, leaveprofiles))
+        Ok(views.html.person.view(person, managername, smanagername, leaveprofiles.sortBy(_.lt)))
       }).getOrElse(NotFound)
     }
   }}
@@ -305,7 +305,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
           val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid)), request), Tools.db_timeout)
           smanager.get.p.fn + " " + smanager.get.p.ln
         }
-        Ok(views.html.person.myprofileview(person, managername, smanagername, leaveprofiles)).withSession(
+        Ok(views.html.person.myprofileview(person, managername, smanagername, leaveprofiles.sortBy(_.lt))).withSession(
             (request.session - "path") + ("path"->((routes.PersonController.myprofileview).toString))
         )
       }).getOrElse(NotFound)
