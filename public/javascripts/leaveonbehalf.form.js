@@ -172,7 +172,7 @@ $(function(){
 				$("#file-input-control").addClass("hidden");
 				$("#file-error").addClass("hidden");
 				$("#file-loader").removeClass("hidden");
-				if ($("#btnApply").text() != "Apply for 0 day" ) { $("#btnApply").attr("disabled", "disabled"); };
+				if (!($("#btnApply").text()=="Apply for 0 day" || $("#btnApply").text()=="Conflict with other leave application  Please select to other date")) { $("#btnApply").attr("disabled", "disabled"); };
 			},
 	        success: function(data, textStatus, jqXHR){
 		        if (data.status == "exceed file size limit") {
@@ -184,7 +184,7 @@ $(function(){
 					$("#file-loader").addClass("hidden");
 					$("#file-view").html("<a href='/leavefile/viewByLK?p_lk=" + $("#docnum").val() + "' target='_blank'>" + file.name + "</a> &nbsp <a class='remove' href=javascript:onDelete('" + $("#docnum").val() + "') title='Delete'><i class='ace-icon fa fa-trash'></i></a>");
 					$("#file-view").removeClass("hidden");
-					if ($("#btnApply").text() != "Apply for 0 day" ) { $("#btnApply").removeAttr("disabled"); };
+					if (!($("#btnApply").text()=="Apply for 0 day" || $("#btnApply").text()=="Conflict with other leave application  Please select to other date")) { $("#btnApply").removeAttr("disabled"); };
 		        }; 
 	        },
 	        error: function(jqXHR, textStatus, errorThrown){
