@@ -552,7 +552,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         
         // Update Todo
-        Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
+        Await.result(TaskModel.setCompletedMulti(leave_update._id.stringify, request), Tools.db_timeout)
         
         // Send Email
         val cc = {
