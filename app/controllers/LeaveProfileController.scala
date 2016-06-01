@@ -273,7 +273,7 @@ class LeaveProfileController extends Controller with Secured {
       maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleaveprofile.get.pid)), request)
     } yield {
-      if(request.session.get("roles").get.contains("Admin") | request.session.get("id").get == maybeperson.get._id.stringify | request.session.get("id").get == maybeperson.get.p.mgrid){
+      if(request.session.get("roles").get.contains("Admin") | request.session.get("id").get == maybeperson.get._id.stringify | request.session.get("id").get == maybeperson.get.p.mgrid | request.session.get("id").get == maybeperson.get.p.smgrid){
         maybeleaveprofile.map( leaveprofile => {
           Ok(views.html.leaveprofile.view(leaveprofile))
         }).getOrElse(NotFound)
