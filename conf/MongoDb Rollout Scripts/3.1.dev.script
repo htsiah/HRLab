@@ -60,7 +60,11 @@ db.leave.find().snapshot().forEach(
 
 db.leave.update({},{ $set: {"wf.aprmthd": "Only manager can approve leave request" }}, false, true)
 
-db.leave.update({"pid":"5749b28f52452b8a01dcbcd3"},{ $set: {"wf.aprmthd": "Automatically approved" }}, false, true)
+# Search all person without email using {"p.nem": true}
+# Export into CSV
+# Using this templat to generate update script C:\Users\simon.siah\Google Drive\Private\HRSifu\Release v3.1\Update_Approval_Method_Template.xlsx
+db.leave.update({"pid":"574d6af052452bed00883f77"},{ $set: {"wf.aprmthd": "Automatically approved" }}, false, true)
+db.leave.update({"pid":"574d6b1852452bf200883f7f"},{ $set: {"wf.aprmthd": "Automatically approved" }}, false, true)
 
 use d-hrsifu-directory
 db.person.update({},{ $set: {"p.smgrid": "" }}, false, true)
@@ -153,7 +157,10 @@ db.leave.find().snapshot().forEach(
 
 db.leave.update({},{ $set: {"wf.aprmthd": "Only manager can approve leave request" }}, false, true)
 
-db.leave.update({"pid":"5749b28f52452b8a01dcbcd3"},{ $set: {"wf.aprmthd": "Automatically approved" }}, false, true)
+# Search all person without email using {"p.nem": true}
+# Export into CSV
+# Using this templat to generate update script C:\Users\simon.siah\Google Drive\Private\HRSifu\Release v3.1\Update_Approval_Method_Template.xlsx
+db.leave.update({"pid":""},{ $set: {"wf.aprmthd": "Automatically approved" }}, false, true)
 
 use hrsifu-directory
 db.person.update({},{ $set: {"p.smgrid": "" }}, false, true)
