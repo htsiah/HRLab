@@ -58,43 +58,6 @@
 					</div>
 				</div> @**/.widget-body **@
 			</div> @**/.widget-box **@
-						
-			<div class="widget-box transparent">
-				<div class="widget-header widget-header-flat">
-					<h4 class="widget-title blue">
-						<i class="ace-icon fa fa-tasks orange"></i>
-						My Leave Entitlement and Balance
-					</h4>
-				</div> @** .widget-header **@
-				<div class="widget-body">
-					<div class="widget-main">
-						<div class="profile-activity clearfix">
-							@if(leaveprofiles.length==0) {
-								You don't entitled any leave or time off. Please contact HR.
-							} else {
-								<table id="sample-table-1" class="table table-striped table-bordered table-hover">
-									<thead>
-										<tr>
-											<th>Leave Type</th>
-											<th>Entitlement</th>
-											<th>Closing Balance</th>
-										</tr>
-									</thead>
-									<tbody>
-										@leaveprofiles.map { leaveprofile =>
-											<tr>
-												<td>@leaveprofile.lt</td>
-												<td>@leaveprofile.cal.ent.toString()</td>
-												<td>@leaveprofile.cal.cbal.toString()</td>
-											</tr>
-										}
-									</tbody>
-								</table>
-							}
-						</div>
-					</div>
-				</div> @**/.widget-body **@
-			</div> @**/.widget-box **@
 
 			<div class="widget-box transparent">
 				<div class="widget-header widget-header-flat">
@@ -141,6 +104,43 @@
 								</tbody>
 							</table>
 						}
+						</div>
+					</div>
+				</div> @**/.widget-body **@
+			</div> @**/.widget-box **@
+			
+			<div class="widget-box transparent">
+				<div class="widget-header widget-header-flat">
+					<h4 class="widget-title blue">
+						<i class="ace-icon fa fa-tasks orange"></i>
+						My Leave Entitlement and Balance
+					</h4>
+				</div> @** .widget-header **@
+				<div class="widget-body">
+					<div class="widget-main">
+						<div class="profile-activity clearfix">
+							@if(leaveprofiles.length==0) {
+								You don't entitled any leave or time off. Please contact HR.
+							} else {
+								<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+									<thead>
+										<tr>
+											<th>Leave Type</th>
+											<th>Entitlement</th>
+											<th>Closing Balance</th>
+										</tr>
+									</thead>
+									<tbody>
+										@leaveprofiles.map { leaveprofile =>
+											<tr>
+												<td>@leaveprofile.lt</td>
+												<td>@leaveprofile.cal.ent.toString()</td>
+												<td>@leaveprofile.cal.cbal.toString()</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							}
 						</div>
 					</div>
 				</div> @**/.widget-body **@
