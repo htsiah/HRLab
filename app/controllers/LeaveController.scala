@@ -17,7 +17,7 @@ import play.modules.reactivemongo.{
 }
 import play.modules.reactivemongo.json._
 
-import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel, AuditLogModel}
+import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel, LeaveSettingModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.api._
@@ -52,8 +52,15 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
           "ld" -> boolean,
           "wf" -> mapping(
               "s" -> text,
-              "aprid" -> text,
-              "aprn" -> text
+              "aprid" -> list(text),
+              "aprn" -> list(text),
+              "aprbyid" -> optional(list(text)),
+              "aprbyn" -> optional(list(text)),
+              "rjtbyid" -> optional(text),
+              "rjtbyn" -> optional(text),
+              "cclbyid" -> optional(text),
+              "cclbyn" -> optional(text),
+              "aprmthd" -> text
           )(Workflow.apply)(Workflow.unapply),
           "sys" -> optional(mapping(
                   "eid" -> optional(text),
@@ -71,25 +78,170 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	def create = withAuth { username => implicit request => {
 	  for {
       leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
-	    maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("managerid").get)), request)
+      maybeleavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
+      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
 	  } yield{
 	    val docnum = DocNumUtility.getNumberText("leave", request.session.get("entity").get)
-	    maybemanager.map( manager => {
-	      Ok(views.html.leave.form(
-	        leaveform.fill(LeaveModel.doc.copy(
-	            docnum = docnum.toInt,
-	            pid = request.session.get("id").get,
-	            pn = request.session.get("name").get,
+	    maybeperson.map( person => {
+        
+        val approvalmethod = maybeleavesetting.get.aprmthd
+        val manager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.mgrid))), Tools.db_timeout)
+        
+        val leave:Form[Leave] = if (approvalmethod == "Only manager can approve leave request") {
+          leaveform.fill(LeaveModel.doc.copy(
+              docnum = docnum.toInt,
+              pid = request.session.get("id").get,
+              pn = request.session.get("name").get,
               fdat = Some(new DateTime()),
               tdat = Some(new DateTime()),
               wf = Workflow(
                   s = "New",
-                  aprid = manager._id.stringify,
-                  aprn = manager.p.fn + " " + manager.p.ln     
+                  aprid = List(manager.get._id.stringify),
+                  aprn = List(manager.get.p.fn + " " + manager.get.p.ln),
+                  aprbyid = None,
+                  aprbyn = None,
+                  rjtbyid = None,
+                  rjtbyn = None,
+                  cclbyid = None,
+                  cclbyn = None,
+                  aprmthd = "Only manager can approve leave request"
               )
-	        )),
-	        leavetypes))
-	    }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+          ))
+        } else if (approvalmethod == "Both manager and substitute manager must approve leave request") {
+          if (person.p.smgrid != "") {
+            val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid))), Tools.db_timeout)
+            leaveform.fill(LeaveModel.doc.copy(
+                docnum = docnum.toInt,
+                pid = request.session.get("id").get,
+                pn = request.session.get("name").get,
+                fdat = Some(new DateTime()),
+                tdat = Some(new DateTime()),
+                wf = Workflow(
+                    s = "New",
+                    aprid = List(manager.get._id.stringify, smanager.get._id.stringify),
+                    aprn = List(manager.get.p.fn + " " + manager.get.p.ln, smanager.get.p.fn + " " + smanager.get.p.ln),
+                    aprbyid = None,
+                    aprbyn = None,
+                    rjtbyid = None,
+                    rjtbyn = None,
+                    cclbyid = None,
+                    cclbyn = None,
+                    aprmthd = "Both manager and substitute manager must approve leave request"
+                )
+            )) 
+          } else {
+            leaveform.fill(LeaveModel.doc.copy(
+                docnum = docnum.toInt,
+                pid = request.session.get("id").get,
+                pn = request.session.get("name").get,
+                fdat = Some(new DateTime()),
+                tdat = Some(new DateTime()),
+                wf = Workflow(
+                    s = "New",
+                    aprid = List(manager.get._id.stringify),
+                    aprn = List(manager.get.p.fn + " " + manager.get.p.ln),
+                    aprbyid = None,
+                    aprbyn = None,
+                    rjtbyid = None,
+                    rjtbyn = None,
+                    cclbyid = None,
+                    cclbyn = None,
+                    aprmthd = "Both manager and substitute manager must approve leave request"
+                )
+            ))
+          }
+        } else if (approvalmethod == "Either manager or substitute manager approve leave request") {
+          if (person.p.smgrid != "") {
+            val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid))), Tools.db_timeout)
+            leaveform.fill(LeaveModel.doc.copy(
+                docnum = docnum.toInt,
+                pid = request.session.get("id").get,
+                pn = request.session.get("name").get,
+                fdat = Some(new DateTime()),
+                tdat = Some(new DateTime()),
+                wf = Workflow(
+                    s = "New",
+                    aprid = List(manager.get._id.stringify, smanager.get._id.stringify),
+                    aprn = List(manager.get.p.fn + " " + manager.get.p.ln, smanager.get.p.fn + " " + smanager.get.p.ln),
+                    aprbyid = None,
+                    aprbyn = None,
+                    rjtbyid = None,
+                    rjtbyn = None,
+                    cclbyid = None,
+                    cclbyn = None,
+                    aprmthd = "Either manager or substitute manager approve leave request"
+                )
+            )) 
+          } else {
+            leaveform.fill(LeaveModel.doc.copy(
+                docnum = docnum.toInt,
+                pid = request.session.get("id").get,
+                pn = request.session.get("name").get,
+                fdat = Some(new DateTime()),
+                tdat = Some(new DateTime()),
+                wf = Workflow(
+                    s = "New",
+                    aprid = List(manager.get._id.stringify),
+                    aprn = List(manager.get.p.fn + " " + manager.get.p.ln),
+                    aprbyid = None,
+                    aprbyn = None,
+                    rjtbyid = None,
+                    rjtbyn = None,
+                    cclbyid = None,
+                    cclbyn = None,
+                    aprmthd = "Either manager or substitute manager approve leave request"
+                )
+            ))
+          }
+        } else {
+          
+          val ismanageronleave = Await.result(LeaveModel.isOnleave(person.p.mgrid, new DateTime().toLocalDate().toDateTimeAtStartOfDay(), request), Tools.db_timeout)
+          if (ismanageronleave && person.p.smgrid != "") {
+            val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid))), Tools.db_timeout)
+            leaveform.fill(LeaveModel.doc.copy(
+                docnum = docnum.toInt,
+                pid = request.session.get("id").get,
+                pn = request.session.get("name").get,
+                fdat = Some(new DateTime()),
+                tdat = Some(new DateTime()),
+                wf = Workflow(
+                    s = "New",
+                    aprid = List(manager.get._id.stringify, smanager.get._id.stringify),
+                    aprn = List(manager.get.p.fn + " " + manager.get.p.ln, smanager.get.p.fn + " " + smanager.get.p.ln),
+                    aprbyid = None,
+                    aprbyn = None,
+                    rjtbyid = None,
+                    rjtbyn = None,
+                    cclbyid = None,
+                    cclbyn = None,
+                    aprmthd = "Either manager or substitute manager approve leave request"
+                )
+            ))
+          } else {
+            leaveform.fill(LeaveModel.doc.copy(
+                docnum = docnum.toInt,
+                pid = request.session.get("id").get,
+                pn = request.session.get("name").get,
+                fdat = Some(new DateTime()),
+                tdat = Some(new DateTime()),
+                wf = Workflow(
+                    s = "New",
+                    aprid = List(manager.get._id.stringify),
+                    aprn = List(manager.get.p.fn + " " + manager.get.p.ln),
+                    aprbyid = None,
+                    aprbyn = None,
+                    rjtbyid = None,
+                    rjtbyn = None,
+                    cclbyid = None,
+                    cclbyn = None,
+                    aprmthd = "Only manager can approve leave request"
+                )
+            ))
+          }
+        }
+                  
+	      Ok(views.html.leave.form(leave, leavetypes))
+      }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
 	  }
 	}}
 	
@@ -109,10 +261,10 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	          maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
 	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get))
 	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
-            maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.wf.aprid)), request)
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
             maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> formWithData.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	        } yield {
+                        
             val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
             if (maybeperson.get.p.edat.get.isAfter(formWithData.fdat.get.plusDays(1))) {
               // restricted apply leave before employment start date.
@@ -136,57 +288,67 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                     formWithData.copy(_id = BSONObjectID.generate, wf = formWithData.wf.copy(s = "Pending Approval"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
                     
               LeaveModel.insert(leave_update, p_request=request)
-              
-              // Insert Audit Log
-              AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=leave_objectID.stringify, c="Apply leave request."), p_request=request)
-              
+                 
               // Update leave profile
               val leaveprofile_update = maybeleaveprofile.get.copy(
                   cal = maybeleaveprofile.get.cal.copy(papr = maybeleaveprofile.get.cal.papr + leave_update.uti + leave_update.cfuti)
               )
               LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
                 
-              // Add ToDo
-              val contentMap = Map(
-                  "DOCUNUM"->leave_update.docnum.toString(), 
-                  "APPLICANT"->leave_update.pn, 
-                  "NUMDAY"->(leave_update.uti + leave_update.cfuti).toString(), 
-                  "LEAVETYPE"->leave_update.lt, 
-                  "FDAT"->(leave_update.fdat.get.dayOfMonth().getAsText + "-" + leave_update.fdat.get.monthOfYear().getAsShortText + "-" + leave_update.fdat.get.getYear.toString()),
-                  "TDAT"->(leave_update.tdat.get.dayOfMonth().getAsText + "-" + leave_update.tdat.get.monthOfYear().getAsShortText + "-" + leave_update.tdat.get.getYear.toString())
-              )
-              val buttonMap = Map(
-                  "APPROVELINK"->(Tools.hostname + "/leave/approve/" + leave_update._id.stringify), 
-                  "DOCLINK"->(Tools.hostname + "/leave/view/" + leave_update._id.stringify)    
-              )
-              if (leave_update.fdat.get == leave_update.tdat.get) {
-                TaskModel.insert(7, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
-              } else {
-                TaskModel.insert(1, leave_update.wf.aprid, leave_update._id.stringify, contentMap, buttonMap, "", request)
-              }
- 
-              // Send email
-              val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
-              val replaceMap = Map(
-                  "MANAGER"->leave_update.wf.aprn, 
-                  "APPLICANT"->leave_update.pn, 
-                  "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
-                  "LEAVETYPE"->leave_update.lt, 
-                  "DOCNUM"->leave_update.docnum.toString(), 
-                  "APPROVEURL"->(Tools.hostname+"/leave/approve/"+leave_update._id.stringify+"?p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") approved."),
-                  "REJECTURL"->(Tools.hostname+"/leave/reject?p_id="+leave_update._id.stringify+"&p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") rejected."), 
-                  "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), 
-                  "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-                  "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-                  "REASON"-> reason,
-                  "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
-                  "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
-              )
-              if (leave_update.fdat.get == leave_update.tdat.get) {
-                MailUtility.getEmailConfig(List(maybemanager.get.p.em), 10, replaceMap).map { email => mailerClient.send(email) }
-              } else {
-                MailUtility.getEmailConfig(List(maybemanager.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
-              }
+              // Loop thru approver list to add to do list and send email
+              leave_update.wf.aprid.foreach { approverid =>  {
+                
+                val approver = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(approverid))), Tools.db_timeout)
+                
+                // Add ToDo
+                val contentMap = Map(
+                    "DOCUNUM"->leave_update.docnum.toString(), 
+                    "APPLICANT"->leave_update.pn, 
+                    "NUMDAY"->(leave_update.uti + leave_update.cfuti).toString(), 
+                    "LEAVETYPE"->leave_update.lt, 
+                    "FDAT"->(leave_update.fdat.get.dayOfMonth().getAsText + "-" + leave_update.fdat.get.monthOfYear().getAsShortText + "-" + leave_update.fdat.get.getYear.toString()),
+                    "TDAT"->(leave_update.tdat.get.dayOfMonth().getAsText + "-" + leave_update.tdat.get.monthOfYear().getAsShortText + "-" + leave_update.tdat.get.getYear.toString())
+                )
+                val buttonMap = Map(
+                    "APPROVELINK"->(Tools.hostname + "/leave/approve/" + leave_update._id.stringify), 
+                    "DOCLINK"->(Tools.hostname + "/leave/view/" + leave_update._id.stringify)    
+                )
+                
+                if (leave_update.fdat.get == leave_update.tdat.get) {
+                  TaskModel.insert(7, approver.get._id.stringify, leave_update._id.stringify, contentMap, buttonMap, "", request)
+                } else {
+                  TaskModel.insert(1, approver.get._id.stringify, leave_update._id.stringify, contentMap, buttonMap, "", request)
+                }
+                
+                // Send email
+                val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
+                val replaceMap = Map(
+                    "MANAGER"->(approver.get.p.fn + " " + approver.get.p.ln), 
+                    "APPLICANT"->leave_update.pn, 
+                    "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+                    "LEAVETYPE"->leave_update.lt, 
+                    "DOCNUM"->leave_update.docnum.toString(), 
+                    "APPROVEURL"->(Tools.hostname+"/leave/approve/"+leave_update._id.stringify+"?p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") approved."),
+                    "REJECTURL"->(Tools.hostname+"/leave/reject?p_id="+leave_update._id.stringify+"&p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") rejected."), 
+                    "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), 
+                    "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                    "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                    "REASON"-> reason,
+                    "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
+                    "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
+                )
+                    
+                if (leave_update.fdat.get == leave_update.tdat.get) {
+                  MailUtility.getEmailConfig(List(approver.get.p.em), 10, replaceMap).map { email => mailerClient.send(email) }
+                } else {
+                  MailUtility.getEmailConfig(List(approver.get.p.em), 3, replaceMap).map { email => mailerClient.send(email) }
+                }
+                
+              }}
+              
+              // Insert Audit Log
+              AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=leave_objectID.stringify, c="Apply leave request."), p_request=request)
+                
               Redirect(routes.DashboardController.index)
             }
           }
@@ -209,66 +371,147 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	def approve(p_id:String, p_msg:String) = withAuth { username => implicit request => {
 	  for {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-      maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
+      maybeapplicant <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
 	    maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
 	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt), request)
-	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeperson.get.p.off))
+	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeapplicant.get.p.off))
       maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	  } yield {
 	    // Check authorized
-	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==request.session.get("id").get && !maybeleave.get.ld) {
+	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid.contains(request.session.get("id").get) && !maybeleave.get.wf.aprbyid.getOrElse(List()).contains(request.session.get("id").get) && !maybeleave.get.ld) {
 	      
-        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
+        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeapplicant.get, maybeoffice.get, request)
         val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
+        
+        if (maybeleave.get.wf.aprmthd == "Both manager and substitute manager must approve leave request" && maybeleave.get.wf.aprid.length > 1) {
+          
+          if (maybeleave.get.wf.aprbyid.getOrElse(List()).length > 0) {
+            // Update Leave
+            val approversbyid = maybeleave.get.wf.aprbyid.getOrElse(List()) ::: List(request.session.get("id").get)
+            val approversbyn = maybeleave.get.wf.aprbyn.getOrElse(List()) ::: List(request.session.get("name").get)
+            val leave_update = if (carryforward_bal <= 0)
+              maybeleave.get.copy(wf = maybeleave.get.wf.copy(s="Approved", aprbyid=Some(approversbyid), aprbyn=Some(approversbyn)), uti = appliedduration, cfuti = 0)
+              else if (carryforward_bal >= appliedduration)
+                maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved", aprbyid=Some(approversbyid), aprbyn=Some(approversbyn)), uti = 0, cfuti = appliedduration)
+                else
+                  maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved", aprbyid=Some(approversbyid), aprbyn=Some(approversbyn)), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
+            LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
             
-        // Update Leave
-        val leave_update = if (carryforward_bal <= 0)
-          maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = appliedduration, cfuti = 0)
-          else if (carryforward_bal >= appliedduration)
-            maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = 0, cfuti = appliedduration)
-            else
-              maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved"), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
-                      
-        LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
+            // Update leave profile
+            val leaveprofile_update = if (carryforward_bal <= 0) 
+              maybeleaveprofile.get.copy(cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti))
+              else if (carryforward_bal >= appliedduration)
+                maybeleaveprofile.get.copy(cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti))
+                else
+                  maybeleaveprofile.get.copy(cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal), papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti))           
+            LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)      
+            
+            // Update Todo
+            Await.result(TaskModel.setCompleted(request.session.get("id").get, leave_update._id.stringify, request), Tools.db_timeout)
+            
+            // Send Email
+            val replaceMap = Map(
+                "APPROVEDBY1"->leave_update.wf.aprbyn.get(0),
+                "APPROVEDBY2"->leave_update.wf.aprbyn.get(1),
+                "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+                "LEAVETYPE"->leave_update.lt, 
+                "DOCNUM"->leave_update.docnum.toString(), 
+                "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                "BALANCE" -> (leaveprofile_update.cal.cbal).toString(),
+                "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
+            )
+            if (leave_update.fdat.get == leave_update.tdat.get) {
+              MailUtility.getEmailConfig(List(maybeapplicant.get.p.em), 17, replaceMap).map { email => mailerClient.send(email) }
+            } else {
+              MailUtility.getEmailConfig(List(maybeapplicant.get.p.em), 18, replaceMap).map { email => mailerClient.send(email) }
+            }
+          } else {
+            // Update Leave
+            val approversbyid = List(request.session.get("id").get)
+            val approversbyn = List(request.session.get("name").get)
+            val leave_update = if (carryforward_bal <= 0)
+              maybeleave.get.copy(wf = maybeleave.get.wf.copy(aprbyid=Some(approversbyid), aprbyn=Some(approversbyn)), uti = appliedduration, cfuti = 0)
+              else if (carryforward_bal >= appliedduration)
+                maybeleave.get.copy(wf = maybeleave.get.wf.copy(aprbyid=Some(approversbyid), aprbyn=Some(approversbyn)), uti = 0, cfuti = appliedduration)
+                else
+                  maybeleave.get.copy(wf = maybeleave.get.wf.copy(aprbyid=Some(approversbyid), aprbyn=Some(approversbyn)), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
+            LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
+            
+            // Update Todo
+            Await.result(TaskModel.setCompleted(request.session.get("id").get, leave_update._id.stringify, request), Tools.db_timeout)
+            
+            // Send Email            
+            val replaceMap = Map(
+                "APPLICANT"->leave_update.pn,
+                "APPROVEDBY"->request.session.get("name").get,
+                "PENDINGBY"->leave_update.wf.aprn.filter( approver => approver != request.session.get("name").get ).mkString,
+                "LEAVETYPE"->leave_update.lt, 
+                "DOCNUM"->leave_update.docnum.toString(), 
+                "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
+            )
+            if (leave_update.fdat.get == leave_update.tdat.get) {
+              MailUtility.getEmailConfig(List(maybeapplicant.get.p.em), 15, replaceMap).map { email => mailerClient.send(email) }
+            } else {
+              MailUtility.getEmailConfig(List(maybeapplicant.get.p.em), 16, replaceMap).map { email => mailerClient.send(email) }
+            }
+          }
+          
+        } else {
+          // Update Leave
+          val leave_update = if (carryforward_bal <= 0)
+            maybeleave.get.copy(wf = maybeleave.get.wf.copy(s="Approved", aprbyid=Some(List(request.session.get("id").get)), aprbyn=Some(List(request.session.get("name").get))), uti = appliedduration, cfuti = 0)
+            else if (carryforward_bal >= appliedduration)
+              maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved", aprbyid=Some(List(request.session.get("id").get)), aprbyn=Some(List(request.session.get("name").get))), uti = 0, cfuti = appliedduration)
+              else
+                maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Approved", aprbyid=Some(List(request.session.get("id").get)), aprbyn=Some(List(request.session.get("name").get))), uti = appliedduration - carryforward_bal, cfuti = carryforward_bal)
+          LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
+          
+          // Update leave profile
+          val leaveprofile_update = if (carryforward_bal <= 0) 
+            maybeleaveprofile.get.copy(cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti))
+            else if (carryforward_bal >= appliedduration)
+              maybeleaveprofile.get.copy(cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti))
+              else
+                maybeleaveprofile.get.copy(cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal), papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti))           
+          LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)       
+                
+          // Update Todo
+          Await.result(TaskModel.setCompletedMulti(leave_update._id.stringify, request), Tools.db_timeout)
+          
+          // Send Email
+          val cc = {
+            if (leave_update.wf.aprid.length > 1) {
+              val ccid = leave_update.wf.aprid.filter ( approver => approver != request.session.get("id").get )
+              val ccperson = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(ccid(0)))), Tools.db_timeout)
+              List(ccperson.get.p.em)
+            } else {
+              List()
+            }
+          }
+          val replaceMap = Map(
+              "APPROVER"->request.session.get("name").get, 
+              "APPLICANT"->leave_update.pn, 
+              "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+              "LEAVETYPE"->leave_update.lt, 
+              "DOCNUM"->leave_update.docnum.toString(), 
+              "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+              "BALANCE" -> (leaveprofile_update.cal.cbal).toString(),
+              "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)           
+          )
+          if (leave_update.fdat.get == leave_update.tdat.get) {
+            MailUtility.getEmailConfig(List(maybeapplicant.get.p.em), cc, 11, replaceMap).map { email => mailerClient.send(email) }
+          } else {
+            MailUtility.getEmailConfig(List(maybeapplicant.get.p.em), cc, 4, replaceMap).map { email => mailerClient.send(email) }
+          }
+        }
         
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Approve leave request."), p_request=request)
-        
-        // Update leave profile
-        val leaveprofile_update = if (carryforward_bal <= 0) 
-          maybeleaveprofile.get.copy(
-              cal = maybeleaveprofile.get.cal.copy(uti = maybeleaveprofile.get.cal.uti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
-          )
-          else if (carryforward_bal >= appliedduration)
-            maybeleaveprofile.get.copy(
-                cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + appliedduration, papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
-            )
-            else
-              maybeleaveprofile.get.copy(
-                  cal = maybeleaveprofile.get.cal.copy(cfuti = maybeleaveprofile.get.cal.cfuti + carryforward_bal, uti = maybeleaveprofile.get.cal.uti + (appliedduration - carryforward_bal), papr = maybeleaveprofile.get.cal.papr - maybeleave.get.uti - maybeleave.get.cfuti)
-              )           
-        LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
-         
-        // Update Todo
-        Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
-            
-        // Send Email
-        val replaceMap = Map(
-            "MANAGER"->leave_update.wf.aprn, 
-            "APPLICANT"->leave_update.pn, 
-            "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
-            "LEAVETYPE"->leave_update.lt, 
-            "DOCNUM"->leave_update.docnum.toString(), 
-            "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-            "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-            "BALANCE" -> (leaveprofile_update.cal.cbal).toString(),
-            "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)           
-        )
-        if (leave_update.fdat.get == leave_update.tdat.get) {
-          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 11, replaceMap).map { email => mailerClient.send(email) }
-        } else {
-          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 4, replaceMap).map { email => mailerClient.send(email) }
-        }
+                 
         Redirect(request.session.get("path").get).flashing("success" -> p_msg)
 	      
 	    } else {
@@ -296,14 +539,11 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
       maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
     } yield {
       // Check authorized
-      if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid==request.session.get("id").get && !maybeleave.get.ld) {
+      if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid.contains(request.session.get("id").get) && !maybeleave.get.wf.aprbyid.contains(request.session.get("id").get) && !maybeleave.get.ld) {
                 
         // Update Leave
-        val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy( s = "Rejected"))
+        val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy(s="Rejected", rjtbyid=Some(request.session.get("id").get), rjtbyn=Some(request.session.get("name").get)))
         LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
-        
-        // Insert audit log
-        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject leave request."), p_request=request)
         
         // Update leave profile
         val leaveprofile_update = maybeleaveprofile.get.copy(
@@ -312,12 +552,21 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         
         // Update Todo
-        Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
+        Await.result(TaskModel.setCompletedMulti(leave_update._id.stringify, request), Tools.db_timeout)
         
         // Send Email
+        val cc = {
+          if (leave_update.wf.aprid.length > 1) {
+            val ccid = leave_update.wf.aprid.filter ( approver => approver != request.session.get("id").get )
+            val ccperson = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(ccid(0)))), Tools.db_timeout)
+            List(ccperson.get.p.em)
+          } else {
+            List()
+          }
+        }
         val replaceMap = Map(
-              "MANAGER"->leave_update.wf.aprn, 
-              "APPLICANT"->leave_update.pn, 
+              "APPLICANT"->leave_update.pn,
+              "REJECTER"->leave_update.wf.rjtbyn.get, 
               "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
               "LEAVETYPE"->leave_update.lt, 
               "DOCNUM"->leave_update.docnum.toString(), 
@@ -327,11 +576,14 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
         )
         if (leave_update.fdat.get == leave_update.tdat.get) {
-          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 12, replaceMap).map { email => mailerClient.send(email) }
+          MailUtility.getEmailConfig(List(maybeperson.get.p.em), cc, 12, replaceMap).map { email => mailerClient.send(email) }
         } else {
-          MailUtility.getEmailConfig(List(maybeperson.get.p.em), 5, replaceMap).map { email => mailerClient.send(email) }
+          MailUtility.getEmailConfig(List(maybeperson.get.p.em), cc, 5, replaceMap).map { email => mailerClient.send(email) }
         }
             
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject leave request."), p_request=request)
+        
         Redirect(request.session.get("path").get).flashing("success" -> p_msg)
       } else {
         Ok(views.html.error.unauthorized())
@@ -344,16 +596,12 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
       maybeapplicant <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
-      maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.wf.aprid)), request)
     } yield {
       if ((maybeleave.get.wf.s=="Pending Approval" || maybeleave.get.wf.s=="Approved") && (maybeleave.get.pid==request.session.get("id").get || hasRoles(List("Admin"), request)) && !maybeleave.get.ld) {
         
         // Update Leave
-        val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy( s = "Cancelled"))
+        val leave_update = maybeleave.get.copy(wf = maybeleave.get.wf.copy(s = "Cancelled", cclbyid=Some(request.session.get("id").get), cclbyn=Some(request.session.get("name").get)))
         LeaveModel.update(BSONDocument("_id" -> maybeleave.get._id), leave_update, request)
-        
-        // Insert audit log
-        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Cancel leave request."), p_request=request)
         
         if (maybeleave.get.wf.s=="Approved") {
           // Update Leave Profile
@@ -371,13 +619,19 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
           LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
         
           // Update Todo
-          Await.result(TaskModel.setCompleted(leave_update._id.stringify, request), Tools.db_timeout)
+          // Normally cancel by applicant and task was pending by another person, thus can be asynchronous.
+          TaskModel.setCompletedMulti(leave_update._id.stringify, request)
         }
                 
         // No email if applicant does not email
         if (!maybeapplicant.get.p.nem){
           // Send Email
-          val recipients = List(maybeapplicant.get.p.em, maybemanager.get.p.em, request.session.get("username").get)
+          val approvers = leave_update.wf.aprid.map { approverid => {
+            val approver = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(approverid))), Tools.db_timeout)
+            approver.get.p.em
+          } }
+          
+          val recipients = (approvers ::: List(maybeapplicant.get.p.em)).filter( approver => approver != request.session.get("username").get )
           val replaceMap = Map(
               "BY"->request.session.get("name").get, 
               "APPLICANT"->leave_update.pn,
@@ -396,7 +650,10 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             MailUtility.getEmailConfig(recipients.distinct, 6, replaceMap).map { email => mailerClient.send(email) }
           }
         }
-                
+           
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Cancel leave request."), p_request=request)
+        
         Redirect(request.session.get("path").get)
       } else {
         Ok(views.html.error.unauthorized())
@@ -439,7 +696,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
             val reason = "" 
             val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-            val url = if (( PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
+            val url = if (( PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -462,7 +719,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
               val reason = ""
               val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-              val url = if ((leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
+              val url = if ((leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -511,7 +768,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
             // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
             val reason = ""
             val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-            val url = if (PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
+            val url = if (PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
             val start = fmt.print(leave.fdat.get)
             val end = fmt.print(leave.tdat.get.plusDays(1))
             if (count > 0) leavejsonstr = leavejsonstr + ","
@@ -534,7 +791,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
               val reason = ""
               val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-              val url = if (leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
+              val url = if (leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
               val start = fmt.print(leave.fdat.get)
               val end = fmt.print(leave.tdat.get.plusDays(1))
               if (count > 0) leavejsonstr = leavejsonstr + ","

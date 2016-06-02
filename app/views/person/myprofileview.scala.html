@@ -1,4 +1,4 @@
-@(person:Person, manager:Person, leaveprofiles: List[LeaveProfile])(implicit session: play.api.mvc.Session)
+@(person:Person, manager:String, smanager:String, leaveprofiles: List[LeaveProfile])(implicit session: play.api.mvc.Session)
 
 @pluginjs = {
 	<script src="@routes.Assets.at("layout/jquery-ui/javascripts/jquery-ui-1.10.3.full.min.js")"></script>
@@ -64,7 +64,10 @@
 						@contentRow("Last Name", person.p.ln)
 						@contentRow("Email", person.p.em)
 						@if(person.p.pt!="") { @contentRow("Position", person.p.pt) }
-						@contentRow("Manager", manager.p.fn + " " + manager.p.ln)
+						@contentRow("Manager", manager)
+						@if(smanager!=""){
+							@contentRow("Substitute Manager", smanager)
+						}
 						@contentRow("Gender", person.p.g)
 						@contentRow("Marital Status", person.p.ms)
 						@contentRow("Department", person.p.dpm)

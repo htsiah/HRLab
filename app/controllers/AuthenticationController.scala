@@ -107,6 +107,7 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
                         "office"->person_doc.get.p.off,
                         "roles"->person_doc.get.p.rl.mkString(","),
                         "managerid"->person_doc.get.p.mgrid,
+                        "smanagerid"->person_doc.get.p.smgrid,
                         "path"->(routes.DashboardController.index).toString,
                         "ismanager"->isManager
                     ) 
@@ -122,6 +123,7 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
                         "office"->person_doc.get.p.off,
                         "roles"->person_doc.get.p.rl.mkString(","),
                         "managerid"->person_doc.get.p.mgrid,
+                        "smanagerid"->person_doc.get.p.smgrid,
                         "path"->(routes.DashboardController.index).toString,
                         "ismanager"->isManager
                     ) 

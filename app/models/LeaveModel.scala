@@ -34,8 +34,15 @@ case class Leave (
 
 case class Workflow (
     s: String,
-    aprid: String,
-    aprn: String
+    aprid: List[String],
+    aprn: List[String],
+    aprbyid: Option[List[String]],
+    aprbyn: Option[List[String]],
+    rjtbyid: Option[String],
+    rjtbyn: Option[String],
+    cclbyid: Option[String],
+    cclbyn: Option[String],
+    aprmthd: String
 )
 
 object LeaveModel {
@@ -59,8 +66,15 @@ object LeaveModel {
     def read(p_doc: BSONDocument): Workflow = {
       Workflow(
           p_doc.getAs[String]("s").get,
-          p_doc.getAs[String]("aprid").get,
-          p_doc.getAs[String]("aprn").get
+          p_doc.getAs[List[String]]("aprid").get,
+          p_doc.getAs[List[String]]("aprn").get,
+          p_doc.getAs[List[String]]("aprbyid").map(v => v),
+          p_doc.getAs[List[String]]("aprbyn").map(v => v),
+          p_doc.getAs[String]("rjtbyid").map(v => v),
+          p_doc.getAs[String]("rjtbyn").map(v => v),
+          p_doc.getAs[String]("cclbyid").map(v => v),
+          p_doc.getAs[String]("cclbyn").map(v => v),
+          p_doc.getAs[String]("aprmthd").get
       )
     }
   }
@@ -106,7 +120,14 @@ object LeaveModel {
       BSONDocument(
           "s" -> p_doc.s,
           "aprid" -> p_doc.aprid,
-          "aprn" -> p_doc.aprn
+          "aprn" -> p_doc.aprn,
+          "aprbyid" -> p_doc.aprbyid,
+          "aprbyn" -> p_doc.aprbyn,
+          "rjtbyid" -> p_doc.rjtbyid,
+          "rjtbyn" -> p_doc.rjtbyn,
+          "cclbyid" -> p_doc.cclbyid,
+          "cclbyn" -> p_doc.cclbyn,
+          "aprmthd" -> p_doc.aprmthd
       )     
     }
   }
@@ -149,8 +170,15 @@ object LeaveModel {
       ld = false,
       wf = Workflow(
           s = "New",
-          aprid = "",
-          aprn = ""
+          aprid = List(""),
+          aprn = List(""),
+          aprbyid = None,
+          aprbyn = None,
+          rjtbyid = None,
+          rjtbyn = None,
+          cclbyid =None,
+          cclbyn = None,
+          aprmthd = "Only manager can approve leave request"
       ),
       sys=None
   )
@@ -285,9 +313,17 @@ object LeaveModel {
     appliedduration
   }
   
-  def isOnleave(p_id:String, p_dt:String, p_date: DateTime, p_request:RequestHeader) = {
+  def isOnleave(p_pid:String, p_dt:String, p_date: DateTime, p_request:RequestHeader) = {
     for {
-      leave <- this.findOne(BSONDocument("pid"->p_id, "dt"->p_dt, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
+      leave <- this.findOne(BSONDocument("pid"->p_pid, "dt"->p_dt, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
+    } yield {
+      if (leave.isEmpty) false else true
+    }
+  }
+  
+  def isOnleave(p_pid:String, p_date: DateTime, p_request:RequestHeader) = {
+    for {
+      leave <- this.findOne(BSONDocument("pid"->p_pid, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
     } yield {
       if (leave.isEmpty) false else true
     }

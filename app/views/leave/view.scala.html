@@ -24,7 +24,7 @@
 @inlinestyle = {}
 
 @buttons = {
-	@if(leave.wf.s=="Pending Approval" && session.get("id").get==leave.wf.aprid && !leave.ld) {
+	@if(leave.wf.s=="Pending Approval" && leave.wf.aprid.contains(session.get("id").get) && !leave.wf.aprbyid.contains(session.get("id").get) && !leave.ld) {
 		<a href="@routes.LeaveController.approve(leave._id.stringify)" class="btn btn-sm btn btn-block">Approve</a>	
 		<a href="@routes.LeaveController.reject(leave._id.stringify)" class="btn btn-sm btn btn-block">Reject</a>
 	}
@@ -48,7 +48,11 @@
 	@contentRow("Doc Num", leave.docnum.toString())
 	@contentRow("Applicant", leave.pn)
 	@contentRow("Status", leave.wf.s)
-	@contentRow("Approver", leave.wf.aprn)
+	@contentRow("Approver", leave.wf.aprn.mkString(", "))
+	@if(leave.wf.aprbyn.getOrElse(List())!=List()){ @contentRow("Approver By", leave.wf.aprbyn.get.mkString(", ")) }
+	@if(leave.wf.rjtbyn.getOrElse("")!=""){ @contentRow("Rejected By", leave.wf.rjtbyn.get) }
+	@if(leave.wf.cclbyn.getOrElse("")!=""){ @contentRow("Cancelled By", leave.wf.cclbyn.get) }
+	@contentRow("Approval Method", leave.wf.aprmthd)
 	@contentRow("Leave Type", leave.lt)
 	@contentRow("Day Type", leave.dt)
 	@contentRow("Date From", leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString())

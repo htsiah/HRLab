@@ -168,6 +168,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                       nem = false,
                       pt = "",
                       mgrid = person_objectID.stringify,
+                      smgrid = "",
                       g = formWithData.gender,
                       ms = formWithData.marital,
                       dpm = "Information Technology",

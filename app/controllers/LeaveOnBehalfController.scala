@@ -115,8 +115,15 @@ class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi,
                 r = formWithData.r,
                 wf = Workflow(
                     s = "New",
-                    aprid = request.session.get("id").get,
-                    aprn = request.session.get("name").get        
+                    aprid = List(request.session.get("id").get),
+                    aprn = List(request.session.get("name").get),
+                    aprbyid = Some(List(request.session.get("id").get)),
+                    aprbyn = Some(List(request.session.get("name").get)),
+                    rjtbyid = None,
+                    rjtbyn = None,
+                    cclbyid = None,
+                    cclbyn = None,
+                    aprmthd = "Automatically approved"
                 )
             )
             val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
