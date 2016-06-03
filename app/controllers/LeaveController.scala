@@ -262,7 +262,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get))
 	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
-            maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> formWithData.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+            maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> formWithData.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	        } yield {
                         
             val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
@@ -359,7 +359,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	def view(p_id:String) = withAuth { username => implicit request => {
 	  for {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	  } yield {
 	    maybeleave.map( leave => {
         val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }        
@@ -375,7 +375,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	    maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
 	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt), request)
 	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeapplicant.get.p.off))
-      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
 	  } yield {
 	    // Check authorized
 	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid.contains(request.session.get("id").get) && !maybeleave.get.wf.aprbyid.getOrElse(List()).contains(request.session.get("id").get) && !maybeleave.get.ld) {
@@ -523,7 +523,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
   def companyview(p_id:String) = withAuth { username => implicit request => {
     for {
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
     } yield {
       maybeleave.map( leave => {
         val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }   

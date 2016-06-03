@@ -26,7 +26,7 @@ class LeaveReportController @Inject() (val reactiveMongoApi: ReactiveMongoApi) e
   def view(p_id:String) = withAuth { username => implicit request => {
     for {
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
     } yield {
       maybeleave.map( leave => {
         val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
