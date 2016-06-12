@@ -17,7 +17,7 @@ application_release=3.1
 
 # Domain name
 # can be used for mail, etc
-domain_name="http://localhost:9001"
+domain_name="https://app.hrsifu.my"
 
 # The application languages
 # ~~~~~
@@ -56,7 +56,7 @@ play.i18n.langs = [ "en" ]
 # evolutionplugin=disabled
 
 # Custom Logger on Application (OFF/ERROR/INFO/DEBUG) and Security (OFF/ON)
-# dblogger_application=DEBUG
+dblogger_application=ERROR
 dblogger_security=ON 
 
 # ****************************************** #
@@ -65,32 +65,28 @@ dblogger_security=ON
 play.modules.enabled += "play.modules.reactivemongo.ReactiveMongoModule"
 
 # Reactivemongo default database
-mongodb.uri = "mongodb://localhost:27017/d-hrsifu-directory"
+mongodb.uri = "mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-directory"
 
 # Custom mongodb connection
 mongodb_timeout = 10000
-mongodb_directory = "d-hrsifu-directory"
-mongodb_directory_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-directory?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_config="d-hrsifu-config"
-mongodb_config_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-config?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_admin="d-hrsifu-admin"
-mongodb_admin_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-admin?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_dblogger="d-hrsifu-dblogger"
-mongodb_dblogger_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-dblogger?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_calendar="d-hrsifu-calendar"
-mongodb_calendar_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-calendar?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_leave="d-hrsifu-leave"
-mongodb_leave_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-leave?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_leave_file="d-hrsifu-leave-file"
-mongodb_leave__file_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-leave-file?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_job="d-hrsifu-job"
-mongodb_job_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-job?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-mongodb_audit_log="d-hrsifu-audit-log"
-mongodb_audit_log_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-audit-log?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
-
-# If you want to turn on logging for ReactiveMongo, uncomment and customize this line
-#logger.reactivemongo=DEBUG
-#logger.reactivemongo=OFF
+mongodb_directory = "hrsifu-directory"
+mongodb_directory_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-directory?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_config="hrsifu-config"
+mongodb_config_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-config?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_admin="hrsifu-admin"
+mongodb_admin_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-admin?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_dblogger="hrsifu-dblogger"
+mongodb_dblogger_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-dblogger?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_calendar="hrsifu-calendar"
+mongodb_calendar_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-calendar?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_leave="hrsifu-leave"
+mongodb_leave_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-leave?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_leave_file="hrsifu-leave-file"
+mongodb_leave_file_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-leave-file?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_job="hrsifu-job"
+mongodb_job_uri="iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-job?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_audit_log="hrsifu-audit-log"
+mongodb_audit_log_uri="iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-audit-log?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 
 # ****************************************** #
 # ***             Play-Mailer            *** #
@@ -107,18 +103,12 @@ mongodb_audit_log_uri="mongodb://iamadmin:hrlab-admin@localhost:27017/d-hrsifu-a
 # mock (defaults to no, will only log all the email properties instead of sending an email)
 
 play.mailer {
-  host=localhost
-  port=27
+	host=smtp.mailgun.org
+	port=25
 #  ssl=false
 #  tls=false
-#  user=clark.kent
-#  password=superman
-#   debug=true
+	user="support@hrsifu.my"
+    password=oyYF-8T1tMjYkgpIXMzyKw
+#  debug=false
 #  mock=false
-#   host=smtp.mailgun.org
-#   port=25
-#  ssl=true
-#  tls=false
-#   user="support@hrsifu.my"
-#   password=oyYF-8T1tMjYkgpIXMzyKw
 }
