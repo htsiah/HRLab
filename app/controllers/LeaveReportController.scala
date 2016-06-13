@@ -12,7 +12,7 @@ import play.modules.reactivemongo.{
   MongoController, ReactiveMongoApi, ReactiveMongoComponents
 }
 
-import models.{LeaveModel, LeaveFileModel}
+import models.{LeaveModel, LeaveFileModel, PersonModel}
 
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import reactivemongo.api.gridfs.ReadFile
@@ -29,8 +29,15 @@ class LeaveReportController @Inject() (val reactiveMongoApi: ReactiveMongoApi) e
       maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
     } yield {
       maybeleave.map( leave => {
-        val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
-        Ok(views.html.leavereport.view(leave, filename.toString().replaceAll("\"", "")))
+        
+        // Viewable by admin, manager, substitute manager and applicant
+        if (leave.pid == request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) {
+          val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
+          Ok(views.html.leavereport.view(leave, filename.toString().replaceAll("\"", "")))
+        } else {
+          Ok(views.html.error.unauthorized())
+        }
+
       }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
     }
   }}
