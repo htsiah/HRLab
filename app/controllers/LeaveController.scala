@@ -644,11 +644,21 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
               "BALANCE" -> (maybeleaveprofile.get.cal.cbal + leave_update.cfuti + leave_update.uti).toString(),
               "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
           )
-          if (leave_update.fdat.get == leave_update.tdat.get) {
-            MailUtility.getEmailConfig(recipients.distinct, 13, replaceMap).map { email => mailerClient.send(email) }
+          
+          if (leave_update.pid == request.session.get("id").get) {
+            if (leave_update.fdat.get == leave_update.tdat.get) {
+              MailUtility.getEmailConfig(recipients.distinct, 19, replaceMap).map { email => mailerClient.send(email) }
+            } else {
+              MailUtility.getEmailConfig(recipients.distinct, 20, replaceMap).map { email => mailerClient.send(email) }
+            }
           } else {
-            MailUtility.getEmailConfig(recipients.distinct, 6, replaceMap).map { email => mailerClient.send(email) }
+             if (leave_update.fdat.get == leave_update.tdat.get) {
+               MailUtility.getEmailConfig(recipients.distinct, 13, replaceMap).map { email => mailerClient.send(email) }
+             } else {
+               MailUtility.getEmailConfig(recipients.distinct, 6, replaceMap).map { email => mailerClient.send(email) }
+             }
           }
+         
         }
            
         // Insert audit log
