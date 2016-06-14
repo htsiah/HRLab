@@ -99,7 +99,6 @@ class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi,
             maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
             maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
             maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeperson.get.p.off))
-            maybemanager <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.mgrid)), request)
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1017))
             maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.lk" -> formWithData.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
           } yield {
@@ -175,6 +174,14 @@ class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi,
               val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
               if (!maybeperson.get.p.nem) {
                 val recipients = List(maybeperson.get.p.em)
+                val manager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.mgrid))), Tools.db_timeout)
+                val cc = if ( maybeperson.get.p.smgrid != "" ) { 
+                  val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.smgrid))), Tools.db_timeout) 
+                  List(manager.get.p.em, smanager.get.p.em)
+                } else { 
+                  List(manager.get.p.em)
+                }
+                                
                 val replaceMap = Map(
                     "BY"->request.session.get("name").get, 
                     "APPLICANT"->leave_update.pn, 
@@ -189,9 +196,9 @@ class LeaveOnBehalfController @Inject() (val reactiveMongoApi: ReactiveMongoApi,
                     "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
                 )
                 if (leave_update.fdat.get == leave_update.tdat.get) {
-                  MailUtility.getEmailConfig(recipients.distinct, 14, replaceMap).map { email => mailerClient.send(email) }
+                  MailUtility.getEmailConfig(recipients, cc.filter { email => email != request.session.get("username").get }, 14, replaceMap).map { email => mailerClient.send(email) }
                 } else {
-                  MailUtility.getEmailConfig(recipients.distinct, 9, replaceMap).map { email => mailerClient.send(email) }
+                  MailUtility.getEmailConfig(recipients, cc.filter { email => email != request.session.get("username").get }, 9, replaceMap).map { email => mailerClient.send(email) }
                 }
               }
               
