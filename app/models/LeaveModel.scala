@@ -293,26 +293,26 @@ object LeaveModel {
 
     applieddates.map( applieddate => {
      val iscompanyholiday =  Await.result(CompanyHolidayModel.isCompanyHoliday(applieddate, p_office.ct, p_office.st, p_request), Tools.db_timeout)
-     val isOnleave =  Await.result(this.isOnleave(p_leave.pid, p_leave.dt, applieddate, p_request), Tools.db_timeout)
-      if (isvalidonnonworkday) {
-        if ( p_leave.dt=="Full day" ) {
-          appliedduration = appliedduration + 1
-        } else {
-          appliedduration = appliedduration + 0.5
-        }
-      } else {
-        if (PersonModel.isWorkDay(p_person, applieddate) && iscompanyholiday==false && isOnleave==false) {
-          if ( p_leave.dt=="Full day" ) {
-            appliedduration = appliedduration + 1
-          } else {
-            appliedduration = appliedduration + 0.5
-          }
-        }
-      }     
+      
+     if (isvalidonnonworkday) {
+       if ( p_leave.dt=="Full day" ) {
+         appliedduration = appliedduration + 1
+       } else {
+         appliedduration = appliedduration + 0.5
+       }
+     } else {
+       if (PersonModel.isWorkDay(p_person, applieddate) && iscompanyholiday==false) {
+         if ( p_leave.dt=="Full day" ) {
+           appliedduration = appliedduration + 1
+         } else {
+           appliedduration = appliedduration + 0.5
+         }
+       }
+     }
     })
     appliedduration
   }
-  
+     
   def isOnleave(p_pid:String, p_dt:String, p_date: DateTime, p_request:RequestHeader) = {
     for {
       leave <- this.findOne(BSONDocument("pid"->p_pid, "dt"->p_dt, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
