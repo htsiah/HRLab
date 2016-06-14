@@ -324,6 +324,7 @@ var onDelete = function(p_lk) {
     $.ajax({
         url: "/leavefile/deleteByLK?p_lk=" + $("#docnum").val(),
         dataType: "json",
+        cache: false,
         success: function(data, textStatus, jqXHR){
         	$('#file').ace_file_input('reset_input');
         	$("#file-view").addClass("hidden");
