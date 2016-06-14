@@ -60,8 +60,8 @@ GET		/companyholiday/getcompanyholidaymyprofilejson		controllers.CompanyHolidayC
 # Leave
 GET		/leave/create											controllers.LeaveController.create
 POST	/leave/insert											controllers.LeaveController.insert
-GET		/leave/approve/:p_id									controllers.LeaveController.approve(p_id:String, p_msg:String?="")
-GET		/leave/reject											controllers.LeaveController.reject(p_id:String, p_msg:String?="")
+GET		/leave/approve/:p_id									controllers.LeaveController.approve(p_id:String, p_path:String?="", p_msg:String?="")
+GET		/leave/reject											controllers.LeaveController.reject(p_id:String, p_path:String?="",p_msg:String?="")
 GET		/leave/cancel											controllers.LeaveController.cancel(p_id:String)
 GET		/leave/view/:p_id										controllers.LeaveController.view(p_id:String)
 GET		/leave/company/view/:p_id								controllers.LeaveController.companyview(p_id:String)

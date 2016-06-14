@@ -328,8 +328,8 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
                     "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
                     "LEAVETYPE"->leave_update.lt, 
                     "DOCNUM"->leave_update.docnum.toString(), 
-                    "APPROVEURL"->(Tools.hostname+"/leave/approve/"+leave_update._id.stringify+"?p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") approved."),
-                    "REJECTURL"->(Tools.hostname+"/leave/reject?p_id="+leave_update._id.stringify+"&p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") rejected."), 
+                    "APPROVEURL"->(Tools.hostname+"/leave/approve/"+leave_update._id.stringify+"?p_path=/dashboard&p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") approved."),
+                    "REJECTURL"->(Tools.hostname+"/leave/reject?p_id="+leave_update._id.stringify+"&p_path=/dashboard&p_msg="+leave_update.pn+"%27s leave request (%23"+leave_update.docnum.toString()+") rejected."), 
                     "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify), 
                     "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
                     "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
@@ -375,7 +375,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	  }
 	}}
 	
-	def approve(p_id:String, p_msg:String) = withAuth { username => implicit request => {
+	def approve(p_id:String, p_path:String, p_msg:String) = withAuth { username => implicit request => {
 	  for {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeapplicant <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
@@ -518,8 +518,12 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Approve leave request."), p_request=request)
-                 
-        Redirect(request.session.get("path").get).flashing("success" -> p_msg)
+        
+        if (p_path!="") {
+          Redirect(p_path).flashing("success" -> p_msg)
+        } else {
+          Redirect(request.session.get("path").get).flashing("success" -> p_msg)
+        }
 	      
 	    } else {
 	      Ok(views.html.error.unauthorized())
@@ -546,7 +550,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
     }
   }}
   	
-	def reject(p_id:String, p_msg:String) = withAuth { username => implicit request => {
+	def reject(p_id:String, p_path:String, p_msg:String) = withAuth { username => implicit request => {
     for {
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
@@ -598,7 +602,11 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject leave request."), p_request=request)
         
-        Redirect(request.session.get("path").get).flashing("success" -> p_msg)
+        if (p_path!="") {
+          Redirect(p_path).flashing("success" -> p_msg)
+        } else {
+          Redirect(request.session.get("path").get).flashing("success" -> p_msg)
+        }
       } else {
         Ok(views.html.error.unauthorized())
       }
