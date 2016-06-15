@@ -57,18 +57,18 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
           } else {
             
             // Soft deletion
-            Await.result(AuthenticationModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request), Tools.db_timeout)
-            CompanyModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            OfficeModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            PersonModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            LeaveModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            LeaveProfileModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            LeaveSettingModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            LeavePolicyModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            KeywordModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            CompanyHolidayModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            TaskModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            AuditLogModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
+            AuthenticationModel.remove(BSONDocument(), request)
+            CompanyModel.remove(BSONDocument(), request)
+            OfficeModel.remove(BSONDocument(), request)
+            PersonModel.remove(BSONDocument(), request)
+            LeaveModel.remove(BSONDocument(), request)
+            LeaveProfileModel.remove(BSONDocument(), request)
+            LeaveSettingModel.remove(BSONDocument(), request)
+            LeavePolicyModel.remove(BSONDocument(), request)
+            KeywordModel.remove(BSONDocument(), request)
+            CompanyHolidayModel.remove(BSONDocument(), request)
+            TaskModel.remove(BSONDocument(), request)
+            AuditLogModel.remove(BSONDocument(), request)
             LeaveFileModel.remove(Json.obj(), request)
             
             // Send email
@@ -94,7 +94,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
   }}
   
   def error = withAuth { username => implicit request => {
-    Future.successful(Redirect(routes.DashboardController.index).flashing("error" -> "Delete abort! Contact support@hrlab.my."))
+    Future.successful(Redirect(routes.DashboardController.index).flashing("error" -> "Delete abort! Contact support@hrsifu.my."))
   }}
   
 }

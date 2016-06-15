@@ -128,7 +128,7 @@ object TaskModel {
     for {
       docs <- this.find(p_query)
     } yield {
-      docs.map { doc => 
+      docs.foreach { doc => 
         val future = col.update(p_query, doc.copy(sys = SystemDataStore.setDeletionFlag(this.updateSystem(doc))))
         future.onComplete {
           case Failure(e) => throw e
@@ -143,7 +143,7 @@ object TaskModel {
     for {
       docs <- this.find(p_query, p_request)
     } yield {
-      docs.map { doc => 
+      docs.foreach { doc => 
         val future = col.update(BSONDocument("_id" -> doc._id, "sys.ddat"->BSONDocument("$exists"->false)), doc.copy(sys = SystemDataStore.setDeletionFlag(this.updateSystem(doc), p_request)))
         future.onComplete {
           case Failure(e) => throw e
