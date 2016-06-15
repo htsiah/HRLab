@@ -69,22 +69,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
             CompanyHolidayModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             TaskModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
             AuditLogModel.remove(BSONDocument("sys.eid" -> request.session.get("entity").get), request)
-            LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity").get, "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]().map { files =>
-              val filesWithId = files.map { file => {
-                LeaveFileModel.gridFS.files.update(
-                    Json.obj("_id" -> file.id),
-                    Json.obj("$set" -> Json.obj("metadata" -> Json.obj(     
-                        "eid" -> file.metadata.value.get("eid").get,
-                        "filename" -> file.metadata.value.get("filename").get,
-                        "lk" -> file.metadata.value.get("lk").get,
-                        "f" -> file.metadata.value.get("f").get,
-                        "cby" -> file.metadata.value.get("cby").get,
-                        "ddat" -> BSONDateTime(new DateTime().getMillis),
-                        "dby" -> request.session.get("username")
-                    )))
-                )
-              }}
-            }
+            LeaveFileModel.remove(Json.obj(), request)
             
             // Send email
             mailerClient.send(

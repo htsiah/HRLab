@@ -2,7 +2,6 @@ package controllers
 
 import scala.concurrent.{Future,Await}
 
-import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -10,20 +9,11 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.json.{ Json, JsObject, JsString }
-
-import play.modules.reactivemongo.{
-  MongoController, ReactiveMongoApi, ReactiveMongoComponents
-}
-import play.modules.reactivemongo.json._
 
 import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel, LeaveSettingModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
-import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
-import reactivemongo.api.gridfs._
-import reactivemongo.api.gridfs.Implicits._
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -31,11 +21,8 @@ import org.joda.time.format.DateTimeFormat
 
 import javax.inject.Inject
 
-class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerClient: MailerClient) extends Controller with MongoController with ReactiveMongoComponents with Secured {
-      
-  import MongoController.readFileReads
-  type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
-    
+class LeaveController @Inject() (mailerClient: MailerClient) extends Controller with Secured {
+          
   val leaveform = Form(
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
@@ -262,7 +249,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get))
 	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
-            maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> formWithData.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+            maybefiles <- LeaveFileModel.findByLK(formWithData.docnum.toString(), request).collect[List]()
 	        } yield {
                         
             val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
@@ -359,7 +346,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	def view(p_id:String) = withAuth { username => implicit request => {
 	  for {
 	    maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+      maybefiles <- LeaveFileModel.findByLK(maybeleave.get.docnum.toString(), request).collect[List]()
 	  } yield {
 	    maybeleave.map( leave => {
         
@@ -382,7 +369,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
 	    maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
 	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt), request)
 	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeapplicant.get.p.off))
-      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+      maybefiles <- LeaveFileModel.findByLK(maybeleave.get.docnum.toString(), request).collect[List]()
 	  } yield {
 	    // Check authorized
 	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid.contains(request.session.get("id").get) && !maybeleave.get.wf.aprbyid.getOrElse(List()).contains(request.session.get("id").get) && !maybeleave.get.ld) {
@@ -534,7 +521,7 @@ class LeaveController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mailerC
   def companyview(p_id:String) = withAuth { username => implicit request => {
     for {
       maybeleave <- LeaveModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
-      maybefiles <- LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("metadata.eid" -> request.session.get("entity"), "metadata.lk" -> maybeleave.get.docnum.toString(), "metadata.f" -> "leave", "metadata.dby" -> Json.obj("$exists" -> false))).collect[List]()
+      maybefiles <- LeaveFileModel.findByLK(maybeleave.get.docnum.toString(), request).collect[List]()
     } yield {
       maybeleave.map( leave => {
 

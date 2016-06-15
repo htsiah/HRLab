@@ -9,8 +9,9 @@ import play.api.mvc._
 import play.modules.reactivemongo.{
   MongoController, ReactiveMongoApi, ReactiveMongoComponents
 }
+import play.modules.reactivemongo.MongoController.readFileReads
 
-import play.api.libs.json.{ Json, JsObject, JsString }
+import play.api.libs.json.{ Json, JsString }
 import play.modules.reactivemongo.json._
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -18,13 +19,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api.gridfs.ReadFile
 import reactivemongo.bson._
 
-import org.joda.time.DateTime
-
 import scala.concurrent.Future
 
 class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) extends Controller with MongoController with ReactiveMongoComponents with Secured {
   
-  import MongoController.readFileReads
   type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
 
   def insert(p_lk: String) = withAuth (parse.maxLength(1 * 1014 * 1024, gridFSBodyParser(LeaveFileModel.gridFS))) { username => implicit request => {
@@ -84,27 +82,34 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
   
   def view(p_id: String) = Action.async { request => {
     
-    // find the matching attachment, if any, and streams it to the client
-    val file = LeaveFileModel.gridFS.find[JsObject, JSONReadFile](Json.obj("_id" -> p_id))
+    // find the matching attachment
+    val file = LeaveFileModel.findById(p_id, request)
+    
+    // Stream to client
     serve[JsString, JSONReadFile](LeaveFileModel.gridFS)(file)
     
   }}
   
   def viewByLK(p_lk: String) = Action.async { request => {
     
-    // find the matching attachment, if any, and streams it to the client
-    val file = LeaveFileModel.gridFS.find[JsObject, JSONReadFile](
-        Json.obj(
-            "metadata.eid" -> request.session.get("entity"),
-            "metadata.lk" -> p_lk, 
-            "metadata.f" -> "leave", 
-            "metadata.dby" -> Json.obj("$exists" -> false)
-        )
-    )
+    // find the matching attachment, if any, and streams it to the client   
+    val file = LeaveFileModel.findByLK(p_lk, request)
+    
+    // Stream to client
     serve[JsString, JSONReadFile](LeaveFileModel.gridFS)(file)
     
   }}
+  
+  def deleteByLK(p_lk:String) = withAuth { username => implicit request => {
+        
+    LeaveFileModel.removeByLK(p_lk, request)
+    Future(Ok(Json.obj("status" -> "success")).as("application/json"))
     
+  }}
+
+    /**
+   * V3.2 - Not using.
+   
   def delete(p_id:String) = withAuth { username => implicit request => {
     
     LeaveFileModel.gridFS.remove(Json toJson p_id).map(_ => 
@@ -118,35 +123,7 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
     
   }}
   
-  def deleteByLK(p_lk:String) = withAuth { username => implicit request => {
-        
-    LeaveFileModel.gridFS.find[JsObject, JSONReadFile](
-        Json.obj(
-            "metadata.eid" -> request.session.get("entity"),
-            "metadata.lk" -> p_lk, 
-            "metadata.f" -> "leave", 
-            "metadata.dby" -> Json.obj("$exists" -> false)
-        )
-        
-    ).collect[List]().map { files =>
-      val filesWithId = files.map { file => {
-        LeaveFileModel.gridFS.files.update(
-            Json.obj("_id" -> file.id),
-            Json.obj("$set" -> Json.obj("metadata" -> Json.obj(     
-                "eid" -> file.metadata.value.get("eid").get,
-                "filename" -> file.metadata.value.get("filename").get,
-                "lk" -> file.metadata.value.get("lk").get,
-                "f" -> file.metadata.value.get("f").get,
-                "cby" -> file.metadata.value.get("cby").get,
-                "ddat" -> BSONDateTime(new DateTime().getMillis),
-                "dby" -> request.session.get("username")
-            )))
-        )
-      }}
-    }
-    
-    Future(Ok(Json.obj("status" -> "success")).as("application/json"))
-    
-  }}
-
+  * 
+  */
+  
 }

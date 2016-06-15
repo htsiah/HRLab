@@ -73,7 +73,6 @@ GET		/leave/getapplyday/:p_pid/:p_lt/:p_dt/:p_fdat/:p_tdat	controllers.LeaveCont
 POST	/leavefile/insert				controllers.LeaveFileController.insert(p_lk: String)
 GET		/leavefile/view					controllers.LeaveFileController.view(p_id: String)
 GET		/leavefile/viewByLK				controllers.LeaveFileController.viewByLK(p_lk: String)
-GET		/leavefile/delete				controllers.LeaveFileController.delete(p_id: String)
 GET		/leavefile/deleteByLK			controllers.LeaveFileController.deleteByLK(p_lk: String)
 
 # Leave - Apply On Behalf
