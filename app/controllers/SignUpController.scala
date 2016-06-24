@@ -228,7 +228,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               val replaceMap = Map("URL"->(Tools.hostname+"/set/"+authentication_doc.em +"/"+authentication_doc.r), "BY"->(person_doc.p.fn+" "+person_doc.p.ln))
               MailUtility.getEmailConfig(List(authentication_doc.em), 1, replaceMap).map { email => mailerClient.send(email) }
               mailerClient.send(
-                  MailUtility.getEmail(List("support@hrsifu.my"), "System Notification: New Sign Up - " + formWithData.company + ".", formWithData.company + "(" + eid +  ") sign up by " + formWithData.email + ".")
+                  MailUtility.getEmail(List("support@hrsifu.com"), "System Notification: New Sign Up - " + formWithData.company + ".", formWithData.company + "(" + eid +  ") sign up by " + formWithData.email + ".")
               )
                 
               Redirect(routes.AuthenticationController.login()).flashing(

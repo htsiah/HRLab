@@ -73,7 +73,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
             
             // Send email
             mailerClient.send(
-                MailUtility.getEmail(List("support@hrsifu.my"), "System Notification: " + formWithData.company + " deleted.", formWithData.company + "(" + request.session.get("entity").get +  ") deleted by " + request.session.get("username").get + ".")
+                MailUtility.getEmail(List("support@hrsifu.com"), "System Notification: " + formWithData.company + " deleted.", formWithData.company + "(" + request.session.get("entity").get +  ") deleted by " + request.session.get("username").get + ".")
             )
             
             // return result
