@@ -1,5 +1,5 @@
 # Step 1: Migrate leave profile entitlement.
-# Rename set_ent to set_ent_backup using MongoChef.
+# Rename set_ent to set_ent_backup using MongoChef, can plan after roll out.
 # Run below script.
 
 use d-hrsifu-leave
@@ -23,7 +23,7 @@ db.leaveprofile.find().snapshot().forEach(
 # Delete set_ent_backup using MongoChef.
 
 #Step 2: Migrate leave policy entitlement.
-# Rename ent to ent_backup using MongoChef.
+# Rename ent to ent_backup using MongoChef, can plan after roll out.
 
 use d-hrsifu-leave
 db.leavepolicy.find().snapshot().forEach(
