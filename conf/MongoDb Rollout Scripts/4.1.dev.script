@@ -1,128 +1,52 @@
-#Step 1: Migrate leave profile entitlement 
+# Step 1: Migrate leave profile entitlement.
+# Rename set_ent to set_ent_backup using MongoChef.
+# Run below script.
 
 use d-hrsifu-leave
-
 db.leaveprofile.find().snapshot().forEach(
     function (elem) {
-    	elem.set_ent.e1.e = elem.set_ent.e1;
-    	elem.set_ent.e1.s = elem.set_ent.e1_s;
-    	elem.set_ent.e1.cf = elem.set_ent.e1_cf;
-    	elem.set_ent.e2.e = elem.set_ent.e2;
-    	elem.set_ent.e2.s = elem.set_ent.e2_s;
-    	elem.set_ent.e2.cf = elem.set_ent.e2_cf;
-    	elem.set_ent.e3.e = elem.set_ent.e3;
-    	elem.set_ent.e3.s = elem.set_ent.e3_s;
-    	elem.set_ent.e3.cf = elem.set_ent.e3_cf;
-    	elem.set_ent.e4.e = elem.set_ent.e4;
-    	elem.set_ent.e4.s = elem.set_ent.e4_s;
-    	elem.set_ent.e4.cf = elem.set_ent.e4_cf;
-    	elem.set_ent.e5.e = elem.set_ent.e5;
-    	elem.set_ent.e5.s = elem.set_ent.e5_s;
-    	elem.set_ent.e5.cf = elem.set_ent.e5_cf;
-    	elem.set_ent.e6.e = 0;
-    	elem.set_ent.e6.s = 0;
-    	elem.set_ent.e6.cf = 0;
-    	elem.set_ent.e7.e = 0;
-    	elem.set_ent.e7.s = 0;
-    	elem.set_ent.e7.cf = 0;
-    	elem.set_ent.e8.e = 0;
-    	elem.set_ent.e8.s = 0;
-    	elem.set_ent.e8.cf = 0;
-    	elem.set_ent.e9.e = 0;
-    	elem.set_ent.e9.s = 0;
-    	elem.set_ent.e9.cf = 0;    	
-    	elem.set_ent.e10.e = 0;
-    	elem.set_ent.e10.s = 0;
-    	elem.set_ent.e10.cf = 0;  
-    	db.leaveprofile.save(elem);
+    	db.leaveprofile.update({_id: elem._id}, {$set: { 
+    	"set_ent.e1.e": elem.set_ent_backup.e1, "set_ent.e1.s": elem.set_ent_backup.e1_s, "set_ent.e1.cf": elem.set_ent_backup.e1_cf,
+    	"set_ent.e2.e": elem.set_ent_backup.e2, "set_ent.e2.s": elem.set_ent_backup.e2_s, "set_ent.e2.cf": elem.set_ent_backup.e2_cf,
+    	"set_ent.e3.e": elem.set_ent_backup.e3, "set_ent.e3.s": elem.set_ent_backup.e3_s, "set_ent.e3.cf": elem.set_ent_backup.e3_cf,
+    	"set_ent.e4.e": elem.set_ent_backup.e4, "set_ent.e4.s": elem.set_ent_backup.e4_s, "set_ent.e4.cf": elem.set_ent_backup.e4_cf,
+    	"set_ent.e5.e": elem.set_ent_backup.e5, "set_ent.e5.s": elem.set_ent_backup.e5_s, "set_ent.e5.cf": elem.set_ent_backup.e5_cf,
+    	"set_ent.e6.e": 0, "set_ent.e6.s": 0, "set_ent.e6.cf": 0,
+    	"set_ent.e7.e": 0, "set_ent.e7.s": 0, "set_ent.e7.cf": 0,
+    	"set_ent.e8.e": 0, "set_ent.e8.s": 0, "set_ent.e8.cf": 0,
+    	"set_ent.e9.e": 0, "set_ent.e9.s": 0, "set_ent.e9.cf": 0,
+    	"set_ent.e10.e": 0, "set_ent.e10.s": 0, "set_ent.e10.cf": 0
+    	}});
     }
 );
 
-#Step 2: Migrate leave policy entitlement
+# Delete set_ent_backup using MongoChef.
+
+#Step 2: Migrate leave policy entitlement.
+# Rename ent to ent_backup using MongoChef.
+use d-hrsifu-leave
 db.leavepolicy.find().snapshot().forEach(
     function (elem) {
-    	elem.ent.e1.e = elem.ent.e1;
-    	elem.ent.e1.s = elem.ent.e1_s;
-    	elem.ent.e1.cf = elem.ent.e1_cf;
-    	elem.ent.e2.e = elem.ent.e2;
-    	elem.ent.e2.s = elem.ent.e2_s;
-    	elem.ent.e2.cf = elem.ent.e2_cf;
-    	elem.ent.e3.e = elem.ent.e3;
-    	elem.ent.e3.s = elem.ent.e3_s;
-    	elem.ent.e3.cf = elem.ent.e3_cf;
-    	elem.ent.e4.e = elem.ent.e4;
-    	elem.ent.e4.s = elem.ent.e4_s;
-    	elem.ent.e4.cf = elem.ent.e4_cf;
-    	elem.ent.e5.e = elem.ent.e5;
-    	elem.ent.e5.s = elem.ent.e5_s;
-    	elem.ent.e5.cf = elem.ent.e5_cf;
-    	elem.ent.e6.e = 0;
-    	elem.ent.e6.s = 0;
-    	elem.ent.e6.cf = 0;
-    	elem.ent.e7.e = 0;
-    	elem.ent.e7.s = 0;
-    	elem.ent.e7.cf = 0;
-    	elem.ent.e8.e = 0;
-    	elem.ent.e8.s = 0;
-    	elem.ent.e8.cf = 0;
-    	elem.ent.e9.e = 0;
-    	elem.ent.e9.s = 0;
-    	elem.ent.e9.cf = 0;
-    	elem.ent.e10.e = 0;
-    	elem.ent.e10.s = 0;
-    	elem.ent.e10.cf = 0;
-    	db.leavepolicy.save(elem);
+    	db.leavepolicy.update({_id: elem._id}, {$set: { 
+    	"ent.e1.e": elem.ent_backup.e1, "ent.e1.s": elem.ent_backup.e1_s, "ent.e1.cf": elem.ent_backup.e1_cf,
+    	"ent.e2.e": elem.ent_backup.e2, "ent.e2.s": elem.ent_backup.e2_s, "ent.e2.cf": elem.ent_backup.e2_cf,
+    	"ent.e3.e": elem.ent_backup.e3, "ent.e3.s": elem.ent_backup.e3_s, "ent.e3.cf": elem.ent_backup.e3_cf,
+    	"ent.e4.e": elem.ent_backup.e4, "ent.e4.s": elem.ent_backup.e4_s, "ent.e4.cf": elem.ent_backup.e4_cf,
+    	"ent.e5.e": elem.ent_backup.e5, "ent.e5.s": elem.ent_backup.e5_s, "ent.e5.cf": elem.ent_backup.e5_cf,
+    	"ent.e6.e": 0, "ent.e6.s": 0, "ent.e6.cf": 0,
+    	"ent.e7.e": 0, "ent.e7.s": 0, "ent.e7.cf": 0,
+    	"ent.e8.e": 0, "ent.e8.s": 0, "ent.e8.cf": 0,
+    	"ent.e9.e": 0, "ent.e9.s": 0, "ent.e9.cf": 0,
+    	"ent.e10.e": 0, "ent.e10.s": 0, "ent.e10.cf": 0
+    	}});
     }
 );
 
-#Step 3: Remove leave profile old entitlement
-db.leaveprofile.find().snapshot().forEach(
-    function (elem) {
-    	delete elem.set_ent.e1;
-    	delete elem.set_ent.e1_s;
-    	delete elem.set_ent.e1_cf;
-    	delete elem.set_ent.e2;
-    	delete elem.set_ent.e2_s;
-    	delete elem.set_ent.e2_cf;
-    	delete elem.set_ent.e3;
-    	delete elem.set_ent.e3_s;
-    	delete elem.set_ent.e3_cf;
-    	delete elem.set_ent.e4;
-    	delete elem.set_ent.e4_s;
-    	delete elem.set_ent.e4_cf;
-    	delete elem.set_ent.e5;
-    	delete elem.set_ent.e5_s;
-    	delete elem.set_ent.e5_cf; 
-    	db.leaveprofile.save(elem);
-    }
-);
+# Delete ent_backup using MongoChef.
 
-#Step 4: Remove leave policy old entitlement
-db.leavepolicy.find().snapshot().forEach(
-    function (elem) {
-    	delete elem.ent.e1;
-    	delete elem.ent.e1_s;
-    	delete elem.ent.e1_cf;
-    	delete elem.ent.e2;
-    	delete elem.ent.e2_s;
-    	delete elem.ent.e2_cf;
-    	delete elem.ent.e3;
-    	delete elem.ent.e3_s;
-    	delete elem.ent.e3_cf;
-    	delete elem.ent.e4;
-    	delete elem.ent.e4_s;
-    	delete elem.ent.e4_cf;
-    	delete elem.ent.e5;
-    	delete elem.ent.e5_s;
-    	delete elem.ent.e5_cf;
-    	db.leavepolicy.save(elem);
-    }
-);
-
-#Step 5 : Update config leave policy
+#Step 3 : Update config leave policy
 
 use d-hrsifu-config
-
 db.leavepolicy.drop()
 db.leavepolicy.insert({"lt":"Annual Leave","set":{"g":"Applicable for all","acc":"Monthly - utilisation based on closing balance","ms":"Applicable for all","dt":"Full day and half day (1st or 2nd)","nwd":false,"cexp":NumberInt(0),"scal":true,"msd":false},"ent":{"e1":{"e":NumberInt(8),"s":NumberInt(24),"cf":NumberInt(0)},"e2":{"e":NumberInt(12),"s":NumberInt(48),"cf":NumberInt(0)},"e3":{"e":NumberInt(16),"s":NumberInt(999),"cf":NumberInt(0)},"e4":{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},"e5":{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},"e6":{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},"e7":{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},"e8":{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},"e9":{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},"e10":{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)}}})
 db.leavepolicy.insert({"lt":"Sick Leave","set":{"g":"Applicable for all","acc":"Yearly","ms":"Applicable for all","dt":"Full day and half day (1st or 2nd)","nwd":false,"cexp":NumberInt(0),"scal":true,"msd":true},"ent":{e1:{"e":NumberInt(14),"s":NumberInt(24),"cf":NumberInt(0)},e2:{"e":NumberInt(18),"s":NumberInt(48),"cf":NumberInt(0)},e3:{"e":NumberInt(22),"s":NumberInt(999),"cf":NumberInt(0)},e4:{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},e5:{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},e6:{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},e7:{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},e8:{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},e9:{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)},e10:{"e":NumberInt(0),"s":NumberInt(0),"cf":NumberInt(0)}}})
