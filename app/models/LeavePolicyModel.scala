@@ -32,22 +32,23 @@ case class LeavePolicySetting (
     msd: Boolean
 )
 
+case class EntitlementValue (
+    e: Int,
+    s: Int,
+    cf: Int
+)
+
 case class Entitlement (
-    e1: Int,
-    e1_s: Int,
-    e1_cf: Int,
-    e2: Int,
-    e2_s: Int,
-    e2_cf: Int,
-    e3: Int,
-    e3_s: Int,
-    e3_cf: Int,
-    e4: Int,
-    e4_s: Int,
-    e4_cf: Int,
-    e5: Int,
-    e5_s: Int,
-    e5_cf: Int
+    e1: EntitlementValue,
+    e2: EntitlementValue,
+    e3: EntitlementValue,
+    e4: EntitlementValue,
+    e5: EntitlementValue, 
+    e6: EntitlementValue,
+    e7: EntitlementValue,
+    e8: EntitlementValue,
+    e9: EntitlementValue,
+    e10: EntitlementValue
 )
 
 object LeavePolicyModel {
@@ -82,24 +83,29 @@ object LeavePolicyModel {
     }
   }
   
+  implicit object EntitlementValueBSONReader extends BSONDocumentReader[EntitlementValue] {
+    def read(p_doc: BSONDocument): EntitlementValue = {
+      EntitlementValue(
+          p_doc.getAs[Int]("e").get,
+          p_doc.getAs[Int]("s").get,
+          p_doc.getAs[Int]("cf").get
+      )
+    }
+  }
+    
   implicit object EntitlementBSONReader extends BSONDocumentReader[Entitlement] {
     def read(p_doc: BSONDocument): Entitlement = {
       Entitlement(
-          p_doc.getAs[Int]("e1").get,
-          p_doc.getAs[Int]("e1_s").get,
-          p_doc.getAs[Int]("e1_cf").get,
-          p_doc.getAs[Int]("e2").get,
-          p_doc.getAs[Int]("e2_s").get,
-          p_doc.getAs[Int]("e2_cf").get,
-          p_doc.getAs[Int]("e3").get,
-          p_doc.getAs[Int]("e3_s").get,
-          p_doc.getAs[Int]("e3_cf").get,
-          p_doc.getAs[Int]("e4").get,
-          p_doc.getAs[Int]("e4_s").get,
-          p_doc.getAs[Int]("e4_cf").get,
-          p_doc.getAs[Int]("e5").get,
-          p_doc.getAs[Int]("e5_s").get,
-          p_doc.getAs[Int]("e5_cf").get
+          p_doc.getAs[EntitlementValue]("e1").get,
+          p_doc.getAs[EntitlementValue]("e2").get,
+          p_doc.getAs[EntitlementValue]("e3").get,
+          p_doc.getAs[EntitlementValue]("e4").get,
+          p_doc.getAs[EntitlementValue]("e5").get,
+          p_doc.getAs[EntitlementValue]("e6").get,
+          p_doc.getAs[EntitlementValue]("e7").get,
+          p_doc.getAs[EntitlementValue]("e8").get,
+          p_doc.getAs[EntitlementValue]("e9").get,
+          p_doc.getAs[EntitlementValue]("e10").get
       )
     }
   }
@@ -146,24 +152,29 @@ object LeavePolicyModel {
     }
   }
   
+  implicit object EntitlementValueBSONWriter extends BSONDocumentWriter[EntitlementValue] {
+    def write(p_doc: EntitlementValue): BSONDocument = {
+      BSONDocument(
+          "e" -> p_doc.e,
+          "s" -> p_doc.s,
+          "cf" -> p_doc.cf
+      )     
+    }
+  }
+  
   implicit object EntitlementBSONWriter extends BSONDocumentWriter[Entitlement] {
     def write(p_doc: Entitlement): BSONDocument = {
       BSONDocument(
           "e1" -> p_doc.e1,
-          "e1_s" -> p_doc.e1_s,
-          "e1_cf" -> p_doc.e1_cf,
           "e2" -> p_doc.e2,
-          "e2_s" -> p_doc.e2_s,
-          "e2_cf" -> p_doc.e2_cf,
           "e3" -> p_doc.e3,
-          "e3_s" -> p_doc.e3_s,
-          "e3_cf" -> p_doc.e3_cf,
           "e4" -> p_doc.e4,
-          "e4_s" -> p_doc.e4_s,
-          "e4_cf" -> p_doc.e4_cf,
           "e5" -> p_doc.e5,
-          "e5_s" -> p_doc.e5_s,
-          "e5_cf" -> p_doc.e5_cf
+          "e6" -> p_doc.e6,
+          "e7" -> p_doc.e7,
+          "e8" -> p_doc.e8,
+          "e9" -> p_doc.e9,
+          "e10" -> p_doc.e10
       )     
     }
   }
@@ -186,7 +197,18 @@ object LeavePolicyModel {
       _id = BSONObjectID.generate,
       lt = "",
       LeavePolicySetting(g = "", acc = "", ms = "", dt = "", nwd = false, cexp = 0, scal = true, msd = false),
-      Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
+      Entitlement(
+          e1=EntitlementValue(e=0, s=0, cf=0),
+          e2=EntitlementValue(e=0, s=0, cf=0),
+          e3=EntitlementValue(e=0, s=0, cf=0),
+          e4=EntitlementValue(e=0, s=0, cf=0),
+          e5=EntitlementValue(e=0, s=0, cf=0),
+          e6=EntitlementValue(e=0, s=0, cf=0),
+          e7=EntitlementValue(e=0, s=0, cf=0),
+          e8=EntitlementValue(e=0, s=0, cf=0),
+          e9=EntitlementValue(e=0, s=0, cf=0),
+          e10=EntitlementValue(e=0, s=0, cf=0)  
+      ),
       sys=None
   )
   
@@ -357,44 +379,74 @@ object LeavePolicyModel {
   
   def sortEligbleLeaveEntitlement(p_doc:LeavePolicy, p_request:RequestHeader) ={
         
-    var eligbleleaveentitlement = ArrayBuffer.fill(5,3)(0)
+    var eligbleleaveentitlement = ArrayBuffer.fill(10,3)(0)
     
     // Replace 0 value to 1000
-    if (p_doc.ent.e1_s == 0) {
+    if (p_doc.ent.e1.s == 0) {
       eligbleleaveentitlement(0) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(0) = ArrayBuffer(p_doc.ent.e1_s, p_doc.ent.e1, p_doc.ent.e1_cf)
+      eligbleleaveentitlement(0) = ArrayBuffer(p_doc.ent.e1.s, p_doc.ent.e1.e, p_doc.ent.e1.cf)
     }
 
-    if (p_doc.ent.e2_s == 0) {
+    if (p_doc.ent.e2.s == 0) {
       eligbleleaveentitlement(1) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(1) = ArrayBuffer(p_doc.ent.e2_s, p_doc.ent.e2, p_doc.ent.e2_cf)
+      eligbleleaveentitlement(1) = ArrayBuffer(p_doc.ent.e2.s, p_doc.ent.e2.e, p_doc.ent.e2.cf)
     }
     
-    if (p_doc.ent.e3_s == 0) {
+    if (p_doc.ent.e3.s == 0) {
       eligbleleaveentitlement(2) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(2) = ArrayBuffer(p_doc.ent.e3_s, p_doc.ent.e3, p_doc.ent.e3_cf)
+      eligbleleaveentitlement(2) = ArrayBuffer(p_doc.ent.e3.s, p_doc.ent.e3.e, p_doc.ent.e3.cf)
     }
     
-    if (p_doc.ent.e4_s == 0) {
+    if (p_doc.ent.e4.s == 0) {
     	eligbleleaveentitlement(3) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(3) = ArrayBuffer(p_doc.ent.e4_s, p_doc.ent.e4, p_doc.ent.e4_cf)
+      eligbleleaveentitlement(3) = ArrayBuffer(p_doc.ent.e4.s, p_doc.ent.e4.e, p_doc.ent.e4.cf)
     }
     
-    if (p_doc.ent.e5_s == 0) {
+    if (p_doc.ent.e5.s == 0) {
       eligbleleaveentitlement(4) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(4) = ArrayBuffer(p_doc.ent.e5_s, p_doc.ent.e5, p_doc.ent.e5_cf)
+      eligbleleaveentitlement(4) = ArrayBuffer(p_doc.ent.e5.s, p_doc.ent.e5.e, p_doc.ent.e5.cf)
+    }
+    
+    if (p_doc.ent.e6.s == 0) {
+      eligbleleaveentitlement(5) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(5) = ArrayBuffer(p_doc.ent.e6.s, p_doc.ent.e6.e, p_doc.ent.e6.cf)
+    }
+    
+    if (p_doc.ent.e7.s == 0) {
+      eligbleleaveentitlement(6) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(6) = ArrayBuffer(p_doc.ent.e7.s, p_doc.ent.e7.e, p_doc.ent.e7.cf)
+    }
+    
+    if (p_doc.ent.e8.s == 0) {
+      eligbleleaveentitlement(7) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(7) = ArrayBuffer(p_doc.ent.e8.s, p_doc.ent.e8.e, p_doc.ent.e8.cf)
+    }
+    
+    if (p_doc.ent.e9.s == 0) {
+      eligbleleaveentitlement(8) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(8) = ArrayBuffer(p_doc.ent.e9.s, p_doc.ent.e9.e, p_doc.ent.e9.cf)
+    }
+    
+    if (p_doc.ent.e10.s == 0) {
+      eligbleleaveentitlement(9) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(9) = ArrayBuffer(p_doc.ent.e10.s, p_doc.ent.e10.e, p_doc.ent.e10.cf)
     }
     
     val eligbleleaveentitlementsorted = eligbleleaveentitlement.sortBy(_(0))
-    var eligbleleaveentitlementsorted_update = ArrayBuffer.fill(5,3)(0)
+    var eligbleleaveentitlementsorted_update = ArrayBuffer.fill(10,3)(0)
     
     // Replace 1000 back to 0
-    for (i <- 0 to 4) {
+    for (i <- 0 to 9) {
       if (eligbleleaveentitlementsorted(i)(0) == 1000) {
         eligbleleaveentitlementsorted_update(i) = ArrayBuffer(0, 0, 0)
       } else {

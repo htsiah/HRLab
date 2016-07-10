@@ -87,21 +87,16 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                               configleavepolicy.set.msd
                           ),
                           Entitlement(
-                              configleavepolicy.ent.e1,
-                              configleavepolicy.ent.e1_s,
-                              configleavepolicy.ent.e1_cf,
-                              configleavepolicy.ent.e2,
-                              configleavepolicy.ent.e2_s,
-                              configleavepolicy.ent.e2_cf,
-                              configleavepolicy.ent.e3,
-                              configleavepolicy.ent.e3_s,
-                              configleavepolicy.ent.e3_cf,
-                              configleavepolicy.ent.e4,
-                              configleavepolicy.ent.e4_s,
-                              configleavepolicy.ent.e4_cf,
-                              configleavepolicy.ent.e5,
-                              configleavepolicy.ent.e5_s,
-                              configleavepolicy.ent.e5_cf
+                              EntitlementValue(configleavepolicy.ent.e1.e, configleavepolicy.ent.e1.s, configleavepolicy.ent.e1.cf),
+                              EntitlementValue(configleavepolicy.ent.e2.e, configleavepolicy.ent.e2.s, configleavepolicy.ent.e2.cf),
+                              EntitlementValue(configleavepolicy.ent.e3.e, configleavepolicy.ent.e3.s, configleavepolicy.ent.e3.cf),
+                              EntitlementValue(configleavepolicy.ent.e4.e, configleavepolicy.ent.e4.s, configleavepolicy.ent.e4.cf),
+                              EntitlementValue(configleavepolicy.ent.e5.e, configleavepolicy.ent.e5.s, configleavepolicy.ent.e5.cf),
+                              EntitlementValue(configleavepolicy.ent.e6.e, configleavepolicy.ent.e6.s, configleavepolicy.ent.e6.cf),
+                              EntitlementValue(configleavepolicy.ent.e7.e, configleavepolicy.ent.e7.s, configleavepolicy.ent.e7.cf),
+                              EntitlementValue(configleavepolicy.ent.e8.e, configleavepolicy.ent.e8.s, configleavepolicy.ent.e8.cf),
+                              EntitlementValue(configleavepolicy.ent.e9.e, configleavepolicy.ent.e9.s, configleavepolicy.ent.e9.cf),
+                              EntitlementValue(configleavepolicy.ent.e10.e, configleavepolicy.ent.e10.s, configleavepolicy.ent.e10.cf)
                           ),
                           configleavepolicy.sys 
                       ), 
@@ -179,50 +174,6 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               )
               PersonModel.insertOnNewSignUp(person_doc, eid)
               AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=person_objectID.stringify, c="Create document."), p_eid=eid)
-     
-              val contentEmptyMap = Map(""->"")
-              
-              // TODO Step 5: Add company staff
-              val lookupkey5 = (BSONObjectID.generate).stringify
-              val buttonMap5 = Map(
-                  "ADDLINK"->{routes.PersonController.create.toString}, 
-                  "SETTINGLINK"->{routes.PersonController.index.toString}, 
-                  "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey5 + "\")"}    
-              )
-              Await.result(TaskModel.insert(6, person_objectID.stringify, lookupkey5, contentEmptyMap, buttonMap5, eid), Tools.db_timeout)
-              
-              // TODO Step 4: Add company holiday
-              val lookupkey4 = (BSONObjectID.generate).stringify
-              val buttonMap4 = Map(
-                  "ADDLINK"->{routes.CompanyHolidayController.create.toString}, 
-                  "SETTINGLINK"->{routes.CalendarController.company.toString}, 
-                  "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey4 + "\")"}    
-              )
-              Await.result(TaskModel.insert(5, person_objectID.stringify, lookupkey4, contentEmptyMap, buttonMap4, eid), Tools.db_timeout)
-              
-              // TODO Step 3: Update your person information and leave profiles
-              val lookupkey3 = (BSONObjectID.generate).stringify
-              val buttonMap3 = Map(
-                  "SETTINGLINK"->{routes.PersonController.view(person_objectID.stringify).toString}, 
-                  "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey3 + "\")"}    
-              )
-              Await.result(TaskModel.insert(4, person_objectID.stringify, lookupkey3, contentEmptyMap, buttonMap3, eid), Tools.db_timeout)
-    
-              // TODO Step 2: Configure leave policy
-              val lookupkey2 = (BSONObjectID.generate).stringify
-              val buttonMap2 = Map(
-                  "SETTINGLINK"->{routes.LeaveSettingController.index.toString}, 
-                  "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey2 + "\")"}    
-              )
-              Await.result(TaskModel.insert(3, person_objectID.stringify, lookupkey2, contentEmptyMap, buttonMap2, eid), Tools.db_timeout)
-                            
-              // TODO Step 1: Update company profile
-              val lookupkey1 = (BSONObjectID.generate).stringify
-              val buttonMap1 = Map(
-                  "SETTINGLINK"->{routes.CompanyController.index.toString}, 
-                  "DISMISSLINK"->{"javascript:dismissTask(\"" + lookupkey1 + "\")"}    
-              )
-              Await.result(TaskModel.insert(2, person_objectID.stringify, lookupkey1, contentEmptyMap, buttonMap1, eid), Tools.db_timeout)
                     
               // Send email
               val replaceMap = Map("URL"->(Tools.hostname+"/set/"+authentication_doc.em +"/"+authentication_doc.r), "BY"->(person_doc.p.fn+" "+person_doc.p.ln))
