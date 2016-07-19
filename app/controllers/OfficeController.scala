@@ -28,7 +28,7 @@ class OfficeController extends Controller with Secured {
           "ad3" -> optional(text),
           "pc" -> optional(text),
           "ct" -> text,
-          "st" -> text,
+          "st" -> optional(text),
           "df" -> boolean,
           "sys" -> optional(mapping(
                   "eid" -> optional(text),
@@ -54,7 +54,7 @@ class OfficeController extends Controller with Secured {
           ad3 = None,
           pc = None,
           ct = "Malaysia",
-          st = "",
+          st = None,
           df = false,
           sys = None
       )

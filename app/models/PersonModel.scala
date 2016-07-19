@@ -292,7 +292,7 @@ object PersonModel {
   }
   
   // Add registrator's person record during new Sign Up
-  def insertOnNewSignUp(p_doc:Person, p_eid:String)= {
+  def insertOnNewSignUp(p_doc:Person, p_country:String,  p_eid:String)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,null)))
     future.onComplete {
       case Failure(e) => throw e
@@ -301,6 +301,7 @@ object PersonModel {
         Thread sleep 3000  // Wait 3 second make sure leave policy and setting is created
         ConfigLeavePolicyModel.find(
             BSONDocument(
+                "ct" -> p_country,
                 "$or" -> BSONArray(
                     BSONDocument("set.g"->(p_doc.p.g + " only")),
                     BSONDocument("set.g"->"Applicable for all")

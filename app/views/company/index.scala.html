@@ -60,7 +60,7 @@
 					@offices.map{ office =>
 						<tr>
 							<td>@office.n</td>
-							<td>@office.st</td>
+							<td>@office.st.getOrElse("")</td>
 							<td>@office.ct</td>
 							<td class="center">
 								<div class="btn-group">

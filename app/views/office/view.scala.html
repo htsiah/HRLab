@@ -40,7 +40,7 @@
 	@contentRow("Address 2", office.ad2.getOrElse(""))
 	@contentRow("Address 3", office.ad3.getOrElse(""))
 	@contentRow("Postcode", office.pc.getOrElse(""))
-	@contentRow("State", office.st)
+	@contentRow("State", office.st.getOrElse(""))
 	@contentRow("Country", office.ct)
 
 }

@@ -20,7 +20,7 @@ case class Office (
     ad3: Option[String],
     pc: Option[String],
     ct: String,
-    st: String,
+    st: Option[String],
     df: Boolean,
     sys: Option[System]
 )
@@ -52,7 +52,7 @@ object OfficeModel {
           p_doc.getAs[String]("ad3").map(v => v),
           p_doc.getAs[String]("pc").map(v => v),
           p_doc.getAs[String]("ct").get,
-          p_doc.getAs[String]("st").get,
+          p_doc.getAs[String]("st").map(v => v),
           p_doc.getAs[Boolean]("df").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
@@ -101,7 +101,7 @@ object OfficeModel {
       ad3 = None,
       pc = None,
       ct = "",
-      st = "",
+      st = None,
       df = false,
       sys = None
   )
