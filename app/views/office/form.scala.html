@@ -3,7 +3,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(office:Form[Office], oid:String="")(implicit session: play.api.mvc.Session)
+@(office:Form[Office], countries: List[String], oid:String="")(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -57,15 +57,10 @@
 		@inputText(office("ad2"), '_label->"Address 2", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@inputText(office("ad3"), '_label->"Address 3", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@inputText(office("pc"), '_label->"Postcode", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
-		@select(office("st"), options(List("Johor","Kedah","Kelantan","Kuala Lumpur","Labuan","Melaka","Negeri Sembilan","Pahang","Penang","Perak","Perlis","Sabah","Sarawak","Selangor","Terengganu")), '_label -> "State",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		<dl class="dl-horizontal">
-			<dt><label>Country</label></dt>
-			<dd class="">@office("ct").value</dd>
-		</dl>
-	
+		@inputText(office("st"), '_label->"State / Province ", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+		@select(office("ct"), options = options(countries.map(country=>country)), '_label -> "Country",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")	
 		<div class="hidden">
 			@inputText(office("_id"),'type -> "hidden")
-			@inputText(office("ct"),'type -> "hidden")
 			@inputText(office("df"),'type -> "hidden")
 			@inputText(office("sys")("eid"),'type -> "hidden")
 			@inputText(office("sys")("cdat"),'type -> "hidden")
