@@ -16,8 +16,7 @@ case class CompanyHoliday (
      _id: BSONObjectID,
      n: String,
      d: String,
-     ct: String,
-     st: List[String],
+     off: List[String],
      fdat: Option[DateTime],
      tdat: Option[DateTime],
      sys: Option[System]
@@ -46,8 +45,7 @@ object CompanyHolidayModel {
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("n").get,
           p_doc.getAs[String]("d").get,
-          p_doc.getAs[String]("ct").get,
-          p_doc.getAs[List[String]]("st").get,
+          p_doc.getAs[List[String]]("off").get,
           p_doc.getAs[BSONDateTime]("fdat").map(dt => new DateTime(dt.value )),
           p_doc.getAs[BSONDateTime]("tdat").map(dt => new DateTime(dt.value )),
           p_doc.getAs[System]("sys").map(o => o)
@@ -76,8 +74,7 @@ object CompanyHolidayModel {
           "_id" -> p_doc._id,
           "n" -> p_doc.n,
           "d" -> p_doc.d,
-          "ct" -> p_doc.ct,
-          "st" -> p_doc.st,
+          "off" -> p_doc.off,
           "fdat" -> p_doc.fdat.map(date => BSONDateTime(date.getMillis)),
           "tdat" -> p_doc.tdat.map(date => BSONDateTime(date.getMillis)),
           "sys" -> p_doc.sys
@@ -91,8 +88,7 @@ object CompanyHolidayModel {
       _id = BSONObjectID.generate,
       n = "",
       d = "",
-      ct = "Malaysia",
-      st = List("Johor","Kedah", "Kelantan", "Kuala Lumpur", "Labuan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Putrajaya", "Sabah", "Sarawak", "Selangor", "Terengganu"),
+      off = List(),
       fdat = Some(new DateTime()),
       tdat = Some(new DateTime()),
       sys = None

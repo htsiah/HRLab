@@ -11,7 +11,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{CompanyHolidayModel, AuditLogModel, CompanyHoliday}
+import models.{CompanyHolidayModel, AuditLogModel, OfficeModel, CompanyHoliday}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
@@ -24,8 +24,7 @@ class CompanyHolidayController extends Controller with Secured {
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
           "n" -> nonEmptyText,
           "d" -> text,
-          "ct" -> nonEmptyText,
-          "st" -> text,
+          "off" -> text,
           "fdat" -> optional(jodaDate("d-MMM-yyyy")),
           "tdat" -> optional(jodaDate("d-MMM-yyyy")),
           "sys" -> optional(mapping(
@@ -37,17 +36,21 @@ class CompanyHolidayController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))  
-      ){(_id, n, d, ct, st, fdat, tdat, sys)=>CompanyHoliday(_id, n, d, ct, st.split(",").toList, fdat, tdat, sys)}
-      {companyholiday:CompanyHoliday=>Some(companyholiday._id, companyholiday.n, companyholiday.d, companyholiday.ct, companyholiday.st.mkString(","), companyholiday.fdat, companyholiday.tdat, companyholiday.sys)}
+      ){(_id, n, d, off, fdat, tdat, sys)=>CompanyHoliday(_id, n, d, off.split(",").toList, fdat, tdat, sys)}
+      {companyholiday:CompanyHoliday=>Some(companyholiday._id, companyholiday.n, companyholiday.d, companyholiday.off.mkString(","), companyholiday.fdat, companyholiday.tdat, companyholiday.sys)}
   ) 
   
   def create = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
-      val filledForm = companyholidayform.fill(CompanyHolidayModel.doc.copy(
-          fdat = Some(new DateTime()),
-          tdat = Some(new DateTime())
-      ))
-      Future.successful(Ok(views.html.companyholiday.form(filledForm, CompanyHolidayModel.doc.st)))
+      for {
+        offices <- OfficeModel.getAllOfficeName(request)
+      } yield {
+        val filledForm = companyholidayform.fill(CompanyHolidayModel.doc.copy(
+            fdat = Some(new DateTime()),
+            tdat = Some(new DateTime())
+        ))
+        Ok(views.html.companyholiday.form(filledForm, CompanyHolidayModel.doc.off, offices))
+      }  
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
@@ -57,9 +60,13 @@ class CompanyHolidayController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       companyholidayform.bindFromRequest.fold(
           formWithError => {
-            formWithError.forField("st")(states => {
-              Future.successful(Ok(views.html.companyholiday.form(formWithError, states.value.get.split(",").toList))) 
-            }) 
+            for {
+              offices <- OfficeModel.getAllOfficeName(request)
+            } yield {
+              formWithError.forField("off")(officesval => {
+                Ok(views.html.companyholiday.form(formWithError, officesval.value.get.split(",").toList, offices))
+              }) 
+            }
           },
           formWithData => {
             val doc_objectID = BSONObjectID.generate
@@ -77,9 +84,10 @@ class CompanyHolidayController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
         maybe_companyholiday <- CompanyHolidayModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+        offices <- OfficeModel.getAllOfficeName(request)
       } yield {
         maybe_companyholiday.map( companyholiday  => {
-          Ok(views.html.companyholiday.form(companyholidayform.fill(companyholiday), companyholiday.st, p_id))
+          Ok(views.html.companyholiday.form(companyholidayform.fill(companyholiday), companyholiday.off, offices, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -91,9 +99,13 @@ class CompanyHolidayController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       companyholidayform.bindFromRequest.fold(
         formWithError => {
-          formWithError.forField("st")(states => {
-            Future.successful(Ok(views.html.companyholiday.form(formWithError, states.value.get.split(",").toList))) 
-          }) 
+          for {
+            offices <- OfficeModel.getAllOfficeName(request)
+          } yield {
+            formWithError.forField("off")(officesval => {
+              Ok(views.html.companyholiday.form(formWithError, officesval.value.get.split(",").toList, offices)) 
+            }) 
+          } 
         },
         formWithData => {
           CompanyHolidayModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
@@ -130,9 +142,10 @@ class CompanyHolidayController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
         maybe_companyholiday <- CompanyHolidayModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+        offices <- OfficeModel.getAllOfficeName(request)
       } yield {
         maybe_companyholiday.map( companyholiday  => {
-          Ok(views.html.companyholiday.myprofileform(companyholidayform.fill(companyholiday), companyholiday.st, p_id))
+          Ok(views.html.companyholiday.myprofileform(companyholidayform.fill(companyholiday), companyholiday.off, offices, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -144,9 +157,13 @@ class CompanyHolidayController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       companyholidayform.bindFromRequest.fold(
           formWithError => {
-            formWithError.forField("st")(states => {
-              Future.successful(Ok(views.html.companyholiday.form(formWithError, states.value.get.split(",").toList))) 
-            }) 
+            for {
+              offices <- OfficeModel.getAllOfficeName(request)
+            } yield {
+              formWithError.forField("off")(officesval => {
+                Ok(views.html.companyholiday.myprofileform(formWithError, officesval.value.get.split(",").toList, offices))
+              }) 
+            }
           },
           formWithData => {
             CompanyHolidayModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
@@ -182,7 +199,7 @@ class CompanyHolidayController extends Controller with Secured {
         var start = fmt.print(companyholiday.fdat.get)
         var end = fmt.print(companyholiday.tdat.get.plusDays(1))
         if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
-        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.st.mkString(", ") + ")" + "\"}"
+        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.off.mkString(", ") + ")" + "\"}"
         count = count + 1
       })
       Ok(Json.parse("[" + companyholidayJSONStr + "]")).as("application/json")
@@ -202,7 +219,7 @@ class CompanyHolidayController extends Controller with Secured {
         var start = fmt.print(companyholiday.fdat.get)
         var end = fmt.print(companyholiday.tdat.get.plusDays(1))
         if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
-        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.st.mkString(", ") + ")" + "\"}"
+        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.off.mkString(", ") + ")" + "\"}"
         count = count + 1
       })
       Ok(Json.parse("[" + companyholidayJSONStr + "]")).as("application/json")

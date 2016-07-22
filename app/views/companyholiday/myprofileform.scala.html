@@ -3,7 +3,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(companyholiday:Form[CompanyHoliday], selectedstates:List[String], oid:String="")(implicit session: play.api.mvc.Session)
+@(companyholiday:Form[CompanyHoliday], selectedoff:List[String], offices:List[String], oid:String="")(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -54,72 +54,16 @@
 		@inputText(companyholiday("n"), '_label->"Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 			
 		<dl class="dl-horizontal">
-			<dt><label>State</label></dt>
+			<dt><label>Office(s)</label></dt>
 			<dd>
-				<label>
-					<input name="st0" id="st0" type="checkbox" class="state ace" value="Johor" @radioSelected(selectedstates, "Johor")>
-					<span class="lbl"> Johor &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st1" id="st1" type="checkbox" class="state ace" value="Kedah" @radioSelected(selectedstates, "Kedah")>
-					<span class="lbl"> Kedah &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st2" id="st2" type="checkbox" class="state ace" value="Kelantan" @radioSelected(selectedstates, "Kelantan")>
-					<span class="lbl"> Kelantan &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st3" id="st3" type="checkbox" class="state ace" value="Kuala Lumpur" @radioSelected(selectedstates, "Kuala Lumpur")>
-					<span class="lbl"> Kuala Lumpur &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st4" id="st4" type="checkbox" class="state ace" value="Labuan" @radioSelected(selectedstates, "Labuan")>
-					<span class="lbl"> Labuan &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st5" id="st5" type="checkbox" class="state ace" value="Melaka" @radioSelected(selectedstates, "Melaka")>
-					<span class="lbl"> Melaka &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st6" id="st6" type="checkbox" class="state ace" value="Negeri Sembilan" @radioSelected(selectedstates, "Negeri Sembilan")>
-					<span class="lbl"> Negeri Sembilan &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st7" id="st7" type="checkbox" class="state ace" value="Pahang" @radioSelected(selectedstates, "Pahang")>
-					<span class="lbl"> Pahang &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st8" id="st8" type="checkbox" class="state ace" value="Penang" @radioSelected(selectedstates, "Penang")>
-					<span class="lbl"> Penang &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st9" id="st9" type="checkbox" class="state ace" value="Perak" @radioSelected(selectedstates, "Perak")>
-					<span class="lbl"> Perak &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st10" id="st10" type="checkbox" class="state ace" value="Perlis" @radioSelected(selectedstates, "Perlis")>
-					<span class="lbl"> Perlis &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st11" id="st11" type="checkbox" class="state ace" value="Putrajaya" @radioSelected(selectedstates, "Putrajaya")>
-					<span class="lbl"> Putrajaya &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st12" id="st12" type="checkbox" class="state ace" value="Sabah" @radioSelected(selectedstates, "Sabah")>
-					<span class="lbl"> Sabah &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st13" id="st13" type="checkbox" class="state ace" value="Sarawak" @radioSelected(selectedstates, "Sarawak")>
-					<span class="lbl"> Sarawak &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st14" id="st14" type="checkbox" class="state ace" value="Selangor" @radioSelected(selectedstates, "Selangor")>
-					<span class="lbl"> Selangor &nbsp;&nbsp;</span>
-				</label>
-				<label>
-					<input name="st15" id="st15" type="checkbox" class="state ace" value="Terengganu" @radioSelected(selectedstates, "Terengganu")>
-					<span class="lbl"> Terengganu &nbsp;&nbsp;</span>
-				</label>
+				@for((office, index) <- offices.zipWithIndex) {
+					<div class="checkbox">
+						<label>
+							<input name="off@index" id="off@index" type="checkbox" class="office ace" value="@office" @radioSelected(selectedoff, office)>
+							<span class="lbl"> @office</span>
+						</label>
+					</div>
+				}				
 			</dd>
 		</dl>
 		
@@ -143,9 +87,8 @@
 
 		<div class="hidden">
 			@inputText(companyholiday("_id"),'type -> "hidden")
-			@inputText(companyholiday("ct"),'type -> "hidden")
 			@inputText(companyholiday("d"),'type -> "hidden")
-			@inputText(companyholiday("st"),'type -> "hidden")
+			@inputText(companyholiday("off"),'type -> "hidden")
 			@inputText(companyholiday("sys")("eid"),'type -> "hidden")
 			@inputText(companyholiday("sys")("cdat"),'type -> "hidden")
 			@inputText(companyholiday("sys")("mdat"),'type -> "hidden")
