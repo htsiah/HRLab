@@ -185,4 +185,17 @@ object CompanyHolidayModel {
     }
   }
   
+  // Notes:
+  // 1 p_modifier format: 
+  //   1.1 Replace - BSONDocument
+  //   1.2 Update certain field - BSONDocument("$set"->BSONDocument("[FIELD]"->VALUE))
+  // 2 No SystemDataStore update
+  def updateUsingBSON(p_query:BSONDocument,p_modifier:BSONDocument) = {
+    val future = col.update(selector=p_query, update=p_modifier, multi=true)
+    future.onComplete {
+      case Failure(e) => throw e
+      case Success(lastError) => {}
+    }
+  }
+  
 }

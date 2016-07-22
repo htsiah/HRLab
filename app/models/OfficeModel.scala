@@ -190,6 +190,14 @@ object OfficeModel {
           // Update name on leave and leave profile
           if (oldoffice.get.n != p_doc.n) {
             PersonModel.updateUsingBSON(BSONDocument("p.off"->p_doc.n), BSONDocument("$set"->BSONDocument("p.off"->p_doc.n)))
+            CompanyHolidayModel.find(BSONDocument("off"->BSONDocument("$in"->List(oldoffice.get.n)))).foreach { holidays => 
+              holidays.foreach { holiday => {
+                val office = holiday.off.map { office => if (office==oldoffice.get.n) p_doc.n else office }
+                CompanyHolidayModel.updateUsingBSON(BSONDocument("_id" -> holiday._id), BSONDocument("$set"->BSONDocument("off"->office)))
+              } }  
+            }
+            
+            
           }
         }
       }
