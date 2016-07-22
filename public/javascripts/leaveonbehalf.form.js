@@ -95,7 +95,7 @@ $(function(){
     				loader.off();
     			},
     			error: function(xhr, status, error){
-    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.")
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.")
     				loader.off();
     			}
     			
@@ -126,7 +126,7 @@ $(function(){
     				loader.off();
     			},
     			error: function(xhr, status, error){
-    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
     				loader.off();
     			},
     		});	
@@ -191,7 +191,7 @@ $(function(){
 	        	$("#file-loader").addClass("hidden");
 	        	$("#file-view").removeClass("file-input-control");
 	        	if ($("#btnApply").text() != "Apply for 0 day" ) { $("#btnApply").removeAttr("disabled"); };
-	        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+	        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
 	        }
 	    });	
 		
@@ -303,7 +303,7 @@ function setApplyBtn(p_loader) {
 				if (p_loader) { loader.off() };
 			},
 			error: function(xhr, status, error){
-				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
 				if (p_loader) { loader.off() };
 			}
 		});	
@@ -331,7 +331,7 @@ var onDelete = function(p_lk) {
         	$("#file-input-control").removeClass("hidden");
         },
         error: function(jqXHR, textStatus, errorThrown){
-        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
         }
     });
     

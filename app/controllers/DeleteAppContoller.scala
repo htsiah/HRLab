@@ -94,7 +94,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
   }}
   
   def error = withAuth { username => implicit request => {
-    Future.successful(Redirect(routes.DashboardController.index).flashing("error" -> "Delete abort! Contact support@hrsifu.my."))
+    Future.successful(Redirect(routes.DashboardController.index).flashing("error" -> "Delete abort! Contact support@hrsifu.com."))
   }}
   
 }

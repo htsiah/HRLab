@@ -94,7 +94,7 @@ $(function(){
     				loader.off();
     			},
     			error: function(xhr, status, error){
-    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
     				loader.off();
     			},
     		});	
@@ -273,7 +273,7 @@ function setApplyBtn(p_loader) {
 				if (p_loader) { loader.off() };
 			},
 			error: function(xhr, status, error){
-				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
 				if (p_loader) { loader.off() };
 			}
 		});	
@@ -311,7 +311,7 @@ var handleSubmit = function() {
 			loader.off();
 		},
 		error: function(xhr, status, error){
-			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
 			loader.off();
 		},
 	});	
@@ -331,7 +331,7 @@ var onDelete = function(p_lk) {
         	$("#file-input-control").removeClass("hidden");
         },
         error: function(jqXHR, textStatus, errorThrown){
-        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
         }
     });
     

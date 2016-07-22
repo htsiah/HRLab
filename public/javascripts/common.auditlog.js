@@ -19,7 +19,7 @@ function displayAuditLog(p_lk) {
 		    });
 		},
 		error: function(xhr, status, error){
-			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
 		},
 	});	
 		
