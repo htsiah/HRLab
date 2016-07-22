@@ -170,12 +170,11 @@ object CompanyHolidayModel {
   
   /** Custom Model Methods **/ 
   
-  def isCompanyHoliday(p_Date:DateTime, p_country:String, p_state:String, p_request:RequestHeader) = {
+  def isCompanyHoliday(p_Date:DateTime, p_office:String, p_request:RequestHeader) = {
     for {
       companyholiday <- this.findOne(
           BSONDocument(
-              "ct"->p_country, 
-              "st"->BSONDocument("$in"->List(p_state)), 
+              "off"->BSONDocument("$in"->List(p_office)), 
               "fdat"->BSONDocument("$lte" -> BSONDateTime(p_Date.getMillis())), 
               "tdat"->BSONDocument("$gte" -> BSONDateTime(p_Date.getMillis()))
               ), 

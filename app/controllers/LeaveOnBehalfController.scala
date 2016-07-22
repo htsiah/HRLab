@@ -87,7 +87,6 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
             maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(formWithData.pid)), request)
             maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
             maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
-            maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeperson.get.p.off))
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1017))
             maybefiles <- LeaveFileModel.findByLK(formWithData.docnum.toString(), request).collect[List]()
           } yield {
@@ -125,7 +124,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
               Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, filename.toString().replaceAll("\"", ""), alert=alert))
             } else {
               
-              val appliedduration = LeaveModel.getAppliedDuration(leaveWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)              
+              val appliedduration = LeaveModel.getAppliedDuration(leaveWithData, maybeleavepolicy.get, maybeperson.get, request)              
               val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
                 
               // Add Leave
