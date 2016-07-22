@@ -64,10 +64,14 @@
 			case _ => "Opps! something is not correct. Please contact support."
 		}
 	)
-	@if(leavepolicy.set.scal==true){@contentRow("", "Show leave in Calendar.")} else {@contentRow("", "Hide leave in Calendar.")}
-	@if(leavepolicy.set.nwd==true){@contentRow("", "This leave policy is intervening no working day.")}
-	@if(leavepolicy.set.msd==true){@contentRow("", "Mandatory upload support document.")}
-	
+	<dl class="dl-horizontal">
+		<dt><label>Others</label></dt>
+		<dd>
+			@if(leavepolicy.set.scal==true){<p>Show leave in Calendar.</p>} else {<p>Hide leave in Calendar.</p>}
+			@if(leavepolicy.set.nwd==true){<p>This leave policy is intervening no working day.</p>}
+			@if(leavepolicy.set.msd==true){<p>Mandatory upload support document.</p>}
+		</dd>
+	</dl>
 	<div class="widget-box transparent">
 		<div class="widget-header widget-header-flat">
 			<h4 class="widget-title lighter">
