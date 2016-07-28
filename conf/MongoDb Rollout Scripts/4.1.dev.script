@@ -126,3 +126,5 @@ db.companyholiday.update({'sys.eid':'000226'}, {$push: {'off':'Office 5 - ok'}},
 db.companyholiday.update({'sys.eid':'000227'}, {$push: {'off':'Main Office'}}, { multi: true });
 db.companyholiday.update({'sys.eid':'000227'}, {$push: {'off':'Singapore - Office'}}, { multi: true });
 db.companyholiday.update({'sys.eid':'000227'}, {$push: {'off':'Malaysia - Office'}}, { multi: true });
+
+# Delete ct and st using MongoChef.
