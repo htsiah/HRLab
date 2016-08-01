@@ -271,21 +271,16 @@ object PersonModel {
                 pn = p_doc.p.fn + " " + p_doc.p.ln,
                 lt = leavepolicy.lt,
                 set_ent = Entitlement(
-                    leavepolicy.ent.e1,
-                    leavepolicy.ent.e1_s,
-                    leavepolicy.ent.e1_cf,
-                    leavepolicy.ent.e2,
-                    leavepolicy.ent.e2_s,
-                    leavepolicy.ent.e2_cf,
-                    leavepolicy.ent.e3,
-                    leavepolicy.ent.e3_s,
-                    leavepolicy.ent.e3_cf,
-                    leavepolicy.ent.e4,
-                    leavepolicy.ent.e4_s,
-                    leavepolicy.ent.e4_cf,
-                    leavepolicy.ent.e5,
-                    leavepolicy.ent.e5_s,
-                    leavepolicy.ent.e5_cf
+                    EntitlementValue(leavepolicy.ent.e1.e, leavepolicy.ent.e1.s, leavepolicy.ent.e1.cf),
+                    EntitlementValue(leavepolicy.ent.e2.e, leavepolicy.ent.e2.s, leavepolicy.ent.e2.cf),
+                    EntitlementValue(leavepolicy.ent.e3.e, leavepolicy.ent.e3.s, leavepolicy.ent.e3.cf),
+                    EntitlementValue(leavepolicy.ent.e4.e, leavepolicy.ent.e4.s, leavepolicy.ent.e4.cf),
+                    EntitlementValue(leavepolicy.ent.e5.e, leavepolicy.ent.e5.s, leavepolicy.ent.e5.cf),
+                    EntitlementValue(leavepolicy.ent.e6.e, leavepolicy.ent.e6.s, leavepolicy.ent.e6.cf),
+                    EntitlementValue(leavepolicy.ent.e7.e, leavepolicy.ent.e7.s, leavepolicy.ent.e7.cf),
+                    EntitlementValue(leavepolicy.ent.e8.e, leavepolicy.ent.e8.s, leavepolicy.ent.e8.cf),
+                    EntitlementValue(leavepolicy.ent.e9.e, leavepolicy.ent.e9.s, leavepolicy.ent.e9.cf),
+                    EntitlementValue(leavepolicy.ent.e10.e, leavepolicy.ent.e10.s, leavepolicy.ent.e10.cf)
                 )
             )
             LeaveProfileModel.insert(leaveprofile_doc, p_eid, p_request)
@@ -297,7 +292,7 @@ object PersonModel {
   }
   
   // Add registrator's person record during new Sign Up
-  def insertOnNewSignUp(p_doc:Person, p_eid:String)= {
+  def insertOnNewSignUp(p_doc:Person, p_country:String,  p_eid:String)= {
     val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,null)))
     future.onComplete {
       case Failure(e) => throw e
@@ -306,6 +301,7 @@ object PersonModel {
         Thread sleep 3000  // Wait 3 second make sure leave policy and setting is created
         ConfigLeavePolicyModel.find(
             BSONDocument(
+                "ct" -> p_country,
                 "$or" -> BSONArray(
                     BSONDocument("set.g"->(p_doc.p.g + " only")),
                     BSONDocument("set.g"->"Applicable for all")
@@ -324,21 +320,16 @@ object PersonModel {
                 pn = p_doc.p.fn + " " + p_doc.p.ln,
                 lt = configleavepolicy.lt,
                 set_ent = Entitlement(
-                    configleavepolicy.ent.e1,
-                    configleavepolicy.ent.e1_s,
-                    configleavepolicy.ent.e1_cf,
-                    configleavepolicy.ent.e2,
-                    configleavepolicy.ent.e2_s,
-                    configleavepolicy.ent.e2_cf,
-                    configleavepolicy.ent.e3,
-                    configleavepolicy.ent.e3_s,
-                    configleavepolicy.ent.e3_cf,
-                    configleavepolicy.ent.e4,
-                    configleavepolicy.ent.e4_s,
-                    configleavepolicy.ent.e4_cf,
-                    configleavepolicy.ent.e5,
-                    configleavepolicy.ent.e5_s,
-                    configleavepolicy.ent.e5_cf                
+                    EntitlementValue(configleavepolicy.ent.e1.e, configleavepolicy.ent.e1.s, configleavepolicy.ent.e1.cf),
+                    EntitlementValue(configleavepolicy.ent.e2.e, configleavepolicy.ent.e2.s, configleavepolicy.ent.e2.cf),
+                    EntitlementValue(configleavepolicy.ent.e3.e, configleavepolicy.ent.e3.s, configleavepolicy.ent.e3.cf),
+                    EntitlementValue(configleavepolicy.ent.e4.e, configleavepolicy.ent.e4.s, configleavepolicy.ent.e4.cf),
+                    EntitlementValue(configleavepolicy.ent.e5.e, configleavepolicy.ent.e5.s, configleavepolicy.ent.e5.cf),
+                    EntitlementValue(configleavepolicy.ent.e6.e, configleavepolicy.ent.e6.s, configleavepolicy.ent.e6.cf),
+                    EntitlementValue(configleavepolicy.ent.e7.e, configleavepolicy.ent.e7.s, configleavepolicy.ent.e7.cf),
+                    EntitlementValue(configleavepolicy.ent.e8.e, configleavepolicy.ent.e8.s, configleavepolicy.ent.e8.cf),
+                    EntitlementValue(configleavepolicy.ent.e9.e, configleavepolicy.ent.e9.s, configleavepolicy.ent.e9.cf),
+                    EntitlementValue(configleavepolicy.ent.e10.e, configleavepolicy.ent.e10.s, configleavepolicy.ent.e10.cf)
                 )
             )
             LeaveProfileModel.insert(leaveprofile_doc, p_eid)

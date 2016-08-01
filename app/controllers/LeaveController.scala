@@ -246,7 +246,6 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	          leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
 	          maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->formWithData.pid , "lt"->formWithData.lt), request)
 	          maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
-	          maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get))
 	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
             maybefiles <- LeaveFileModel.findByLK(formWithData.docnum.toString(), request).collect[List]()
@@ -262,7 +261,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
               val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
               Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, filename.toString().replaceAll("\"", ""), alert=alert))
             } else {
-	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, maybeoffice.get, request)
+	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, request)
               val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
 	                           
               // Add Leave
@@ -368,13 +367,12 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
       maybeapplicant <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeleave.get.pid)), request)
 	    maybeleaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->maybeleave.get.pid , "lt"->maybeleave.get.lt), request)
 	    maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> maybeleave.get.lt), request)
-	    maybeoffice <- OfficeModel.findOne(BSONDocument("n" -> maybeapplicant.get.p.off))
       maybefiles <- LeaveFileModel.findByLK(maybeleave.get.docnum.toString(), request).collect[List]()
 	  } yield {
 	    // Check authorized
 	    if (maybeleave.get.wf.s=="Pending Approval" && maybeleave.get.wf.aprid.contains(request.session.get("id").get) && !maybeleave.get.wf.aprbyid.getOrElse(List()).contains(request.session.get("id").get) && !maybeleave.get.ld) {
 	      
-        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeapplicant.get, maybeoffice.get, request)
+        val appliedduration = LeaveModel.getAppliedDuration(maybeleave.get, maybeleavepolicy.get, maybeapplicant.get, request)
         val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp
         
         if (maybeleave.get.wf.aprmthd == "Both manager and substitute manager must approve leave request" && maybeleave.get.wf.aprid.length > 1) {
@@ -828,7 +826,6 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
   def getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String) = withAuth { username => implicit request => {
     for {
       maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
-      maybe_office <- OfficeModel.findOne(BSONDocument("n" -> maybe_person.get.p.off))
       maybe_leaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->p_pid , "lt"->p_lt), request)
       maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> p_lt), request)
     } yield {
@@ -847,7 +844,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
              Ok(json).as("application/json")
            } else {
              maybe_leavepolicy.map( leavepolicy => {
-               val appliedduration = LeaveModel.getAppliedDuration(leave_doc, maybe_leavepolicy.get, maybe_person.get, maybe_office.get, request)
+               val appliedduration = LeaveModel.getAppliedDuration(leave_doc, maybe_leavepolicy.get, maybe_person.get, request)
                val leavebalance = if (maybe_leavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybe_leaveprofile.get.cal.bal } else { maybe_leaveprofile.get.cal.cbal }             
                val json = Json.obj("a" -> appliedduration.toString(), "b" -> (leavebalance - appliedduration).toString(), "msg" -> "")
                Ok(json).as("application/json")

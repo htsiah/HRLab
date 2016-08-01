@@ -98,21 +98,21 @@ $(function(){
 // Form submit function
 var handleSubmit = function() {
 	
-	var selectedStates = "";
-	var count = $("input:checkbox.state").length;
+	var selectedOffices = "";
+	var count = $("input:checkbox.office").length;
 	
 	for(var i=0; i<count; i++){
-		st=$("input:checkbox:checked#st" + i).val();
-		if (st!=undefined) {
-			if (selectedStates=="") {
-				selectedStates = st;
+		off=$("input:checkbox:checked#off" + i).val();
+		if (off!=undefined) {
+			if (selectedOffices=="") {
+				selectedOffices = off;
 			} else {
-				selectedStates = selectedStates + "," + st;
+				selectedOffices = selectedOffices + "," + off;
 			}
 		}
 	};
 	
-	$("#st").val(selectedStates)
+	$("#off").val(selectedOffices)
 	$('#companyholidayform').submit();	
 
 }

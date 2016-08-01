@@ -286,29 +286,30 @@ object LeaveModel {
     }
   }
   
-  def getAppliedDuration(p_leave:Leave, p_leavepolicy:LeavePolicy, p_person:Person, p_office:Office, p_request:RequestHeader) = {    
+  def getAppliedDuration(p_leave:Leave, p_leavepolicy:LeavePolicy, p_person:Person, p_request:RequestHeader) = {    
     val isvalidonnonworkday = p_leavepolicy.set.nwd
     val applieddates = this.getAppliedDate(p_leave.fdat.get , p_leave.tdat.get)
     var appliedduration : Double = 0
 
     applieddates.map( applieddate => {
-     val iscompanyholiday =  Await.result(CompanyHolidayModel.isCompanyHoliday(applieddate, p_office.ct, p_office.st, p_request), Tools.db_timeout)
+
+      val iscompanyholiday =  Await.result(CompanyHolidayModel.isCompanyHoliday(applieddate, p_person.p.off, p_request), Tools.db_timeout)
       
-     if (isvalidonnonworkday) {
-       if ( p_leave.dt=="Full day" ) {
-         appliedduration = appliedduration + 1
-       } else {
-         appliedduration = appliedduration + 0.5
-       }
-     } else {
-       if (PersonModel.isWorkDay(p_person, applieddate) && iscompanyholiday==false) {
-         if ( p_leave.dt=="Full day" ) {
-           appliedduration = appliedduration + 1
-         } else {
-           appliedduration = appliedduration + 0.5
-         }
-       }
-     }
+      if (isvalidonnonworkday) {
+        if ( p_leave.dt=="Full day" ) {
+          appliedduration = appliedduration + 1
+        } else {
+          appliedduration = appliedduration + 0.5
+        }
+      } else {
+        if (PersonModel.isWorkDay(p_person, applieddate) && iscompanyholiday==false) {
+          if ( p_leave.dt=="Full day" ) {
+            appliedduration = appliedduration + 1
+          } else {
+            appliedduration = appliedduration + 0.5
+          }
+        }
+      }
     })
     appliedduration
   }

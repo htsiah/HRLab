@@ -12,7 +12,7 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel, AuditLogModel}
+import models.{LeaveProfileModel, LeaveProfile, LeaveProfileMonthEarn, LeaveProfileCalculation, Entitlement, EntitlementValue, LeavePolicyModel, PersonModel, LeaveModel, LeaveSettingModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools}
 
 import reactivemongo.api._
@@ -55,21 +55,56 @@ class LeaveProfileController extends Controller with Secured {
               "dec" -> of[Double]
           )(LeaveProfileMonthEarn.apply)(LeaveProfileMonthEarn.unapply),
           "set_ent" -> mapping(
-              "e1" -> number,
-              "e1_s" -> number,
-              "e1_cf" -> number,
-              "e2" -> number,
-              "e2_s" -> number,
-              "e2_cf" -> number,
-              "e3" -> number,
-              "e3_s" -> number,
-              "e3_cf" -> number,
-              "e4" -> number,
-              "e4_s" -> number,
-              "e4_cf" -> number,
-              "e5" -> number,
-              "e5_s" -> number,
-              "e5_cf" -> number
+              "e1" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e2" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e3" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e4" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e5" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e6" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e7" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e8" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e9" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply),
+              "e10" -> mapping(
+                  "e" -> number,
+                  "s" -> number,
+                  "cf" -> number
+              )(EntitlementValue.apply)(EntitlementValue.unapply)
           )(Entitlement.apply)(Entitlement.unapply),
           "sys" -> optional(mapping(
                   "eid" -> optional(text),
@@ -153,21 +188,16 @@ class LeaveProfileController extends Controller with Secured {
                       formWithData.copy(
                           _id=doc_objectID, 
                           set_ent=Entitlement(
-                              e1_s=eligbleleaveentitlement(0)(0),
-                              e1=eligbleleaveentitlement(0)(1),
-                              e1_cf=eligbleleaveentitlement(0)(2),
-                              e2_s=eligbleleaveentitlement(1)(0),
-                              e2=eligbleleaveentitlement(1)(1),
-                              e2_cf=eligbleleaveentitlement(1)(2),
-                              e3_s=eligbleleaveentitlement(2)(0),
-                              e3=eligbleleaveentitlement(2)(1),
-                              e3_cf=eligbleleaveentitlement(2)(2),
-                              e4_s=eligbleleaveentitlement(3)(0),
-                              e4=eligbleleaveentitlement(3)(1),
-                              e4_cf=eligbleleaveentitlement(3)(2),
-                              e5_s=eligbleleaveentitlement(4)(0),
-                              e5=eligbleleaveentitlement(4)(1),
-                              e5_cf=eligbleleaveentitlement(4)(2)
+                              EntitlementValue(s=eligbleleaveentitlement(0)(0), e=eligbleleaveentitlement(0)(1), cf=eligbleleaveentitlement(0)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(1)(0), e=eligbleleaveentitlement(1)(1), cf=eligbleleaveentitlement(1)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(2)(0), e=eligbleleaveentitlement(2)(1), cf=eligbleleaveentitlement(2)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(3)(0), e=eligbleleaveentitlement(3)(1), cf=eligbleleaveentitlement(3)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(4)(0), e=eligbleleaveentitlement(4)(1), cf=eligbleleaveentitlement(4)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(5)(0), e=eligbleleaveentitlement(5)(1), cf=eligbleleaveentitlement(5)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(6)(0), e=eligbleleaveentitlement(6)(1), cf=eligbleleaveentitlement(6)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(7)(0), e=eligbleleaveentitlement(7)(1), cf=eligbleleaveentitlement(7)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(8)(0), e=eligbleleaveentitlement(8)(1), cf=eligbleleaveentitlement(8)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(9)(0), e=eligbleleaveentitlement(9)(1), cf=eligbleleaveentitlement(9)(2))
                           )
                       ),
                       p_request=request),
@@ -228,21 +258,16 @@ class LeaveProfileController extends Controller with Secured {
                   formWithData.copy(                      
                       _id=BSONObjectID(p_id), 
                       set_ent=Entitlement(
-                          e1_s=eligbleleaveentitlement(0)(0),
-                          e1=eligbleleaveentitlement(0)(1),
-                          e1_cf=eligbleleaveentitlement(0)(2),
-                          e2_s=eligbleleaveentitlement(1)(0),
-                          e2=eligbleleaveentitlement(1)(1),
-                          e2_cf=eligbleleaveentitlement(1)(2),
-                          e3_s=eligbleleaveentitlement(2)(0),
-                          e3=eligbleleaveentitlement(2)(1),
-                          e3_cf=eligbleleaveentitlement(2)(2),
-                          e4_s=eligbleleaveentitlement(3)(0),
-                          e4=eligbleleaveentitlement(3)(1),
-                          e4_cf=eligbleleaveentitlement(3)(2),
-                          e5_s=eligbleleaveentitlement(4)(0),
-                          e5=eligbleleaveentitlement(4)(1),
-                          e5_cf=eligbleleaveentitlement(4)(2)
+                          EntitlementValue(s=eligbleleaveentitlement(0)(0), e=eligbleleaveentitlement(0)(1), cf=eligbleleaveentitlement(0)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(1)(0), e=eligbleleaveentitlement(1)(1), cf=eligbleleaveentitlement(1)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(2)(0), e=eligbleleaveentitlement(2)(1), cf=eligbleleaveentitlement(2)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(3)(0), e=eligbleleaveentitlement(3)(1), cf=eligbleleaveentitlement(3)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(4)(0), e=eligbleleaveentitlement(4)(1), cf=eligbleleaveentitlement(4)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(5)(0), e=eligbleleaveentitlement(5)(1), cf=eligbleleaveentitlement(5)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(6)(0), e=eligbleleaveentitlement(6)(1), cf=eligbleleaveentitlement(6)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(7)(0), e=eligbleleaveentitlement(7)(1), cf=eligbleleaveentitlement(7)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(8)(0), e=eligbleleaveentitlement(8)(1), cf=eligbleleaveentitlement(8)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(9)(0), e=eligbleleaveentitlement(9)(1), cf=eligbleleaveentitlement(9)(2))
                       )
                   ), 
                   request),
@@ -337,21 +362,16 @@ class LeaveProfileController extends Controller with Secured {
                       formWithData.copy(
                           _id=doc_objectID, 
                           set_ent=Entitlement(
-                              e1_s=eligbleleaveentitlement(0)(0),
-                              e1=eligbleleaveentitlement(0)(1),
-                              e1_cf=eligbleleaveentitlement(0)(2),
-                              e2_s=eligbleleaveentitlement(1)(0),
-                              e2=eligbleleaveentitlement(1)(1),
-                              e2_cf=eligbleleaveentitlement(1)(2),
-                              e3_s=eligbleleaveentitlement(2)(0),
-                              e3=eligbleleaveentitlement(2)(1),
-                              e3_cf=eligbleleaveentitlement(2)(2),
-                              e4_s=eligbleleaveentitlement(3)(0),
-                              e4=eligbleleaveentitlement(3)(1),
-                              e4_cf=eligbleleaveentitlement(3)(2),
-                              e5_s=eligbleleaveentitlement(4)(0),
-                              e5=eligbleleaveentitlement(4)(1),
-                              e5_cf=eligbleleaveentitlement(4)(2)
+                              EntitlementValue(s=eligbleleaveentitlement(0)(0), e=eligbleleaveentitlement(0)(1), cf=eligbleleaveentitlement(0)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(1)(0), e=eligbleleaveentitlement(1)(1), cf=eligbleleaveentitlement(1)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(2)(0), e=eligbleleaveentitlement(2)(1), cf=eligbleleaveentitlement(2)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(3)(0), e=eligbleleaveentitlement(3)(1), cf=eligbleleaveentitlement(3)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(4)(0), e=eligbleleaveentitlement(4)(1), cf=eligbleleaveentitlement(4)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(5)(0), e=eligbleleaveentitlement(5)(1), cf=eligbleleaveentitlement(5)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(6)(0), e=eligbleleaveentitlement(6)(1), cf=eligbleleaveentitlement(6)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(7)(0), e=eligbleleaveentitlement(7)(1), cf=eligbleleaveentitlement(7)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(8)(0), e=eligbleleaveentitlement(8)(1), cf=eligbleleaveentitlement(8)(2)),
+                              EntitlementValue(s=eligbleleaveentitlement(9)(0), e=eligbleleaveentitlement(9)(1), cf=eligbleleaveentitlement(9)(2))
                           )
                       ),
                       p_request=request),
@@ -412,21 +432,16 @@ class LeaveProfileController extends Controller with Secured {
                   formWithData.copy(                      
                       _id=BSONObjectID(p_id), 
                       set_ent=Entitlement(
-                          e1_s=eligbleleaveentitlement(0)(0),
-                          e1=eligbleleaveentitlement(0)(1),
-                          e1_cf=eligbleleaveentitlement(0)(2),
-                          e2_s=eligbleleaveentitlement(1)(0),
-                          e2=eligbleleaveentitlement(1)(1),
-                          e2_cf=eligbleleaveentitlement(1)(2),
-                          e3_s=eligbleleaveentitlement(2)(0),
-                          e3=eligbleleaveentitlement(2)(1),
-                          e3_cf=eligbleleaveentitlement(2)(2),
-                          e4_s=eligbleleaveentitlement(3)(0),
-                          e4=eligbleleaveentitlement(3)(1),
-                          e4_cf=eligbleleaveentitlement(3)(2),
-                          e5_s=eligbleleaveentitlement(4)(0),
-                          e5=eligbleleaveentitlement(4)(1),
-                          e5_cf=eligbleleaveentitlement(4)(2)
+                          EntitlementValue(s=eligbleleaveentitlement(0)(0), e=eligbleleaveentitlement(0)(1), cf=eligbleleaveentitlement(0)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(1)(0), e=eligbleleaveentitlement(1)(1), cf=eligbleleaveentitlement(1)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(2)(0), e=eligbleleaveentitlement(2)(1), cf=eligbleleaveentitlement(2)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(3)(0), e=eligbleleaveentitlement(3)(1), cf=eligbleleaveentitlement(3)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(4)(0), e=eligbleleaveentitlement(4)(1), cf=eligbleleaveentitlement(4)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(5)(0), e=eligbleleaveentitlement(5)(1), cf=eligbleleaveentitlement(5)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(6)(0), e=eligbleleaveentitlement(6)(1), cf=eligbleleaveentitlement(6)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(7)(0), e=eligbleleaveentitlement(7)(1), cf=eligbleleaveentitlement(7)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(8)(0), e=eligbleleaveentitlement(8)(1), cf=eligbleleaveentitlement(8)(2)),
+                          EntitlementValue(s=eligbleleaveentitlement(9)(0), e=eligbleleaveentitlement(9)(1), cf=eligbleleaveentitlement(9)(2))
                       )
                   ), 
                   request),
@@ -538,11 +553,16 @@ class LeaveProfileController extends Controller with Secured {
       val m_nov = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 11)
       val m_dec = LeaveProfileModel.getMonthEntitlementEarn(leavepolicy, leavesetting, person, 12)
       maybe_leavepolicy.map( leavepolicy => {
-        val json = Json.parse("{\"e1\":" + leavepolicy.ent.e1 + ", \"e1_s\":" + leavepolicy.ent.e1_s + ", \"e1_cf\":" + leavepolicy.ent.e1_cf +
-          ",\"e2\":" + leavepolicy.ent.e2 + ", \"e2_s\":" + leavepolicy.ent.e2_s + ", \"e2_cf\":" + leavepolicy.ent.e2_cf +
-          ",\"e3\":" + leavepolicy.ent.e3 + ", \"e3_s\":" + leavepolicy.ent.e3_s + ", \"e3_cf\":" + leavepolicy.ent.e3_cf +
-          ",\"e4\":" + leavepolicy.ent.e4 + ", \"e4_s\":" + leavepolicy.ent.e4_s + ", \"e4_cf\":" + leavepolicy.ent.e4_cf +
-          ",\"e5\":" + leavepolicy.ent.e5 + ", \"e5_s\":" + leavepolicy.ent.e5_s + ", \"e5_cf\":" + leavepolicy.ent.e5_cf +
+        val json = Json.parse("{\"e1\":" + leavepolicy.ent.e1.e + ", \"e1_s\":" + leavepolicy.ent.e1.s + ", \"e1_cf\":" + leavepolicy.ent.e1.cf +
+          ",\"e2\":" + leavepolicy.ent.e2.e + ", \"e2_s\":" + leavepolicy.ent.e2.s + ", \"e2_cf\":" + leavepolicy.ent.e2.cf +
+          ",\"e3\":" + leavepolicy.ent.e3.e + ", \"e3_s\":" + leavepolicy.ent.e3.s + ", \"e3_cf\":" + leavepolicy.ent.e3.cf +
+          ",\"e4\":" + leavepolicy.ent.e4.e + ", \"e4_s\":" + leavepolicy.ent.e4.s + ", \"e4_cf\":" + leavepolicy.ent.e4.cf +
+          ",\"e5\":" + leavepolicy.ent.e5.e + ", \"e5_s\":" + leavepolicy.ent.e5.s + ", \"e5_cf\":" + leavepolicy.ent.e5.cf +
+          ",\"e6\":" + leavepolicy.ent.e6.e + ", \"e5_s\":" + leavepolicy.ent.e6.s + ", \"e5_cf\":" + leavepolicy.ent.e6.cf +
+          ",\"e7\":" + leavepolicy.ent.e7.e + ", \"e5_s\":" + leavepolicy.ent.e7.s + ", \"e5_cf\":" + leavepolicy.ent.e7.cf +
+          ",\"e8\":" + leavepolicy.ent.e8.e + ", \"e5_s\":" + leavepolicy.ent.e8.s + ", \"e5_cf\":" + leavepolicy.ent.e8.cf +
+          ",\"e9\":" + leavepolicy.ent.e9.e + ", \"e5_s\":" + leavepolicy.ent.e9.s + ", \"e5_cf\":" + leavepolicy.ent.e9.cf +
+          ",\"e10\":" + leavepolicy.ent.e10.e + ", \"e5_s\":" + leavepolicy.ent.e10.s + ", \"e5_cf\":" + leavepolicy.ent.e10.cf +
           ",\"earned\":" + leaveearned + ",\"ent\":" + ent + ",\"bal\":" + leaveearned + ",\"cbal\":" + cbal + ",\"m_jan\":" + m_jan +
           ",\"m_feb\":" + m_feb + ",\"m_mar\":" + m_mar + ",\"m_apr\":" + m_apr +
           ",\"m_may\":" + m_may + ",\"m_jun\":" + m_jun + ",\"m_jul\":" + m_jul +
@@ -551,7 +571,7 @@ class LeaveProfileController extends Controller with Secured {
           "}");
         Ok(json).as("application/json")
       }).getOrElse({        
-          val json = Json.parse("{\"e1\":0,\"e1_s\":0,\"e1_cf\":0,\"e2\":0,\"e2_s\":0,\"e2_cf\":0,\"e3\":0,\"e3_s\":0,\"e3_cf\":0,\"e4\":0,\"e4_s\":0,\"e4_cf\":0,\"e5\":0,\"e5_s\":0,\"e5_cf\":0}");
+          val json = Json.parse("{\"e1\":0,\"e1_s\":0,\"e1_cf\":0,\"e2\":0,\"e2_s\":0,\"e2_cf\":0,\"e3\":0,\"e3_s\":0,\"e3_cf\":0,\"e4\":0,\"e4_s\":0,\"e4_cf\":0,\"e5\":0,\"e5_s\":0,\"e5_cf\":0,\"e6\":0,\"e6_s\":0,\"e6_cf\":0,\"e7\":0,\"e7_s\":0,\"e7_cf\":0,\"e8\":0,\"e8_s\":0,\"e8_cf\":0,\"e9\":0,\"e9_s\":0,\"e9_cf\":0,\"e10\":0,\"e10_s\":0,\"e10_cf\":0}");
           Ok(json).as("application/json")
       })
     }

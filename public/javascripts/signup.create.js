@@ -21,7 +21,8 @@ $(function(){
 			},
 			gender: "required",
 			marital: "required",
-			company: "required"
+			company: "required",
+			country: "required"
 		},
 		messages: {
 			fname: "Please enter your first name.",
@@ -33,10 +34,11 @@ $(function(){
 			},
 			gender: "Please select your gender.",
 			marital: "Please select your marital status.",
-			company: "Please enter your company."
+			company: "Please enter your company.",
+			country: "Please select your country."
 		},
 		 submitHandler: function(form) {
-			 goog_report_conversion ('https://www.hrsifu.my/signup/create');
+			 goog_report_conversion ('https://app.hrsifu.com');
 			 form.submit();
 		 }
 	});

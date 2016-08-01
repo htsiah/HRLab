@@ -1,4 +1,4 @@
-@(signupform: Form[Signup])
+@(signupform: Form[Signup], countries: List[String])
 
 @import helper._
 
@@ -71,6 +71,14 @@
 								<span class="block input-icon input-icon-right">
 									<input type="text" name="company" id="company" class="form-control" placeholder="Company" data-toggle="tooltip" title="Company">
 									<i class="ace-icon fa fa-building"></i>
+								</span>
+							</label>
+							<label class="block clearfix">
+								<span class="block input-icon input-icon-right">
+									<select id="country" name="country" class="form-control">
+										<option class="blank" value="">Country</option>
+										@countries.map(country=>Html("<option class='blank' value='" + country + "'>" + country + "</option>"))
+									</select>
 								</span>
 							</label>
 							<div class="clearfix">

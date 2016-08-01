@@ -225,21 +225,36 @@ class ReportController extends Controller with Secured {
            leaveprofile.me.oct + "," + 
            leaveprofile.me.nov + "," + 
            leaveprofile.me.dec + "," + 
-           leaveprofile.set_ent.e1_s + "," + 
-           leaveprofile.set_ent.e1 + "," +
-           leaveprofile.set_ent.e1_cf + "," + 
-           leaveprofile.set_ent.e2_s + "," + 
-           leaveprofile.set_ent.e2 + "," +
-           leaveprofile.set_ent.e2_cf + "," + 
-           leaveprofile.set_ent.e3_s + "," + 
-           leaveprofile.set_ent.e3 + "," +
-           leaveprofile.set_ent.e3_cf + "," + 
-           leaveprofile.set_ent.e4_s + "," + 
-           leaveprofile.set_ent.e4 + "," +
-           leaveprofile.set_ent.e4_cf + "," + 
-           leaveprofile.set_ent.e5_s + "," + 
-           leaveprofile.set_ent.e5 + "," +
-           leaveprofile.set_ent.e5_cf
+           leaveprofile.set_ent.e1.s + "," + 
+           leaveprofile.set_ent.e1.e + "," +
+           leaveprofile.set_ent.e1.cf + "," + 
+           leaveprofile.set_ent.e2.s + "," + 
+           leaveprofile.set_ent.e2.e + "," +
+           leaveprofile.set_ent.e2.cf + "," + 
+           leaveprofile.set_ent.e3.s + "," + 
+           leaveprofile.set_ent.e3.e + "," +
+           leaveprofile.set_ent.e3.cf + "," + 
+           leaveprofile.set_ent.e4.s + "," + 
+           leaveprofile.set_ent.e4.e + "," +
+           leaveprofile.set_ent.e4.cf + "," + 
+           leaveprofile.set_ent.e5.s + "," + 
+           leaveprofile.set_ent.e5.e + "," +
+           leaveprofile.set_ent.e5.cf + "," +
+           leaveprofile.set_ent.e6.s + "," + 
+           leaveprofile.set_ent.e6.e + "," +
+           leaveprofile.set_ent.e6.cf + "," +
+           leaveprofile.set_ent.e7.s + "," + 
+           leaveprofile.set_ent.e7.e + "," +
+           leaveprofile.set_ent.e7.cf + "," +
+           leaveprofile.set_ent.e8.s + "," + 
+           leaveprofile.set_ent.e8.e + "," +
+           leaveprofile.set_ent.e8.cf + "," +
+           leaveprofile.set_ent.e9.s + "," + 
+           leaveprofile.set_ent.e9.e + "," +
+           leaveprofile.set_ent.e9.cf + "," +
+           leaveprofile.set_ent.e10.s + "," + 
+           leaveprofile.set_ent.e10.e + "," +
+           leaveprofile.set_ent.e10.cf
          }
          
          Ok(header + data.mkString("\n")).withHeaders(
@@ -399,21 +414,36 @@ class ReportController extends Controller with Secured {
           leaveprofile.me.oct + "," + 
           leaveprofile.me.nov + "," + 
           leaveprofile.me.dec + "," + 
-          leaveprofile.set_ent.e1_s + "," + 
-          leaveprofile.set_ent.e1 + "," +
-          leaveprofile.set_ent.e1_cf + "," + 
-          leaveprofile.set_ent.e2_s + "," + 
-          leaveprofile.set_ent.e2 + "," +
-          leaveprofile.set_ent.e2_cf + "," + 
-          leaveprofile.set_ent.e3_s + "," + 
-          leaveprofile.set_ent.e3 + "," +
-          leaveprofile.set_ent.e3_cf + "," + 
-          leaveprofile.set_ent.e4_s + "," + 
-          leaveprofile.set_ent.e4 + "," +
-          leaveprofile.set_ent.e4_cf + "," + 
-          leaveprofile.set_ent.e5_s + "," + 
-          leaveprofile.set_ent.e5 + "," +
-          leaveprofile.set_ent.e5_cf
+          leaveprofile.set_ent.e1.s + "," + 
+          leaveprofile.set_ent.e1.e + "," +
+          leaveprofile.set_ent.e1.cf + "," + 
+          leaveprofile.set_ent.e2.s + "," + 
+          leaveprofile.set_ent.e2.e + "," +
+          leaveprofile.set_ent.e2.cf + "," + 
+          leaveprofile.set_ent.e3.s + "," + 
+          leaveprofile.set_ent.e3.e + "," +
+          leaveprofile.set_ent.e3.cf + "," + 
+          leaveprofile.set_ent.e4.s + "," + 
+          leaveprofile.set_ent.e4.e + "," +
+          leaveprofile.set_ent.e4.cf + "," + 
+          leaveprofile.set_ent.e5.s + "," + 
+          leaveprofile.set_ent.e5.e + "," +
+          leaveprofile.set_ent.e5.cf + "," +
+          leaveprofile.set_ent.e6.s + "," + 
+          leaveprofile.set_ent.e6.e + "," +
+          leaveprofile.set_ent.e6.cf + "," +
+          leaveprofile.set_ent.e7.s + "," + 
+          leaveprofile.set_ent.e7.e + "," +
+          leaveprofile.set_ent.e7.cf + "," +
+          leaveprofile.set_ent.e8.s + "," + 
+          leaveprofile.set_ent.e8.e + "," +
+          leaveprofile.set_ent.e8.cf + "," +
+          leaveprofile.set_ent.e9.s + "," + 
+          leaveprofile.set_ent.e9.e + "," +
+          leaveprofile.set_ent.e9.cf + "," +
+          leaveprofile.set_ent.e10.s + "," + 
+          leaveprofile.set_ent.e10.e + "," +
+          leaveprofile.set_ent.e10.cf
         }
         Ok(header + data.mkString("\n")).withHeaders(
             CONTENT_TYPE -> "text/csv",

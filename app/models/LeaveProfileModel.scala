@@ -91,24 +91,29 @@ object LeaveProfileModel {
     }
   }
   
+  implicit object EntitlementValueBSONReader extends BSONDocumentReader[EntitlementValue] {
+    def read(p_doc: BSONDocument): EntitlementValue = {
+      EntitlementValue(
+          p_doc.getAs[Int]("e").get,
+          p_doc.getAs[Int]("s").get,
+          p_doc.getAs[Int]("cf").get
+      )
+    }
+  }
+  
   implicit object EntitlementBSONReader extends BSONDocumentReader[Entitlement] {
     def read(p_doc: BSONDocument): Entitlement = {
       Entitlement(
-          p_doc.getAs[Int]("e1").get,
-          p_doc.getAs[Int]("e1_s").get,
-          p_doc.getAs[Int]("e1_cf").get,
-          p_doc.getAs[Int]("e2").get,
-          p_doc.getAs[Int]("e2_s").get,
-          p_doc.getAs[Int]("e2_cf").get,
-          p_doc.getAs[Int]("e3").get,
-          p_doc.getAs[Int]("e3_s").get,
-          p_doc.getAs[Int]("e3_cf").get,
-          p_doc.getAs[Int]("e4").get,
-          p_doc.getAs[Int]("e4_s").get,
-          p_doc.getAs[Int]("e4_cf").get,
-          p_doc.getAs[Int]("e5").get,
-          p_doc.getAs[Int]("e5_s").get,
-          p_doc.getAs[Int]("e5_cf").get
+          p_doc.getAs[EntitlementValue]("e1").get,
+          p_doc.getAs[EntitlementValue]("e2").get,
+          p_doc.getAs[EntitlementValue]("e3").get,
+          p_doc.getAs[EntitlementValue]("e4").get,
+          p_doc.getAs[EntitlementValue]("e5").get,
+          p_doc.getAs[EntitlementValue]("e6").get,
+          p_doc.getAs[EntitlementValue]("e7").get,
+          p_doc.getAs[EntitlementValue]("e8").get,
+          p_doc.getAs[EntitlementValue]("e9").get,
+          p_doc.getAs[EntitlementValue]("e10").get
       )
     }
   }
@@ -160,24 +165,29 @@ object LeaveProfileModel {
     }
   }
   
+  implicit object EntitlementValueBSONWriter extends BSONDocumentWriter[EntitlementValue] {
+    def write(p_doc: EntitlementValue): BSONDocument = {
+      BSONDocument(
+          "e" -> p_doc.e,
+          "s" -> p_doc.s,
+          "cf" -> p_doc.cf
+      )     
+    }
+  }
+  
   implicit object EntitlementBSONWriter extends BSONDocumentWriter[Entitlement] {
     def write(p_doc: Entitlement): BSONDocument = {
       BSONDocument(
           "e1" -> p_doc.e1,
-          "e1_s" -> p_doc.e1_s,
-          "e1_cf" -> p_doc.e1_cf,
           "e2" -> p_doc.e2,
-          "e2_s" -> p_doc.e2_s,
-          "e2_cf" -> p_doc.e2_cf,
           "e3" -> p_doc.e3,
-          "e3_s" -> p_doc.e3_s,
-          "e3_cf" -> p_doc.e3_cf,
           "e4" -> p_doc.e4,
-          "e4_s" -> p_doc.e4_s,
-          "e4_cf" -> p_doc.e4_cf,
           "e5" -> p_doc.e5,
-          "e5_s" -> p_doc.e5_s,
-          "e5_cf" -> p_doc.e5_cf
+          "e6" -> p_doc.e6,
+          "e7" -> p_doc.e7,
+          "e8" -> p_doc.e8,
+          "e9" -> p_doc.e9,
+          "e10" -> p_doc.e10
       )     
     }
   }
@@ -242,7 +252,18 @@ object LeaveProfileModel {
       lt = "",
       cal = LeaveProfileCalculation (ent = 0, ear = 0.0, adj = 0.0, uti = 0.0, cf = 0.0, cfuti = 0.0, cfexp = 0.0, papr = 0.0, bal = 0.0, cbal = 0.0),
       me = LeaveProfileMonthEarn(jan=0.0, feb=0.0, mar=0.0, apr=0.0, may=0.0, jun=0.0, jul=0.0, aug=0.0, sep = 0.0, oct=0.0, nov=0.0, dec=0.0),
-      set_ent = Entitlement(e1=0, e1_s=0, e1_cf=0, e2=0, e2_s=0, e2_cf=0, e3=0, e3_s=0, e3_cf=0, e4=0, e4_s=0, e4_cf=0, e5=0, e5_s=0, e5_cf=0),
+      set_ent = Entitlement(
+          e1=EntitlementValue(e=0, s=0, cf=0),
+          e2=EntitlementValue(e=0, s=0, cf=0),
+          e3=EntitlementValue(e=0, s=0, cf=0),
+          e4=EntitlementValue(e=0, s=0, cf=0),
+          e5=EntitlementValue(e=0, s=0, cf=0),
+          e6=EntitlementValue(e=0, s=0, cf=0),
+          e7=EntitlementValue(e=0, s=0, cf=0),
+          e8=EntitlementValue(e=0, s=0, cf=0),
+          e9=EntitlementValue(e=0, s=0, cf=0),
+          e10=EntitlementValue(e=0, s=0, cf=0)  
+      ),
       sys=None
   )
   
@@ -604,44 +625,74 @@ object LeaveProfileModel {
   
   def sortEligbleLeaveEntitlement(p_doc:LeaveProfile, p_request:RequestHeader) = {
         
-    var eligbleleaveentitlement = ArrayBuffer.fill(5,3)(0)
+    var eligbleleaveentitlement = ArrayBuffer.fill(10,3)(0)
     
     // Replace 0 value to 1000
-    if (p_doc.set_ent.e1_s == 0) {
+    if (p_doc.set_ent.e1.s == 0) {
       eligbleleaveentitlement(0) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(0) = ArrayBuffer(p_doc.set_ent.e1_s, p_doc.set_ent.e1, p_doc.set_ent.e1_cf)
+      eligbleleaveentitlement(0) = ArrayBuffer(p_doc.set_ent.e1.s, p_doc.set_ent.e1.e, p_doc.set_ent.e1.cf)
     }
 
-    if (p_doc.set_ent.e2_s == 0) {
+    if (p_doc.set_ent.e2.s == 0) {
       eligbleleaveentitlement(1) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(1) = ArrayBuffer(p_doc.set_ent.e2_s, p_doc.set_ent.e2, p_doc.set_ent.e2_cf)
+      eligbleleaveentitlement(1) = ArrayBuffer(p_doc.set_ent.e2.s, p_doc.set_ent.e2.e, p_doc.set_ent.e2.cf)
     }
     
-    if (p_doc.set_ent.e3_s == 0) {
+    if (p_doc.set_ent.e3.s == 0) {
       eligbleleaveentitlement(2) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(2) = ArrayBuffer(p_doc.set_ent.e3_s, p_doc.set_ent.e3, p_doc.set_ent.e3_cf)
+      eligbleleaveentitlement(2) = ArrayBuffer(p_doc.set_ent.e3.s, p_doc.set_ent.e3.e, p_doc.set_ent.e3.cf)
     }
     
-    if (p_doc.set_ent.e4_s == 0) {
+    if (p_doc.set_ent.e4.s == 0) {
     	eligbleleaveentitlement(3) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(3) = ArrayBuffer(p_doc.set_ent.e4_s, p_doc.set_ent.e4, p_doc.set_ent.e4_cf)
+      eligbleleaveentitlement(3) = ArrayBuffer(p_doc.set_ent.e4.s, p_doc.set_ent.e4.e, p_doc.set_ent.e4.cf)
     }
     
-    if (p_doc.set_ent.e5_s == 0) {
+    if (p_doc.set_ent.e5.s == 0) {
       eligbleleaveentitlement(4) = ArrayBuffer(1000, 1000, 1000)
     } else {
-      eligbleleaveentitlement(4) = ArrayBuffer(p_doc.set_ent.e5_s, p_doc.set_ent.e5, p_doc.set_ent.e5_cf)
+      eligbleleaveentitlement(4) = ArrayBuffer(p_doc.set_ent.e5.s, p_doc.set_ent.e5.e, p_doc.set_ent.e5.cf)
+    }
+    
+    if (p_doc.set_ent.e6.s == 0) {
+      eligbleleaveentitlement(5) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(5) = ArrayBuffer(p_doc.set_ent.e6.s, p_doc.set_ent.e6.e, p_doc.set_ent.e6.cf)
+    }
+    
+    if (p_doc.set_ent.e7.s == 0) {
+      eligbleleaveentitlement(6) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(6) = ArrayBuffer(p_doc.set_ent.e7.s, p_doc.set_ent.e7.e, p_doc.set_ent.e7.cf)
+    }
+    
+    if (p_doc.set_ent.e8.s == 0) {
+      eligbleleaveentitlement(7) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(7) = ArrayBuffer(p_doc.set_ent.e8.s, p_doc.set_ent.e8.e, p_doc.set_ent.e8.cf)
+    }
+    
+    if (p_doc.set_ent.e9.s == 0) {
+      eligbleleaveentitlement(8) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(8) = ArrayBuffer(p_doc.set_ent.e9.s, p_doc.set_ent.e9.e, p_doc.set_ent.e9.cf)
+    }
+    
+    if (p_doc.set_ent.e10.s == 0) {
+      eligbleleaveentitlement(9) = ArrayBuffer(1000, 1000, 1000)
+    } else {
+      eligbleleaveentitlement(9) = ArrayBuffer(p_doc.set_ent.e10.s, p_doc.set_ent.e10.e, p_doc.set_ent.e10.cf)
     }
     
     val eligbleleaveentitlementsorted = eligbleleaveentitlement.sortBy(_(0))
-    var eligbleleaveentitlementsorted_update = ArrayBuffer.fill(5,3)(0)
+    var eligbleleaveentitlementsorted_update = ArrayBuffer.fill(10,3)(0)
     
     // Replace 1000 back to 0
-    for (i <- 0 to 4) {
+    for (i <- 0 to 9) {
       if (eligbleleaveentitlementsorted(i)(0) == 1000) {
         eligbleleaveentitlementsorted_update(i) = ArrayBuffer(0, 0, 0)
       } else {
@@ -657,11 +708,16 @@ object LeaveProfileModel {
   def getEligibleEntitlement(p_doc:LeaveProfile, p_servicemonth:Int) = { 
     p_servicemonth match {
       // case servicemonth if servicemonth < 0 => 0
-      case servicemonth if servicemonth < p_doc.set_ent.e1_s => p_doc.set_ent.e1
-      case servicemonth if servicemonth <= p_doc.set_ent.e2_s => p_doc.set_ent.e2
-      case servicemonth if servicemonth <= p_doc.set_ent.e3_s => p_doc.set_ent.e3
-      case servicemonth if servicemonth <= p_doc.set_ent.e4_s => p_doc.set_ent.e4
-      case servicemonth if servicemonth <= p_doc.set_ent.e5_s => p_doc.set_ent.e5
+      case servicemonth if servicemonth < p_doc.set_ent.e1.s => p_doc.set_ent.e1.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e2.s => p_doc.set_ent.e2.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e3.s => p_doc.set_ent.e3.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e4.s => p_doc.set_ent.e4.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e5.s => p_doc.set_ent.e5.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e6.s => p_doc.set_ent.e6.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e7.s => p_doc.set_ent.e7.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e8.s => p_doc.set_ent.e8.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e9.s => p_doc.set_ent.e9.e
+      case servicemonth if servicemonth <= p_doc.set_ent.e10.s => p_doc.set_ent.e10.e
       case _ => 0
     }
   }
@@ -671,11 +727,16 @@ object LeaveProfileModel {
   def getEligibleEntitlement(p_leavepolicy:LeavePolicy, p_servicemonth:Int) = { 
     p_servicemonth match {
       // case servicemonth if servicemonth < 0 => 0
-      case servicemonth if servicemonth < p_leavepolicy.ent.e1_s => p_leavepolicy.ent.e1
-      case servicemonth if servicemonth <= p_leavepolicy.ent.e2_s => p_leavepolicy.ent.e2
-      case servicemonth if servicemonth <= p_leavepolicy.ent.e3_s => p_leavepolicy.ent.e3
-      case servicemonth if servicemonth <= p_leavepolicy.ent.e4_s => p_leavepolicy.ent.e4
-      case servicemonth if servicemonth <= p_leavepolicy.ent.e5_s => p_leavepolicy.ent.e5
+      case servicemonth if servicemonth < p_leavepolicy.ent.e1.s => p_leavepolicy.ent.e1.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e2.s => p_leavepolicy.ent.e2.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e3.s => p_leavepolicy.ent.e3.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e4.s => p_leavepolicy.ent.e4.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e5.s => p_leavepolicy.ent.e5.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e6.s => p_leavepolicy.ent.e6.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e7.s => p_leavepolicy.ent.e7.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e8.s => p_leavepolicy.ent.e8.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e9.s => p_leavepolicy.ent.e9.e
+      case servicemonth if servicemonth <= p_leavepolicy.ent.e10.s => p_leavepolicy.ent.e10.e
       case _ => 0
     }
   }
@@ -683,11 +744,16 @@ object LeaveProfileModel {
   def getEligibleCarryForword(p_doc:LeaveProfile, p_servicemonth:Int) = {
     p_servicemonth match {
       // case servicemonth if servicemonth < 0 => 0
-      case servicemonth if servicemonth <= p_doc.set_ent.e1_s => p_doc.set_ent.e1_cf 
-      case servicemonth if servicemonth <= p_doc.set_ent.e2_s => p_doc.set_ent.e2_cf
-      case servicemonth if servicemonth <= p_doc.set_ent.e3_s => p_doc.set_ent.e3_cf
-      case servicemonth if servicemonth <= p_doc.set_ent.e4_s => p_doc.set_ent.e4_cf
-      case servicemonth if servicemonth <= p_doc.set_ent.e5_s => p_doc.set_ent.e5_cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e1.s => p_doc.set_ent.e1.cf 
+      case servicemonth if servicemonth <= p_doc.set_ent.e2.s => p_doc.set_ent.e2.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e3.s => p_doc.set_ent.e3.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e4.s => p_doc.set_ent.e4.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e5.s => p_doc.set_ent.e5.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e6.s => p_doc.set_ent.e6.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e7.s => p_doc.set_ent.e7.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e8.s => p_doc.set_ent.e8.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e9.s => p_doc.set_ent.e9.cf
+      case servicemonth if servicemonth <= p_doc.set_ent.e10.s => p_doc.set_ent.e10.cf
       case _ => 0
     }
   }

@@ -31,22 +31,23 @@ case class ConfigLeavePolicySetting (
     msd: Boolean
 )
 
+case class ConfigEntitlementValue (
+    e: Int,
+    s: Int,
+    cf: Int
+)
+
 case class ConfigEntitlement (
-    e1: Int,
-    e1_s: Int,
-    e1_cf: Int,
-    e2: Int,
-    e2_s: Int,
-    e2_cf: Int,
-    e3: Int,
-    e3_s: Int,
-    e3_cf: Int,
-    e4: Int,
-    e4_s: Int,
-    e4_cf: Int,
-    e5: Int,
-    e5_s: Int,
-    e5_cf: Int
+    e1: ConfigEntitlementValue,
+    e2: ConfigEntitlementValue,
+    e3: ConfigEntitlementValue,
+    e4: ConfigEntitlementValue,
+    e5: ConfigEntitlementValue, 
+    e6: ConfigEntitlementValue,
+    e7: ConfigEntitlementValue,
+    e8: ConfigEntitlementValue,
+    e9: ConfigEntitlementValue,
+    e10: ConfigEntitlementValue
 )
 
 object ConfigLeavePolicyModel {
@@ -81,24 +82,29 @@ object ConfigLeavePolicyModel {
     }
   }
   
+  implicit object ConfigEntitlementValueBSONReader extends BSONDocumentReader[ConfigEntitlementValue] {
+    def read(p_doc: BSONDocument): ConfigEntitlementValue = {
+      ConfigEntitlementValue(
+          p_doc.getAs[Int]("e").get,
+          p_doc.getAs[Int]("s").get,
+          p_doc.getAs[Int]("cf").get
+      )
+    }
+  }
+    
   implicit object ConfigEntitlementBSONReader extends BSONDocumentReader[ConfigEntitlement] {
     def read(p_doc: BSONDocument): ConfigEntitlement = {
       ConfigEntitlement(
-          p_doc.getAs[Int]("e1").get,
-          p_doc.getAs[Int]("e1_s").get,
-          p_doc.getAs[Int]("e1_cf").get,
-          p_doc.getAs[Int]("e2").get,
-          p_doc.getAs[Int]("e2_s").get,
-          p_doc.getAs[Int]("e2_cf").get,
-          p_doc.getAs[Int]("e3").get,
-          p_doc.getAs[Int]("e3_s").get,
-          p_doc.getAs[Int]("e3_cf").get,
-          p_doc.getAs[Int]("e4").get,
-          p_doc.getAs[Int]("e4_s").get,
-          p_doc.getAs[Int]("e4_cf").get,
-          p_doc.getAs[Int]("e5").get,
-          p_doc.getAs[Int]("e5_s").get,
-          p_doc.getAs[Int]("e5_cf").get
+          p_doc.getAs[ConfigEntitlementValue]("e1").get,
+          p_doc.getAs[ConfigEntitlementValue]("e2").get,
+          p_doc.getAs[ConfigEntitlementValue]("e3").get,
+          p_doc.getAs[ConfigEntitlementValue]("e4").get,
+          p_doc.getAs[ConfigEntitlementValue]("e5").get,
+          p_doc.getAs[ConfigEntitlementValue]("e6").get,
+          p_doc.getAs[ConfigEntitlementValue]("e7").get,
+          p_doc.getAs[ConfigEntitlementValue]("e8").get,
+          p_doc.getAs[ConfigEntitlementValue]("e9").get,
+          p_doc.getAs[ConfigEntitlementValue]("e10").get
       )
     }
   }
