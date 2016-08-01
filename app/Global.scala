@@ -57,7 +57,7 @@ object Global extends GlobalSettings {
   
   override def onStop(app: Application) {
     // Shutdown database connection
-    DbConnUtility.close(
+    DbConnUtility.close()
   }  
    
 }
