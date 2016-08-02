@@ -63,7 +63,7 @@ object MailUtility {
   def getEmail(p_recipient: Seq[String], p_subject: String, p_body: String):Email =  {
     Email(
         subject = p_subject,
-        from = "System - HRSifu <noreply@hrsifu.com>",
+        from = "System - HRSifu.com <noreply@hrsifu.com>",
         to = p_recipient,
         bodyHtml = Some(html.mail.defaultv2(Tools.hostname ,p_body).toString)
     )
@@ -73,7 +73,7 @@ object MailUtility {
   def getEmail(p_recipient: Seq[String], p_cc: Seq[String], p_subject: String, p_body: String):Email =  {
     Email(
         subject = p_subject,
-        from = "System - HRSifu <noreply@hrsifu.com>",
+        from = "System - HRSifu.com <noreply@hrsifu.com>",
         to = p_recipient,
         cc = p_cc,
         bodyHtml = Some(html.mail.defaultv2(Tools.hostname ,p_body).toString)
