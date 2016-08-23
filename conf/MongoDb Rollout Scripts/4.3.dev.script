@@ -1,0 +1,2 @@
+use d-hrsifu-directory
+db.company.update({},{ $set: {"ads": "" }}, false, true)

@@ -16,6 +16,7 @@ case class Company (
      _id: BSONObjectID,
      c: String,
      ct: String,
+     ads: String,
      sys: Option[System]
 )
 
@@ -42,6 +43,7 @@ object CompanyModel {
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("c").get,
           p_doc.getAs[String]("ct").get,
+          p_doc.getAs[String]("ads").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
     }
@@ -68,6 +70,7 @@ object CompanyModel {
           "_id" -> p_doc._id,
           "c" -> p_doc.c,
           "ct" -> p_doc.ct,
+          "ads" -> p_doc.ads,
           "sys" -> p_doc.sys
       )     
     }
@@ -79,6 +82,7 @@ object CompanyModel {
       _id = BSONObjectID.generate,
       c = "",
       ct = "",
+      ads = "",
       sys = None
   ) 
   

@@ -21,4 +21,12 @@ object Tools {
     }
   }
   
+  // Create random boolean based on provide probability
+  // 0.25 is 1/4
+  // 0.5 is 1/2
+  // http://stackoverflow.com/questions/20018423/random-boolean-generator
+  def getRandomBoolean (probability : Double): Boolean = {
+    math.random < probability
+  }
+  
 }

@@ -7,6 +7,7 @@ import scala.concurrent.Future
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
 import models.TaskModel
+import utilities._
 
 class DashboardController extends Controller with Secured {
   

@@ -109,7 +109,8 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
                         "managerid"->person_doc.get.p.mgrid,
                         "smanagerid"->person_doc.get.p.smgrid,
                         "path"->(routes.DashboardController.index).toString,
-                        "ismanager"->isManager
+                        "ismanager"->isManager,
+                        "ads"->company_doc.get.ads
                     ) 
                   } else {
                     Redirect(routes.DashboardController.index).withSession(
@@ -125,7 +126,8 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
                         "managerid"->person_doc.get.p.mgrid,
                         "smanagerid"->person_doc.get.p.smgrid,
                         "path"->(routes.DashboardController.index).toString,
-                        "ismanager"->isManager
+                        "ismanager"->isManager,
+                        "ads"->company_doc.get.ads
                     ) 
                   }
                 } else { 
