@@ -336,7 +336,7 @@ object LeaveModel {
         val applieddates = this.getAppliedDate(p_leave.fdat.get , p_leave.tdat.get)
         var result : Boolean = false
         breakable { applieddates.foreach ( applieddate => {
-          val leave =  Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "ld"->false, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(applieddate.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(applieddate.getMillis()))), p_request), Tools.db_timeout)
+          val leave =  Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(applieddate.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(applieddate.getMillis()))), p_request), Tools.db_timeout)
           if (!leave.isEmpty) {
             result = true
             break
@@ -345,11 +345,11 @@ object LeaveModel {
         result
       }
       case "1st half" => {
-        val leave = Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "dt"->BSONDocument("$in"->List(p_leave.dt, "Full day")), "ld"->false, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(p_leave.fdat.get.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_leave.fdat.get.getMillis()))), p_request), Tools.db_timeout)
+        val leave = Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "dt"->BSONDocument("$in"->List(p_leave.dt, "Full day")), "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(p_leave.fdat.get.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_leave.fdat.get.getMillis()))), p_request), Tools.db_timeout)
         if (leave.isEmpty) false else true
       }
       case "2nd half" => {
-        val leave = Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "dt"->BSONDocument("$in"->List(p_leave.dt, "Full day")), "ld"->false, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(p_leave.fdat.get.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_leave.fdat.get.getMillis()))), p_request), Tools.db_timeout)
+        val leave = Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "dt"->BSONDocument("$in"->List(p_leave.dt, "Full day")), "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(p_leave.fdat.get.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_leave.fdat.get.getMillis()))), p_request), Tools.db_timeout)
         if (leave.isEmpty) false else true
       }
     }
