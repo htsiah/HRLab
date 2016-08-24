@@ -1,0 +1,30 @@
+mongo 128.199.80.162:9622
+use admin
+db.auth( "iamadmin", "hrlab-admin" )
+
+use hrsifu-admin
+db.keyword.remove( { "sys.eid" : "" } )
+db.task.remove( { "sys.eid" : "" } )
+
+use hrsifu-audit-log
+db.auditlog.remove( { "sys.eid" : "" } )
+
+use hrsifu-calendar
+db.companyholiday.remove( { "sys.eid" : "" } )
+
+use hrsifu-dblogger
+db.authentication.remove( { "sys._eid" : "" } )
+
+use hrsifu-directory
+db.authentication.remove( { "sys.eid" : "" } )
+db.company.remove( { "sys.eid" : "" } )
+db.office.remove( { "sys.eid" : "" } )
+db.person.remove( { "sys.eid" : "" } )
+
+use hrsifu-leave
+db.leave.remove( { "sys.eid" : "" } )
+db.leavepolicy.remove( { "sys.eid" : "" } )
+db.leaveprofile.remove( { "sys.eid" : "" } )
+db.leavesetting.remove( { "sys.eid" : "" } )
+
+# Manual delete leave's file
