@@ -1,6 +1,16 @@
 @()(implicit session: play.api.mvc.Session)
 
+@import utilities.Tools
+
 @if(session.get("ads").get.contains("on")) {
+	<script type="text/javascript">
+		var infolinks_pid = 2850488;
+		var infolinks_wsid = 0;
+	</script>
+	<script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>
+}
+
+@if(session.get("ads").get.contains("random") && Tools.getRandomBoolean(0.5)) {
 	<script type="text/javascript">
 		var infolinks_pid = 2850488;
 		var infolinks_wsid = 0;
