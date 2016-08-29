@@ -37,7 +37,7 @@ class ReportController extends Controller with Secured {
                "tdat" -> Json.toJson(leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()),
                "uti" -> Json.toJson(leave.uti + leave.cfuti),
                "wf_s" -> Json.toJson(leave.wf.s),
-               "wf_aprn" -> Json.toJson(leave.wf.aprn),
+               "wf_aprn" -> Json.toJson(leave.wf.aprn.mkString(", ")),
                "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leavereport/view?p_id=" + leave._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
            )}
            Ok(Json.toJson(leavesMap)).as("application/json")  
@@ -102,7 +102,7 @@ class ReportController extends Controller with Secured {
                 "tdat" -> Json.toJson(leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()),
                 "uti" -> Json.toJson(leave.uti + leave.cfuti),
                 "wf_s" -> Json.toJson(leave.wf.s),
-                "wf_aprn" -> Json.toJson(leave.wf.aprn),
+                "wf_aprn" -> Json.toJson(leave.wf.aprn.mkString(", ")),
                 "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leavereport/view?p_id=" + leave._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
             )}
             Ok(Json.toJson(leavesMap)).as("application/json")
@@ -300,7 +300,7 @@ class ReportController extends Controller with Secured {
                 "uti" -> Json.toJson(leave.uti),
                 "cfuti" -> Json.toJson(leave.cfuti),
                 "wf_s" -> Json.toJson(leave.wf.s),
-                "wf_aprn" -> Json.toJson(leave.wf.aprn),
+                "wf_aprn" -> Json.toJson(leave.wf.aprn.mkString(", ")),
                 "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/leavereport/view?p_id=" + leave._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
             )}
             Ok(Json.toJson(leavesMap)).as("application/json")
