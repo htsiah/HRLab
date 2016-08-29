@@ -51,7 +51,7 @@
 	@contentRow("Doc Num", leave.docnum.toString())
 	@contentRow("Applicant", leave.pn)
 	@contentRow("Status", leave.wf.s)
-	@contentRow("Approver(s)", leave.wf.aprn.mkString(","))
+	@contentRow("Approver(s)", leave.wf.aprn.mkString(", "))
 	@if(leave.wf.aprbyn.getOrElse(List())!=List()){ @contentRow("Approved By", leave.wf.aprbyn.get.mkString(", ")) }
 	@if(leave.wf.rjtbyn.getOrElse("")!=""){ @contentRow("Rejected By", leave.wf.rjtbyn.get) }
 	@if(leave.wf.cclbyn.getOrElse("")!=""){ @contentRow("Cancelled By", leave.wf.cclbyn.get) }
