@@ -49,7 +49,7 @@
 					<dd>@leave("wf.s").value</dd>
 				</dl>
 				<dl class="dl-horizontal">
-					<dt><label for="s">Approver</label></dt>
+					<dt><label for="s">Approver(s)</label></dt>
 					<dd>
 						@leave("wf.aprn").indexes.map { v => 
 							@leave("wf.aprn")("[" + v + "]").value@if(leave("wf.aprn").indexes.max != v){, }
