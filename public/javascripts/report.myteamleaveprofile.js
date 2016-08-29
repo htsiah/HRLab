@@ -87,8 +87,7 @@ function setupJqGrid(data){
 		caption:"",
         buttonicon:"ace-icon fa fa-download bigger-140", 
         onClickButton : function () { 
-        	alert("This feature is no available yet.");
-            // alert("Call server to generate CSV. Example: http://www.trirand.net/documentation/php/_32h0wow2v.htm");
+        	window.open("/report/myteamleaveprofilecsv");
         } 
     });
 	

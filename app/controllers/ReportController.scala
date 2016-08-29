@@ -209,7 +209,12 @@ class ReportController extends Controller with Secured {
          "Eligible Leave Entitlement - Service Month 2,Eligible Leave Entitlement - Entitlement 2,Eligible Leave Entitlement - Carry Forward 2," +
          "Eligible Leave Entitlement - Service Month 3,Eligible Leave Entitlement - Entitlement 3,Eligible Leave Entitlement - Carry Forward 3," +
          "Eligible Leave Entitlement - Service Month 4,Eligible Leave Entitlement - Entitlement 4,Eligible Leave Entitlement - Carry Forward 4," +
-         "Eligible Leave Entitlement - Service Month 5,Eligible Leave Entitlement - Entitlement 5,Eligible Leave Entitlement - Carry Forward 5\n"
+         "Eligible Leave Entitlement - Service Month 5,Eligible Leave Entitlement - Entitlement 5,Eligible Leave Entitlement - Carry Forward 5," +
+         "Eligible Leave Entitlement - Service Month 6,Eligible Leave Entitlement - Entitlement 6,Eligible Leave Entitlement - Carry Forward 6," +
+         "Eligible Leave Entitlement - Service Month 7,Eligible Leave Entitlement - Entitlement 7,Eligible Leave Entitlement - Carry Forward 7," +
+         "Eligible Leave Entitlement - Service Month 8,Eligible Leave Entitlement - Entitlement 8,Eligible Leave Entitlement - Carry Forward 8," +
+         "Eligible Leave Entitlement - Service Month 9,Eligible Leave Entitlement - Entitlement 9,Eligible Leave Entitlement - Carry Forward 9," +
+         "Eligible Leave Entitlement - Service Month 10,Eligible Leave Entitlement - Entitlement 10,Eligible Leave Entitlement - Carry Forward 10\n"
          val data = leaveprofiles.map { leaveprofile => 
            leaveprofile.pn + "," + 
            leaveprofile.lt + "," + 
@@ -403,7 +408,12 @@ class ReportController extends Controller with Secured {
         "Eligible Leave Entitlement - Service Month 2,Eligible Leave Entitlement - Entitlement 2,Eligible Leave Entitlement - Carry Forward 2," +
         "Eligible Leave Entitlement - Service Month 3,Eligible Leave Entitlement - Entitlement 3,Eligible Leave Entitlement - Carry Forward 3," +
         "Eligible Leave Entitlement - Service Month 4,Eligible Leave Entitlement - Entitlement 4,Eligible Leave Entitlement - Carry Forward 4," +
-        "Eligible Leave Entitlement - Service Month 5,Eligible Leave Entitlement - Entitlement 5,Eligible Leave Entitlement - Carry Forward 5\n"
+        "Eligible Leave Entitlement - Service Month 5,Eligible Leave Entitlement - Entitlement 5,Eligible Leave Entitlement - Carry Forward 5," +
+        "Eligible Leave Entitlement - Service Month 6,Eligible Leave Entitlement - Entitlement 6,Eligible Leave Entitlement - Carry Forward 6," +
+        "Eligible Leave Entitlement - Service Month 7,Eligible Leave Entitlement - Entitlement 7,Eligible Leave Entitlement - Carry Forward 7," +
+        "Eligible Leave Entitlement - Service Month 8,Eligible Leave Entitlement - Entitlement 8,Eligible Leave Entitlement - Carry Forward 8," +
+        "Eligible Leave Entitlement - Service Month 9,Eligible Leave Entitlement - Entitlement 9,Eligible Leave Entitlement - Carry Forward 9," +
+        "Eligible Leave Entitlement - Service Month 10,Eligible Leave Entitlement - Entitlement 10,Eligible Leave Entitlement - Carry Forward 10\n"
         val data = leaveprofiles.map { leaveprofile => 
           leaveprofile.pn + "," + 
           leaveprofile.lt + "," + 
