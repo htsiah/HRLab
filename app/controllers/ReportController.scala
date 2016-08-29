@@ -51,8 +51,9 @@ class ReportController extends Controller with Secured {
       leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get), BSONDocument("docnum" -> -1), request)
     } yield {
       val filename = "attachment; filename=" + request.session.get("name").get.toString().replaceAll(" ", "") + "-LeaveRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-      val header = "Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approver,Reason,Lock\n"
-      val data = leaves.map { leave => 
+      val header = "Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approval Method,Approver(s),Approved By,Rejected By,Cancelled By,Reason,Lock\n"
+      val data = leaves.map { leave => {
+        val aprby = if(leave.wf.aprbyn.getOrElse(List())!=List()){ leave.wf.aprbyn.get.mkString("; ") } else { "" }
         leave.docnum + "," + 
         leave.lt + "," + 
         leave.dt + "," + 
@@ -62,10 +63,14 @@ class ReportController extends Controller with Secured {
         leave.uti + "," + 
         leave.cfuti + "," +
         leave.wf.s + "," +
-        leave.wf.aprn + "," +
+        leave.wf.aprmthd + "," +
+        leave.wf.aprn.mkString("; ") + "," +
+        aprby + "," +
+        leave.wf.rjtbyn.getOrElse("") + "," +
+        leave.wf.cclbyn.getOrElse("") + "," +
         leave.r + "," +
         leave.ld
-      }
+      }}
       
       Ok(header + data.mkString("\n")).withHeaders(
           CONTENT_TYPE -> "text/csv",
@@ -116,8 +121,9 @@ class ReportController extends Controller with Secured {
          leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1, "docnum" -> -1), request)
        } yield {
          val filename = "attachment; filename=" + request.session.get("name").get.toString().replaceAll(" ", "") + "-TeamLeaveRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-         val header = "Applicant,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approver,Reason,Lock\n"
-         val data = leaves.map { leave => 
+         val header = "Applicant,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approval Method,Approver(s),Approved By,Rejected By,Cancelled By,Reason,Lock\n"
+         val data = leaves.map { leave => {
+           val aprby = if(leave.wf.aprbyn.getOrElse(List())!=List()){ leave.wf.aprbyn.get.mkString("; ") } else { "" }
            leave.pn + "," + 
            leave.docnum + "," + 
            leave.lt + "," + 
@@ -128,10 +134,14 @@ class ReportController extends Controller with Secured {
            leave.uti + "," + 
            leave.cfuti + "," +
            leave.wf.s + "," +
-           leave.wf.aprn + "," +
+           leave.wf.aprmthd + "," +
+           leave.wf.aprn.mkString("; ") + "," +
+           aprby + "," +
+           leave.wf.rjtbyn.getOrElse("") + "," +
+           leave.wf.cclbyn.getOrElse("") + "," +
            leave.r + "," +
            leave.ld
-         }
+         }}
          
          Ok(header + data.mkString("\n")).withHeaders(
              CONTENT_TYPE -> "text/csv",
@@ -308,8 +318,9 @@ class ReportController extends Controller with Secured {
          leaves <- LeaveModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
        } yield {
          val filename = "attachment; filename=" + "AllStaff-LeaveRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-         val header = "Applicant,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approver,Reason,Lock\n"
-         val data = leaves.map { leave => 
+         val header = "Applicant,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approval Method,Approver(s),Approved By,Rejected By,Cancelled By,Reason,Lock\n"
+         val data = leaves.map { leave => {
+           val aprby = if(leave.wf.aprbyn.getOrElse(List())!=List()){ leave.wf.aprbyn.get.mkString("; ") } else { "" }
            leave.pn + "," + 
            leave.docnum + "," + 
            leave.lt + "," + 
@@ -320,10 +331,14 @@ class ReportController extends Controller with Secured {
            leave.uti + "," + 
            leave.cfuti + "," +
            leave.wf.s + "," +
-           leave.wf.aprn + "," +
+           leave.wf.aprmthd + "," +
+           leave.wf.aprn.mkString("; ") + "," +
+           aprby + "," +
+           leave.wf.rjtbyn.getOrElse("") + "," +
+           leave.wf.cclbyn.getOrElse("") + "," +
            leave.r + "," +
            leave.ld
-         }
+         } }
          
          Ok(header + data.mkString("\n")).withHeaders(
              CONTENT_TYPE -> "text/csv",

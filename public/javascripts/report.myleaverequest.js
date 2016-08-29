@@ -6,7 +6,7 @@ $(function(){
 	$("#grid-table").jqGrid({
 	   	url:"/report/myleaverequest",
 		datatype: 'json',
-	   	colNames:['', 'DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', 'Status', 'Approver',''],
+	   	colNames:['', 'DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', 'Status', 'Approver(s)',''],
 	   	colModel:[
 	   	    {name:'lock',index:'lock',width:20},
 			{name:'docnum',index:'docnum', width:70, sorttype:'int'},

@@ -26,7 +26,7 @@ function setupJqGrid(data){
 	$("#grid-table").jqGrid({
 		data: data,
 		datatype: "local",
-		colNames:['Name','','DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', 'Status', 'Approver', ''],
+		colNames:['Name','','DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', 'Status', 'Approver(s)', ''],
 	   	colModel:[
 	   		{name:'name',index:'name',width:100},
 	   		{name:'lock',index:'lock',width:20},
