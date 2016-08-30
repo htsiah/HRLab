@@ -1,0 +1,12 @@
+# Update Leave Setting
+use d-hrsifu-leave
+db.leavesetting.update({'aprmthd':'Only manager can approve leave request'}, {$set: {'aprmthd':'Only manager is authorized to approve leave request'}}, { multi: true });
+db.leavesetting.update({'aprmthd':'Either manager or substitute manager approve leave request'}, {$set: {'aprmthd':'Either manager or substitute manager is authorized to approve leave request'}}, { multi: true });
+db.leavesetting.update({'aprmthd':'Substitute manager approve leave request when manager is on leave'}, {$set: {'aprmthd':'Substitute manager is authorized to approve leave request when manager is on leave'}}, { multi: true });
+
+# Update Leave Request
+use d-hrsifu-leave
+db.leave.update({'wf.aprmthd':'Only manager can approve leave request'}, {$set: {'wf.aprmthd':'Only manager is authorized to approve leave request'}}, { multi: true });
+db.leave.update({'wf.aprmthd':'Either manager or substitute manager approve leave request'}, {$set: {'wf.aprmthd':'Either manager or substitute manager is authorized to approve leave request'}}, { multi: true });
+db.leave.update({'wf.aprmthd':'Substitute manager approve leave request when manager is on leave'}, {$set: {'wf.aprmthd':'Substitute manager is authorized to approve leave request when manager is on leave'}}, { multi: true });
+

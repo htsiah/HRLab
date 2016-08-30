@@ -74,7 +74,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
         val approvalmethod = maybeleavesetting.get.aprmthd
         val manager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.mgrid))), Tools.db_timeout)
         
-        val leave:Form[Leave] = if (approvalmethod == "Only manager can approve leave request") {
+        val leave:Form[Leave] = if (approvalmethod == "Only manager is authorized to approve leave request") {
           leaveform.fill(LeaveModel.doc.copy(
               docnum = docnum.toInt,
               pid = request.session.get("id").get,
@@ -91,7 +91,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                   rjtbyn = None,
                   cclbyid = None,
                   cclbyn = None,
-                  aprmthd = "Only manager can approve leave request"
+                  aprmthd = "Only manager is authorized to approve leave request"
               )
           ))
         } else if (approvalmethod == "Both manager and substitute manager must approve leave request") {
@@ -137,7 +137,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                 )
             ))
           }
-        } else if (approvalmethod == "Either manager or substitute manager approve leave request") {
+        } else if (approvalmethod == "Either manager or substitute manager is authorized to approve leave request") {
           if (person.p.smgrid != "") {
             val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(person.p.smgrid))), Tools.db_timeout)
             leaveform.fill(LeaveModel.doc.copy(
@@ -156,7 +156,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                     rjtbyn = None,
                     cclbyid = None,
                     cclbyn = None,
-                    aprmthd = "Either manager or substitute manager approve leave request"
+                    aprmthd = "Either manager or substitute manager is authorized to approve leave request"
                 )
             )) 
           } else {
@@ -176,7 +176,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                     rjtbyn = None,
                     cclbyid = None,
                     cclbyn = None,
-                    aprmthd = "Either manager or substitute manager approve leave request"
+                    aprmthd = "Either manager or substitute manager is authorized to approve leave request"
                 )
             ))
           }
@@ -201,7 +201,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                     rjtbyn = None,
                     cclbyid = None,
                     cclbyn = None,
-                    aprmthd = "Either manager or substitute manager approve leave request"
+                    aprmthd = "Either manager or substitute manager is authorized to approve leave request"
                 )
             ))
           } else {
@@ -221,7 +221,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                     rjtbyn = None,
                     cclbyid = None,
                     cclbyn = None,
-                    aprmthd = "Only manager can approve leave request"
+                    aprmthd = "Only manager is authorized to approve leave request"
                 )
             ))
           }

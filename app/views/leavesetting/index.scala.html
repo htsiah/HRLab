@@ -89,10 +89,10 @@
 			</div>
 			<div id="approval-method-edit" style="display:none">
 				<select id="approval-method-field">
-					<option value="Only manager can approve leave request" @checkSelected(leavesetting.aprmthd, "Only manager can approve leave request")>Only manager can approve leave request</option>
+					<option value="Only manager is authorized to approve leave request" @checkSelected(leavesetting.aprmthd, "Only manager is authorized to approve leave request")>Only manager is authorized to approve leave request</option>
 					<option value="Both manager and substitute manager must approve leave request" @checkSelected(leavesetting.aprmthd, "Both manager and substitute manager must approve leave request")>Both manager and substitute manager must approve leave request</option>
-					<option value="Either manager or substitute manager approve leave request" @checkSelected(leavesetting.aprmthd, "Either manager or substitute manager approve leave request")>Either manager or substitute manager approve leave request</option>
-					<option value="Substitute manager can approve leave request when manager is on leave" @checkSelected(leavesetting.aprmthd, "Substitute manager can approve leave request when manager is on leave")>Substitute manager can approve leave request when manager is on leave</option>
+					<option value="Either manager or substitute manager is authorized to approve leave request" @checkSelected(leavesetting.aprmthd, "Either manager or substitute manager is authorized to approve leave request")>Either manager or substitute manager is authorized to approve leave request</option>
+					<option value="Substitute manager is authorized to approve leave request when manager is on leave" @checkSelected(leavesetting.aprmthd, "Substitute manager is authorized to approve leave request when manager is on leave")>Substitute manager is authorized to approve leave request when manager is on leave</option>
 				</select>
 				&nbsp;<a href="#" title="Update"><i class="ace-icon green fa fa-check bigger-120" id="approval-method-check"></i></a>
 				&nbsp;<a href="#" title="Cancel"><i class="ace-icon red fa fa-times bigger-120" id="approval-method-times"></i></a>

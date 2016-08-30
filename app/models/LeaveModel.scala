@@ -178,7 +178,7 @@ object LeaveModel {
           rjtbyn = None,
           cclbyid =None,
           cclbyn = None,
-          aprmthd = "Only manager can approve leave request"
+          aprmthd = "Only manager is authorized to approve leave request"
       ),
       sys=None
   )
