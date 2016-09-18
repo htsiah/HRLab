@@ -931,7 +931,7 @@ object LeaveProfileModel {
   
   def getLeaveTypesSelection(p_pid:String, p_request:RequestHeader) = {
     for {
-      leavetypes <- this.find(BSONDocument("pid" -> p_pid), p_request)
+      leavetypes <- this.find(BSONDocument("pid" -> p_pid), BSONDocument("lt" -> 1), p_request)
     } yield {
       buildLeaveTypesSelection(leavetypes, Map[String, String](), p_request)
     }
