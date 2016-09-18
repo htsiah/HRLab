@@ -68,7 +68,7 @@ class ReportController extends Controller with Secured {
         aprby + "," +
         leave.wf.rjtbyn.getOrElse("") + "," +
         leave.wf.cclbyn.getOrElse("") + "," +
-        leave.r + "," +
+        Tools.cleanCSV(leave.r) + "," +
         leave.ld
       }}
       
@@ -139,7 +139,7 @@ class ReportController extends Controller with Secured {
            aprby + "," +
            leave.wf.rjtbyn.getOrElse("") + "," +
            leave.wf.cclbyn.getOrElse("") + "," +
-           leave.r + "," +
+           Tools.cleanCSV(leave.r) + "," +
            leave.ld
          }}
          
@@ -341,7 +341,7 @@ class ReportController extends Controller with Secured {
            aprby + "," +
            leave.wf.rjtbyn.getOrElse("") + "," +
            leave.wf.cclbyn.getOrElse("") + "," +
-           leave.r + "," +
+           Tools.cleanCSV(leave.r) + "," +
            leave.ld
          } }
          

@@ -29,4 +29,9 @@ object Tools {
     math.random < probability
   }
   
+  def cleanCSV ( p_text:String ) : String = {
+    val replacedText = p_text.replaceAll("\"", "\"\"")
+    if (replacedText.contains(",")) { "\"" + replacedText + "\""  } else { replacedText }
+  }
+  
 }
