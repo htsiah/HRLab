@@ -44,8 +44,12 @@
 	}
 }
 
-@radioSelected(values: List[String], valueCheck: String) = {	
-	@if(values.contains(valueCheck)) { checked="checked" }
+@radioSelected(values: List[String], valueCheck: String) = {
+	@if(oid=="") {
+		checked="checked"
+	} else {
+		@if(values.contains(valueCheck)) { checked="checked" }
+	}
 }
 
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
