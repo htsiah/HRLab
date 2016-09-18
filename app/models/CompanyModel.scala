@@ -36,7 +36,7 @@ object CompanyModel {
       )
     }
   }
-  
+    
   implicit object CompanyBSONReader extends BSONDocumentReader[Company] {
     def read(p_doc: BSONDocument): Company = {
       Company(
@@ -63,7 +63,7 @@ object CompanyModel {
       )     
     }
   }
-  
+    
   implicit object CompanyBSONWriter extends BSONDocumentWriter[Company] {
     def write(p_doc: Company): BSONDocument = {
       BSONDocument(
