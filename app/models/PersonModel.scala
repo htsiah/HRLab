@@ -351,8 +351,8 @@ object PersonModel {
         case Success(lastError) => {
           // Update name on leave
           if (oldperson.get.p.fn != p_doc.p.fn || oldperson.get.p.ln != p_doc.p.ln) {
-            LeaveModel.updateUsingBSON(BSONDocument("pid"->p_doc._id.stringify), BSONDocument("$set"->BSONDocument("pn"->(p_doc.p.fn + " " + p_doc.p.ln))))
-            LeaveModel.updateUsingBSON(BSONDocument("w_aprid"->p_doc._id.stringify), BSONDocument("$set"->BSONDocument("w_aprn"->(p_doc.p.fn + " " + p_doc.p.ln))))
+            LeaveModel.updateUsingBSON(BSONDocument("pid"->p_doc._id.stringify, "sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)), BSONDocument("$set"->BSONDocument("pn"->(p_doc.p.fn + " " + p_doc.p.ln))))
+            // LeaveModel.updateUsingBSON(BSONDocument("w_aprid"->p_doc._id.stringify), BSONDocument("$set"->BSONDocument("w_aprn"->(p_doc.p.fn + " " + p_doc.p.ln))))
           }
           
           // Update leave profiles - recalculate leave entitlement
