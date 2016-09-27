@@ -1,0 +1,141 @@
+@import helper._
+@import reactivemongo.bson.BSONObjectID
+@import play.api.Play.current
+@import play.api.i18n.Messages.Implicits._
+
+@(event:Form[Event], oid:String="")(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		@if(oid=="") {
+			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Event <i class="ace-icon fa fa-angle-double-right"></i> New</small></h1>	
+		} else {
+			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Event </small></h1>
+		}
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/jquery.fullcalendar/moment.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/bootstrap.datetimepicker/bootstrap-datetimepicker.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
+	<script src="@routes.Assets.at("layout/ace/js/ace/elements.colorpicker.js")"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/event.form.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("layout/bootstrap.datetimepicker/bootstrap-datetimepicker.min.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {}
+
+@buttons = {
+	<a href="javascript:handleSubmit();" class="btn btn-sm btn btn-block">Save</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@radioSelected(value: Option[String], valueCheck: String) = {
+	@if(value != None){
+		@if(value.get == valueCheck){
+			checked="checked"
+		}
+	}
+}
+
+@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	
+	@helper.form(
+		action = (
+			if(oid=="")
+				routes.EventController.insert
+			else
+				routes.EventController.update(oid)
+		), 
+		'id -> "eventform"
+	) {
+	
+		@inputText(event("n"), '_label->"Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")	
+		<dl class="dl-horizontal">
+			<dt><label>All Day</label></dt>
+			<dd>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" value="true" name="aday" id="aday" class="ace" @radioSelected(event("aday").value, "true")>
+						<span class="lbl"></span>
+					</label>
+				</div>
+			
+			</dd>
+		</dl>
+		<dl class="dl-horizontal " id="fdat_field">
+			<dt><label>Date From</label></dt>
+			<dd>
+				<div class="input-group">		
+    				<input type="text" name="t_fdat" id="t_fdat" class="form-control datetime-picker">
+					<span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+				</div>
+			</dd>
+    	</dl>
+		<dl class="dl-horizontal " id="fdat_field">
+			<dt><label>Date To</label></dt>
+			<dd>
+				<div class="input-group">		
+    				<input type="text" name="t_tdat" id="t_tdat" class="form-control datetime-picker">
+					<span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+				</div>
+			</dd>
+    	</dl>
+		@inputText(event("w"), '_label->"Where", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")					
+		<dl class="dl-horizontal " id="c_field">
+			<dt><label for="c">Colour</label></dt>
+			<dd>
+				<select id="c" name="c" class="form-control">
+					<option value="#ac725e">#ac725e</option>
+            		<option value="#d06b64">#d06b64</option>
+            		<option value="#f83a22">#f83a22</option>
+            		<option value="#fa573c">#fa573c</option>
+            		<option value="#ff7537">#ff7537</option>
+            		<option value="#ffad46">#ffad46</option>
+            		<option value="#42d692">#42d692</option>
+            		<option value="#16a765">#16a765</option>
+            		<option value="#7bd148">#7bd148</option>
+            		<option value="#b3dc6c">#b3dc6c</option>
+            		<option value="#fbe983">#fbe983</option>
+            		<option value="#fad165">#fad165</option>
+            		<option value="#92e1c0">#92e1c0</option>
+            		<option value="#9fe1e7">#9fe1e7</option>
+            		<option value="#9fc6e7">#9fc6e7</option>
+            		<option value="#4986e7">#4986e7</option>
+            		<option value="#9a9cff">#9a9cff</option>
+            		<option value="#b99aff">#b99aff</option>
+            		<option value="#c2c2c2">#c2c2c2</option>
+            		<option value="#cabdbf">#cabdbf</option>
+            		<option value="#cca6ac">#cca6ac</option>
+            		<option value="#f691b2">#f691b2</option>
+            		<option value="#cd74e6">#cd74e6</option>
+            		<option value="#a47ae2">#a47ae2</option>
+            		<option value="#555">#555</option>
+            	</select>
+    		</dd>
+		</dl>
+		@textarea(event("d"), '_label->"Description", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control", 'rows-> 3, 'cols->80)	
+		<div class="hidden">
+			@inputText(event("_id"),'type -> "hidden")
+			@inputText(event("fdat"),'type -> "hidden", 'class->"datetime-picker")
+			@inputText(event("tdat"),'type -> "hidden", 'class->"datetime-picker")
+			@inputText(event("sys")("eid"),'type -> "hidden")
+			@inputText(event("sys")("cdat"),'type -> "hidden")
+			@inputText(event("sys")("mdat"),'type -> "hidden")
+			@inputText(event("sys")("mby"),'type -> "hidden")
+			@inputText(event("sys")("ddat"),'type -> "hidden")
+			@inputText(event("sys")("dby"),'type -> "hidden")
+			@inputText(event("sys")("ll"),'type -> "hidden")
+		</div>
+		
+	}
+		
+}

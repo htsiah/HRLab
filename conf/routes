@@ -157,6 +157,11 @@ GET		/task/dismiss/:p_lk				controllers.TaskController.dismiss(p_lk: String)
 # Audit Log
 GET		/auditlog/:p_lk				controllers.AuditLogController.getAuditlog(p_lk: String)
 
+# Event
+GET		/event/create				controllers.EventController.create
+POST	/event/insert				controllers.EventController.insert
+POST	/event/update				controllers.EventController.update(p_id:String)
+
 # Delete Application
 POST	/deleteapp/delete			controllers.DeleteAppController.delete
 GET		/deleteapp/success			controllers.DeleteAppController.success
