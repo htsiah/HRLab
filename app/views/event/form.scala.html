@@ -3,7 +3,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(event:Form[Event], oid:String="")(implicit session: play.api.mvc.Session)
+@(event:Form[Event], restrictionSelections:List[String], oid:String="")(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -20,6 +20,7 @@
 	<script src="@routes.Assets.at("layout/bootstrap.datetimepicker/bootstrap-datetimepicker.min.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
 	<script src="@routes.Assets.at("layout/ace/js/ace/elements.colorpicker.js")"></script>
+	<script src="@routes.Assets.at("layout/jquery.chosen/chosen.jquery.min.js")"></script>
 }
 
 @inlinejs = {
@@ -29,6 +30,7 @@
 @pluginstyle = {
 	<link href="@routes.Assets.at("layout/bootstrap.datetimepicker/bootstrap-datetimepicker.min.css")" rel="stylesheet" media="screen">
 	<link href="@routes.Assets.at("stylesheets/common.jquery.validation.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("layout/jquery.chosen/chosen.modify.min.css")" rel="stylesheet" media="screen">
 }
 
 @inlinestyle = {}
@@ -122,6 +124,12 @@
             	</select>
     		</dd>
 		</dl>
+		@select(event("lrr"), options=restrictionSelections.map(restrictionSelection=>restrictionSelection->{restrictionSelection.split("@|@").head}),
+			'_label -> "Leave Req. Restrictions",
+			'_showConstraints -> false,
+			'_class->"dl-horizontal", 
+			'class->"chosen-select tag-input-style form-control",
+			'multiple->"multiple")
 		@textarea(event("d"), '_label->"Description", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control", 'rows-> 3, 'cols->80)	
 		<div class="hidden">
 			@inputText(event("_id"),'type -> "hidden")

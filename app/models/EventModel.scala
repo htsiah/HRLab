@@ -21,6 +21,7 @@ case class Event (
     w: String,
     c: String,
     d: String,
+    lrr: List[String],
     sys: Option[System]
 )
 
@@ -52,6 +53,7 @@ object EventModel {
           p_doc.getAs[String]("w").get,
           p_doc.getAs[String]("c").get,
           p_doc.getAs[String]("d").get,
+          p_doc.getAs[List[String]]("lrr").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
     }
@@ -83,6 +85,7 @@ object EventModel {
           "w" -> p_doc.w,
           "c" -> p_doc.c,
           "d" -> p_doc.d,
+          "lrr" -> p_doc.lrr,
           "sys" -> p_doc.sys
       )     
     }
@@ -99,6 +102,7 @@ object EventModel {
       w = "",
       c = "",
       d = "",
+      lrr = List(""),
       sys = None
   )
   

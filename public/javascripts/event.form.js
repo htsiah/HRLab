@@ -3,6 +3,7 @@ $(function(){
 	$("#navCompany").addClass("active open");
     $("#navCalendar").addClass("active");
     
+    // Date time field
     $(".datetime-picker").datetimepicker({
     	format: 'D-MMM-YYYY h:mm A',
     	defaultDate: moment().startOf('day'),
@@ -21,7 +22,7 @@ $(function(){
     }).next().on(ace.click_event, function(){
     	$(this).prev().focus();
     });
-    
+        
     // To date can not earlier than From date
     $("#t_tdat").data("DateTimePicker").minDate($("#t_fdat").data("DateTimePicker").date());
     
@@ -52,6 +53,15 @@ $(function(){
         };
         $(this).data("stickyDate", null);
     });
+    
+    // Choosen field
+    $(".chosen-select").chosen({
+    	placeholder_text_multiple: "Please select",
+    	width: "100%",
+    	display_selected_options: false
+    });
+    
+    $('ul[class="chosen-choices"]').addClass( "form-control" );
     
     // Initial colour picker
     $("#c").ace_colorpicker();

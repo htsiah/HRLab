@@ -8,8 +8,9 @@ import java.time.LocalTime;
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{EventModel, Event}
+import models.{EventModel, Event, PersonModel, OfficeModel}
 import utilities.{System}
 
 import reactivemongo.api._
@@ -27,6 +28,7 @@ class EventController extends Controller with Secured {
           "w" -> text,
           "c" -> nonEmptyText,
           "d" -> text,
+          "lrr" -> list(text),
           "sys" -> optional(mapping(
                   "eid" -> optional(text),
                   "cdat" -> optional(jodaDate),
@@ -36,17 +38,23 @@ class EventController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))  
-      ){(_id, n, fdat, tdat, aday, w, c, d, sys)=>Event(_id, n, fdat, tdat, aday, w, c, d, sys)}
-      {event:Event=>Some(event._id, event.n, event.fdat, event.tdat, event.aday, event.w, event.c, event.d, event.sys)}
+      ){(_id, n, fdat, tdat, aday, w, c, d, lrr, sys)=>Event(_id, n, fdat, tdat, aday, w, c, d, lrr, sys)}
+      {event:Event=>Some(event._id, event.n, event.fdat, event.tdat, event.aday, event.w, event.c, event.d, event.lrr, event.sys)}
   ) 
   
   def create = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
-      val filledForm = eventform.fill(EventModel.doc.copy(
-          fdat = Some(new DateTime().withTimeAtStartOfDay()),
-          tdat = Some(new DateTime().withTimeAtStartOfDay())
-      ))
-      Future.successful(Ok(views.html.event.form(filledForm)))
+      for {
+        persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
+        offices <- OfficeModel.getAllOfficeName(request)
+      } yield {
+        val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
+        val filledForm = eventform.fill(EventModel.doc.copy(
+            fdat = Some(new DateTime().withTimeAtStartOfDay()),
+            tdat = Some(new DateTime().withTimeAtStartOfDay())
+        ))
+        Ok(views.html.event.form(filledForm, restrictionSelection.sorted))
+      }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
@@ -56,7 +64,13 @@ class EventController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       eventform.bindFromRequest.fold(
           formWithError => {
-            Future.successful(Ok(views.html.event.form(formWithError)))
+            for {
+              persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
+              offices <- OfficeModel.getAllOfficeName(request)
+            } yield {
+              val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
+              Ok(views.html.event.form(formWithError, restrictionSelection.sorted))
+            }
           },
           formWithData => {
             val doc_objectID = BSONObjectID.generate
