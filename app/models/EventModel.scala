@@ -7,7 +7,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System, SystemDataStore, Tools, DbConnUtility}
+import utilities.{System, SystemDataStore, DbConnUtility}
 
 import scala.util.{Success, Failure}
 import org.joda.time.DateTime

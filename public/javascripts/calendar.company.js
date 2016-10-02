@@ -43,6 +43,16 @@ var Calendar = {
 		className: 'label-success'
 	},
 	
+	eventsource:{
+		url: '/event/getevent/y?p_page=company',
+		type: 'GET',
+		cache: false,
+		error: function() {
+			alert('There was an error while fetching event!');
+		},
+		className: 'label-success'
+	},
+	
 	myapprovedleavessource:{
 		url: '/leave/getapprovedleaveforcompanyviewjson/my',
 		type: 'GET',
@@ -87,6 +97,7 @@ var Calendar = {
 
 	showMyCalendar:function(){
 		$('#calendar').fullCalendar('addEventSource',this.companyholidaysource);
+		$('#calendar').fullCalendar('addEventSource',this.eventsource);
 	},
 		
 	showMyLeave:function(){

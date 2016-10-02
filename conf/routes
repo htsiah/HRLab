@@ -158,9 +158,16 @@ GET		/task/dismiss/:p_lk				controllers.TaskController.dismiss(p_lk: String)
 GET		/auditlog/:p_lk				controllers.AuditLogController.getAuditlog(p_lk: String)
 
 # Event
-GET		/event/create				controllers.EventController.create
-POST	/event/insert				controllers.EventController.insert
-POST	/event/update				controllers.EventController.update(p_id:String)
+GET		/event/create							controllers.EventController.create
+POST	/event/insert							controllers.EventController.insert
+GET		/event/edit								controllers.EventController.edit(p_id:String)
+POST	/event/update							controllers.EventController.update(p_id:String)
+GET		/event/delete/:p_id						controllers.EventController.delete(p_id:String)
+GET		/event/view/:p_id						controllers.EventController.view(p_id:String)
+GET		/event/myprofile/view/:p_id				controllers.EventController.myprofileview(p_id:String)
+GET		/event/myprofile/edit					controllers.EventController.myprofileedit(p_id:String)
+POST	/event/myprofile/update					controllers.EventController.myprofileupdate(p_id:String)
+GET		/event/getevent/:p_withlink				controllers.EventController.getEvent(p_withlink, p_page:String?="")
 
 # Delete Application
 POST	/deleteapp/delete			controllers.DeleteAppController.delete

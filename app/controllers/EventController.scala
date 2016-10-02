@@ -3,15 +3,17 @@ package controllers
 import scala.concurrent.{Future}
 
 import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 import java.time.LocalTime;
 
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{EventModel, Event, PersonModel, OfficeModel}
-import utilities.{System}
+import models.{EventModel, Event, PersonModel, OfficeModel, CompanyHolidayModel}
+import utilities.{System, Tools}
 
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
@@ -84,6 +86,63 @@ class EventController extends Controller with Secured {
     }
   }}
   
+  def edit(p_id:String) = TODO
+    
   def update(p_id:String) = TODO
+  
+  def delete(p_id:String) = TODO
+  
+  def view(p_id:String) = withAuth { username => implicit request => {
+    for { 
+       maybe_event <- EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+     } yield {
+       maybe_event.map( event  => {
+         val selectedLRR = event.lrr.map { lrr => lrr.split("@|@").head }
+         Ok(views.html.event.view(event, selectedLRR))
+       }).getOrElse(NotFound)
+     }
+  }}
+  
+  def myprofileedit(p_id:String) = TODO
+  
+  def myprofileupdate(p_id:String) = TODO
+  
+  def myprofileview(p_id:String) = withAuth { username => implicit request => {
+    for { 
+       maybe_event <- EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+     } yield {
+       maybe_event.map( event  => {
+         val selectedLRR = event.lrr.map { lrr => lrr.split("@|@").head }
+         Ok(views.html.event.myprofileview(event, selectedLRR))
+       }).getOrElse(NotFound)
+     }
+  }}
+  
+  def getEvent(p_withLink:String, p_page:String) = withAuth { username => implicit request => {
+    for {
+      events <- EventModel.find(BSONDocument(), request)
+    } yield {
+      render {
+        case Accepts.Html() => Ok(views.html.error.unauthorized())
+        case Accepts.Json() => {
+          val datFmt = ISODateTimeFormat.date()
+          val dTFmt = ISODateTimeFormat.dateTimeNoMillis()
+          val tFmt = ISODateTimeFormat.timeNoMillis()
+          var count = 0
+          val eventJSONStr = events.map { event => {
+            event.lrr.sorted.foreach { name => name.split("@|@").head + ", " }
+            val start = if (event.aday) { datFmt.print(event.fdat.get) } else { dTFmt.print(event.fdat.get) }
+            val end =if (event.aday) { datFmt.print(event.tdat.get.plusDays(1)) } else { dTFmt.print(event.tdat.get) }
+            val url = if (p_withLink=="y") {
+              if (p_page=="company") { "/event/view/" + event._id.stringify } else {"/event/myprofile/view/" + event._id.stringify}
+            } else { "" }
+            count = count + 1
+            "{\"id\":"+ count + ",\"title\":\"" + event.n + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"color\":\""+ event.c + "\",\"tip\":\"" + event.n + "\"}"
+          } }
+          Ok(Json.parse("[" + eventJSONStr.mkString(",") + "]")).as("application/json")
+        }
+       }
+    }
+  }}
   
 }

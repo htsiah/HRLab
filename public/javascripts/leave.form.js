@@ -185,6 +185,16 @@ var Calendar = {
 		},
 		className: 'label-success'
 	},
+	
+	eventsource:{
+		url: '/event/getevent/n',
+		type: 'GET',
+		cache: false,
+		error: function() {
+			alert('There was an error while fetching event!');
+		},
+		className: 'label-success'
+	},
 		
 	myapprovedleavessource:{
 		url: '/leave/getapprovedleavejson/my/n',
@@ -230,6 +240,7 @@ var Calendar = {
 		
 	showMyLeave:function(){
 		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
+		$('#calendar').fullCalendar('addEventSource',this.eventsource);
 	},
 	
 	showOtherLeave:function(){
