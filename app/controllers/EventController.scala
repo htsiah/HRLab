@@ -123,21 +123,19 @@ class EventController extends Controller with Secured {
       events <- EventModel.find(BSONDocument(), request)
     } yield {
       render {
-        case Accepts.Html() => Ok(views.html.error.unauthorized())
+        case Accepts.Html() => {Ok(views.html.error.unauthorized())}
         case Accepts.Json() => {
           val datFmt = ISODateTimeFormat.date()
           val dTFmt = ISODateTimeFormat.dateTimeNoMillis()
           val tFmt = ISODateTimeFormat.timeNoMillis()
-          var count = 0
-          val eventJSONStr = events.map { event => {
+          val eventJSONStr = events.zipWithIndex.map {  case (event, c) => {
             event.lrr.sorted.foreach { name => name.split("@|@").head + ", " }
             val start = if (event.aday) { datFmt.print(event.fdat.get) } else { dTFmt.print(event.fdat.get) }
             val end =if (event.aday) { datFmt.print(event.tdat.get.plusDays(1)) } else { dTFmt.print(event.tdat.get) }
             val url = if (p_withLink=="y") {
               if (p_page=="company") { "/event/view/" + event._id.stringify } else {"/event/myprofile/view/" + event._id.stringify}
             } else { "" }
-            count = count + 1
-            "{\"id\":"+ count + ",\"title\":\"" + event.n + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"color\":\""+ event.c + "\",\"tip\":\"" + event.n + "\"}"
+            "{\"id\":"+ c + ",\"title\":\"" + event.n + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"color\":\""+ event.c + "\",\"tip\":\"" + event.n + "\"}"
           } }
           Ok(Json.parse("[" + eventJSONStr.mkString(",") + "]")).as("application/json")
         }
