@@ -1,6 +1,6 @@
 package controllers
 
-import scala.concurrent.{Future}
+import scala.concurrent.{Future, Await}
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -12,7 +12,7 @@ import play.api.data.Forms._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{EventModel, Event, PersonModel, OfficeModel, CompanyHolidayModel}
+import models.{EventModel, Event, PersonModel, OfficeModel, CompanyHolidayModel, AuditLogModel}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
@@ -77,7 +77,7 @@ class EventController extends Controller with Secured {
           formWithData => {
             val doc_objectID = BSONObjectID.generate
             EventModel.insert(formWithData.copy(_id=doc_objectID), p_request=request)
-            // AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create document."), p_request=request)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create document."), p_request=request)
             Future.successful(Redirect(routes.CalendarController.company))
           }
       )
@@ -90,7 +90,15 @@ class EventController extends Controller with Secured {
     
   def update(p_id:String) = TODO
   
-  def delete(p_id:String) = TODO
+  def delete(p_id:String) = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      Await.result(EventModel.remove(BSONDocument("_id" -> BSONObjectID(p_id)), request), Tools.db_timeout)
+      AuditLogModel.remove(BSONDocument("lk"->p_id), request)
+      Future.successful(Redirect(request.session.get("path").getOrElse(routes.DashboardController.index).toString))
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  } }
   
   def view(p_id:String) = withAuth { username => implicit request => {
     for { 

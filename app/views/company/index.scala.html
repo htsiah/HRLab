@@ -81,7 +81,7 @@
 			</table>
 		</div>
 		@layout.ace.dialogbox("dialog-abort", Html("<div class='alert alert-info bigger-110'><p>Selected office can not be deleted because there are staffs still working there.</p></div>"))
-		@layout.ace.dialogbox("dialog-delete", Html("<div class='alert alert-info bigger-110'><p>Selected office will be permanently deleted and cannot be recovered.</p></div>"))
+		@layout.ace.dialogbox("dialog-delete", Html("<div class='alert alert-info bigger-110'><p>Selected office will permanently deleted and cannot be recovered.</p></div>"))
 	}
 } else {
 	@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
