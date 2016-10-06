@@ -7,11 +7,7 @@
 
 @pageheader = {
 	<div class="page-header">
-		@if(oid=="") {
-			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Event <i class="ace-icon fa fa-angle-double-right"></i> New</small></h1>	
-		} else {
-			<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Event </small></h1>
-		}
+		<h1>My Profile <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Event </small></h1>
 	</div>
 }
 
@@ -24,7 +20,7 @@
 }
 
 @inlinejs = {
-	<script src="@routes.Assets.at("javascripts/event.form.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/event.myprofileform.js")" type="text/javascript"></script>
 }
 
 @pluginstyle = {
@@ -59,12 +55,7 @@
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 	
 	@helper.form(
-		action = (
-			if(oid=="")
-				routes.EventController.insert
-			else
-				routes.EventController.update(oid)
-		), 
+		action = routes.EventController.myprofileupdate(oid), 
 		'id -> "eventform"
 	) {
 	

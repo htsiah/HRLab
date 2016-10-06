@@ -1,7 +1,7 @@
 $(function(){
 
-	$("#navCompany").addClass("active open");
-    $("#navCalendar").addClass("active");
+    $("#navProfile").addClass("active open");
+    $("#navDashboard").addClass("active");
     
     // Date time field
 	$(".datetime-picker").datetimepicker({

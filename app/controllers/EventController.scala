@@ -86,9 +86,45 @@ class EventController extends Controller with Secured {
     }
   }}
   
-  def edit(p_id:String) = TODO
+  def edit(p_id:String) = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      for { 
+        maybe_event <- EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+        persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
+        offices <- OfficeModel.getAllOfficeName(request)
+      } yield {
+        val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
+        maybe_event.map( event  => {
+          Ok(views.html.event.form(eventform.fill(event), restrictionSelection.sorted, p_id))
+        }).getOrElse(NotFound)
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
     
-  def update(p_id:String) = TODO
+  def update(p_id:String) = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      eventform.bindFromRequest.fold(
+        formWithError => {
+          for {
+            persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
+            offices <- OfficeModel.getAllOfficeName(request)
+          } yield {
+            val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
+            Ok(views.html.event.form(formWithError, restrictionSelection.sorted))
+          } 
+        },
+        formWithData => {
+          EventModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
+          AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)  
+          Future.successful(Redirect(routes.CalendarController.company))
+        }
+      )
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
   
   def delete(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
@@ -111,9 +147,45 @@ class EventController extends Controller with Secured {
      }
   }}
   
-  def myprofileedit(p_id:String) = TODO
+  def myprofileedit(p_id:String) = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      for { 
+        maybe_event <- EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+        persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
+        offices <- OfficeModel.getAllOfficeName(request)
+      } yield {
+        val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
+        maybe_event.map( event  => {
+          Ok(views.html.event.myprofileform(eventform.fill(event), restrictionSelection.sorted, p_id))
+        }).getOrElse(NotFound)
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
   
-  def myprofileupdate(p_id:String) = TODO
+  def myprofileupdate(p_id:String) = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      eventform.bindFromRequest.fold(
+        formWithError => {
+          for {
+            persons <- PersonModel.find(BSONDocument("p.nem" -> false), request)
+            offices <- OfficeModel.getAllOfficeName(request)
+          } yield {
+            val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
+            Ok(views.html.event.myprofileform(formWithError, restrictionSelection.sorted))
+          } 
+        },
+        formWithData => {
+          EventModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request)
+          AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)  
+          Future.successful(Redirect(routes.DashboardController.index))
+        }
+      )
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
   
   def myprofileview(p_id:String) = withAuth { username => implicit request => {
     for { 
@@ -137,15 +209,16 @@ class EventController extends Controller with Secured {
           val dTFmt = ISODateTimeFormat.dateTimeNoMillis()
           val tFmt = ISODateTimeFormat.timeNoMillis()
           val eventJSONStr = events.zipWithIndex.map {  case (event, c) => {
-            event.lrr.sorted.foreach { name => name.split("@|@").head + ", " }
             val start = if (event.aday) { datFmt.print(event.fdat.get) } else { dTFmt.print(event.fdat.get) }
-            val end =if (event.aday) { datFmt.print(event.tdat.get.plusDays(1)) } else { dTFmt.print(event.tdat.get) }
+            val end =if (event.aday) { 
+              if (event.fdat.get == event.tdat.get) { "" } else { "\"end\":\"" + datFmt.print(event.tdat.get.plusDays(1)) + "\"," }
+              } else { "\"end\":\"" + dTFmt.print(event.tdat.get) + "\"," }
             val url = if (p_withLink=="y") {
-              if (p_page=="company") { "/event/view/" + event._id.stringify } else {"/event/myprofile/view/" + event._id.stringify}
-            } else { "" }
-            "{\"id\":"+ c + ",\"title\":\"" + event.n + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"color\":\""+ event.c + "\",\"tip\":\"" + event.n + "\"}"
+              if (p_page=="company") { "\"url\":\"/event/view/" + event._id.stringify + "\"," } else {"\"url\":\"/event/myprofile/view/" + event._id.stringify + "\","}
+              } else { "" }
+            "{\"id\":"+ c + ",\"title\":\"" + event.n + "\"," + url + "\"start\":\"" + start + "\"," + end + "\"color\":\""+ event.c + "\",\"tip\":\"" + event.n + "\"}"
           } }
-          Ok(Json.parse("[" + eventJSONStr.mkString(",") + "]")).as("application/json")
+          Ok(Json.parse("[" + eventJSONStr.mkString(",") + "]")).as("application/json") 
         }
        }
     }

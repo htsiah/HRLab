@@ -25,7 +25,7 @@
 
 @buttons = {
 	@if(session.get("roles").get.contains("Admin")) {
-		<a href="@routes.EventController.edit(event._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
+		<a href="@routes.EventController.myprofileedit(event._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
 		<a href="javascript:onDelete('@event._id.stringify')" class="btn btn-sm btn btn-block">Delete</a>
 	}
 	<a href="javascript:displayAuditLog('@event._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
@@ -58,7 +58,7 @@
 		}
 	)
 	@if(event.w!="") { @contentRow("Where", event.w) }
-	@contentRow("Colour", event.c)
+	<dl class="dl-horizontal"><dt><label>Colour</label></dt><dd><span class="btn-colorpicker" style="background-color:@event.c"></span></dd></dl>
 	@if(!event.lrr.isEmpty) { @contentRow("Leave Req. Restrictions", selectedLRR.sorted.mkString(", ")) }
 	@if(event.d!="") { @contentRow("Description", event.d) }
 	@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>This event will be permanently removed from the system and cannot be recovered.</p></div>"))
