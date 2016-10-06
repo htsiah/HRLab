@@ -285,9 +285,6 @@ object LeaveModel {
     var appliedduration : Double = 0
 
     applieddates.map( applieddate => {
-
-      val iscompanyholiday =  Await.result(CompanyHolidayModel.isCompanyHoliday(applieddate, p_person.p.off, p_request), Tools.db_timeout)
-      
       if (isvalidonnonworkday) {
         if ( p_leave.dt=="Full day" ) {
           appliedduration = appliedduration + 1
@@ -295,6 +292,7 @@ object LeaveModel {
           appliedduration = appliedduration + 0.5
         }
       } else {
+        val iscompanyholiday =  Await.result(CompanyHolidayModel.isCompanyHoliday(applieddate, p_person.p.off, p_request), Tools.db_timeout)
         if (PersonModel.isWorkDay(p_person, applieddate) && iscompanyholiday==false) {
           if ( p_leave.dt=="Full day" ) {
             appliedduration = appliedduration + 1
