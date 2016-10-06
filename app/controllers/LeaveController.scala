@@ -10,7 +10,7 @@ import play.api.libs.json._
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel, LeaveSettingModel, AuditLogModel}
+import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel, LeaveSettingModel, AuditLogModel, EventModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
@@ -839,8 +839,12 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                fdat = Some(new DateTime(dtf.parseLocalDate(p_fdat).toDateTimeAtStartOfDay())),
                tdat = Some(new DateTime(dtf.parseLocalDate(p_tdat).toDateTimeAtStartOfDay()))
            )
+           
            if (LeaveModel.isOverlap(leave_doc, request)) {
              val json = Json.obj("a" -> "0", "b" -> "0", "msg" -> "overlap")
+             Ok(json).as("application/json")
+           } else if (!maybe_leavepolicy.get.set.nwd && EventModel.isRestriction(leave_doc.fdat.get, leave_doc.tdat.get, maybe_person.get, request)) {
+             val json = Json.obj("a" -> "0", "b" -> "0", "msg" -> "restricted on event")
              Ok(json).as("application/json")
            } else {
              maybe_leavepolicy.map( leavepolicy => {

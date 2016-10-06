@@ -271,8 +271,9 @@ function setApplyBtn(p_loader) {
 				if (data.msg == "overlap") {
 					$("#btnApply").html("Conflict with other leave application <br /> Please select to other date");
 					$("#btnApply").attr("disabled", "disabled");
-				
-					// Add event restricted condition here. (Restricted leave application event.
+				} else if (data.msg == "restricted on event") {
+					$("#btnApply").html("Restricted leave application on event day <br /> Please select to other date");
+					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.a <= 0) {
 					$("#btnApply").text("Apply for 0 day");
 					$("#btnApply").attr("disabled", "disabled");

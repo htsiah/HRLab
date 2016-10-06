@@ -7,7 +7,8 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System, SystemDataStore, DbConnUtility}
+import scala.concurrent.{Await}
+import utilities.{System, SystemDataStore, DbConnUtility, Tools}
 
 import scala.util.{Success, Failure}
 import org.joda.time.DateTime
@@ -182,19 +183,42 @@ object EventModel {
   
  /** Custom Model Methods **/ 
   
-  def isRestriction(p_date:DateTime, p_person:Person, p_request:RequestHeader) = {
-    for {
-      event <- this.findOne(
-          BSONDocument(
-              "lrr"->BSONDocument("$in"->List(p_person.p.off,p_person.p.fn + " " + p_person.p.ln + "@|@" + p_person._id.stringify)), 
-              "fdat"->BSONDocument("$lte" -> BSONDateTime(p_date.getMillis())), 
-              "tdat"->BSONDocument("$gte" -> BSONDateTime(p_date.getMillis()))
-              ), 
-              p_request
-      )
-    } yield {
-      if (event.isDefined) true else false
+  def isRestriction(p_fdat:DateTime, p_tdat:DateTime, p_person:Person, p_request:RequestHeader) = {
+    
+    def lookupRestriction (p_dat:List[DateTime]): Boolean = {
+      for(dat <- p_dat){
+        val event = Await.result(
+            this.findOne(
+                // BSONDocument("lrr"->BSONDocument("$in"->List(p_person.p.off,p_person.p.fn + " " + p_person.p.ln + "@|@" + p_person._id.stringify)), "fdat"->BSONDocument("$lte" -> BSONDateTime(dat.getMillis())), "tdat"->BSONDocument("$gte" -> BSONDateTime(dat.getMillis()))), 
+                BSONDocument(
+                    "lrr"->BSONDocument("$in"->List(p_person.p.off,p_person.p.fn + " " + p_person.p.ln + "@|@" + p_person._id.stringify)),
+                    "$or" -> BSONArray(
+                        BSONDocument("aday"->false, "fdat"->BSONDocument("$lte" -> BSONDateTime(dat.plusDays(1).getMillis())), "tdat"->BSONDocument("$gte" -> BSONDateTime(dat.getMillis()))),
+                        BSONDocument("aday"->true, "fdat"->BSONDocument("$lte" -> BSONDateTime(dat.getMillis())), "tdat"->BSONDocument("$gte" -> BSONDateTime(dat.getMillis())))
+                    )
+                ),
+                p_request
+            ), 
+            Tools.db_timeout
+        )
+        if (event.isDefined) {
+          if (event.get.aday == true) {
+            return true
+          } else {
+            if (event.get.fdat.get.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0).getMillis() <= dat.getMillis() &&
+                event.get.tdat.get.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0).getMillis() >= dat.getMillis()
+                ) {
+              return true
+            }
+          }
+          
+        }
+      }
+      false
     }
+  
+    lookupRestriction(Tools.transformDateList(p_fdat, p_tdat))
+    
   }
   
 }
