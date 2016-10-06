@@ -278,17 +278,10 @@ object LeaveModel {
   }
     
   /** Custom Model Methods **/ 
-  private def getAppliedDate(p_fdat:DateTime, p_tdat:DateTime) : List[DateTime] = {
-    if(p_tdat.isAfter(p_fdat)){
-      List(p_fdat) ::: getAppliedDate(p_fdat.plusDays(1),p_tdat)
-    }else{
-      List(p_tdat)
-    }
-  }
   
   def getAppliedDuration(p_leave:Leave, p_leavepolicy:LeavePolicy, p_person:Person, p_request:RequestHeader) = {    
     val isvalidonnonworkday = p_leavepolicy.set.nwd
-    val applieddates = this.getAppliedDate(p_leave.fdat.get , p_leave.tdat.get)
+    val applieddates = Tools.transformDateList(p_leave.fdat.get , p_leave.tdat.get)
     var appliedduration : Double = 0
 
     applieddates.map( applieddate => {
@@ -333,7 +326,7 @@ object LeaveModel {
   def isOverlap(p_leave:Leave, p_request:RequestHeader) = {
     val overlap = p_leave.dt match {
       case "Full day" => {
-        val applieddates = this.getAppliedDate(p_leave.fdat.get , p_leave.tdat.get)
+        val applieddates = Tools.transformDateList(p_leave.fdat.get , p_leave.tdat.get)
         var result : Boolean = false
         breakable { applieddates.foreach ( applieddate => {
           val leave =  Await.result(this.findOne(BSONDocument("pid"->p_leave.pid, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(applieddate.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(applieddate.getMillis()))), p_request), Tools.db_timeout)

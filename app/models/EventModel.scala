@@ -180,4 +180,21 @@ object EventModel {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[Event]
   }
   
+ /** Custom Model Methods **/ 
+  
+  def isRestriction(p_date:DateTime, p_person:Person, p_request:RequestHeader) = {
+    for {
+      event <- this.findOne(
+          BSONDocument(
+              "lrr"->BSONDocument("$in"->List(p_person.p.off,p_person.p.fn + " " + p_person.p.ln + "@|@" + p_person._id.stringify)), 
+              "fdat"->BSONDocument("$lte" -> BSONDateTime(p_date.getMillis())), 
+              "tdat"->BSONDocument("$gte" -> BSONDateTime(p_date.getMillis()))
+              ), 
+              p_request
+      )
+    } yield {
+      if (event.isDefined) true else false
+    }
+  }
+  
 }

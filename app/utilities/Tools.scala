@@ -1,7 +1,7 @@
 package utilities
 
 import play.api.Play
-
+import org.joda.time.DateTime
 import scala.concurrent.duration.Duration
 
 object Tools {
@@ -32,6 +32,14 @@ object Tools {
   def cleanCSV ( p_text:String ) : String = {
     val replacedText = p_text.replaceAll("\"", "\"\"")
     if (replacedText.contains(",")) { "\"" + replacedText + "\""  } else { replacedText }
+  }
+  
+  def transformDateList(p_fdat:DateTime, p_tdat:DateTime) : List[DateTime] = {
+    if(p_tdat.isAfter(p_fdat)){
+      List(p_fdat) ::: transformDateList(p_fdat.plusDays(1),p_tdat)
+    }else{
+      List(p_tdat)
+    }
   }
   
 }
