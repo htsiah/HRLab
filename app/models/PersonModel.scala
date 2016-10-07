@@ -361,6 +361,14 @@ object PersonModel {
                   LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile.copy(pn=p_doc.p.fn + " " + p_doc.p.ln), p_request)
             } }
           }
+          
+          // Update event
+          EventModel.find(BSONDocument("lrr"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { events => {
+            events.foreach { event => {
+              val lrr = event.lrr.map { lrr => if (lrr==oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify) p_doc.p.fn + " " + p_doc.p.ln + "@|@" + p_doc._id.stringify else lrr}
+              EventModel.update(BSONDocument("_id" -> event._id), event.copy(lrr=lrr), p_request)
+            } }
+          } } 
         }
       }
     }

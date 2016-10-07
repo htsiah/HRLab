@@ -187,17 +187,21 @@ object OfficeModel {
       future.onComplete {
         case Failure(e) => throw e
         case Success(lastError) => {
-          // Update name on leave and leave profile
+          // Update office name on person, company holiday and event.
           if (oldoffice.get.n != p_doc.n) {
             PersonModel.updateUsingBSON(BSONDocument("p.off"->p_doc.n, "sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)), BSONDocument("$set"->BSONDocument("p.off"->p_doc.n)))
-            CompanyHolidayModel.find(BSONDocument("off"->BSONDocument("$in"->List(oldoffice.get.n)), "sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))).foreach { holidays => 
+            CompanyHolidayModel.find(BSONDocument("off"->BSONDocument("$in"->List(oldoffice.get.n))), p_request).map { holidays => 
               holidays.foreach { holiday => {
                 val office = holiday.off.map { office => if (office==oldoffice.get.n) p_doc.n else office }
-                CompanyHolidayModel.updateUsingBSON(BSONDocument("_id" -> holiday._id), BSONDocument("$set"->BSONDocument("off"->office)))
+                CompanyHolidayModel.update(BSONDocument("_id" -> holiday._id), holiday.copy(off=office), p_request)
               } }  
             }
-            
-            
+            EventModel.find(BSONDocument("lrr"->BSONDocument("$in"->List(oldoffice.get.n))), p_request).map { events => {
+              events.foreach { event => {
+                val lrr = event.lrr.map { lrr => if (lrr==oldoffice.get.n) p_doc.n else lrr}
+                EventModel.update(BSONDocument("_id" -> event._id), event.copy(lrr=lrr), p_request)
+              } }
+            } } 
           }
         }
       }
