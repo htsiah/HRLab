@@ -10,7 +10,7 @@ $(function(){
 
 var Calendar = {
 	companyholidaysource:{
-		url: '/companyholiday/getcompanyholidaymyprofilejson',
+		url: '/companyholiday/getcompanyholiday/y?p_page=myprofile',
 		type: 'GET',
 		cache: false,
 		error: function() {

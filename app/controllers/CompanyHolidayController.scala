@@ -186,43 +186,25 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
    
-  def getCompanyHolidayJSON(p_withLink:String) = withAuth { username => implicit request => {
+  def getCompanyHoliday(p_withLink:String, p_page:String) = withAuth { username => implicit request => {
     for {
       companyholidays <- CompanyHolidayModel.find(BSONDocument(), request)
     } yield {
-      var companyholidayJSONStr = ""
-      var count = 0
-      val fmt = ISODateTimeFormat.date()
-      companyholidays.foreach(companyholiday => {
-        var title = companyholiday.n.replace("\t", "") // Temparary solution
-        var url = if (p_withLink=="y") "/companyholiday/view/" + companyholiday._id.stringify else ""
-        var start = fmt.print(companyholiday.fdat.get)
-        var end = fmt.print(companyholiday.tdat.get.plusDays(1))
-        if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
-        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.off.mkString(", ") + ")" + "\"}"
-        count = count + 1
-      })
-      Ok(Json.parse("[" + companyholidayJSONStr + "]")).as("application/json")
-    }
-  }}
-
-  def getCompanyHolidayMyProfileJSON = withAuth { username => implicit request => {
-    for {
-      companyholidays <- CompanyHolidayModel.find(BSONDocument(), request)
-    } yield {
-      var companyholidayJSONStr = ""
-      var count = 0
-      val fmt = ISODateTimeFormat.date()
-      companyholidays.foreach(companyholiday => {
-        var title = companyholiday.n.replace("\t", "") // Temparary solution 
-        var url = "/companyholiday/myprofile/view/" + companyholiday._id.stringify
-        var start = fmt.print(companyholiday.fdat.get)
-        var end = fmt.print(companyholiday.tdat.get.plusDays(1))
-        if (count > 0) companyholidayJSONStr = companyholidayJSONStr + ","
-        companyholidayJSONStr = companyholidayJSONStr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + " (" + companyholiday.off.mkString(", ") + ")" + "\"}"
-        count = count + 1
-      })
-      Ok(Json.parse("[" + companyholidayJSONStr + "]")).as("application/json")
+      render {
+        case Accepts.Html() => {Ok(views.html.error.unauthorized())}
+        case Accepts.Json() => {
+          val fmt = ISODateTimeFormat.date()
+          val companyholidayJSONStr = companyholidays.zipWithIndex.map{ case (companyholiday, c) => {
+            val title = companyholiday.n.replace("\t", "") // Temporary solution 
+            val url = if (p_withLink=="y") { 
+              if (p_page=="company") { "\"url\":\"/companyholiday/view/" + companyholiday._id.stringify + "\","  } else { "\"url\":\"/companyholiday/myprofile/view/" + companyholiday._id.stringify + "\"," }
+            } else { "" }
+            val end = if (companyholiday.fdat.get == companyholiday.tdat.get) { "" } else { "\"end\":\"" + fmt.print(companyholiday.tdat.get.plusDays(1)) + "\"," }
+            "{\"id\":"+ c + ",\"title\":\"" + title + "\"," + url + "\"start\":\"" + fmt.print(companyholiday.fdat.get) + "\"," + end + "\"tip\":\"" + title + " (" + companyholiday.off.mkString(", ") + ")" + "\"}"
+          }}
+          Ok(Json.parse("[" + companyholidayJSONStr.mkString(",") + "]")).as("application/json")
+        }
+      }
     }
   }}
   
