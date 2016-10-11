@@ -11,21 +11,21 @@ $(function(){
 	$(document).on('change', '#calendardisplaytypes', function(e) {
 		var selcalendardisplaytypes = this.options[this.selectedIndex].value;
 		if (selcalendardisplaytypes=="Company Calendar"){
-			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/my");
-			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/allexceptmy");
+			Calendar.removeEvents("/leave/getapprovedleave/my/y?p_page=company");
+			Calendar.removeEvents("/leave/getapprovedleave/allexceptmy/y?p_page=company");
 			Calendar.removeEvents(Calendar.deptleavesurl);
 			Calendar.showMyLeave();
 			Calendar.showOtherLeave();
 		} else if (selcalendardisplaytypes=="My Calendar"){
-			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/my");
-			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/allexceptmy");
+			Calendar.removeEvents("/leave/getapprovedleave/my/y?p_page=company");
+			Calendar.removeEvents("/leave/getapprovedleave/allexceptmy/y?p_page=company");
 			Calendar.removeEvents(Calendar.deptleavesurl);
 			Calendar.showMyLeave();
 		} else {
-			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/my");
-			Calendar.removeEvents("/leave/getapprovedleaveforcompanyviewjson/allexceptmy");
+			Calendar.removeEvents("/leave/getapprovedleave/my/y?p_page=company");
+			Calendar.removeEvents("/leave/getapprovedleave/allexceptmy/y?p_page=company");
 			Calendar.removeEvents(Calendar.deptleavesurl);
-			Calendar.deptleavesurl = "/leave/getapprovedleaveforcompanyviewjson/" + selcalendardisplaytypes;
+			Calendar.deptleavesurl = "/leave/getapprovedleave/" + selcalendardisplaytypes + "/y?p_page=company";
 			Calendar.showDeptCalendar();
 		}
 	})
@@ -54,7 +54,7 @@ var Calendar = {
 	},
 	
 	myapprovedleavessource:{
-		url: '/leave/getapprovedleaveforcompanyviewjson/my',
+		url: '/leave/getapprovedleave/my/y?p_page=company',
 		type: 'GET',
 		cache: false,
 		error: function() {
@@ -65,7 +65,7 @@ var Calendar = {
 	},
 	
 	otherapprovedleavessource:{
-		url: '/leave/getapprovedleaveforcompanyviewjson/allexceptmy',
+		url: '/leave/getapprovedleave/allexceptmy/y?p_page=company',
 		type: 'GET',
 		cache: false,
 		error: function() {
@@ -75,6 +75,7 @@ var Calendar = {
 		textColor: 'white' // a non-ajax option
 	},
 		
+	
 	deptleavesurl:{},
 		
 	deptleavessource:{},

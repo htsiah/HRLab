@@ -30,7 +30,7 @@ var Calendar = {
 	},
 		
 	myapprovedleavessource:{
-		url: '/leave/getapprovedleavejson/my/y',
+		url: '/leave/getapprovedleave/my/y',
 		type: 'GET',
 		cache: false,
 		error: function() {
@@ -41,7 +41,7 @@ var Calendar = {
 	},
 		
 	otherapprovedleavessource:{
-		url: '/leave/getapprovedleavejson/allexceptmy/y',
+		url: '/leave/getapprovedleave/allexceptmy/y',
 		type: 'GET',
 		cache: false,
 		error: function() {

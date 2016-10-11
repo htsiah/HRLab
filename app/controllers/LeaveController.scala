@@ -677,151 +677,89 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
       }
     }
   }}
-  
+
   // Parameter:
-  // p_type: my / [department name]
-  def getApprovedLeaveJSON(p_type:String, p_withLink:String) = withAuth { username => implicit request => {
-    var leavejsonstr = ""
-    var count = 0
+  // p_type: my  [department name]
+  // p_withLink: y/y  [include url link]
+  // p_page: [which calendar page]
+  def getApprovedLeave(p_type:String, p_withLink:String, p_page:String) = withAuth { username => implicit request => {
     val fmt = ISODateTimeFormat.date()
-        
     if (p_type=="my") {
       for {
         leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
       } yield {
-        leaves.map ( leave => {
-          // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
-          val reason = ""
-          val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-          val url = if (p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
-          val start = fmt.print(leave.fdat.get)
-          val end = fmt.print(leave.tdat.get.plusDays(1))
-          if (count > 0) leavejsonstr = leavejsonstr + ","
-          leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
-          count = count + 1   
-        })
-        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
+        render {
+          case Accepts.Html() => Ok(views.html.error.unauthorized())
+          case Accepts.Json() => {
+            val leaveJSONList = leaves.zipWithIndex.map { case (leave, c) => {
+              val title = leave.pn + " (" + leave.lt + ") - " + leave.dt
+              val url = if (p_withLink=="y") { 
+                if (p_page=="company") { "\"url\":\"/leave/company/view/" + leave._id.stringify + "\","   } else { "\"url\":\"/leave/view/" + leave._id.stringify + "\","  }
+                } else { "" }
+              val start = fmt.print(leave.fdat.get)
+              val end = if (leave.fdat.get == leave.tdat.get) { "" } else { "\"end\":\"" + fmt.print(leave.tdat.get.plusDays(1)) + "\"," }
+              "{\"id\":"+ c + ",\"title\":\"" + title + "\"," + url + "\"start\":\"" + start + "\"," + end + "\"tip\":\"" + title + "\"}"
+            }}
+            
+            Ok(Json.parse("[" + leaveJSONList.mkString(",") + "]")).as("application/json")
+          }
+        }
       }
     } else if (p_type=="allexceptmy") {
       for {
         leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$ne" -> request.session.get("id").get), "wf.s"->"Approved"), request)
       } yield {
-        leaves.map ( leave => {
-          val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
-          val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
-          if (leavepolicy.set.scal) {            
-            // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
-            val reason = "" 
-            val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-            val url = if (( PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
-              val start = fmt.print(leave.fdat.get)
-              val end = fmt.print(leave.tdat.get.plusDays(1))
-              if (count > 0) leavejsonstr = leavejsonstr + ","
-              leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
-              count = count + 1
+        render {
+          case Accepts.Html() => Ok(views.html.error.unauthorized())
+          case Accepts.Json() => {
+            val leaveJSONList = leaves.zipWithIndex.map { case (leave, c) => {
+              val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
+              val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+              if (leavepolicy.set.scal) {            
+                val title = leave.pn + " (" + leave.lt + ") - " + leave.dt
+                val url = if (( PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") { 
+                  if (p_page=="company") { "\"url\":\"/leave/company/view/" + leave._id.stringify + "\","   } else { "\"url\":\"/leave/view/" + leave._id.stringify + "\","  }
+                } else { "" }
+                val start = fmt.print(leave.fdat.get)
+                val end = if (leave.fdat.get == leave.tdat.get) { "" } else { "\"end\":\"" + fmt.print(leave.tdat.get.plusDays(1)) + "\"," }
+                "{\"id\":"+ c + ",\"title\":\"" + title + "\"," + url + "\"start\":\"" + start + "\"," + end + "\"tip\":\"" + title + "\"}"
+              }
+            }}
+
+            Ok(Json.parse("[" + leaveJSONList.mkString(",") + "]")).as("application/json")
           }
-        })
-        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
+        }
       }
     } else {
       for {
         persons <- PersonModel.find(BSONDocument("p.dpm"->p_type), request)
       } yield {
-        persons.map { person => {
-          val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
-          leaves.map { leave => {
-            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
-            val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
-            if (leavepolicy.set.scal) {
-              // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
-              val reason = ""
-              val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-              val url = if ((leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") "/leave/view/" + leave._id.stringify else ""
-              val start = fmt.print(leave.fdat.get)
-              val end = fmt.print(leave.tdat.get.plusDays(1))
-              if (count > 0) leavejsonstr = leavejsonstr + ","
-              leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
-              count = count + 1
-            }
-          } }
-        } }
-        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
-      }
-    }
-  }}
-  
-    // Parameter:
-  // p_type: my / [department name]
-  def getApprovedLeaveForCompanyViewJSON(p_type:String) = withAuth { username => implicit request => {
-    var leavejsonstr = ""
-    var count = 0
-    val fmt = ISODateTimeFormat.date()
-        
-    if (p_type=="my") {
-      for {
-        leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
-      } yield {
-        leaves.map ( leave => {
-          // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
-          val reason = ""
-          val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-          val url = "/leave/company/view/" + leave._id.stringify
-          val start = fmt.print(leave.fdat.get)
-          val end = fmt.print(leave.tdat.get.plusDays(1))
-          if (count > 0) leavejsonstr = leavejsonstr + ","
-          leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
-          count = count + 1   
-        })
-        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
-      }
-    } else if (p_type=="allexceptmy") {
-      for {
-        leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$ne" -> request.session.get("id").get), "wf.s"->"Approved"), request)
-      } yield {
-        leaves.map ( leave => {
-          val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
-          val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
-          if (leavepolicy.set.scal) {
-            // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
-            val reason = ""
-            val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-            val url = if (PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
-            val start = fmt.print(leave.fdat.get)
-            val end = fmt.print(leave.tdat.get.plusDays(1))
-            if (count > 0) leavejsonstr = leavejsonstr + ","
-            leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
-            count = count + 1
+        render {
+          case Accepts.Html() => Ok(views.html.error.unauthorized())
+          case Accepts.Json() => {
+            val personList = persons.map ( person => person._id.stringify)
+            val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->personList), "wf.s"->"Approved"), request), Tools.db_timeout)
+            val leaveJSONList = leaves.zipWithIndex.map { case (leave, c) => {
+              val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
+              val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
+              if (leavepolicy.set.scal) {
+                val title = leave.pn + " (" + leave.lt + ") - " + leave.dt
+                val url = if ((leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) && p_withLink=="y") { 
+                  if (p_page=="company") { "\"url\":\"/leave/company/view/" + leave._id.stringify + "\","   } else { "\"url\":\"/leave/view/" + leave._id.stringify + "\","  }
+                  } else { "" }
+                val start = fmt.print(leave.fdat.get)
+                val end = if (leave.fdat.get == leave.tdat.get) { "" } else { "\"end\":\"" + fmt.print(leave.tdat.get.plusDays(1)) + "\"," }
+                "{\"id\":"+ c + ",\"title\":\"" + title + "\"," + url + "\"start\":\"" + start + "\"," + end + "\"tip\":\"" + title + "\"}"
+              }
+            } }
+            
+            Ok(Json.parse("[" + leaveJSONList.mkString(",") + "]")).as("application/json")
           }
-        })
-        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
-      }
-    } else {
-      for {
-        persons <- PersonModel.find(BSONDocument("p.dpm"->p_type), request)
-      } yield {
-        persons.map { person => {
-          val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->person._id.stringify, "wf.s"->"Approved"), request), Tools.db_timeout)
-          leaves.map { leave => {
-            val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
-            val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
-            if (leavepolicy.set.scal) {
-              // val reason = if (leave.r != "") { " - " + leave.r } else { "" }
-              val reason = ""
-              val title = leave.pn + " (" + leave.lt + ") - " + leave.dt + reason
-              val url = if (leave.pid==request.session.get("id").get || PersonModel.isManagerFor(leave.pid, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(leave.pid, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) "/leave/company/view/" + leave._id.stringify else ""
-              val start = fmt.print(leave.fdat.get)
-              val end = fmt.print(leave.tdat.get.plusDays(1))
-              if (count > 0) leavejsonstr = leavejsonstr + ","
-              leavejsonstr = leavejsonstr + "{\"id\":"+ count + ",\"title\":\"" + title + "\",\"url\":\"" + url + "\",\"start\":\"" + start + "\",\"end\":\"" + end + "\",\"tip\":\"" + title + "\"}"
-              count = count + 1
-            }
-          } }
-        } }
-        Ok(Json.parse("[" + leavejsonstr + "]")).as("application/json")
+        }
       }
     }
   }}
-  
+    
   // Return: {"a":0,"b":0}
   def getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String) = withAuth { username => implicit request => {
     for {

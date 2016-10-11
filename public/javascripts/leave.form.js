@@ -197,7 +197,7 @@ var Calendar = {
 	},
 		
 	myapprovedleavessource:{
-		url: '/leave/getapprovedleavejson/my/n',
+		url: '/leave/getapprovedleave/my/n',
 		type: 'GET',
 		cache: false,
 		error: function() {
@@ -208,7 +208,7 @@ var Calendar = {
 	},
 		
 	otherapprovedleavessource:{
-		url: '/leave/getapprovedleavejson/allexceptmy/n',
+		url: '/leave/getapprovedleave/allexceptmy/n',
 		type: 'GET',
 		cache: false,
 		error: function() {
