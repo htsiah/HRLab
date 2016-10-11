@@ -44,54 +44,15 @@ $(function(){
 	$("#companyholidayform").validate({
 		onkeyup: false,
 		rules: {
-			"n": "required",
-			"fdat": {
-				required: true,
-				customDate: true
-			},
-			"tdat": {
-				required: true,
-				customDate: true,
-				checkDate: true
-			}
+			"n": "required"
 		},
 		messages: {
-			"n": "Please enter holiday name.",
-			"fdat": {
-				required: "Please enter date from (start).",
-				customDate: "Please enter a valid date format d-mmm-yyyy."
-			},
-			"tdat": {
-				required: "Please enter date to (end).",
-				customDate: "Please enter a valid date format d-mmm-yyyy.",
-				checkDate: "Date to (end) should greater than date from (start)."
-			}
+			"n": "Please enter holiday name."
 		},		 
 		submitHandler: function(form) {
 		   form.submit();
 		 }
 	});
-	
-	$.validator.addMethod(
-		"customDate", 
-		function(value, element) {
-			return this.optional(element) || value.match(/^\d\d?-\w\w\w-\d\d\d\d/);
-		}, 
-		"Please enter a valid date format d-mmm-yyyy."
-	);
-	
-	$.validator.addMethod("checkDate", 
-		function(value) {
-			var fdat = new Date($("#fdat").val());
-			var tdat = new Date($("#tdat").val());
-			if (fdat>tdat) {
-				return false;
-			} else {
-				return true;
-			}
-		}, 
-		'Date to (end) should greater than date from (start).'
-	);
 	
 });
 
