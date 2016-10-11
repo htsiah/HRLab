@@ -30,7 +30,7 @@ object Tools {
   }
   
   def cleanCSV ( p_text:String ) : String = {
-    val replacedText = p_text.replaceAll("\"", "\"\"")
+    val replacedText = p_text.replaceAll("\r", "").replaceAll("\n", "").replaceAll("\"", "\"\"")
     if (replacedText.contains(",")) { "\"" + replacedText + "\""  } else { replacedText }
   }
   
