@@ -349,26 +349,48 @@ object PersonModel {
       future.onComplete {
         case Failure(e) => throw e
         case Success(lastError) => {
-          // Update name on leave
+          
           if (oldperson.get.p.fn != p_doc.p.fn || oldperson.get.p.ln != p_doc.p.ln) {
-            LeaveModel.updateUsingBSON(BSONDocument("pid"->p_doc._id.stringify, "sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)), BSONDocument("$set"->BSONDocument("pn"->(p_doc.p.fn + " " + p_doc.p.ln))))
-            // LeaveModel.updateUsingBSON(BSONDocument("w_aprid"->p_doc._id.stringify), BSONDocument("$set"->BSONDocument("w_aprn"->(p_doc.p.fn + " " + p_doc.p.ln))))
+            
+            // Update name on leave
+            LeaveModel.find(
+                BSONDocument(
+                    "$or" -> BSONArray(
+                        BSONDocument("pid"->p_doc._id.stringify),
+                        BSONDocument("wf.aprid"->BSONDocument("$in"->List(p_doc._id.stringify))),
+                        BSONDocument("wf.aprbyid"->BSONDocument("$in"->List(p_doc._id.stringify))),
+                        BSONDocument("wf.rjtbyid"->p_doc._id.stringify),  
+                        BSONDocument("wf.cclbyid"->p_doc._id.stringify)
+                    )
+                ),
+                p_request
+            ).map { leaves =>  
+              leaves.foreach { leave => {
+                val pn = if (leave.pid == p_doc._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { leave.pn }                
+                val aprn = if ( leave.wf.aprid.indexOf(p_doc._id.stringify)!= -1 ) { leave.wf.aprn.updated(leave.wf.aprid.indexOf(p_doc._id.stringify), p_doc.p.fn + " " + p_doc.p.ln) } else { leave.wf.aprn }
+                val aprbyn = if (leave.wf.aprbyn.isDefined) { if ( leave.wf.aprbyid.get.indexOf(p_doc._id.stringify)!= -1 ) { Option(leave.wf.aprbyn.get.updated(leave.wf.aprbyid.get.indexOf(p_doc._id.stringify), p_doc.p.fn + " " + p_doc.p.ln)) } else { leave.wf.aprbyn } } else { None }
+                val rjtbyn = if (leave.wf.rjtbyn.isDefined) { if ( leave.wf.rjtbyid.get == p_doc._id.stringify ) { Option(p_doc.p.fn + " " + p_doc.p.ln) } else { leave.wf.rjtbyn } } else { None }
+                val cclbyn = if (leave.wf.cclbyn.isDefined) { if ( leave.wf.cclbyid.get == p_doc._id.stringify ) { Option(p_doc.p.fn + " " + p_doc.p.ln) } else { leave.wf.cclbyn } } else { None }
+                LeaveModel.update(BSONDocument("_id" -> leave._id), leave.copy(pn=pn, wf=leave.wf.copy(aprn=aprn, aprbyn=aprbyn, rjtbyn=rjtbyn, cclbyn=cclbyn)), p_request)
+              } }  
+            }
+            
+            // Update leave profiles - recalculate leave entitlement
+            LeaveProfileModel.find(BSONDocument("pid" -> p_doc._id.stringify), p_request).map { leaveprofiles =>
+              leaveprofiles.foreach { leaveprofile => {
+                LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile.copy(pn=p_doc.p.fn + " " + p_doc.p.ln), p_request)
+              } }
+            }
+          
+            // Update event
+            EventModel.find(BSONDocument("lrr"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { events => {
+              events.foreach { event => {
+                val lrr = event.lrr.map { lrr => if (lrr==oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify) p_doc.p.fn + " " + p_doc.p.ln + "@|@" + p_doc._id.stringify else lrr}
+                EventModel.update(BSONDocument("_id" -> event._id), event.copy(lrr=lrr), p_request)
+              } }
+            } } 
           }
           
-          // Update leave profiles - recalculate leave entitlement
-          LeaveProfileModel.find(BSONDocument("pid" -> p_doc._id.stringify), p_request).map { leaveprofiles =>
-            leaveprofiles.foreach { leaveprofile => {
-                  LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile.copy(pn=p_doc.p.fn + " " + p_doc.p.ln), p_request)
-            } }
-          }
-          
-          // Update event
-          EventModel.find(BSONDocument("lrr"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { events => {
-            events.foreach { event => {
-              val lrr = event.lrr.map { lrr => if (lrr==oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify) p_doc.p.fn + " " + p_doc.p.ln + "@|@" + p_doc._id.stringify else lrr}
-              EventModel.update(BSONDocument("_id" -> event._id), event.copy(lrr=lrr), p_request)
-            } }
-          } } 
         }
       }
     }
