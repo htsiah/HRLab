@@ -292,7 +292,7 @@ function setApplyBtn(p_loader) {
 	} else {
 		
 		$.ajax({
-			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat,
+			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat + "?p_cevent=false",
 			dataType: "json",
 			beforeSend: function(){
 				if (p_loader) { loader.on() };

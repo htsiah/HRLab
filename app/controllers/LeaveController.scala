@@ -761,7 +761,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
   }}
     
   // Return: {"a":0,"b":0}
-  def getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String) = withAuth { username => implicit request => {
+  def getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String, p_cevent:String) = withAuth { username => implicit request => {
     for {
       maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_pid)), request)
       maybe_leaveprofile <- LeaveProfileModel.findOne(BSONDocument("pid"->p_pid , "lt"->p_lt), request)
@@ -781,7 +781,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
            if (LeaveModel.isOverlap(leave_doc, request)) {
              val json = Json.obj("a" -> "0", "b" -> "0", "msg" -> "overlap")
              Ok(json).as("application/json")
-           } else if (!maybe_leavepolicy.get.set.nwd && EventModel.isRestriction(leave_doc.fdat.get, leave_doc.tdat.get, maybe_person.get, request)) {
+           } else if (p_cevent=="true" && !maybe_leavepolicy.get.set.nwd && EventModel.isRestriction(leave_doc.fdat.get, leave_doc.tdat.get, maybe_person.get, request)) {
              val json = Json.obj("a" -> "0", "b" -> "0", "msg" -> "restricted on event")
              Ok(json).as("application/json")
            } else {

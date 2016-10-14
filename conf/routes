@@ -65,7 +65,7 @@ GET		/leave/cancel											controllers.LeaveController.cancel(p_id:String)
 GET		/leave/view/:p_id										controllers.LeaveController.view(p_id:String)
 GET		/leave/company/view/:p_id								controllers.LeaveController.companyview(p_id:String)
 GET		/leave/getapprovedleave/:p_type/:p_withlink				controllers.LeaveController.getApprovedLeave(p_type, p_withlink, p_page:String?="")
-GET		/leave/getapplyday/:p_pid/:p_lt/:p_dt/:p_fdat/:p_tdat	controllers.LeaveController.getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String)
+GET		/leave/getapplyday/:p_pid/:p_lt/:p_dt/:p_fdat/:p_tdat	controllers.LeaveController.getApplyDayJSON(p_pid:String, p_lt:String, p_dt:String, p_fdat:String, p_tdat:String, p_cevent:String?="true")
 
 # Leave File
 POST	/leavefile/insert				controllers.LeaveFileController.insert(p_lk: String)
