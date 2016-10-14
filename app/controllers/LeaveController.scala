@@ -403,6 +403,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
             
             // Send Email
             val replaceMap = Map(
+                "APPLICANT"->leave_update.pn,
                 "APPROVEDBY1"->leave_update.wf.aprbyn.get(0),
                 "APPROVEDBY2"->leave_update.wf.aprbyn.get(1),
                 "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
