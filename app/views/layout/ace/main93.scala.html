@@ -32,17 +32,11 @@
 			<link rel="stylesheet" href="@routes.Assets.at("layout/ace/css/ace-ie.min.css")" />
 		<![endif]-->
 		
+		@** ace settings handler **@
+		<script src="@routes.Assets.at("layout/ace/js/ace-extra.min.js")"></script>
+		
 		@** inline styles related to this page **@
 		@inlinestyle
-		
-		@** ace settings handler **@
-		<script src="@routes.Assets.at("layout/ace/js/ace-extra.min.js")"></script>	
-
-		@** HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries **@
-		<!--[if lt IE 9]>
-			<script src="@routes.Assets.at("layout/ace/js/html5shiv.min.js")"></script>
-			<script src="@routes.Assets.at("layout/ace/js/respond.min.js")"></script>
-		<![endif]-->
 	</head>
 	<body class="no-skin">
 		@layout.ace.header()
