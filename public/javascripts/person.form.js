@@ -15,12 +15,13 @@ $(function(){
 		
     // Disable empty date field after selecting current date
     // http://stackoverflow.com/questions/24981072/bootstrap-datepicker-empties-field-after-selecting-current-date
-    $("#p_edat").on("show", function(e){
+	let stickyDate;
+	$("#p_edat").on("show", function(e){
     	$(this).data("stickyDate", e.date);
     });
 
     $("#p_edat").on("hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
+        stickyDate = $(this).data("stickyDate");
         if ( !e.date && stickyDate ) {
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);

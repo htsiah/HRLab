@@ -21,9 +21,9 @@
 
 @inlinejs = {
 	<script type="text/javascript">
-		var path = '@session.get("path").get';
-		var p_pid = "@pid";
-		var p_position = "@ppt";
+		let path = '@session.get("path").get',
+			p_pid = "@pid",
+			p_position = "@ppt";
 	</script>
 	<script src="@routes.Assets.at("javascripts/common.loaderanimation.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/leaveprofilereport.form.js")" type="text/javascript"></script>

@@ -34,13 +34,14 @@ $(function(){
     // To date can not earlier than From date
     $("#t_tdat").data("DateTimePicker").minDate($("#t_fdat").data("DateTimePicker").date());
     
-    // Disable empty date field after selecting current date     
+    // Disable empty date field after selecting current date  
+    let stickyDate;
     $("#t_fdat").on("dp.show", function(e){
     	$(this).data("stickyDate", $("#t_fdat").data("DateTimePicker").date());
     });
 
     $("#t_fdat").on("dp.hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
+        stickyDate = $(this).data("stickyDate");
         if ( !$("#t_fdat").data("DateTimePicker").date()) {
         	$(this).data("DateTimePicker").date(stickyDate);
         } else {
@@ -55,7 +56,7 @@ $(function(){
     });
 
     $("#t_tdat").on("dp.hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
+        stickyDate = $(this).data("stickyDate");
         if ( !$("#t_tdat").data("DateTimePicker").date() ) {
         	$(this).data("DateTimePicker").date(stickyDate);
         };

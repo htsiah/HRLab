@@ -18,12 +18,13 @@ $(function(){
 	
     // Disable empty date field after selecting current date
     // http://stackoverflow.com/questions/24981072/bootstrap-datepicker-empties-field-after-selecting-current-date
-    $("#fdat, #tdat").on("show", function(e){
+    let stickyDate;
+	$("#fdat, #tdat").on("show", function(e){
     	$(this).data("stickyDate", e.date);
     });
-
+    
     $("#tdat").on("hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
+    	stickyDate = $(this).data("stickyDate");
         if ( !e.date && stickyDate ) {
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
@@ -32,7 +33,7 @@ $(function(){
     });
     
     $("#fdat").on("hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
+    	stickyDate = $(this).data("stickyDate");
         if ( !e.date && stickyDate ) {
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
@@ -74,7 +75,7 @@ $(function(){
         
     // Bind leave type field 
     $("#lt").change(function() {
-    	var selectedLT = $( "#lt option:selected" ).val();
+    	let selectedLT = $( "#lt option:selected" ).val();
     	if (selectedLT != "") {
     		$.ajax({
     			url: "/leavepolicy/getdaytype/" + selectedLT,
@@ -105,7 +106,7 @@ $(function(){
     
 	// Bind date type field 
 	$(document).on('change', '#dt', function(e) {
-		var seldatetype = this.options[this.selectedIndex].value;
+		let seldatetype = this.options[this.selectedIndex].value;
 		if (seldatetype=="1st half" || seldatetype=="2nd half") {
 			$("#tdat").attr("disabled", "disabled");
 			$("#tdat").val($("#fdat").val());
@@ -119,11 +120,8 @@ $(function(){
 	// Binder on supporting document field
 	$(document).on('change', '#file', function(e) {
 		
-		// Create a new FormData object for file upload.
-		var formfile = new FormData();
-		
-		// Get upload file
-		var file = e.target.files[0];
+		let formfile = new FormData(), // Create a new FormData object for file upload.
+			file = e.target.files[0]; // Get upload file
 		
 		// Add the file to the request.
 		formfile.append("file", file, file.name);
@@ -250,11 +248,11 @@ var Calendar = {
 
 function setApplyBtn(p_loader) {
 	
-	var selPerson = $("#pid").val();
-	var selLT = $("#lt").val();
-	var selDT = $("#dt").val();
-	var selFDat = $("#fdat").val();
-	var selTDat = $("#tdat").val();
+	let selPerson = $("#pid").val(), 
+	    selLT = $("#lt").val(), 
+	    selDT = $("#dt").val(), 
+	    selFDat = $("#fdat").val(), 
+	    selTDat = $("#tdat").val();
 	
 	if (selPerson=="" || selLT=="" || selDT=="" || selFDat=="" || selTDat=="") {
 		$("#btnApply").text("Apply for 0 day");

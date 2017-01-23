@@ -14,7 +14,7 @@ $(function(){
 	
 	// Bind add keyword's value button
 	$(document).on('click', '#addValue', function(e) {
-		var template = $('.value_template');
+		const template = $('.value_template');
 		template.before('<div class="twipsies well value">' + template.html() + '</div>');
 		renumber();
 	})

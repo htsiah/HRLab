@@ -40,9 +40,8 @@ $(function(){
 	});
 	
 	$( "#lt" ).change(function() {
-		var selectedLT = $( "#lt option:selected" ).text();
 		$.ajax({
-			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + selectedLT,
+			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + $( "#lt option:selected" ).text(),
 			contentType: "application/json; charset=utf-8",
 			beforeSend: function(){
 				loader.on();

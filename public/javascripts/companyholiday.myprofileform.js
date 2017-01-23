@@ -18,12 +18,13 @@ $(function(){
 	
     // Disable empty date field after selecting current date
     // http://stackoverflow.com/questions/24981072/bootstrap-datepicker-empties-field-after-selecting-current-date
-    $("#fdat, #tdat").on("show", function(e){
+	let stickyDate;
+	$("#fdat, #tdat").on("show", function(e){
     	$(this).data("stickyDate", e.date);
     });
 
     $("#tdat").on("hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
+        stickyDate = $(this).data("stickyDate");
         if ( !e.date && stickyDate ) {
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
@@ -31,7 +32,7 @@ $(function(){
     });
     
     $("#fdat").on("hide", function(e){
-        var stickyDate = $(this).data("stickyDate");
+        stickyDate = $(this).data("stickyDate");
         if ( !e.date && stickyDate ) {
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
@@ -59,10 +60,9 @@ $(function(){
 // Form submit function
 var handleSubmit = function() {
 	
-	var selectedOffices = "";
-	var count = $("input:checkbox.office").length;
+	let selectedOffices = "";
 	
-	for(var i=0; i<count; i++){
+	for(let i=0, count = $("input:checkbox.office").length; i<count; i++){
 		off=$("input:checkbox:checked#off" + i).val();
 		if (off!=undefined) {
 			if (selectedOffices=="") {
