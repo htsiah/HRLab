@@ -62,33 +62,41 @@ let CALENDAR = (function(){
 		
 		removeEvent: function(p_source){
 			switch (p_source) {
-				case "showCompanyHoliday" : Calendar.removeEvents(companyHolidaySource.url); break;
-				case "showEvent" : Calendar.removeEvents(eventSource.url); break;
-				case "showMyLeave" : Calendar.removeEvents(myLeaveSource.url); break;
-				case "showOtherLeave" : Calendar.removeEvents(otherLeaveSource.url); break;
-				case "showDeptLeave" : Calendar.removeEvents(deptLeaveSource.url); break;
+				case "showCompanyHoliday" : $('#calendar').fullCalendar('removeEventSource', companyHolidaySource.url); break;
+				case "showEvent" : $('#calendar').fullCalendar('removeEventSource', eventSource.url); break;
+				case "showMyLeave" : $('#calendar').fullCalendar('removeEventSource', myLeaveSource.url); break;
+				case "showOtherLeave" : $('#calendar').fullCalendar('removeEventSource', otherLeaveSource.url); break;
+				case "showDeptLeave" : $('#calendar').fullCalendar('removeEventSource', deptLeaveSource.url); break;
 			};			
 		},
 		
-		showCompanyHoliday: function(p_link=true, p_page=""){
+		showCompanyHoliday: function(p_link, p_page){
+			p_link = p_link || true;
+			p_page = p_page || "";
 			companyHolidaySource.url = p_link ? "/companyholiday/getcompanyholiday/y" : "/companyholiday/getcompanyholiday/n";
 			companyHolidaySource.url += p_page==="" ? "" : "?p_page=" + p_page;
 			$('#calendar').fullCalendar('addEventSource', companyHolidaySource);
 		},
 		
-		showEvent: function(p_link=true, p_page=""){
+		showEvent: function(p_link, p_page){
+			p_link = p_link || true;
+			p_page = p_page || "";
 			eventSource.url = p_link ? "/event/getevent/y" : "/event/getevent/n";
 			eventSource.url += p_page==="" ? "" : "?p_page=" + p_page;
 			$('#calendar').fullCalendar('addEventSource', eventSource);
 		},
 		
-		showMyLeave: function(p_link=true, p_page=""){
+		showMyLeave: function(p_link, p_page){
+			p_link = p_link || true;
+			p_page = p_page || "";
 			myLeaveSource.url = p_link ? "/leave/getapprovedleave/my/y" : "/leave/getapprovedleave/my/n";
 			myLeaveSource.url += p_page==="" ? "" : "?p_page=" + p_page;
 			$('#calendar').fullCalendar('addEventSource', myLeaveSource);
 		},
 		
-		showOtherLeave: function(p_link=true, p_page=""){
+		showOtherLeave: function(p_link, p_page){
+			p_link = p_link || true;
+			p_page = p_page || "";
 			otherLeaveSource.url = p_link ? "/leave/getapprovedleave/allexceptmy/y" : "/leave/getapprovedleave/allexceptmy/n";
 			otherLeaveSource.url += p_page==="" ? "" : "?p_page=" + p_page;
 			$('#calendar').fullCalendar('addEventSource', otherLeaveSource);
