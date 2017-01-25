@@ -29,7 +29,7 @@ $(function(){
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
         };
-        setApplyBtn(true);
+        setApplyBtn();
     });
     
     $("#fdat").on("hide", function(e){
@@ -41,7 +41,7 @@ $(function(){
     		$("#tdat").datepicker("setStartDate", $(this).val());
     		$("#tdat").datepicker("update", $(this).val());
         };
-        setApplyBtn(true);
+        setApplyBtn();
     });
     
     // Setup input file field
@@ -75,34 +75,26 @@ $(function(){
     // Bind Applicant field 
     $(document).on('change', '#pid', function(e) {
     	let selperson = this.options[this.selectedIndex].value;
-    	if (selperson == "") {
-			$('#lt option').remove();
-			$('#lt').append( new Option("Please select","") );
-    		$("#dt").removeAttr("disabled");
-    	} else {
+		$('#lt option').remove();
+		$('#lt').append( new Option("Please select","") );
+		$("#lt").val("");
+		$("#dt").removeAttr("disabled");
+    	if (selperson !== "") {
     		$.ajax({
     			url: "/leaveprofile/getleaveprofile/" + selperson,
     			dataType: "json",
-    			beforeSend: function(){
-    				loader.on();
-    			},
     			success: function(data){
-    				$('#lt option').remove();
-    				$('#lt').append( new Option("Please select","") );
     				$.each(data, function(key, val) {
     					$('#lt').append( new Option(val,key) );
     				});
-    				$("#dt").removeAttr("disabled");
-    				loader.off();
     			},
     			error: function(xhr, status, error){
-    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.")
-    				loader.off();
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
     			}
     			
     		})
     	};
-    	setApplyBtn(true);
+    	setApplyBtn();
     })
 
     // Bind leave type field 
@@ -112,9 +104,6 @@ $(function(){
     		$.ajax({
     			url: "/leavepolicy/getdaytype/" + selectedLT,
     			dataType: "json",
-    			beforeSend: function(){
-    				loader.on();
-    			},
     			success: function(data){
     				if (data.daytype == "Full day only") {
     					$("#dt").attr("disabled", "disabled");
@@ -123,16 +112,14 @@ $(function(){
     				} else {
     					$("#dt").removeAttr("disabled");
     				}
-    				setApplyBtn(false);
-    				loader.off();
+    				setApplyBtn();
     			},
     			error: function(xhr, status, error){
     				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
-    				loader.off();
     			},
     		});	
     	} else {
-    		setApplyBtn(true);
+    		setApplyBtn();
     	};
     });
     
@@ -145,7 +132,7 @@ $(function(){
 		} else {
 			$("#tdat").removeAttr("disabled");
 		}
-		setApplyBtn(true);
+		setApplyBtn();
 	});
 	
 	// Binder on supporting document field
@@ -204,7 +191,7 @@ $(function(){
 	
 });
 
-function setApplyBtn(p_loader) {
+function setApplyBtn() {
 	
 	let selPerson = $("#pid").val(),
 		selLT = $("#lt").val(),
@@ -216,13 +203,9 @@ function setApplyBtn(p_loader) {
 		$("#btnApply").text("Apply for 0 day");
 		$("#btnApply").attr("disabled", "disabled");
 	} else {
-		
 		$.ajax({
 			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat + "?p_cevent=false",
 			dataType: "json",
-			beforeSend: function(){
-				if (p_loader) { loader.on() };
-			},
 			success: function(data){
 				if (data.msg == "overlap") {
 					$("#btnApply").html("Conflict with other leave application <br /> Please select to other date");
@@ -236,12 +219,10 @@ function setApplyBtn(p_loader) {
 				} else {
 					$("#btnApply").html("Apply for " + data.a + " day(s) <br />" + data.b + " day(s) remaining balance");
 					$("#btnApply").removeAttr("disabled");
-				}
-				if (p_loader) { loader.off() };
+				};
 			},
 			error: function(xhr, status, error){
 				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
-				if (p_loader) { loader.off() };
 			}
 		});	
 

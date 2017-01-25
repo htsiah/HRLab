@@ -29,7 +29,7 @@ $(function(){
         	$(this).datepicker("setDate", stickyDate);
             $(this).data("stickyDate", null);
         }
-        setApplyBtn(true);
+        setApplyBtn();
     });
     
     $("#fdat").on("hide", function(e){
@@ -41,7 +41,7 @@ $(function(){
     		$("#tdat").datepicker("setStartDate", $(this).val());
     		$("#tdat").datepicker("update", $(this).val());
         }
-        setApplyBtn(true);
+        setApplyBtn();
     });
     
     
@@ -80,9 +80,6 @@ $(function(){
     		$.ajax({
     			url: "/leavepolicy/getdaytype/" + selectedLT,
     			dataType: "json",
-    			beforeSend: function(){
-    				loader.on();
-    			},
     			success: function(data){
     				if (data.daytype == "Full day only") {
     					$("#dt").attr("disabled", "disabled");
@@ -91,16 +88,14 @@ $(function(){
     				} else {
     					$("#dt").removeAttr("disabled");
     				}
-    				setApplyBtn(false);
-    				loader.off();
+    				setApplyBtn();
     			},
     			error: function(xhr, status, error){
     				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
-    				loader.off();
     			},
     		});	
     	} else {
-    		setApplyBtn(true);
+    		setApplyBtn();
     	};
     });
     
@@ -114,7 +109,7 @@ $(function(){
 		} else {
 			$("#tdat").removeAttr("disabled");
 		}
-		setApplyBtn(true);
+		setApplyBtn();
 	});
 	
 	// Binder on supporting document field
@@ -174,7 +169,7 @@ $(function(){
 	
 });
 
-function setApplyBtn(p_loader) {
+function setApplyBtn() {
 	
 	let selPerson = $("#pid").val(), 
 	    selLT = $("#lt").val(), 
@@ -190,9 +185,6 @@ function setApplyBtn(p_loader) {
 		$.ajax({
 			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat,
 			dataType: "json",
-			beforeSend: function(){
-				if (p_loader) { loader.on() };
-			},
 			success: function(data){
 				if (data.msg == "overlap") {
 					$("#btnApply").html("Conflict with other leave application <br /> Please select to other date");
@@ -209,12 +201,10 @@ function setApplyBtn(p_loader) {
 				} else {
 					$("#btnApply").html("Apply for " + data.a + " day(s) <br />" + data.b + " day(s) remaining balance");
 					$("#btnApply").removeAttr("disabled");
-				}
-				if (p_loader) { loader.off() };
+				};
 			},
 			error: function(xhr, status, error){
 				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
-				if (p_loader) { loader.off() };
 			}
 		});	
 
@@ -228,9 +218,6 @@ var handleSubmit = function() {
 	$.ajax({
 		url: "/leavepolicy/getsupportingdocument/" + $( "#lt option:selected" ).val(),
 		dataType: "json",
-		beforeSend: function(){
-			loader.on();
-		},
 		success: function(data){
 			if (data.supportingdocument == false) {
 				$("#dt").removeAttr("disabled");
@@ -247,12 +234,10 @@ var handleSubmit = function() {
 				 	$("#tdat").removeAttr("disabled");
 					$('#leaveform').submit();
 				}
-			}
-			loader.off();
+			};
 		},
 		error: function(xhr, status, error){
 			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
-			loader.off();
 		},
 	});	
 	
