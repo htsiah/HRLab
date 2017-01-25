@@ -196,85 +196,13 @@ $(function(){
 	});
 	
 	// Show calendar
-	Calendar.initCalendar();
-	Calendar.showCompanyHoliday();
-	Calendar.showMyLeave();
-	Calendar.showOtherLeave();
+	CALENDAR.initCalendar();
+	CALENDAR.showCompanyHoliday(false);
+	CALENDAR.showEvent(false);
+	CALENDAR.showMyLeave(false);
+	CALENDAR.showOtherLeave(false);
 	
 });
-
-var Calendar = {
-	companyholidaysource:{
-		url: '/companyholiday/getcompanyholiday/n',
-		type: 'GET',
-		cache: false,
-		error: function() {
-			alert('There was an error while fetching company holiday!');
-		},
-		className: 'label-success'
-	},
-	
-	eventsource:{
-		url: '/event/getevent/n',
-		type: 'GET',
-		cache: false,
-		error: function() {
-			alert('There was an error while fetching event!');
-		},
-		className: 'label-success'
-	},
-			
-	myapprovedleavessource:{
-		url: '/leave/getapprovedleave/my/n',
-		type: 'GET',
-		cache: false,
-		error: function() {
-			alert('There was an error while fetching your leave!');
-		},
-		color: 'blue',   // a non-ajax option
-		textColor: 'white' // a non-ajax option
-	},
-			
-	otherapprovedleavessource:{
-		url: '/leave/getapprovedleave/allexceptmy/n',
-		type: 'GET',
-		cache: false,
-		error: function() {
-			alert('There was an error while fetching your leave!');
-		},
-		color: 'blue',   // a non-ajax option
-		textColor: 'white' // a non-ajax option
-	},
-			
-	initCalendar:function(){
-		var date = new Date();
-		var d = date.getDate();
-		var m = date.getMonth();
-		var y = date.getFullYear();
-		$('#calendar').fullCalendar({
-		     eventRender: function(event, element) {
-		    	 $(element).tooltip({title: event.tip});
-		     }
-		});	
-	},
-
-	removeEvents:function(p_source){
-		$('#calendar').fullCalendar( 'removeEventSource', p_source )
-	},
-
-	showCompanyHoliday:function(){
-		$('#calendar').fullCalendar('addEventSource',this.companyholidaysource);
-	},
-			
-	showMyLeave:function(){
-		$('#calendar').fullCalendar('addEventSource',this.myapprovedleavessource);
-		$('#calendar').fullCalendar('addEventSource',this.eventsource);
-	},
-		
-	showOtherLeave:function(){
-		$('#calendar').fullCalendar('addEventSource',this.otherapprovedleavessource);
-	}
-};
 
 function setApplyBtn(p_loader) {
 	
