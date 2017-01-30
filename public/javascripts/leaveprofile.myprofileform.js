@@ -41,7 +41,7 @@ $(function(){
 	
 	$( "#lt" ).change(function() {
 		$.ajax({
-			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + $( "#lt option:selected" ).text(),
+			url: "/leaveprofile/getvaluesonleavetypechangejson/" + p_pid + "/" + encodeURIComponent($( "#lt option:selected" ).text()),
 			contentType: "application/json; charset=utf-8",
 			beforeSend: function(){
 				loader.on();

@@ -1,16 +1,12 @@
 package models
 
 import scala.concurrent.Await
-
 import play.api.Logger
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
 import reactivemongo.api._
 import reactivemongo.bson._
-
 import utilities.{System,SystemDataStore,Tools,DbConnUtility}
-
 import scala.util.{Success, Failure}
 import scala.collection.mutable.ArrayBuffer
 import org.joda.time.DateTime

@@ -78,7 +78,7 @@ $(function(){
     	let selectedLT = $( "#lt option:selected" ).val();
     	if (selectedLT != "") {
     		$.ajax({
-    			url: "/leavepolicy/getdaytype/" + selectedLT,
+    			url: "/leavepolicy/getdaytype/" + encodeURIComponent(selectedLT),
     			dataType: "json",
     			success: function(data){
     				if (data.daytype == "Full day only") {
@@ -176,14 +176,14 @@ function setApplyBtn() {
 	    selDT = $("#dt").val(), 
 	    selFDat = $("#fdat").val(), 
 	    selTDat = $("#tdat").val();
-	
+		
 	if (selPerson=="" || selLT=="" || selDT=="" || selFDat=="" || selTDat=="") {
 		$("#btnApply").text("Apply for 0 day");
 		$("#btnApply").attr("disabled", "disabled");
 	} else {
 		
 		$.ajax({
-			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat,
+			url: "/leave/getapplyday/" + selPerson + "/" + encodeURIComponent(selLT) + "/" + selDT + "/" + selFDat + "/" + selTDat,
 			dataType: "json",
 			success: function(data){
 				if (data.msg == "overlap") {
@@ -216,7 +216,7 @@ var handleSubmit = function() {
 	
 	// Check on mandatory upload supporting document
 	$.ajax({
-		url: "/leavepolicy/getsupportingdocument/" + $( "#lt option:selected" ).val(),
+		url: "/leavepolicy/getsupportingdocument/" + encodeURIComponent($( "#lt option:selected" ).val()),
 		dataType: "json",
 		success: function(data){
 			if (data.supportingdocument == false) {

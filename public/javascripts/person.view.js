@@ -17,7 +17,7 @@ function onDeleteLeaveProfile(p_id, p_lt, p_pid) {
 				html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Delete",
 				"class" : "btn btn-danger btn-mini",
 				click: function() {
-					window.location = "/leaveprofile/delete/" + p_id + "/" + p_lt + "/" + p_pid;
+					window.location = "/leaveprofile/delete/" + p_id + "/" + encodeURIComponent(p_lt) + "/" + p_pid;
 				}
 			},
 			{

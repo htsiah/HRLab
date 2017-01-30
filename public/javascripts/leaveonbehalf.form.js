@@ -102,7 +102,7 @@ $(function(){
     	let selectedLT = $( "#lt option:selected" ).val();
     	if (selectedLT != "") {
     		$.ajax({
-    			url: "/leavepolicy/getdaytype/" + selectedLT,
+    			url: "/leavepolicy/getdaytype/" + encodeURIComponent(selectedLT),
     			dataType: "json",
     			success: function(data){
     				if (data.daytype == "Full day only") {
@@ -204,7 +204,7 @@ function setApplyBtn() {
 		$("#btnApply").attr("disabled", "disabled");
 	} else {
 		$.ajax({
-			url: "/leave/getapplyday/" + selPerson + "/" + selLT + "/" + selDT + "/" + selFDat + "/" + selTDat + "?p_cevent=false",
+			url: "/leave/getapplyday/" + selPerson + "/" + encodeURIComponent(selLT) + "/" + selDT + "/" + selFDat + "/" + selTDat + "?p_cevent=false",
 			dataType: "json",
 			success: function(data){
 				if (data.msg == "overlap") {
