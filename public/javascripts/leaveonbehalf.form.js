@@ -77,8 +77,6 @@ $(function(){
     	let selperson = this.options[this.selectedIndex].value;
 		$('#lt option').remove();
 		$('#lt').append( new Option("Please select","") );
-		$("#lt").val("");
-		$("#dt").removeAttr("disabled");
     	if (selperson !== "") {
     		$.ajax({
     			url: "/leaveprofile/getleaveprofile/" + selperson,
@@ -94,6 +92,8 @@ $(function(){
     			
     		})
     	};
+		$("#lt").val("");
+    	$("#dt").removeAttr("disabled");
     	setApplyBtn();
     })
 
