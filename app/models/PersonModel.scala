@@ -374,14 +374,7 @@ object PersonModel {
                 LeaveModel.update(BSONDocument("_id" -> leave._id), leave.copy(pn=pn, wf=leave.wf.copy(aprn=aprn, aprbyn=aprbyn, rjtbyn=rjtbyn, cclbyn=cclbyn)), p_request)
               } }  
             }
-            
-            // Update leave profiles - recalculate leave entitlement
-            LeaveProfileModel.find(BSONDocument("pid" -> p_doc._id.stringify), p_request).map { leaveprofiles =>
-              leaveprofiles.foreach { leaveprofile => {
-                LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile.copy(pn=p_doc.p.fn + " " + p_doc.p.ln), p_request)
-              } }
-            }
-          
+                      
             // Update event
             EventModel.find(BSONDocument("lrr"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { events => {
               events.foreach { event => {
@@ -389,6 +382,14 @@ object PersonModel {
                 EventModel.update(BSONDocument("_id" -> event._id), event.copy(lrr=lrr), p_request)
               } }
             } } 
+            
+          }
+          
+          // Update leave profiles - recalculate leave entitlement
+          LeaveProfileModel.find(BSONDocument("pid" -> p_doc._id.stringify), p_request).map { leaveprofiles =>
+            leaveprofiles.foreach { leaveprofile => {
+              LeaveProfileModel.update(BSONDocument("_id" -> leaveprofile._id), leaveprofile.copy(pn=p_doc.p.fn + " " + p_doc.p.ln), p_request)
+            } }
           }
           
         }
