@@ -756,7 +756,8 @@ object LeaveProfileModel {
   
   def getEligibleCarryForwordEarn(p_leaveprofile:LeaveProfile, p_servicemonth:Int) = {
     val eligblecarryforword = this.getEligibleCarryForword(p_leaveprofile, p_servicemonth)
-    if (p_leaveprofile.cal.cbal > eligblecarryforword) eligblecarryforword else p_leaveprofile.cal.cbal
+    val carryforward = if (p_leaveprofile.cal.cbal > 0) p_leaveprofile.cal.cbal else 0
+    if (carryforward > eligblecarryforword) eligblecarryforword else carryforward
   }
   
   // Get total leave earn from previous cut off date or employee start date until cut off date.
