@@ -4,7 +4,8 @@ import scala.concurrent.{Future, Await}
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import java.time.LocalTime;
+import org.joda.time.DateTime
+import reactivemongo.bson._
 
 import play.api.mvc._
 import play.api.data._
@@ -189,7 +190,7 @@ class EventController extends Controller with Secured {
   
   def myprofileview(p_id:String) = withAuth { username => implicit request => {
     for { 
-       maybe_event <- EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+       maybe_event <- {EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)}
      } yield {
        maybe_event.map( event  => {
          val selectedLRR = event.lrr.map { lrr => lrr.split("@|@").head }
@@ -197,10 +198,16 @@ class EventController extends Controller with Secured {
        }).getOrElse(NotFound)
      }
   }}
-  
-  def getEvent(p_withLink:String, p_page:String) = withAuth { username => implicit request => {
+    
+  def getEvent(p_withLink:String, p_page:String, p_sdat:String, p_edat:String) = withAuth { username => implicit request => {
     for {
-      events <- EventModel.find(BSONDocument(), request)
+      events <- {
+       if (p_sdat!="" || p_edat!="") {
+         EventModel.find(BSONDocument("fdat"->BSONDocument("$lte"->BSONDateTime(new DateTime(p_edat).getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(new DateTime(p_sdat).getMillis()))), request)
+       } else {
+         EventModel.find(BSONDocument(), request)
+       } 
+      }
     } yield {
       render {
         case Accepts.Html() => {Ok(views.html.error.unauthorized())}
