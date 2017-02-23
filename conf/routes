@@ -54,7 +54,7 @@ GET		/companyholiday/view/:p_id							controllers.CompanyHolidayController.view(
 GET		/companyholiday/myprofile/view/:p_id				controllers.CompanyHolidayController.myprofileview(p_id:String)
 GET		/companyholiday/myprofile/edit						controllers.CompanyHolidayController.myprofileedit(p_id:String)
 POST	/companyholiday/myprofile/update					controllers.CompanyHolidayController.myprofileupdate(p_id:String)
-GET		/companyholiday/getcompanyholiday/:p_withlink		controllers.CompanyHolidayController.getCompanyHoliday(p_withlink, p_page:String?="")
+GET		/companyholiday/getcompanyholiday/:p_withlink		controllers.CompanyHolidayController.getCompanyHoliday(p_withlink, p_page:String?="", start:String?="", end:String?="")
 
 # Leave
 GET		/leave/create											controllers.LeaveController.create

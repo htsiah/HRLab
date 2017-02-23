@@ -15,7 +15,7 @@ import models.{CompanyHolidayModel, AuditLogModel, OfficeModel, CompanyHoliday}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
-import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONDateTime}
 
 class CompanyHolidayController extends Controller with Secured {
   
@@ -186,9 +186,15 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
    
-  def getCompanyHoliday(p_withLink:String, p_page:String) = withAuth { username => implicit request => {
+  def getCompanyHoliday(p_withLink:String, p_page:String, p_sdat:String, p_edat:String) = withAuth { username => implicit request => {
     for {
-      companyholidays <- CompanyHolidayModel.find(BSONDocument(), request)
+      companyholidays <- {
+        if (p_sdat!="" || p_edat!="") {
+          CompanyHolidayModel.find(BSONDocument("fdat"->BSONDocument("$lte"->BSONDateTime(new DateTime(p_edat).getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(new DateTime(p_sdat).getMillis()))), request)
+        } else {
+          CompanyHolidayModel.find(BSONDocument(), request)
+        }
+      }
     } yield {
       render {
         case Accepts.Html() => {Ok(views.html.error.unauthorized())}

@@ -5,7 +5,6 @@ import scala.concurrent.{Future, Await}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.DateTime
-import reactivemongo.bson._
 
 import play.api.mvc._
 import play.api.data._
@@ -17,7 +16,7 @@ import models.{EventModel, Event, PersonModel, OfficeModel, CompanyHolidayModel,
 import utilities.{System, Tools}
 
 import reactivemongo.api._
-import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONDateTime}
 
 class EventController extends Controller with Secured {
   
