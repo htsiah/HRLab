@@ -13,7 +13,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, CompanyHolidayModel, LeavePolicyModel, OfficeModel, TaskModel, LeaveFileModel, LeaveSettingModel, AuditLogModel, EventModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
-import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONDateTime}
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -683,11 +683,17 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
   // p_type: my  [department name]
   // p_withLink: y/y  [include url link]
   // p_page: [which calendar page]
-  def getApprovedLeave(p_type:String, p_withLink:String, p_page:String) = withAuth { username => implicit request => {
+  def getApprovedLeave(p_type:String, p_withLink:String, p_page:String, p_sdat:String, p_edat:String) = withAuth { username => implicit request => {
     val fmt = ISODateTimeFormat.date()
     if (p_type=="my") {
       for {
-        leaves <- LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
+        leaves <- {
+          if (p_sdat!="" || p_edat!="") {
+            LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(new DateTime(p_edat).getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(new DateTime(p_sdat).getMillis()))), request)
+          } else {
+            LeaveModel.find(BSONDocument("pid"->request.session.get("id").get, "wf.s"->"Approved"), request)
+          }          
+        }
       } yield {
         render {
           case Accepts.Html() => Ok(views.html.error.unauthorized())
@@ -708,7 +714,13 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
       }
     } else if (p_type=="allexceptmy") {
       for {
-        leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$ne" -> request.session.get("id").get), "wf.s"->"Approved"), request)
+        leaves <- {
+          if (p_sdat!="" || p_edat!="") {
+            LeaveModel.find(BSONDocument("pid"->BSONDocument("$ne" -> request.session.get("id").get), "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(new DateTime(p_edat).getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(new DateTime(p_sdat).getMillis()))), request)
+          } else {
+            LeaveModel.find(BSONDocument("pid"->BSONDocument("$ne" -> request.session.get("id").get), "wf.s"->"Approved"), request)
+          }
+        }
       } yield {
         render {
           case Accepts.Html() => Ok(views.html.error.unauthorized())
@@ -739,7 +751,11 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
           case Accepts.Html() => Ok(views.html.error.unauthorized())
           case Accepts.Json() => {
             val personList = persons.map ( person => person._id.stringify)
-            val leaves = Await.result(LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->personList), "wf.s"->"Approved"), request), Tools.db_timeout)
+            val leaves = if (p_sdat!="" || p_edat!="") {
+              Await.result(LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->personList), "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(new DateTime(p_edat).getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(new DateTime(p_sdat).getMillis()))), request), Tools.db_timeout)
+            } else {
+              Await.result(LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->personList), "wf.s"->"Approved"), request), Tools.db_timeout)
+            }
             val leaveJSONList = leaves.zipWithIndex.map { case (leave, c) => {
               val maybe_leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt"->leave.lt), request), Tools.db_timeout)
               val leavepolicy = maybe_leavepolicy.getOrElse(LeavePolicyModel.doc)
