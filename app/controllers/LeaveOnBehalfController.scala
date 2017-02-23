@@ -159,10 +159,38 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
               LeaveProfileModel.update(BSONDocument("_id" -> maybeleaveprofile.get._id), leaveprofile_update, request)
               
               // Send Email
+              val manager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.mgrid))), Tools.db_timeout)
               val reason = if (leave_update.r == "") {"."} else { " with reason '" + leave_update.r + "'."}
-              if (!maybeperson.get.p.nem) {
+              val replaceMap = Map(
+                  "BY"->request.session.get("name").get, 
+                  "APPLICANT"->leave_update.pn, 
+                  "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
+                  "LEAVETYPE"->leave_update.lt, 
+                  "DOCNUM"->leave_update.docnum.toString(), 
+                  "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify),
+                  "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                  "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
+                  "REASON"-> reason,
+                  "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
+                  "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
+              )
+              if (maybeperson.get.p.nem) {
+                val recipients = if ( maybeperson.get.p.smgrid != "" ) { 
+                  val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.smgrid))), Tools.db_timeout) 
+                  List(manager.get.p.em, smanager.get.p.em).filter { email => email != request.session.get("username").get }
+                } else { 
+                  List(manager.get.p.em).filter { email => email != request.session.get("username").get }
+                }
+                                
+                if (!recipients.isEmpty) {
+                  if (leave_update.fdat.get == leave_update.tdat.get) {
+                    MailUtility.getEmailConfig(recipients, 21, replaceMap).map { email => mailerClient.send(email) }
+                  } else {
+                    MailUtility.getEmailConfig(recipients, 22, replaceMap).map { email => mailerClient.send(email) }
+                  }
+                }
+              } else {
                 val recipients = List(maybeperson.get.p.em)
-                val manager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.mgrid))), Tools.db_timeout)
                 val cc = if ( maybeperson.get.p.smgrid != "" ) { 
                   val smanager = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(maybeperson.get.p.smgrid))), Tools.db_timeout) 
                   List(manager.get.p.em, smanager.get.p.em)
@@ -170,19 +198,6 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
                   List(manager.get.p.em)
                 }
                                 
-                val replaceMap = Map(
-                    "BY"->request.session.get("name").get, 
-                    "APPLICANT"->leave_update.pn, 
-                    "NUMBER"->(leave_update.uti + leave_update.cfuti).toString(), 
-                    "LEAVETYPE"->leave_update.lt, 
-                    "DOCNUM"->leave_update.docnum.toString(), 
-                    "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify),
-                    "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-                    "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-                    "REASON"-> reason,
-                    "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
-                    "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
-                )
                 if (leave_update.fdat.get == leave_update.tdat.get) {
                   MailUtility.getEmailConfig(recipients, cc.filter { email => email != request.session.get("username").get }, 14, replaceMap).map { email => mailerClient.send(email) }
                 } else {
