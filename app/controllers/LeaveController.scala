@@ -805,8 +805,8 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
            } else {
              maybe_leavepolicy.map( leavepolicy => {
                val appliedduration = LeaveModel.getAppliedDuration(leave_doc, maybe_leavepolicy.get, maybe_person.get, request)
-               val leavebalance = if (maybe_leavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybe_leaveprofile.get.cal.bal } else { maybe_leaveprofile.get.cal.cbal }             
-               val json = Json.obj("a" -> appliedduration.toString(), "b" -> (leavebalance - appliedduration).toString(), "msg" -> "")
+               val leavebalance = if (maybe_leavepolicy.get.set.acc == "Monthly - utilisation based on earned") { maybe_leaveprofile.get.cal.bal } else { maybe_leaveprofile.get.cal.cbal }
+               val json = Json.obj("a" -> appliedduration.toString(), "b" -> (BigDecimal(leavebalance - appliedduration).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble).toString(), "msg" -> "")
                Ok(json).as("application/json")
              }).getOrElse({        
                val json = Json.obj("daytype" -> "error")

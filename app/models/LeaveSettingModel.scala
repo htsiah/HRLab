@@ -127,7 +127,7 @@ object LeaveSettingModel {
       case Success(lastError) => {}
     }
   }
-  
+    
   // Soft deletion by setting deletion flag in document
   def remove(p_query:BSONDocument, p_request:RequestHeader) = {
     for {
