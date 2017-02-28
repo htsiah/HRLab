@@ -10,7 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import play.modules.reactivemongo.json._
 
-import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, LeavePolicyModel, OfficeModel, LeaveFileModel, AuditLogModel}
+import models.{LeaveModel, Leave, Workflow, LeaveProfileModel, PersonModel, LeavePolicyModel, OfficeModel, LeaveFileModel, AuditLogModel, LeaveSettingModel}
 import utilities.{AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.api._
@@ -50,6 +50,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
     if(request.session.get("roles").get.contains("Admin")){
       for {
         persons <- PersonModel.find(BSONDocument(), request) 
+        maybeleavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
       } yield {
         val docnum = DocNumUtility.getNumberText("leave", request.session.get("entity").get)
         val filledForm = leaveonbehalfform.fill(LeaveOnBehalf(
@@ -61,7 +62,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
           Some(new DateTime()),
           ""
         ))
-        Ok(views.html.leaveonbehalf.form(filledForm, persons, Map()))
+        Ok(views.html.leaveonbehalf.form(filledForm, persons, Map(), maybeleavesetting.get.freq, LeaveSettingModel.getCutOffDate(maybeleavesetting.get.cfm).minusDays(1)))
       }  
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -76,8 +77,9 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
           for {
             persons <- PersonModel.find(BSONDocument(), request) 
             leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
+            maybeleavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
           } yield{
-            Ok(views.html.leaveonbehalf.form(formWithError, persons, leavetypes))
+            Ok(views.html.leaveonbehalf.form(formWithError, persons, leavetypes, maybeleavesetting.get.freq, LeaveSettingModel.getCutOffDate(maybeleavesetting.get.cfm).minusDays(1)))
           }
         },
         formWithData => {
@@ -89,6 +91,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
             maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt" -> formWithData.lt), request)
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1017))
             maybefiles <- LeaveFileModel.findByLK(formWithData.docnum.toString(), request).collect[List]()
+            maybeleavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
           } yield {
             val leaveWithData = LeaveModel.doc.copy(
                 _id = BSONObjectID.generate,
@@ -121,7 +124,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
                   "DATE"-> (fmt.print(maybeperson.get.p.edat.get))
               )
               val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
-              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, filename.toString().replaceAll("\"", ""), alert=alert))
+              Ok(views.html.leaveonbehalf.form(leaveonbehalfform.fill(formWithData), persons, leavetypes, maybeleavesetting.get.freq, LeaveSettingModel.getCutOffDate(maybeleavesetting.get.cfm).minusDays(1), filename.toString().replaceAll("\"", ""), alert=alert))
             } else {
               
               val appliedduration = LeaveModel.getAppliedDuration(leaveWithData, maybeleavepolicy.get, maybeperson.get, request)              

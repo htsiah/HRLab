@@ -123,6 +123,33 @@ $(function(){
 		});
 	});
 	
+	// Future Leave Request
+	$("#future-request-pencil").click(function(){
+		$("#future-request-view").hide();
+		$("#future-request-edit").show();
+	});
+	
+	$("#future-request-times").click(function(){
+		$("#future-request-edit").hide();
+		$("#future-request-view").show();
+	});
+	
+	$("#future-request-check").click(function(){
+		$.ajax({
+			url: "/leavesetting/updatefuturerequest/" + $("#future-request-field").val(),
+			type: 'GET',
+			dataType: "json",
+			success: function(result){
+				$('#future-request-value').text($("#future-request-field").val());
+				$("#future-request-edit").hide();
+            	$("#future-request-view").show();
+            },
+            error: function(xhr, textStatus, errorThrown) {
+            	alert("Update future request failed!!!");
+			}
+		});
+	});
+	
 });
 
 function onDelete(p_id, p_lt) {

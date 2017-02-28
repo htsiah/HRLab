@@ -16,6 +16,12 @@ $(function(){
 	// To date can not earlier than From date
 	$("#tdat").datepicker("setStartDate", $("#fdat").val());
 	
+	// Future request date setting
+	if (!futurerequest) {
+		$("#fdat").datepicker("setEndDate", cutoffdate);
+		$("#tdat").datepicker("setEndDate", cutoffdate);
+	};
+	
     // Disable empty date field after selecting current date
     // http://stackoverflow.com/questions/24981072/bootstrap-datepicker-empties-field-after-selecting-current-date
 	let stickyDate;

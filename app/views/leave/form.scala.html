@@ -3,8 +3,9 @@
 @import utilities.Alert
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
+@import org.joda.time.DateTime
 
-@(leave:Form[Leave], leavetypes:Map[String, String], filename:String="", alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(leave:Form[Leave], leavetypes:Map[String, String], futurerequest: Boolean, cutoffdate:DateTime, filename:String="", alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pluginjs = {
 	<script src="@routes.Assets.at("layout/ace/js/spin.min.js")" type="text/javascript"></script>
@@ -15,6 +16,10 @@
 }
 
 @inlinejs = {
+	<script>
+		const futurerequest = @futurerequest;
+		const cutoffdate = "@cutoffdate.dayOfMonth().getAsText - @cutoffdate.monthOfYear().getAsShortText - @cutoffdate.getYear.toString())";
+	</script>
 	<script src="@routes.Assets.at("javascripts/common.calendar.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/leave.form.js")" type="text/javascript"></script>
 }

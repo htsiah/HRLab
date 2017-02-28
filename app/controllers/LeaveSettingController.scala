@@ -94,4 +94,30 @@ class LeaveSettingController extends Controller with Secured {
     }
   }}
   
+  def updateFutureRequest(p_futurerequest:String) = withAuth { username => implicit request => { 
+    if(request.session.get("roles").get.contains("Admin")){
+      for { 
+        maybe_leavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
+      } yield {
+        render {
+          case Accepts.Html() => Ok(views.html.error.unauthorized())
+          case Accepts.Json() => {
+            val leavesetting = maybe_leavesetting.get
+            LeaveSettingModel.update(
+               BSONDocument(), 
+               leavesetting.copy(
+                   _id=leavesetting._id,
+                   freq=if(p_futurerequest=="Allow future calendar year request") { true } else { false } 
+               ), 
+               request
+            )
+            Ok(Json.parse("""{"status":true}""")).as("application/json")
+          }
+        }
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
 }

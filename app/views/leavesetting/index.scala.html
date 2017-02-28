@@ -83,7 +83,7 @@
 		<dd>
 			<div id="approval-method-view">
 				<span id="approval-method-value">
-					@leavesetting.aprmthd
+					@leavesetting.aprmthd 
 				</span>
 				&nbsp;<a href="#" title="Edit"><i class="ace-icon blue fa fa-pencil bigger-120" id="approval-method-pencil"></i></a>
 			</div>
@@ -99,7 +99,31 @@
 			</div>
 		</dd>	
 	</dl>
-			
+
+	<dl class="dl-horizontal">
+		<dt><label>Future Request</label></dt>
+		<dd>
+			<div id="future-request-view">
+				<span id="future-request-value">
+					@leavesetting.freq match {
+						case true => { Allow future calendar year request  }
+						case false => { Not allow future calendar year request }
+						case _ => {}
+					}
+				</span>
+				&nbsp;<a href="#" title="Edit"><i class="ace-icon blue fa fa-pencil bigger-120" id="future-request-pencil"></i></a>
+			</div>
+			<div id="future-request-edit" style="display:none">
+				<select id="future-request-field">
+					<option value="Allow future calendar year request" @if(leavesetting.freq){ selected }>Allow future calendar year request</option>
+					<option value="Not allow future calendar year request" @if(!leavesetting.freq){ selected }>Not allow future calendar year request</option>
+				</select>
+				&nbsp;<a href="#" title="Update"><i class="ace-icon green fa fa-check bigger-120" id="future-request-check"></i></a>
+				&nbsp;<a href="#" title="Cancel"><i class="ace-icon red fa fa-times bigger-120" id="future-request-times"></i></a>
+			</div>
+		</dd>	
+	</dl>
+	
 	<div class="table-responsive">
     	<table id="leavepoliciestable" class="table table-striped table-bordered table-hover">
 			<thead>

@@ -226,8 +226,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
             ))
           }
         }
-                  
-	      Ok(views.html.leave.form(leave, leavetypes))
+	      Ok(views.html.leave.form(leave, leavetypes, maybeleavesetting.get.freq, LeaveSettingModel.getCutOffDate(maybeleavesetting.get.cfm).minusDays(1)))
       }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
 	  }
 	}}
@@ -237,8 +236,9 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	      formWithError => {
 	        for {
 	          leavetypes <- LeaveProfileModel.getLeaveTypesSelection(request.session.get("id").get, request)
+            maybeleavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
 	        } yield{
-	          Ok(views.html.leave.form(formWithError,leavetypes))
+	          Ok(views.html.leave.form(formWithError,leavetypes, maybeleavesetting.get.freq, LeaveSettingModel.getCutOffDate(maybeleavesetting.get.cfm).minusDays(1)))
 	        }
 	      },
 	      formWithData => {
@@ -249,6 +249,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
 	          maybeperson <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), request)
             maybealert_restrictebeforejoindate <- AlertUtility.findOne(BSONDocument("k"->1013))
             maybefiles <- LeaveFileModel.findByLK(formWithData.docnum.toString(), request).collect[List]()
+            maybeleavesetting <- LeaveSettingModel.findOne(BSONDocument(), request)
 	        } yield {
                         
             val filename = if ( maybefiles.isEmpty ) { "" } else { maybefiles.head.metadata.value.get("filename").getOrElse("") }
@@ -259,7 +260,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                   "DATE"-> (fmt.print(maybeperson.get.p.edat.get))
               )
               val alert = if ((maybealert_restrictebeforejoindate.getOrElse(null))!=null) { maybealert_restrictebeforejoindate.get.copy(m=Tools.replaceSubString(maybealert_restrictebeforejoindate.get.m, replaceMap.toList)) } else { null }
-              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, filename.toString().replaceAll("\"", ""), alert=alert))
+              Ok(views.html.leave.form(leaveform.fill(formWithData), leavetypes, maybeleavesetting.get.freq, LeaveSettingModel.getCutOffDate(maybeleavesetting.get.cfm).minusDays(1), filename.toString().replaceAll("\"", ""), alert=alert))
             } else {
 	            val appliedduration = LeaveModel.getAppliedDuration(formWithData, maybeleavepolicy.get, maybeperson.get, request)
               val carryforward_bal = maybeleaveprofile.get.cal.cf - maybeleaveprofile.get.cal.cfuti - maybeleaveprofile.get.cal.cfexp

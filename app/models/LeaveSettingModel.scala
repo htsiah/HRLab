@@ -17,6 +17,7 @@ case class LeaveSetting (
     cfm: Int,
     cflr: Option[DateTime],
     aprmthd: String,
+    freq: Boolean,
     sys: Option[System]
 )
 
@@ -44,6 +45,7 @@ object LeaveSettingModel {
           p_doc.getAs[Int]("cfm").get,
           p_doc.getAs[BSONDateTime]("cflr").map(dt => new DateTime(dt.value)),
           p_doc.getAs[String]("aprmthd").get,
+          p_doc.getAs[Boolean]("freq").getOrElse(false),
           p_doc.getAs[System]("sys").map(o => o)
       )
     }
@@ -71,6 +73,7 @@ object LeaveSettingModel {
           "cfm" -> p_doc.cfm,
           "cflr" -> p_doc.cflr.map(date => BSONDateTime(date.getMillis)),
           "aprmthd" -> p_doc.aprmthd,
+          "freq" -> p_doc.freq,
           "sys" -> p_doc.sys
       )     
     }
@@ -83,6 +86,7 @@ object LeaveSettingModel {
       cfm = 1,
       cflr = Some(new DateTime()),
       aprmthd = "Only manager is authorized to approve leave request",
+      freq = false,
       sys = None
   )
   
