@@ -10,6 +10,9 @@ $(function(){
 	    ]
 	});
 	
+	// Mouse over help
+	$('[data-rel=popover]').popover({container:'body'});
+	
 	// Leave cut off
 	$("#leave-cut-off-pencil").click(function(){
 		$("#leave-cut-off-view").hide();
