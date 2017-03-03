@@ -322,7 +322,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
                     "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
                     "REASON"-> reason,
                     "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
-                    "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
+                    "BALANCE" -> (BigDecimal(leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble).toString()
                 )
                     
                 if (leave_update.fdat.get == leave_update.tdat.get) {
@@ -577,7 +577,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
               "DOCNUM"->leave_update.docnum.toString(), 
               "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
               "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
-              "BALANCE" -> (leaveprofile_update.cal.cbal + leave_update.cfuti + leave_update.uti).toString(),
+              "BALANCE" -> ((BigDecimal(leaveprofile_update.cal.cbal + leave_update.cfuti + leave_update.uti)).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble).toString(),
               "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
         )
         if (leave_update.fdat.get == leave_update.tdat.get) {
@@ -650,7 +650,7 @@ class LeaveController @Inject() (mailerClient: MailerClient) extends Controller 
               "FROM"->(leave_update.fdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.fdat.get.toLocalDate().toString("MMM") + "-" + leave_update.fdat.get.toLocalDate().getYear + " (" + leave_update.fdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
               "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
               "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
-              "BALANCE" -> (maybeleaveprofile.get.cal.cbal + leave_update.cfuti + leave_update.uti).toString(),
+              "BALANCE" -> ((BigDecimal(maybeleaveprofile.get.cal.cbal + leave_update.cfuti + leave_update.uti)).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble).toString(),
               "DOCURL"->(Tools.hostname+"/leave/view/"+leave_update._id.stringify)
           )
           

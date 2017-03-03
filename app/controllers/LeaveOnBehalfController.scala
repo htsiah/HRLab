@@ -175,7 +175,7 @@ class LeaveOnBehalfController @Inject() (mailerClient: MailerClient) extends Con
                   "TO"->(leave_update.tdat.get.toLocalDate().getDayOfMonth + "-" + leave_update.tdat.get.toLocalDate().toString("MMM") + "-" + leave_update.tdat.get.toLocalDate().getYear + " (" + leave_update.tdat.get.toLocalDate().dayOfWeek().getAsText + ")"),
                   "REASON"-> reason,
                   "UTILIZED" -> (leave_update.cfuti + leave_update.uti).toString(),
-                  "BALANCE" -> (leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).toString()
+                  "BALANCE" -> (BigDecimal(leaveprofile_update.cal.cbal - (leave_update.cfuti + leave_update.uti)).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble).toString()
               )
               if (maybeperson.get.p.nem) {
                 val recipients = if ( maybeperson.get.p.smgrid != "" ) { 
