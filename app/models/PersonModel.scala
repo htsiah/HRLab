@@ -2,6 +2,7 @@ package models
 
 import play.api.Logger
 import play.api.mvc._
+import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import reactivemongo.api._
@@ -10,7 +11,6 @@ import reactivemongo.bson._
 import utilities.{System, SystemDataStore, Tools, DbConnUtility}
 
 import scala.concurrent.Await
-
 import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 import org.joda.time.Months
@@ -229,6 +229,16 @@ object PersonModel {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Person](ReadPreference.primary).collect[List]()
   }
 
+  // Find all documents with projection
+  def find(p_query:BSONDocument, p_projection:BSONDocument) = {
+    col.find(p_query, p_projection).cursor[BSONDocument](ReadPreference.primary).collect[List]()
+  }
+  
+  // Find all documents with projection using session
+  def find(p_query:BSONDocument, p_projection:BSONDocument, p_request:RequestHeader) = {
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_projection).cursor[BSONDocument](ReadPreference.primary).collect[List]()
+  }
+  
   // Find one document
   // Return the first found document
   def findOne(p_query:BSONDocument) = {
@@ -476,11 +486,20 @@ object PersonModel {
       case Success(lastError) => {}
     }
   }
+  	
+  def buildReporting(p_id:String, p_request:RequestHeader) : JsValue  = {
+    val person = Await.result(this.findOne(BSONDocument("_id"->BSONObjectID(p_id)), p_request), Tools.db_timeout).get
+    val reporting_persons = Await.result(this.find(BSONDocument("_id" -> BSONDocument("$ne" -> BSONObjectID(p_id)), "p.mgrid" -> p_id), p_request), Tools.db_timeout)
+    if (reporting_persons.isEmpty) {
+      Json.parse("{\"name\": \"" + person.p.fn + " " + person.p.ln + "\",\"title\": \"" + person.p.pt + "\"}")
+    } else {
+      val reporting_persons_json_list = reporting_persons.map { reporting_person => this.buildReporting(reporting_person._id.stringify, p_request) }
+      Json.obj("name" -> (person.p.fn + " " + person.p.ln), "title" -> person.p.pt, "children" -> Json.toJson(reporting_persons_json_list))
+    }
+  }
   
-  // Optional - Find all document with filter
-  // def find(p_query:BSONDocument,p_filter:BSONDocument) = {}
-	
-  // Optional - Find all document with filter and sorting
-  // def find(p_query:BSONDocument,p_filter:BSONDocument,p_sort:BSONDocument) = {}
+  
+  // Optional - Find all document with projection and sorting
+  // def find(p_query:BSONDocument,p_projection:BSONDocument,p_sort:BSONDocument) = {}
   
 }

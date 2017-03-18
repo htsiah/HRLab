@@ -168,6 +168,15 @@ GET		/event/myprofile/edit					controllers.EventController.myprofileedit(p_id:St
 POST	/event/myprofile/update					controllers.EventController.myprofileupdate(p_id:String)
 GET		/event/getevent/:p_withlink				controllers.EventController.getEvent(p_withlink, p_page:String?="", start:String?="", end:String?="")
 
+# Org Chart
+GET		/orgchart							controllers.OrgChartController.index
+GET		/orgchart/getchart					controllers.OrgChartController.getChart
+GET		/orgchart/getchartstructure/:p_id	controllers.OrgChartController.getchartstructure(p_id:String)
+
+# Org Chart
+GET		/orgchartsetting										controllers.OrgChartSettingController.index
+GET		/orgchartsetting/updateorgchartsetting/:p_toplevel		controllers.OrgChartSettingController.updateOrgChartSetting(p_toplevel:String, p_toplevelmanager:List[String]?=List())
+
 # Delete Application
 POST	/deleteapp/delete			controllers.DeleteAppController.delete
 GET		/deleteapp/success			controllers.DeleteAppController.success

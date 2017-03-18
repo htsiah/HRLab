@@ -1,0 +1,77 @@
+@import helper._
+@(orgchartsetting: OrgChartSetting, persons:List[String])(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Admin <small><i class="ace-icon fa fa-angle-double-right"></i> Org Chart Setting</small></h1>
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/jquery.chosen/chosen.jquery.min.js")"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/orgchartsetting.index.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link href="@routes.Assets.at("layout/jquery.chosen/chosen.modify.min.css")" rel="stylesheet" media="screen">
+}
+
+@inlinestyle = {}
+
+@personSelected = @{persons.filter{ person => orgchartsetting.tlm.contains(person.split("@|@").tail(1)) }.map{ person=> person.split("@|@").head } }
+
+@checkSelected(value: String, valueCheck: String) = {
+	@if(value == valueCheck){ selected }
+}
+
+@checkSelectedList(value: String, valuesCheck: List[String]) = {
+	@if(valuesCheck.contains(value)){ selected }
+}
+
+@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+
+	<div class="page-header">
+		<h1>Admin <small><i class="ace-icon fa fa-angle-double-right"></i> Org Chart Setting</small></h1>
+	</div>
+	
+	<dl class="dl-horizontal">
+		<dt><label>Top-Level</label></dt>
+		<dd>
+			<div id="top-level-view">
+				<span id="top-level-value">
+					@orgchartsetting.tl 
+				</span>
+				&nbsp;<a href="#" title="Edit"><i class="ace-icon blue fa fa-pencil bigger-120" id="top-level-pencil"></i></a>				
+			</div>
+			<div id="top-level-edit" style="display:none">
+				<select id="top-level-field">
+					<option value="Automatic - employee who report to himself will be at the top-level" @checkSelected(orgchartsetting.tl, "Automatic - employee who report to himself will be at the top-level")>Automatic - employee who report to himself will be at the top-level</option>
+					<option value="Manual - define top-level manually" @checkSelected(orgchartsetting.tl, "Manual - define top-level manually")>Manual - define top-level manually</option>
+				</select>
+				&nbsp;<a href="#" title="Update"><i class="ace-icon green fa fa-check bigger-120" id="top-level-check"></i></a>
+				&nbsp;<a href="#" title="Cancel"><i class="ace-icon red fa fa-times bigger-120" id="top-level-times"></i></a>
+			</div>
+		</dd>	
+	</dl>
+		
+	<dl class="dl-horizontal">
+		<dt><label>Top-Level Manager(s)</label></dt>
+		<dd>
+			<div id="top-level-manager-view">
+				<span id="top-level-manager-value">
+					@personSelected.sorted.mkString(", ")
+				</span>		
+			</div>
+			<div id="top-level-manager-edit" style="display:none">
+				<select id="top-level-manager-field" class="chosen-select tag-input-style form-control" multiple>
+					@persons.map { person=>
+						<option value='@person.split("@|@").tail(1)' @checkSelectedList(person.split("@|@").tail(1), orgchartsetting.tlm)>@person.split("@|@").head</option>
+					}
+				</select>
+			</div>
+		</dd>	
+	</dl>	
+}

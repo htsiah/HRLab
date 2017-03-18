@@ -1,0 +1,29 @@
+@()(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Org Chart</small></h1>
+	</div>
+}
+
+@pluginjs = {
+	<script src="@routes.Assets.at("layout/jquery.orgchart/jquery.orgchart.min.js")" type="text/javascript"></script>
+}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/orgchart.index.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {
+	<link rel="stylesheet" href="@routes.Assets.at("layout/jquery.orgchart/jquery.orgchart.min.css")" />
+}
+
+@inlinestyle = {}
+
+@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+
+	@pageheader
+
+	<div id="chart-container"></div>
+	
+}
