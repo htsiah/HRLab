@@ -24,7 +24,7 @@
 @inlinestyle = {}
 
 @buttons = {
-	@if(leave.wf.s=="Pending Approval" && session.get("id").get==leave.wf.aprid && !leave.ld) {
+	@if(leave.wf.s=="Pending Approval" && leave.wf.aprid.contains(session.get("id").get) && !leave.wf.aprbyid.contains(List(session.get("id").get)) && !leave.ld) {
 		<a href="@routes.LeaveController.approve(leave._id.stringify)" class="btn btn-sm btn btn-block">Approve</a>	
 		<a href="@routes.LeaveController.reject(leave._id.stringify)" class="btn btn-sm btn btn-block">Reject</a>
 	}

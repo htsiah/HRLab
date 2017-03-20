@@ -6,7 +6,8 @@ $(function(){
 	$('#persontable').dataTable({
 		"aoColumnDefs": [
 	    	{ "bSortable": false, "sClass":"text-center", "aTargets": [ 4 ] }
-	    ]
+	    ],
+	    paging: false
 	});
 });
 
