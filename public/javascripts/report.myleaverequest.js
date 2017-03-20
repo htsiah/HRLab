@@ -19,7 +19,7 @@ $(function(){
 			{name:'wf_aprn',index:'wf_aprn',width:130},
 			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
-	   	rowNum: 30,
+	   	rowNum: 100,
 	   	rowList: [],
 	   	loadonce: true,
 	   	pager: '#grid-pager',

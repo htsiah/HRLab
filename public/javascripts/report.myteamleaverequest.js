@@ -40,7 +40,7 @@ function setupJqGrid(data){
 			{name:'wf_aprn',index:'wf_aprn',width:130},
 			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
-	   	rowNum:30,
+	   	rowNum:100,
 	   	rowList:[],
 	   	loadonce: true,
 	   	pager: '#grid-pager',
@@ -58,7 +58,8 @@ function setupJqGrid(data){
    			groupColumnShow : [false],
    			groupText : ['<b>&nbsp{0} - {1} Leave Request(s)</b>'],
 			plusicon : 'fa fa-plus-square-o bigger-110',
-			minusicon : 'fa fa-minus-square-o bigger-110'
+			minusicon : 'fa fa-minus-square-o bigger-110',
+			groupCollapse : true
    		},
 	    caption:"",
 	    loadComplete : function() {

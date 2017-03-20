@@ -45,7 +45,7 @@ function setupJqGrid(data){
 			{name:'cbal',index:'cbal',width:100,sorttype:"float"},
 			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
-	   	rowNum:30,
+	   	rowNum:100,
 	   	rowList:[],
 	   	pager: '#grid-pager',
 	   	altRows: true,
@@ -60,7 +60,8 @@ function setupJqGrid(data){
    			groupColumnShow : [false],
    			groupText : ['<b>&nbsp{0} - {1} Leave Profile(s)</b>'],
 			plusicon : 'fa fa-plus-square-o bigger-110',
-			minusicon : 'fa fa-minus-square-o bigger-110'
+			minusicon : 'fa fa-minus-square-o bigger-110',
+			groupCollapse : true
    		},
 	    caption:"",
 	    loadComplete : function() {
@@ -131,7 +132,8 @@ function setupJqGridForAdmin(data){
    			groupColumnShow : [false],
    			groupText : ['<b>&nbsp{0} - {1} Leave Profile(s)</b>'],
 			plusicon : 'fa fa-plus-square-o bigger-110',
-			minusicon : 'fa fa-minus-square-o bigger-110'
+			minusicon : 'fa fa-minus-square-o bigger-110',
+			groupCollapse : true
    		},
 	    caption:"",
 	    loadComplete : function() {
