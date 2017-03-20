@@ -101,6 +101,15 @@ object OrgChartSettingModel {
     sys_doc
   }
   
+    // Insert new document
+  def insert(p_doc:OrgChartSetting, p_eid:String="", p_request:RequestHeader=null)= {
+    val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
+    future.onComplete {
+      case Failure(e) => throw e
+      case Success(lastError) => {}
+    }
+  }
+  
   // Update document
   def update(p_query:BSONDocument,p_doc:OrgChartSetting,p_request:RequestHeader) = {
     val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
@@ -160,6 +169,16 @@ object OrgChartSettingModel {
   // Return the first found document
   def findOne(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[OrgChartSetting]
+  }
+  
+  /** Custom Model Methods **/ 
+  
+  def removeTLM(p_id:String, p_request:RequestHeader) = {
+    val future = col.update(BSONDocument("tlm"->BSONDocument("$in"->List(p_id))).++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), BSONDocument("$pull"->BSONDocument("tlm" -> p_id)))
+    future.onComplete {
+      case Failure(e) => throw e
+      case Success(lastError) => {}
+    }
   }
 
 }

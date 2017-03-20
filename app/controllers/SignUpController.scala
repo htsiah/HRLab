@@ -188,6 +188,13 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               PersonModel.insertOnNewSignUp(person_doc, formWithData.country, eid)
               AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=person_objectID.stringify, c="Create document."), p_eid=eid)
                     
+              // Create Org Chart Setting
+              val orgchartsetting_objectID = BSONObjectID.generate
+              val orgchartseting_doc = OrgChartSettingModel.doc.copy(
+                  _id = office_objectID
+              )
+              OrgChartSettingModel.insert(orgchartseting_doc, eid)
+              
               // Send email
               val replaceMap = Map("URL"->(Tools.hostname+"/set/"+authentication_doc.em +"/"+authentication_doc.r), "BY"->(person_doc.p.fn+" "+person_doc.p.ln))
               MailUtility.getEmailConfig(List(authentication_doc.em), 1, replaceMap).map { email => mailerClient.send(email) }

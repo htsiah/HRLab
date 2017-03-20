@@ -14,7 +14,7 @@ import play.api.cache.Cache
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel, LeavePolicyModel, AuditLogModel}
+import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel, LeavePolicyModel, AuditLogModel, OrgChartSettingModel}
 import utilities.{System, MailUtility, Tools, AlertUtility}
 
 import reactivemongo.api._
@@ -253,6 +253,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
       AuditLogModel.remove(BSONDocument("lk"->p_id), request)
       LeaveProfileModel.removeWithAuditLog(BSONDocument("pid" -> p_id), request)
       LeaveModel.setLockDown(BSONDocument("pid" -> p_id), request)
+      OrgChartSettingModel.removeTLM(p_id, request)
       
       if (p_email!="") {
         AuthenticationModel.remove(BSONDocument("em" -> p_email), request)
