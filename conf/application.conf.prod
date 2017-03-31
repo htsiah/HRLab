@@ -16,7 +16,7 @@ application_name=hrsifu
 application_release=4.8.1
 # Domain name
 # can be used for mail, etc
-domain_name="https://139.59.241.173"
+domain_name="https://app.hrsifu.com"
 
 # The application languages
 # ~~~~~
@@ -64,28 +64,28 @@ dblogger_security=ON
 play.modules.enabled += "play.modules.reactivemongo.ReactiveMongoModule"
 
 # Reactivemongo default database
-mongodb.uri = "mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-directory"
+mongodb.uri = "mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-directory"
 
 # Custom mongodb connection
 mongodb_timeout = 10000
 mongodb_directory = "hrsifu-directory"
-mongodb_directory_uri="mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-directory?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_directory_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-directory?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_config="hrsifu-config"
-mongodb_config_uri="mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-config?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_config_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-config?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_admin="hrsifu-admin"
-mongodb_admin_uri="mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-admin?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_admin_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-admin?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_dblogger="hrsifu-dblogger"
-mongodb_dblogger_uri="mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-dblogger?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_dblogger_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-dblogger?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_calendar="hrsifu-calendar"
-mongodb_calendar_uri="mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-calendar?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_calendar_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-calendar?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_leave="hrsifu-leave"
-mongodb_leave_uri="mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-leave?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_leave_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-leave?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_leave_file="hrsifu-leave-file"
-mongodb_leave_file_uri="mongodb://iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-leave-file?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_leave_file_uri="mongodb://iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-leave-file?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_job="hrsifu-job"
-mongodb_job_uri="iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-job?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_job_uri="iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-job?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 mongodb_audit_log="hrsifu-audit-log"
-mongodb_audit_log_uri="iamadmin:hrlab-admin@127.0.0.1:9622/hrsifu-audit-log?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
+mongodb_audit_log_uri="iamadmin:hrlab-admin@128.199.80.162:9622/hrsifu-audit-log?authSource=admin&authMode=scram-sha1&rm.tcpNoDelay=true"
 
 # ****************************************** #
 # ***             Play-Mailer            *** #
