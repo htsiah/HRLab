@@ -180,7 +180,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                       smgrid = "",
                       g = formWithData.gender,
                       ms = formWithData.marital,
-                      dpm = "Information Technology",
+                      dpm = "",
                       off = "Main Office",
                       edat = Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)),
                       rl=List("Admin")

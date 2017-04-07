@@ -53,7 +53,6 @@ $(function(){
 			},
 			"p.g": "required",
 			"p.ms": "required",
-			"p.dpm": "required",
 			"p.off": "required",
 			"p.edat": {
 				required: true,
@@ -72,7 +71,6 @@ $(function(){
 			"p.smgrid": "Substitute Manager can not same with Manager.",
 			"p.g": "Please select gender.",
 			"p.ms": "Please select marital status.",
-			"p.dpm": "Please select department.",
 			"p.off": "Please select Office.",
 			"p.edat": {
 				required: "Please enter employment start date.",
