@@ -60,6 +60,7 @@
 			<div id="home" class="tab-pane fade active in">
 				<div class="row">
 					<div class="col-sm-9">
+						@if(person.p.empid!="") { @contentRow("Employee ID", person.p.empid) }	
 						@contentRow("First Name", person.p.fn)
 						@contentRow("Last Name", person.p.ln)
 						@contentRow("Email", person.p.em)

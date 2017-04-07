@@ -170,6 +170,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               val person_doc = PersonModel.doc.copy(
                   _id = person_objectID,
                   p = Profile(
+                      empid = "",
                       fn = formWithData.fname, 
                       ln = formWithData.lname,
                       em = formWithData.email,

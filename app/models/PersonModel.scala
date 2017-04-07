@@ -23,6 +23,7 @@ case class Person (
 )
 
 case class Profile (
+    empid: String,
     fn: String,
     ln: String,
     em: String,
@@ -65,6 +66,7 @@ object PersonModel {
   implicit object ProfileBSONReader extends BSONDocumentReader[Profile] {
     def read(p_doc: BSONDocument): Profile = {
       Profile(
+          p_doc.getAs[String]("empid").get,
           p_doc.getAs[String]("fn").get,
           p_doc.getAs[String]("ln").get,
           p_doc.getAs[String]("em").get,
@@ -125,6 +127,7 @@ object PersonModel {
   implicit object ProfileBSONWriter extends BSONDocumentWriter[Profile] {
     def write(p_doc: Profile): BSONDocument = {
       BSONDocument(
+          "empid" -> p_doc.empid,
           "fn" -> p_doc.fn,
           "ln" -> p_doc.ln,
           "em" -> p_doc.em,
@@ -174,7 +177,7 @@ object PersonModel {
   
   val doc = Person(
       _id = BSONObjectID.generate,
-      p = Profile(fn="", ln="", em="", nem=false, pt="", mgrid="", smgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)), rl=List("")),
+      p = Profile(empid="", fn="", ln="", em="", nem=false, pt="", mgrid="", smgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)), rl=List("")),
       wd = Workday(wd1=true, wd2=true, wd3=true, wd4=true, wd5=true, wd6=false, wd7=false),
       sys = None
   )

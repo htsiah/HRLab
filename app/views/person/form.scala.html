@@ -70,7 +70,7 @@
 		), 
 		'id -> "personform"
 	) {
-		
+		@inputText(person("p")("empid"), '_label->"Employee ID", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@inputText(person("p")("fn"), '_label->"First Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@inputText(person("p")("ln"), '_label->"Last Name", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@if(oid=="") {	

@@ -28,6 +28,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
           "p" -> mapping(
+              "empid" -> text,
               "fn" -> text,
               "ln" -> text,
               "em" -> text,
@@ -41,8 +42,8 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
               "off" -> text,
               "edat" -> optional(jodaDate("d-MMM-yyyy")),
               "rl" -> text
-          ){(fn,ln,em,nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl)=>Profile(fn,ln,em.toLowerCase().trim(),nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
-          {profile:Profile => Some(profile.fn,profile.ln,profile.em,profile.nem,profile.pt,profile.mgrid,profile.smgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
+          ){(empid,fn,ln,em,nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl)=>Profile(empid,fn,ln,em.toLowerCase().trim(),nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
+          {profile:Profile => Some(profile.empid,profile.fn,profile.ln,profile.em,profile.nem,profile.pt,profile.mgrid,profile.smgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
           "wd" -> mapping(
               "wd1" -> boolean,
               "wd2" -> boolean,

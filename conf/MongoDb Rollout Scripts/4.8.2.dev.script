@@ -1,0 +1,2 @@
+use d-hrsifu-directory
+db.person.update({},{ $set: {"p.empid": "" }}, false, true)

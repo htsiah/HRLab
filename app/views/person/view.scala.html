@@ -76,6 +76,7 @@
 				<div id="home" class="tab-pane fade active in">
 					<div class="row">
 						<div class="col-sm-9">
+							@if(person.p.empid!="") { @contentRow("Employee ID", person.p.empid) }	
 							@contentRow("First Name", person.p.fn)
 							@contentRow("Last Name", person.p.ln)
 							@if(person.p.em=="") {
@@ -198,6 +199,7 @@
 					<div id="home" class="tab-pane fade active in">
 						<div class="row">
 							<div class="col-sm-9">
+								@if(person.p.empid!="") { @contentRow("Employee ID", person.p.empid) }	
 								@contentRow("First Name", person.p.fn)
 								@contentRow("Last Name", person.p.ln)
 								@if(person.p.em=="") {
@@ -293,6 +295,7 @@
 	} else {
 	
 		@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,vbuttons) {
+			@if(person.p.empid!="") { @contentRow("Employee ID", person.p.empid) }	
 			@contentRow("First Name", person.p.fn)
 			@contentRow("Last Name", person.p.ln)
 			@if(person.p.em=="") {
