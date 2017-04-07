@@ -152,14 +152,14 @@
 		<div class="col-sm-6">
 			<a href="@routes.LeaveController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg">Apply Leave</a>
 			@if(session.get("roles").get.contains("Admin")) {
-				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg">Apply Leave For Other Staff</a>
+				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg">Apply Leave On Behalf Of Employee</a>
 			}
 			<div class="space-6"></div>
 			<div id="calendar"></div>
 			<div class="space-6"></div>
 			<a href="@routes.LeaveController.create" class="btn btn-sm btn btn-block visible-xs">Apply Leave</a>
 			@if(session.get("roles").get.contains("Admin")) {
-				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn btn-block visible-xs">Apply Leave for Other Staff</a>
+				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn btn-block visible-xs">Apply Leave On Behalf Of Employee</a>
 			}
 		</div>
 	
