@@ -40,6 +40,7 @@ GET		/person/view/:p_id						controllers.PersonController.view(p_id:String)
 GET		/person/myprofile/view					controllers.PersonController.myprofileview
 GET		/person/myprofile/edit					controllers.PersonController.myprofileedit
 POST	/person/myprofile/update				controllers.PersonController.myprofileupdate
+GET		/person/isempidunique					controllers.PersonController.isEmpIdUnique(p_id:String, p_empid:String)
 
 # Calendar
 GET		/calendar/company			controllers.CalendarController.company

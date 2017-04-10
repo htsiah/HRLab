@@ -32,6 +32,21 @@ $(function(){
 		debug: true,
 		onkeyup: false,
 		rules: {
+			"p.empid": {
+				remote: {
+					url: "/person/isempidunique	",
+			        type: "get",
+			        cache: false,
+			        data: {
+			        	p_id: function() {
+			        		return oid;
+			        	},
+			        	p_empid: function() {
+			        		return $( "#p_empid" ).val();
+			        	}
+			        }
+				}
+			},
 			"p.fn": "required",
 			"p.ln": "required",
 			"p.mgrid": "required",
@@ -47,6 +62,9 @@ $(function(){
 			}
 		},
 		messages: {
+			"p.empid" : {
+				remote: "Someone already used this employee id. Try another one?"
+			},
 			"p.fn": "Please enter first name.",
 			"p.ln": "Please enter last name.",
 			"p.mgrid": "Please select manager.",
