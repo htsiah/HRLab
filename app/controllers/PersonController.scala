@@ -221,8 +221,6 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
                   Redirect(routes.PersonController.index).withSession(
                     request.session + 
                     ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
-                    ("department" -> formWithData.p.dpm) + 
-                    ("position" -> formWithData.p.pt) + 
                     ("roles"->formWithData.p.rl.mkString(",")) + 
                     ("ismanager"->isManager)
                   )
@@ -382,7 +380,6 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
                 Redirect(routes.PersonController.myprofileview).withSession(
                     request.session + 
                     ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
-                    ("department" -> formWithData.p.dpm) + 
                     ("roles"->formWithData.p.rl.mkString(",")) + 
                     ("ismanager"->isManager)
                 )
