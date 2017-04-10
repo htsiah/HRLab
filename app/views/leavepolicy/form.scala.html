@@ -4,7 +4,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(leavepolicy:Form[LeavePolicy],leavetypes:List[String],positiontypes:List[String],oid:String="",alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(leavepolicy:Form[LeavePolicy],leavetypes:List[String],oid:String="",alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">

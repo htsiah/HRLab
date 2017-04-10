@@ -15,7 +15,7 @@ import org.joda.time.DateTime
 case class ConfigKeyword (
      _id: BSONObjectID,
      n: String,
-     v: Option[List[String]],
+     v: List[String],
      s: Boolean,
      sys: Option[System]
 )
@@ -43,7 +43,7 @@ object ConfigKeywordModel {
       ConfigKeyword(
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("n").get,
-          p_doc.getAs[List[String]]("v").map(v => v),
+          p_doc.getAs[List[String]]("v").get,
           p_doc.getAs[Boolean]("s").get,
           p_doc.getAs[System]("sys").map(o => o)
       )

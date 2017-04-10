@@ -22,7 +22,7 @@ class KeywordController extends Controller with Secured {
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
           "n" -> text,
-          "v" -> optional(list(nonEmptyText)),
+          "v" -> list(nonEmptyText),
           "s" -> boolean,
           "sys" -> optional(mapping(
                   "eid" -> optional(text),

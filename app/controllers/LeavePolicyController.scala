@@ -117,11 +117,9 @@ class LeavePolicyController extends Controller with Secured {
       val doc = LeavePolicyModel.doc
       for { 
         maybe_leavetypes <- KeywordModel.findOne(BSONDocument("n" -> "Leave Type"), request)
-        maybe_positiontypes <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
       } yield {
         val leavetypes = maybe_leavetypes.getOrElse(KeywordModel.doc)
-        val positiontypes = maybe_positiontypes.getOrElse(KeywordModel.doc)
-        Ok(views.html.leavepolicy.form(leavepolicyform.fill(doc), leavetypes.v.get, positiontypes.v.get))
+        Ok(views.html.leavepolicy.form(leavepolicyform.fill(doc), leavetypes.v))
       }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -134,11 +132,9 @@ class LeavePolicyController extends Controller with Secured {
           formWithError => {
             for { 
               maybe_leavetypes <- KeywordModel.findOne(BSONDocument("n" -> "Leave Type"), request)
-              maybe_positiontypes <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
             } yield {
               val leavetypes = maybe_leavetypes.getOrElse(KeywordModel.doc)
-              val positiontypes = maybe_positiontypes.getOrElse(KeywordModel.doc)
-              Ok(views.html.leavepolicy.form(formWithError, leavetypes.v.get, positiontypes.v.get))
+              Ok(views.html.leavepolicy.form(formWithError, leavetypes.v))
             }
           },
           formWithData => {
@@ -146,7 +142,6 @@ class LeavePolicyController extends Controller with Secured {
               maybe_unique <- LeavePolicyModel.isUnique(formWithData, request)
               maybeleavepolicy <- LeavePolicyModel.findOne(BSONDocument("lt"->formWithData.lt), request)
               maybe_leavetypes <- KeywordModel.findOne(BSONDocument("n" -> "Leave Type"), request)
-              maybe_positiontypes <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
               maybe_alert <- AlertUtility.findOne(BSONDocument("k"->1004))
             } yield {
               if (maybe_unique) {
@@ -174,11 +169,10 @@ class LeavePolicyController extends Controller with Secured {
                 Redirect(routes.LeaveSettingController.index)
               } else {
                 val leavetypes = maybe_leavetypes.getOrElse(KeywordModel.doc)
-                val positiontypes = maybe_positiontypes.getOrElse(KeywordModel.doc)
                 val replaceMap = Map("URL"->(Tools.hostname+"/leavepolicy/view?p_id=" + maybeleavepolicy.get._id.stringify))
                 val alert = maybe_alert.getOrElse(null)
                 val mod_alert = if(alert!=null){alert.copy(m=Tools.replaceSubString(alert.m, replaceMap.toList))}else{alert}
-                Ok(views.html.leavepolicy.form(leavepolicyform.fill(formWithData), leavetypes.v.get, positiontypes.v.get,alert=mod_alert))
+                Ok(views.html.leavepolicy.form(leavepolicyform.fill(formWithData), leavetypes.v, alert=mod_alert))
               }
             }
           }
@@ -193,12 +187,10 @@ class LeavePolicyController extends Controller with Secured {
       for { 
         maybe_leavepolicy <- LeavePolicyModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
         maybe_leavetypes <- KeywordModel.findOne(BSONDocument("n" -> "Leave Type"), request)
-        maybe_positiontypes <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
       } yield {
         maybe_leavepolicy.map( leavepolicy  => {
           val leavetypes = maybe_leavetypes.getOrElse(KeywordModel.doc)
-          val positiontypes = maybe_positiontypes.getOrElse(KeywordModel.doc)
-          Ok(views.html.leavepolicy.form(leavepolicyform.fill(leavepolicy), leavetypes.v.get, positiontypes.v.get, p_id))
+          Ok(views.html.leavepolicy.form(leavepolicyform.fill(leavepolicy), leavetypes.v, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -212,11 +204,9 @@ class LeavePolicyController extends Controller with Secured {
           formWithError => {
             for { 
               maybe_leavetypes <- KeywordModel.findOne(BSONDocument("n" -> "Leave Type"), request)
-              maybe_positiontypes <- KeywordModel.findOne(BSONDocument("n" -> "Position Type"), request)
             } yield {
               val leavetypes = maybe_leavetypes.getOrElse(KeywordModel.doc)
-              val positiontypes = maybe_positiontypes.getOrElse(KeywordModel.doc)
-              Ok(views.html.leavepolicy.form(formWithError, leavetypes.v.get, positiontypes.v.get))
+              Ok(views.html.leavepolicy.form(formWithError, leavetypes.v))
             }
           },
           formWithData => {

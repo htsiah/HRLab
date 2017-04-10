@@ -15,7 +15,7 @@ class CalendarController extends Controller with Secured {
       maybe_departments <- KeywordModel.findOne(BSONDocument("n" -> "Department"), request)
     } yield {
       val departments = maybe_departments.getOrElse(KeywordModel.doc)
-      Ok(views.html.calendar.company(departments.v.get)).withSession(
+      Ok(views.html.calendar.company(departments.v)).withSession(
           (request.session - "path") + ("path"->((routes.CalendarController.company).toString))
       )
     } 

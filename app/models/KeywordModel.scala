@@ -16,7 +16,7 @@ import utilities.{System, SystemDataStore, Tools, DbConnUtility}
 case class Keyword (
      _id: BSONObjectID,
      n: String,
-     v: Option[List[String]],
+     v: List[String],
      s: Boolean,
      sys: Option[System]
 )
@@ -43,7 +43,7 @@ object KeywordModel {
       Keyword(
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("n").get,
-          p_doc.getAs[List[String]]("v").map(v => v),
+          p_doc.getAs[List[String]]("v").get,
           p_doc.getAs[Boolean]("s").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
@@ -82,7 +82,7 @@ object KeywordModel {
   val doc = Keyword(
       _id = BSONObjectID.generate,
       n = "",
-      v = Some(List("")),
+      v = List(""),
       s = false,
       sys = None
   )
@@ -170,10 +170,10 @@ object KeywordModel {
   /** Custom Model Methods **/ 
   
   def getProtectedKey(p_doc:Keyword, p_request:RequestHeader) = {
-    
+        
     def findProtectDepartmentKey() : List[String] = {
       var protectedKeyList = List[String]()
-      p_doc.v.get.foreach { value => {
+      p_doc.v.foreach { value => {
         val person = Await.result(PersonModel.findOne(BSONDocument("p.dpm" -> value), p_request), Tools.db_timeout)
         if (person.isDefined) protectedKeyList = value :: protectedKeyList
       } }
@@ -182,7 +182,7 @@ object KeywordModel {
     
     def findProtectLeaveTypeKey() : List[String] = {
       var protectedKeyList = List[String]()
-      p_doc.v.get.foreach { value => {
+      p_doc.v.foreach { value => {
         val leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt" -> value), p_request), Tools.db_timeout)
         if (leavepolicy.isDefined) protectedKeyList = value :: protectedKeyList
       } }
@@ -191,7 +191,7 @@ object KeywordModel {
     
     def findProtectPositionTypeKey() : List[String] = {
       var protectedKeyList = List[String]()
-      p_doc.v.get.foreach { value => {
+      p_doc.v.foreach { value => {
         val person = Await.result(PersonModel.findOne(BSONDocument("p.pt" -> value), p_request), Tools.db_timeout)
         if (person.isDefined) protectedKeyList = value :: protectedKeyList
         val leavetype = Await.result(LeavePolicyModel.findOne(BSONDocument("lt" -> value), p_request), Tools.db_timeout)

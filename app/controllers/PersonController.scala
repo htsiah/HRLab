@@ -96,7 +96,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
       } yield {
         val department = maybe_departments.getOrElse(KeywordModel.doc)
         val position = maybe_positions.getOrElse(KeywordModel.doc)
-        Ok(views.html.person.form(personform.fill(PersonModel.doc), persons, department.v.get, offices, position.v.get))
+        Ok(views.html.person.form(personform.fill(PersonModel.doc), persons, department.v, offices, position.v))
       }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -115,7 +115,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
             } yield {
               val department = maybe_departments.getOrElse(KeywordModel.doc)
               val position = maybe_positions.getOrElse(KeywordModel.doc)
-              Ok(views.html.person.form(formWithError, persons, department.v.get, offices, position.v.get))
+              Ok(views.html.person.form(formWithError, persons, department.v, offices, position.v))
             }
           },
           formWithData => {
@@ -165,7 +165,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
         maybeperson.map( person => {
           val department = maybe_departments.getOrElse(KeywordModel.doc)
           val position = maybe_positions.getOrElse(KeywordModel.doc)
-          Ok(views.html.person.form(personform.fill(person), persons, department.v.get, offices, position.v.get, isLastAdmin, p_id))
+          Ok(views.html.person.form(personform.fill(person), persons, department.v, offices, position.v, isLastAdmin, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -186,7 +186,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
             } yield {
               val department = maybe_departments.getOrElse(KeywordModel.doc)
               val position = maybe_positions.getOrElse(KeywordModel.doc)
-              Ok(views.html.person.form(formWithError, persons, department.v.get, offices, position.v.get, isLastAdmin, p_id))
+              Ok(views.html.person.form(formWithError, persons, department.v, offices, position.v, isLastAdmin, p_id))
             }
           },
           formWithData => {
@@ -238,7 +238,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
                 val alert = if ((maybealert_missingleavepolicy.getOrElse(null))!=null) { maybealert_missingleavepolicy.get.copy(m=Tools.replaceSubString(maybealert_missingleavepolicy.get.m, replaceMap.toList)) } else { null }
                 val department = maybe_departments.getOrElse(KeywordModel.doc)
                 val position = maybe_positions.getOrElse(KeywordModel.doc)
-                Ok(views.html.person.form(personform.fill(formWithData), persons, department.v.get, offices, position.v.get, isLastAdmin, p_id, alert))
+                Ok(views.html.person.form(personform.fill(formWithData), persons, department.v, offices, position.v, isLastAdmin, p_id, alert))
               }
             }
           }
@@ -327,7 +327,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
         maybeperson.map( person => {
           val department = maybe_departments.getOrElse(KeywordModel.doc)
           val position = maybe_positions.getOrElse(KeywordModel.doc)
-          Ok(views.html.person.myprofileform(personform.fill(person), persons, department.v.get, offices, position.v.get, isLastAdmin))
+          Ok(views.html.person.myprofileform(personform.fill(person), persons, department.v, offices, position.v, isLastAdmin))
         }).getOrElse(NotFound)
       }
     } else {
@@ -348,7 +348,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
             } yield {
               val department = maybe_departments.getOrElse(KeywordModel.doc)
               val position = maybe_positions.getOrElse(KeywordModel.doc)
-              Ok(views.html.person.myprofileform(formWithError, persons, department.v.get, offices, position.v.get, isLastAdmin))
+              Ok(views.html.person.myprofileform(formWithError, persons, department.v, offices, position.v, isLastAdmin))
             }
           },
           formWithData => {
@@ -393,7 +393,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
                 val alert = if ((maybealert_missingleavepolicy.getOrElse(null))!=null) { maybealert_missingleavepolicy.get.copy(m=Tools.replaceSubString(maybealert_missingleavepolicy.get.m, replaceMap.toList)) } else { null }
                 val department = maybe_departments.getOrElse(KeywordModel.doc)
                 val position = maybe_positions.getOrElse(KeywordModel.doc)
-                Ok(views.html.person.myprofileform(personform.fill(formWithData), persons, department.v.get, offices, position.v.get, isLastAdmin, alert))
+                Ok(views.html.person.myprofileform(personform.fill(formWithData), persons, department.v, offices, position.v, isLastAdmin, alert))
               }
             }
           }
