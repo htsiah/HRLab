@@ -172,32 +172,24 @@ object KeywordModel {
   def getProtectedKey(p_doc:Keyword, p_request:RequestHeader) = {
         
     def findProtectDepartmentKey() : List[String] = {
-      var protectedKeyList = List[String]()
-      p_doc.v.foreach { value => {
+      p_doc.v.map { value => {
         val person = Await.result(PersonModel.findOne(BSONDocument("p.dpm" -> value), p_request), Tools.db_timeout)
-        if (person.isDefined) protectedKeyList = value :: protectedKeyList
-      } }
-      protectedKeyList
+        if (person.isDefined) { value } else { "" }
+      } }.filter { _.nonEmpty }
     }
     
     def findProtectLeaveTypeKey() : List[String] = {
-      var protectedKeyList = List[String]()
-      p_doc.v.foreach { value => {
+      p_doc.v.map { value => {
         val leavepolicy = Await.result(LeavePolicyModel.findOne(BSONDocument("lt" -> value), p_request), Tools.db_timeout)
-        if (leavepolicy.isDefined) protectedKeyList = value :: protectedKeyList
-      } }
-      protectedKeyList
+        if (leavepolicy.isDefined) { value } else { "" }
+      } }.filter { _.nonEmpty }
     }
     
     def findProtectPositionTypeKey() : List[String] = {
-      var protectedKeyList = List[String]()
-      p_doc.v.foreach { value => {
+      p_doc.v.map { value => {
         val person = Await.result(PersonModel.findOne(BSONDocument("p.pt" -> value), p_request), Tools.db_timeout)
-        if (person.isDefined) protectedKeyList = value :: protectedKeyList
-        val leavetype = Await.result(LeavePolicyModel.findOne(BSONDocument("lt" -> value), p_request), Tools.db_timeout)
-        if (leavetype.isDefined) protectedKeyList = value :: protectedKeyList
-      } }
-      protectedKeyList
+        if (person.isDefined) { value } else { "" }
+      } }.filter { _.nonEmpty }
     }
     
     p_doc.n match {
