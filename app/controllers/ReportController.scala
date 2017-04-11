@@ -121,10 +121,19 @@ class ReportController extends Controller with Secured {
          leaves <- LeaveModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1, "docnum" -> -1), request)
        } yield {
          val filename = "attachment; filename=" + request.session.get("name").get.toString().replaceAll(" ", "") + "-TeamLeaveRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-         val header = "Applicant,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approval Method,Approver(s),Approved By,Rejected By,Cancelled By,Reason,Lock\n"
+         val header = "Employee ID,Applicant,Email,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approval Method,Approver(s),Approved By,Rejected By,Cancelled By,Reason,Lock\n"
          val data = leaves.map { leave => {
+           
+           // Important: Enhance using Aggregation $lookup after upgrade MongoDb Server to version 3.4
+           val maybe_person = Await.result(PersonModel.findOne(BSONDocument("_id"->BSONObjectID(leave.pid)), request), Tools.db_timeout)
+        
            val aprby = if(leave.wf.aprbyn.getOrElse(List())!=List()){ leave.wf.aprbyn.get.mkString("; ") } else { "" }
+           val empId = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.empid }
+           val email = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.em } 
+           
+           empId + "," + 
            leave.pn + "," + 
+           email + "," + 
            leave.docnum + "," + 
            leave.lt + "," + 
            leave.dt + "," + 
@@ -203,7 +212,7 @@ class ReportController extends Controller with Secured {
          leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid"->BSONDocument("$in"->persons.map { person => person._id.stringify })), BSONDocument("pn" -> 1, "it" -> 1), request)
        } yield {
          val filename = "attachment; filename=" + request.session.get("name").get.toString().replaceAll(" ", "") + "-TeamLeaveProfile-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-         val header = "Applicant,Leave Type,Entitlement,Earned,Adjustment,Utilized,Carry Forward,Carry Forward Utilized,Carry Forward Expired,Pending Approval,Balance,Closing Balance," + 
+         val header = "Employee ID,Applicant,Email,Leave Type,Entitlement,Earned,Adjustment,Utilized,Carry Forward,Carry Forward Utilized,Carry Forward Expired,Pending Approval,Balance,Closing Balance," + 
          "Leave Earned Jan,Leave Earned Feb,Leave Earned Mar,Leave Earned Apr,Leave Earned May,Leave Earned Jun,Leave Earned Jul,Leave Earned Aug,Leave Earned Sep,Leave Earned Oct,Leave Earned Nov,Leave Earned Dec," +
          "Eligible Leave Entitlement - Service Month 1,Eligible Leave Entitlement - Entitlement 1,Eligible Leave Entitlement - Carry Forward 1," +
          "Eligible Leave Entitlement - Service Month 2,Eligible Leave Entitlement - Entitlement 2,Eligible Leave Entitlement - Carry Forward 2," +
@@ -216,7 +225,15 @@ class ReportController extends Controller with Secured {
          "Eligible Leave Entitlement - Service Month 9,Eligible Leave Entitlement - Entitlement 9,Eligible Leave Entitlement - Carry Forward 9," +
          "Eligible Leave Entitlement - Service Month 10,Eligible Leave Entitlement - Entitlement 10,Eligible Leave Entitlement - Carry Forward 10\n"
          val data = leaveprofiles.map { leaveprofile => 
+           
+           // Important: Enhance using Aggregation $lookup after upgrade MongoDb Server to version 3.4
+           val maybe_person = Await.result(PersonModel.findOne(BSONDocument("_id"->BSONObjectID(leaveprofile.pid)), request), Tools.db_timeout)
+           val empId = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.empid }
+           val email = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.em } 
+           
+           empId + "," +
            leaveprofile.pn + "," + 
+           email + "," +
            leaveprofile.lt + "," + 
            leaveprofile.cal.ent + "," + 
            leaveprofile.cal.ear + "," + 
@@ -323,10 +340,19 @@ class ReportController extends Controller with Secured {
          leaves <- LeaveModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
        } yield {
          val filename = "attachment; filename=" + "AllStaff-LeaveRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-         val header = "Applicant,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approval Method,Approver(s),Approved By,Rejected By,Cancelled By,Reason,Lock\n"
+         val header = "Employee ID,Applicant,Email,Doc Num,Leave Type,Day Type,Submit On,Date From,Date To,Utilized,Carry Forward Utilized,Status,Approval Method,Approver(s),Approved By,Rejected By,Cancelled By,Reason,Lock\n"
          val data = leaves.map { leave => {
+           
+           // Important: Enhance using Aggregation $lookup after upgrade MongoDb Server to version 3.4
+           val maybe_person = Await.result(PersonModel.findOne(BSONDocument("_id"->BSONObjectID(leave.pid)), request), Tools.db_timeout)
+           
            val aprby = if(leave.wf.aprbyn.getOrElse(List())!=List()){ leave.wf.aprbyn.get.mkString("; ") } else { "" }
+           val empId = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.empid }
+           val email = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.em } 
+           
+           empId + "," + 
            leave.pn + "," + 
+           email + "," + 
            leave.docnum + "," + 
            leave.lt + "," + 
            leave.dt + "," + 
@@ -415,7 +441,15 @@ class ReportController extends Controller with Secured {
         "Eligible Leave Entitlement - Service Month 9,Eligible Leave Entitlement - Entitlement 9,Eligible Leave Entitlement - Carry Forward 9," +
         "Eligible Leave Entitlement - Service Month 10,Eligible Leave Entitlement - Entitlement 10,Eligible Leave Entitlement - Carry Forward 10\n"
         val data = leaveprofiles.map { leaveprofile => 
+          
+          // Important: Enhance using Aggregation $lookup after upgrade MongoDb Server to version 3.4
+          val maybe_person = Await.result(PersonModel.findOne(BSONDocument("_id"->BSONObjectID(leaveprofile.pid)), request), Tools.db_timeout)
+          val empId = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.empid }
+          val email = if (maybe_person.isEmpty) { "" } else { maybe_person.get.p.em } 
+           
+          empId + "," +
           leaveprofile.pn + "," + 
+          email + "," +
           leaveprofile.lt + "," + 
           leaveprofile.cal.ent + "," + 
           leaveprofile.cal.ear + "," + 
