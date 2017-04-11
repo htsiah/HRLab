@@ -5,7 +5,7 @@ $(function(){
 	// Setup keyword index table using jquery table
 	$('#persontable').dataTable({
 		"aoColumnDefs": [
-	    	{ "bSortable": false, "sClass":"text-center", "aTargets": [ 4 ] }
+	    	{ "bSortable": false, "sClass":"text-center", "aTargets": [ 5 ] }
 	    ],
 	    paging: false
 	});
