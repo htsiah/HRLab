@@ -31,3 +31,44 @@ function onDeleteLeaveProfile(p_id, p_lt, p_pid) {
 	});
 
 }
+
+function sendWelcomeEmail(p_email) {
+	
+	$( "#dialog-send-welcome-email" ).removeClass('hide').dialog({
+		resizable: false,
+		modal: true,
+		title: "<div class='widget-header'><h4 class='smaller'>Confirmation</h4></div>",
+		title_html: true,
+		buttons: [
+			{
+				html: "Yes, send now",
+				"class" : "btn btn-primary btn-mini",
+				click: function() {
+					$.ajax({
+						url: "/person/sendwelcomeemail",
+						type: 'GET',
+						data: {p_email : p_email},
+						dataType: "json",
+						success: function(result){
+							if (result == "false") {
+								alert("Send welcome email failed!!!");
+							};
+			            },
+			            error: function(xhr, textStatus, errorThrown) {
+			            	alert("Send welcome email failed!!!");
+						}
+					});
+					$( this ).dialog( "close" );
+				}
+			},
+			{
+				html: "Cancel",
+				"class" : "btn btn-mini",
+				click: function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		]
+	});
+	
+}

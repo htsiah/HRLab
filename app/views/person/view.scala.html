@@ -28,6 +28,9 @@
 @pbuttons = {
 	@if(session.get("roles").get.contains("Admin")) {
 		<a href="@routes.PersonController.edit(person._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
+		@if(person.p.em!=""){
+			<a href="javascript:sendWelcomeEmail('@person.p.em')" class="btn btn-sm btn btn-block">Send Welcome Email</a>
+		}
 	}	
 	<a href="javascript:displayAuditLog('@person._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
@@ -172,6 +175,9 @@
 			</div>
 		</div>
 		@layout.ace.dialogbox("dialog-message", Html("<div class='alert alert-info bigger-110'><p>Selected leave profile will permanently deleted and cannot be recovered.</p><p>Notes:</p><ul><li>Leave that linked to this leave profile will be locked.</li><li>No actions can be perform on locked document.</li></ul></div>"))
+		@layout.ace.dialogbox("dialog-send-welcome-email", 
+			Html("<p class='center'><i class='ace-icon fa fa-hand-o-right blue bigger-120'></i> Are you sure you want to send welcome email containing set password link to " + person.p.em + " ?</p>")
+		)
 	}
 
 } else {

@@ -425,4 +425,34 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
     } }
   } }
   
+  def sendWelcomeEmail(p_email:String) = withAuth { username => implicit request => {
+
+    if(request.session.get("roles").get.contains("Admin")){
+      PersonModel.findOne(BSONDocument("p.em" -> p_email), request).map { person => {
+        val maybe_person = Await.result(PersonModel.findOne(BSONDocument("p.em" -> p_email), request), Tools.db_timeout)
+
+        // Reset authentication 
+        val resetkey = Random.alphanumeric.take(8).mkString
+        val modifier = BSONDocument("$set"->BSONDocument("r"->resetkey))
+        AuthenticationModel.updateUsingBSON(BSONDocument("em"->p_email, "sys.ddat"->BSONDocument("$exists"->false)), modifier)
+                
+        // Send email
+        val replaceMap = Map(
+            "FULLNAME" -> {maybe_person.get.p.fn + " " + maybe_person.get.p.ln},
+            "ADMIN" -> request.session.get("name").get,
+            "COMPANY" -> request.session.get("company").get,
+            "URL" -> {Tools.hostname + "/set/" + p_email  + "/" + resetkey}
+        )
+        MailUtility.getEmailConfig(List(p_email), 7, replaceMap).map { email => mailerClient.send(email) }
+      
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=maybe_person.get._id.stringify, c="Send welcome email."), p_request=request)
+        Ok("true").as("text/plain")
+      } }  
+    } else {
+      Future.successful(Ok("false").as("text/plain"))
+    }
+
+  } }
+  
 }
