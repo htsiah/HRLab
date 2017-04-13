@@ -428,7 +428,7 @@ class ReportController extends Controller with Secured {
         leaveprofiles <- LeaveProfileModel.find(BSONDocument(), BSONDocument("pn" -> 1), request)
       } yield {
         val filename = "attachment; filename=" + "AllStaffLeaveProfile-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-        val header = "Applicant,Leave Type,Entitlement,Earned,Adjustment,Utilized,Carry Forward,Carry Forward Utilized,Carry Forward Expired,Pending Approval,Balance,Closing Balance," + 
+        val header = "Employee ID,Applicant,Email,Leave Type,Entitlement,Earned,Adjustment,Utilized,Carry Forward,Carry Forward Utilized,Carry Forward Expired,Pending Approval,Balance,Closing Balance," + 
         "Leave Earned Jan,Leave Earned Feb,Leave Earned Mar,Leave Earned Apr,Leave Earned May,Leave Earned Jun,Leave Earned Jul,Leave Earned Aug,Leave Earned Sep,Leave Earned Oct,Leave Earned Nov,Leave Earned Dec," +
         "Eligible Leave Entitlement - Service Month 1,Eligible Leave Entitlement - Entitlement 1,Eligible Leave Entitlement - Carry Forward 1," +
         "Eligible Leave Entitlement - Service Month 2,Eligible Leave Entitlement - Entitlement 2,Eligible Leave Entitlement - Carry Forward 2," +
