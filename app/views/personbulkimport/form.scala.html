@@ -1,0 +1,22 @@
+@import utilities.Alert
+
+@(alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pluginjs = {}
+
+@inlinejs = {}
+
+@pluginstyle = {}
+
+@inlinestyle = {}
+
+@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
+
+	@layout.ace.alert(alert)
+	
+	@helper.form(action = routes.PersonBulkImportController.insert, 'enctype -> "multipart/form-data") {
+		<input type="file" name="csv">
+		<div><input type="submit" class="btn"></div>
+    }
+    
+}

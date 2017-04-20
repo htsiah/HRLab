@@ -43,6 +43,10 @@ POST	/person/myprofile/update				controllers.PersonController.myprofileupdate
 GET		/person/isempidunique					controllers.PersonController.isEmpIdUnique(p_id:String, p_empid:String)
 GET 	/person/sendwelcomeemail				controllers.PersonController.sendWelcomeEmail(p_email:String)
 
+# Person Bulk Import
+GET		/personbulkimport				controllers.PersonBulkImportController.create
+POST	/personbulkimport/insert		controllers.PersonBulkImportController.insert
+
 # Calendar
 GET		/calendar/company			controllers.CalendarController.company
 
