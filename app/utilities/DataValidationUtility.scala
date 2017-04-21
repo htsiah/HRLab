@@ -15,7 +15,7 @@ import org.joda.time.format.DateTimeFormat
 
 object DataValidationUtility {
   
-  def valEmail (p_value:String) : Boolean = {
+  def isValidEmail (p_value:String) : Boolean = {
     val emailRegex = """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""".r
     
     p_value match{
@@ -26,15 +26,15 @@ object DataValidationUtility {
     }
   }
   
-  def valGender (p_value:String) : Boolean = {
+  def isValidGender (p_value:String) : Boolean = {
     if (p_value == "Male" || p_value =="Female" ) { true } else { false }    
   }
   
-  def valMaritalStatus (p_value:String) : Boolean = {
+  def isValidMaritalStatus (p_value:String) : Boolean = {
     if (p_value == "Single" || p_value =="Married" ) { true } else { false } 
   }
   
-  def valOffice (p_value:String, p_request:RequestHeader) : Boolean = {    
+  def isOfficeExist (p_value:String, p_request:RequestHeader) : Boolean = {    
     val office = Await.result(OfficeModel.findOne(BSONDocument("n" -> p_value), p_request), Tools.db_timeout)
     if ( office.isDefined ) { true } else { false }
   }
@@ -42,7 +42,7 @@ object DataValidationUtility {
   // Format is d-MMM-YYYY
   // Ref: http://stackoverflow.com/questions/14194290/validating-a-date-in-java
   // Ref: http://stackoverflow.com/questions/31463243/regex-for-validating-date-in-dd-mmm-yyyy-format
-  def valDate (p_value:String) : Boolean = {
+  def isValidDate (p_value:String) : Boolean = {
     try {
       val dateRegex = """^[0-3][0-9]-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{4}$""".r
       if (dateRegex.findFirstMatchIn(p_value).isDefined) {
@@ -57,6 +57,10 @@ object DataValidationUtility {
         return false
       }
     }
+  }
+  
+  def isValidYesNo (p_value:String) : Boolean = {
+    if ( p_value == "yes" || p_value =="no" ) { true } else { false }
   }
   
 }
