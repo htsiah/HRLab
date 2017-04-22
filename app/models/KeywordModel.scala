@@ -201,4 +201,15 @@ object KeywordModel {
     
   }
   
+  def addKeywordValue(p_keyword:String, p_value:String, p_request:RequestHeader) = {
+    
+    val department = KeywordModel.findOne(BSONDocument("n" -> p_keyword), p_request)
+    department.map { doc => { 
+      if (!doc.get.v.contains(p_value)) {
+        KeywordModel.update(BSONDocument("_id" -> doc.get._id), doc.get.copy(v=List(p_value).:::(doc.get.v)), p_request)
+      }
+    } }
+    
+  }
+  
 }

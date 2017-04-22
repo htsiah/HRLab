@@ -12,6 +12,7 @@ import play.api.libs.mailer._
 import com.github.tototoshi.csv._
 
 import scala.concurrent.{Future, Await}
+import scala.util.{Random}
 
 import javax.inject.Inject
 import java.io.{FileInputStream}
@@ -24,8 +25,8 @@ import reactivemongo.api.gridfs.Implicits.DefaultReadFileReader
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
-import models.{PersonBulkImportModel, PersonModel}
-import utilities.{DataValidationUtility, Tools}
+import models.{PersonBulkImportModel, PersonModel, AuthenticationModel, Authentication, AuditLogModel, KeywordModel}
+import utilities.{DataValidationUtility, Tools, MailUtility}
 
 class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reactiveMongoApi: ReactiveMongoApi) extends Controller with MongoController with ReactiveMongoComponents with Secured {
 
@@ -107,8 +108,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
               val WorkDaySunday = if( importrawrow.contains("Work Day - Sunday")) { importrawrow("Work Day - Sunday").toLowerCase().trim } else { "" }
               val Admin = if( importrawrow.contains("Admin")) { importrawrow("Admin").toLowerCase().trim } else { "" }
               val SendWelcomeEmail = if( importrawrow.contains("Send Welcome Email")) { importrawrow("Send Welcome Email").toLowerCase().trim } else { "" }
-              
-              // Validation - Mandatory fields
+
               val validation = valdata(
                   EmployeeID, 
                   FirstName, 
@@ -169,36 +169,37 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             val createdresult = importdata.filter( value => value(21) != "fail" ).map { newemployee => {
               println (newemployee(1))
               
-              val dtf = DateTimeFormat.forPattern("d-MMM-yyyy");
-              val mgrid = if (newemployee(5) == "") { 
-                newemployee(22) 
-              } else {
-                val manager = Await.result(PersonModel.findOne(BSONDocument("p.em" -> newemployee(5)), request), Tools.db_timeout)
-                if (manager.isDefined) {
-                  manager.get._id.stringify
-                } else {
-                  val mgrdata = importdata.filter( value => value(3) == newemployee(5) )
-                  mgrdata(0)(22)
+              val dtf = DateTimeFormat.forPattern("d-MMM-yyyy")              
+              
+              if (newemployee(3) != "") {
+                
+                // Create Authentication document
+                val authentication_doc = Authentication(
+                    _id = BSONObjectID.generate,
+                    em = newemployee(3),
+                    p = Random.alphanumeric.take(8).mkString,
+                    r = Random.alphanumeric.take(8).mkString,
+                    sys = None
+                )
+                AuthenticationModel.insert(authentication_doc, p_request=request)
+                
+                if (newemployee(20) == "yes") {
+                  
+                  // Send email
+                  val replaceMap = Map(
+                      "FULLNAME" -> {newemployee(1) + " " + newemployee(2)},
+                      "ADMIN" -> request.session.get("name").get,
+                      "COMPANY" -> request.session.get("company").get,
+                      "URL" -> {Tools.hostname + "/set/" + authentication_doc.em  + "/" + authentication_doc.r}
+                  )
+                  MailUtility.getEmailConfig(List(authentication_doc.em), 7, replaceMap).map { email => mailerClient.send(email) }
+                
                 }
+                
               }
-              val smgrid = if (newemployee(6) == "") { 
-                ""
-              } else {
-                val smanager = Await.result(PersonModel.findOne(BSONDocument("p.em" -> newemployee(6)), request), Tools.db_timeout)
-                if (smanager.isDefined) {
-                  smanager.get._id.stringify
-                } else {
-                  val smgrdata = importdata.filter( value => value(3) == newemployee(6) )
-                  smgrdata(0)(22)
-                }
-              }
-              
-              // Create Authentication document
-              
-              // Send Welcome Email
-              
+                
               // Create Person Document
-              val person = PersonModel.doc.copy(
+              val person_doc = PersonModel.doc.copy(
                   _id=BSONObjectID(newemployee(22)),
                   p = PersonModel.doc.p.copy(
                       empid = newemployee(0),
@@ -207,8 +208,8 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                       em = newemployee(3),
                       nem = if ( newemployee(3) == "" ) { true } else { false },
                       pt = newemployee(4),
-                      mgrid = mgrid,
-                      smgrid = smgrid,
+                      mgrid = getManagerID(newemployee(5), importdata, request),
+                      smgrid = getManagerID(newemployee(6), importdata, request),
                       g = newemployee(7),
                       ms = newemployee(8),
                       dpm = newemployee(9),
@@ -226,9 +227,16 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                       wd7 = if (newemployee(18) == "yes") { true } else { false }
                   )
               )
-              PersonModel.insert(person, p_request=request)
+              PersonModel.insert(person_doc, p_request=request)
               
               // Create Audit Log
+              AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=newemployee(22), c="Create by using CSV import."), p_request=request)
+              
+              // Create department keyword if import department no exist
+              KeywordModel.addKeywordValue("Department", newemployee(9), request)
+              
+              // Create position keyword if import position no exist
+              KeywordModel.addKeywordValue("Position Type", newemployee(4), request)
               
               // Output success result
               
@@ -255,6 +263,33 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
+  
+  private def addKeyword(p_keyword:String, p_value:String, p_request:RequestHeader) = {
+    
+    val department = KeywordModel.findOne(BSONDocument("n" -> p_keyword), p_request)
+    department.map { doc => { 
+      if (!doc.get.v.contains(p_value)) {
+        KeywordModel.update(BSONDocument("_id" -> doc.get._id), doc.get.copy(v=doc.get.v.::(p_value)), p_request)
+      }
+    } }
+    
+  }
+  
+  private def getManagerID(p_doc:String, p_importdata:List[List[String]], p_request:RequestHeader) = {
+    
+    if (p_doc == "") { 
+      ""
+    } else {
+      val smanager = Await.result(PersonModel.findOne(BSONDocument("p.em" -> p_doc), p_request), Tools.db_timeout)
+      if (smanager.isDefined) {
+        smanager.get._id.stringify
+      } else {
+        val smgrdata = p_importdata.filter( value => value(3) == p_doc )
+        smgrdata(0)(22)
+      }
+    }
+              
+  }
   
   private def valdata(
       p_EmployeeID:String, 
