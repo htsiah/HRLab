@@ -417,12 +417,21 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
   }}
   
   def isEmpIdUnique(p_id:String, p_empid:String) = withAuth { username => implicit request => {
-    PersonModel.findOne(BSONDocument("_id"->BSONDocument("$ne"->BSONObjectID(p_id)), "p.empid" -> p_empid), request).map { person => {
-      person.isDefined match {
-        case true => Ok("false").as("text/plain")
-        case _ =>Ok("true").as("text/plain")
-      }
-    } }
+    if (p_id == "") {
+      PersonModel.findOne(BSONDocument("p.empid" -> p_empid), request).map { person => {
+        person.isDefined match {
+          case true => Ok("false").as("text/plain")
+          case _ =>Ok("true").as("text/plain")
+        }
+      } }
+    } else {
+      PersonModel.findOne(BSONDocument("_id"->BSONDocument("$ne"->BSONObjectID(p_id)), "p.empid" -> p_empid), request).map { person => {
+        person.isDefined match {
+          case true => Ok("false").as("text/plain")
+          case _ =>Ok("true").as("text/plain")
+        }
+      } }
+    }
   } }
   
   def sendWelcomeEmail(p_email:String) = withAuth { username => implicit request => {
