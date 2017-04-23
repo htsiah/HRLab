@@ -75,6 +75,14 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
           
           // Validation - Only 50 Per Import.
           if (importrawdata.length > 50) {
+            
+                              
+            // Send email
+            val replaceMap = Map(
+                "Admin" -> request.session.get("name").get
+            )
+            MailUtility.getEmailConfig(List(request.session.get("username").get), 23, replaceMap).map { email => mailerClient.send(email) }
+                  
             Future.successful(Ok(Json.obj("status" -> "exceed 50 employee")).as("application/json"))
           } else {
             
