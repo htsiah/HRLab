@@ -75,9 +75,8 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
           
           // Validation - Only 50 Per Import.
           if (importrawdata.length > 50) {
-            
-                              
-            // Send email
+                 
+            // Send email - Exceed 50 employee
             val replaceMap = Map(
                 "Admin" -> request.session.get("name").get
             )
@@ -92,7 +91,6 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                         
             // Import data validation
             val importdata = importrawdata.map{ importrawrow => {
-              println(importrawrow)
               
               // Import values
               val EmployeeID = if( importrawrow.contains("Employee ID")) { importrawrow("Employee ID").trim } else { "" }
@@ -175,7 +173,6 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             
             // Create document
             val createdresult = importdata.filter( value => value(21) != "fail" ).map { newemployee => {
-              println (newemployee(1))
               
               val dtf = DateTimeFormat.forPattern("d-MMM-yyyy")              
               
@@ -247,18 +244,42 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
               KeywordModel.addKeywordValue("Position Type", newemployee(4), request)
               
               // Output success result
+              "<tr style='font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px;'>" +
+              "<td class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal;' valign='top' align='left'>" + newemployee(0) + "</td>"+
+              "<td class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal;' valign='top' align='left'>" + newemployee(1) + " " + newemployee(2) + "</td>" +
+              "<td class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal;' valign='top' align='left'>" + newemployee(3) + "</td>" + 
+              "<td class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal;' valign='top' align='center'><div style='line-height: 36px;'><a style='margin: 0px; padding: 4px 9px; border: 4px solid rgb(171, 186, 195); border-image: none; text-align: center; color: rgb(255, 255, 255); line-height: 19px; font-size: 14px; text-decoration: none; vertical-align: baseline; background-color: rgb(171, 186, 195);' href='" + Tools.hostname + "/person/view/" + newemployee(22) + "' target='_blank'> &nbsp;&nbsp; &nbsp; View &nbsp; &nbsp;&nbsp;</a></div></td>" +
+              "</tr>"
               
             } }
             
             // Generate error information
-           
+           val importerror = importdata.zipWithIndex.map { case (newemployee, index) => {
+             if (newemployee(21) == "fail") {
+               "Row " + { index + 2 } + ": " + newemployee(22) +"<br>"
+             } else { "" }
+           } }.filter( value => value != "" )
                         
+            // Send email - import completed            
+            val ImportDetail = if (createdresult.length > 0) {
+              "<table class='table-row' style='table-layout: auto; width: 528px; background-color: #ffffff; border: 1px solid #ddd;' bgcolor='#FFFFFF' width='528' cellspacing='0' cellpadding='0' border='0'>" + 
+              "<tr style='font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px;' bgcolor='#DDDDDD'>" + 
+              "<th class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: bold;' valign='top' align='left' bgcolor='#DDDDDD'>Employee ID</th>" + 
+              "<th class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: bold;' valign='top' align='left' bgcolor='#DDDDDD'>Name</th>" + 
+              "<th class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: bold;' valign='top' align='left' bgcolor='#DDDDDD'>Email</th>" + 
+              "<th class='table-row-td' style='padding: 3px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: bold;' valign='top' align='left' bgcolor='#DDDDDD'></th>" + 
+              "</tr>" + createdresult.mkString("") + "</table>"
+              } else { "" }
+            val ImportError = if (importerror.length > 0) { "<p>However, we encounter the errors below:</p>" + importerror.mkString } else { "" }
+            val replaceMap = Map(
+                "Admin" -> request.session.get("name").get,
+                "TotalImport" -> createdresult.length.toString,
+                "ImportDetail" -> ImportDetail,
+                "ImportError" -> ImportError
+            )
+            MailUtility.getEmailConfig(List(request.session.get("username").get), 24, replaceMap).map { email => mailerClient.send(email) }
             
-            println("")
-            println(importdata)
-            
-            // Send Bulk Employee Status Email
-  
+            // Return json message
             Future.successful(Ok(Json.obj("status"->"success")).as("application/json"))
           }
           
@@ -282,7 +303,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
     } }
     
   }
-  
+    
   private def getManagerID(p_doc:String, p_importdata:List[List[String]], p_request:RequestHeader) = {
     
     if (p_doc == "") { 
