@@ -4,7 +4,9 @@
 
 @pluginjs = {}
 
-@inlinejs = {}
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/personbulkimport.form.js")" type="text/javascript"></script>
+}
 
 @pluginstyle = {}
 
@@ -12,11 +14,43 @@
 
 @layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {
 
+	<div class="page-header">
+		<h1>Company <small><i class="ace-icon fa fa-angle-double-right"></i> Staff Directory <i class="ace-icon fa fa-angle-double-right"></i> Add Multiple Employee</small></h1>
+	</div>
 	@layout.ace.alert(alert)
+
+   	<h4 class="header smaller lighter blue">Overview</h4>
+   	<p>Employee Bulk Import supports create multiple users simultaneously by importing a pre-defined CSV file.</p> 
+   	<p>Maximum 50 employee per import. If you have more than 50 employee, it should be split into multiple files with header rows and import separately.</p>
+   	<p>Employee’s leave profile is automatic create based on configured Leave Policy in the system. Thus, it is recommend to make sure leave policy is well configured before perform Employee Bulk Import.</p>
+   	
+	<h4 class="header smaller lighter blue">Step 1: Download Employee Bulk Import Template</h4>
+	<a href="@routes.Assets.at("files/HRSifu-EmployeeBulkImportTemplate.csv")" class="grey"><i class="ace-icon fa fa-hand-o-right"></i> HRSifu-EmployeeBulkImportTemplate.csv</a>
 	
-	@helper.form(action = routes.PersonBulkImportController.insert, 'enctype -> "multipart/form-data") {
-		<input type="file" name="csv">
-		<div><input type="submit" class="btn"></div>
-    }
+	<h4 class="header smaller lighter blue">Step 2: Fill Up the Template</h4>
+	<p>Populate the CSV file working in Excel – refer to image below for guidance on completing the excel file:</p>
+	<img src="@routes.Assets.at("images/personbulkimport.form.help1.png")">
+	<img src="@routes.Assets.at("images/personbulkimport.form.help2.png")">
+	<img src="@routes.Assets.at("images/personbulkimport.form.help3.png")">
+	<div class="space-6"></div>
+	<p>Save the Excel file as type .CSV, other file types (e.g. .xlsx) are not supported</p>
+	
+	<h4 class="header smaller lighter blue">Step 3: Import Employee </h4>    
+    <dl class="dl-horizontal">
+    	<dt><label for="s">Select File to Import</label></dt>
+    	<dd>
+			<div id="file-input-control">
+				 <input type="file" name="file" id="file" />
+			</div>
+			<div id="file-loader" class="smaller lighter grey hidden">
+				<i class="ace-icon fa fa-spinner fa-spin orange bigger-125"></i> Importing Employee
+			</div>
+			<div id="file-view" class="hidden"></div>
+			<div id="file-error" class="hidden"></div>
+		</dd>
+	</dl>
+	<div id="import-reason" class="hidden"></div>
+	<div class="space-6"></div>
+    <a href="@routes.PersonController.index" class="btn btn-sm btn btn-block">Back</a>
     
 }

@@ -26,6 +26,11 @@
 
 @buttons = {
 	<a href="@routes.PersonController.create" class="btn btn-sm btn btn-block">Add Employee</a>
+	@if(persons.length < 500) {
+		<a href="@routes.PersonBulkImportController.create" class="btn btn-sm btn btn-block">Add Multiple Employee</a>
+	} else {
+		<a class="btn btn-sm btn btn-block" title="Import is disabled when reach 500 employee. Please contact support@@hrsifu.com if you have need any help." disabled>Add Multiple Employee</a>
+	}
 }
 
 @if(session.get("roles").get.contains("Admin")) {

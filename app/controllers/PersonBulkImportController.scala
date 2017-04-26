@@ -29,12 +29,18 @@ import models.{PersonBulkImportModel, PersonModel, AuthenticationModel, Authenti
 import utilities.{DataValidationUtility, Tools, MailUtility}
 
 class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reactiveMongoApi: ReactiveMongoApi) extends Controller with MongoController with ReactiveMongoComponents with Secured {
-
-  // type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
   
   def create = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
-      Future.successful(Ok(views.html.personbulkimport.form()))
+      for {
+        persons <- PersonModel.find(BSONDocument(), request)
+      } yield {
+        if (persons.length < 500) {
+          Ok(views.html.personbulkimport.form())
+        } else {
+          Ok(views.html.error.unauthorized())
+        }
+      }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))    
     }
@@ -49,7 +55,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
           Future(Ok(Json.obj("status" -> "exceed file size limit")).as("application/json"))
         }
         case Right(multipartForm) => {
-          val csv = multipartForm.file("csv").get       
+          val csv = multipartForm.file("file").get       
           val metadata = BSONDocument(
               "eid" -> request.session.get("entity"),
               "filename" -> csv.filename, 
@@ -73,16 +79,9 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
           val reader = CSVReader.open(csv.ref.file)            
           val importrawdata = reader.allWithHeaders()
           
-          // Validation - Only 50 Per Import.
-          if (importrawdata.length > 50) {
-                 
-            // Send email - Exceed 50 employee
-            val replaceMap = Map(
-                "Admin" -> request.session.get("name").get
-            )
-            MailUtility.getEmailConfig(List(request.session.get("username").get), 23, replaceMap).map { email => mailerClient.send(email) }
-                  
+          if (importrawdata.length > 50) {                  
             Future.successful(Ok(Json.obj("status" -> "exceed 50 employee")).as("application/json"))
+            
           } else {
             
             // Generate import employee id list
@@ -277,13 +276,11 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                 "ImportDetail" -> ImportDetail,
                 "ImportError" -> ImportError
             )
-            MailUtility.getEmailConfig(List(request.session.get("username").get), 24, replaceMap).map { email => mailerClient.send(email) }
-            
+            MailUtility.getEmailConfig(List(request.session.get("username").get), 23, replaceMap).map { email => mailerClient.send(email) }
+
             // Return json message
-            Future.successful(Ok(Json.obj("status"->"success")).as("application/json"))
+            Future.successful(Ok(Json.obj("status"->"success", "result"-> {ImportDetail + "<br>" + ImportError} )).as("application/json"))
           }
-          
-          
           
         } 
       }
@@ -292,18 +289,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
-  
-  private def addKeyword(p_keyword:String, p_value:String, p_request:RequestHeader) = {
-    
-    val department = KeywordModel.findOne(BSONDocument("n" -> p_keyword), p_request)
-    department.map { doc => { 
-      if (!doc.get.v.contains(p_value)) {
-        KeywordModel.update(BSONDocument("_id" -> doc.get._id), doc.get.copy(v=doc.get.v.::(p_value)), p_request)
-      }
-    } }
-    
-  }
-    
+      
   private def getManagerID(p_doc:String, p_importdata:List[List[String]], p_request:RequestHeader) = {
     
     if (p_doc == "") { 
