@@ -41,7 +41,7 @@ function setupJqGrid(data){
 			{name:'wf_aprn',index:'wf_aprn',width:130},
 			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
-	   	rowNum:100,
+	   	rowNum:250,
 	   	rowList:[],
 	   	pager: '#grid-pager',
 	   	altRows: true,
