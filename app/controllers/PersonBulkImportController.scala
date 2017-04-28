@@ -277,9 +277,15 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                 "ImportError" -> ImportError
             )
             MailUtility.getEmailConfig(List(request.session.get("username").get), 23, replaceMap).map { email => mailerClient.send(email) }
+            
+            val outputresult = if( createdresult.length > 0) { 
+              "<p>A total of " + createdresult.length.toString + " employee have been successfully added.</p>" + ImportDetail + "<br>"
+              } else {
+                "<p>A total of " + createdresult.length.toString + " employee have been successfully added.</p>"
+              }
 
             // Return json message
-            Future.successful(Ok(Json.obj("status"->"success", "result"-> {ImportDetail + "<br>" + ImportError} )).as("application/json"))
+            Future.successful(Ok(Json.obj("status"->"success", "result"-> {outputresult + ImportError} )).as("application/json"))
           }
           
         } 
