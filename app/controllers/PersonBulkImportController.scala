@@ -88,8 +88,9 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             val empidlist = importrawdata.map{ importrawrow => if( importrawrow.contains("Employee ID")) { importrawrow("Employee ID").trim } }.filter( value => value != "" )
             val empemaillist = importrawdata.map{ importrawrow => if( importrawrow.contains("Email")) { importrawrow("Email").trim } }.filter( value => value != "" )
                         
-            // Import data validation
-            val importdata = importrawdata.map{ importrawrow => {
+            // Import data validation first round
+            // Validate value, manadatory, duplicate emp id, duplicate email.
+            val importpersons1 = importrawdata.map{ importrawrow => {
               
               // Import values
               val EmployeeID = if( importrawrow.contains("Employee ID")) { importrawrow("Employee ID").trim } else { "" }
@@ -164,14 +165,29 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                   WorkDaySunday,
                   Admin,
                   SendWelcomeEmail,
-                  validation("status"),
-                  validation("msg")
+                  validation(0),
+                  validation(1)
               )
 
             } }
             
+            // Generate new list on pass validation employee
+            val importpersons1PASSONLY = importpersons1.filter( value => value(21) != "fail" )
+            
+            // Import data validation second round
+            // Validate manager exist in system and import sheet
+            val importpersons2 = importpersons1.map { person =>{
+              valmanager(person(5).toString, person, importpersons1PASSONLY, "manager", request)
+            } }
+            
+            // Import data validation second round
+            // Validate substitute manager exist in system and import sheet
+            val importpersons3 = importpersons2.map { person =>{
+              valmanager(person(6).toString, person, importpersons1PASSONLY, "substitute manager", request)
+            } }
+                           
             // Create document
-            val createdresult = importdata.filter( value => value(21) != "fail" ).map { newemployee => {
+            val createdresult = importpersons3.filter( value => value(21) != "fail" ).map { newemployee => {
               
               val dtf = DateTimeFormat.forPattern("d-MMM-yyyy")              
               
@@ -204,7 +220,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                 
               // Create Person Document
               val person_doc = PersonModel.doc.copy(
-                  _id=BSONObjectID(newemployee(22)),
+                  _id=BSONObjectID(newemployee(22).toString),
                   p = PersonModel.doc.p.copy(
                       empid = newemployee(0),
                       fn = newemployee(1),
@@ -212,8 +228,8 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                       em = newemployee(3),
                       nem = if ( newemployee(3) == "" ) { true } else { false },
                       pt = newemployee(4),
-                      mgrid = getManagerID(newemployee(5), importdata, request),
-                      smgrid = getManagerID(newemployee(6), importdata, request),
+                      mgrid = newemployee(5),
+                      smgrid = newemployee(6),
                       g = newemployee(7),
                       ms = newemployee(8),
                       dpm = newemployee(9),
@@ -253,7 +269,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             } }
             
             // Generate error information
-           val importerror = importdata.zipWithIndex.map { case (newemployee, index) => {
+           val importerror = importpersons3.zipWithIndex.map { case (newemployee, index) => {
              if (newemployee(21) == "fail") {
                "Row " + { index + 2 } + ": " + newemployee(22) +"<br>"
              } else { "" }
@@ -311,7 +327,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
     }
               
   }
-  
+    
   private def valdata(
       p_EmployeeID:String, 
       p_FirstName:String, 
@@ -361,102 +377,130 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
     val isSameManager = if (p_Manager != "" && p_SubstituteManager != "") {
       if (p_Manager == p_SubstituteManager) { true } else { false }
     }
-    
-    val ismanagerexist = if (p_Manager!="") {
-      if (Await.result(PersonModel.findOne(BSONDocument("p.em" -> p_Manager), p_request), Tools.db_timeout).isDefined) {
-        true
-      } else if (p_empemaillist.contains(p_Manager)) {
-        true
-      } else { 
-        false
-      }
-    }
-    
-    val issmanagerexist = if (p_SubstituteManager!="") {
-      if (Await.result(PersonModel.findOne(BSONDocument("p.em" -> p_SubstituteManager), p_request), Tools.db_timeout).isDefined) {
-        true
-      } else if (p_empemaillist.contains(p_SubstituteManager)) {
-        true
-      } else { 
-        false
-      }
-    }
-      
+          
     // Validate - mandatory fields
     if (p_FirstName=="" || p_LastName=="" || p_Gender=="" || p_MaritalStatus=="" || p_Office=="" ) {
-      Map("status" -> "fail", "msg" -> "First Name (M), Last Name (M), Gender (M), Marital Status (M) and Office (M) is mandatory.")
+      List("fail", "First Name (M), Last Name (M), Gender (M), Marital Status (M) and Office (M) is mandatory.")
 
       // Validation - Employee ID – if not empty, then must be unique.
     } else if (isempidexist == true) {
-      Map("status" -> "fail", "msg" -> "Someone already used or duplicate employee id in import csv file.")
+      List("fail", "Someone already used or duplicate employee id in import csv file.")
       
       // Validation - Email format
     } else if (p_Email!="" && !DataValidationUtility.isValidEmail(p_Email)) {
-      Map("status" -> "fail", "msg" -> "Invalid email address format.")  
+      List("fail", "Invalid email address format.")  
         
       // Validation - Email must be unique
     } else if (isempemailexist == true) {
-      Map("status" -> "fail", "msg" -> "Someone already used or duplicate email address in import csv file.")  
+      List("fail", "Someone already used or duplicate email address in import csv file.")  
       
       // Validation - Office is exist
     } else if (!DataValidationUtility.isOfficeExist(p_Office, p_request)) {
-      Map("status" -> "fail", "msg" -> "Invalid office.")  
+      List("fail", "Invalid office.")  
       
       // Validation - Gender
     } else if (!DataValidationUtility.isValidGender(p_Gender)) {
-      Map("status" -> "fail", "msg" -> "Invalid gender.")  
-      
-      // Validation - Manager 
-    } else if (ismanagerexist == false) {
-      Map("status" -> "fail", "msg" -> "Invalid manager.")  
-      
-      // Validation - Substitute Manager 
-    } else if (issmanagerexist == false) {
-      Map("status" -> "fail", "msg" -> "Invalid substitute manager.")  
-      
+      List("fail", "Invalid gender.")  
+            
       // Validation - Manager and Substitute Manager is same
     } else if (isSameManager == true) {
-      Map("status" -> "fail", "msg" -> "Substitute Manager can not same with Manager.")  
+      List("fail", "Substitute Manager can not same with Manager.")  
       
       // Validation - Marital Status
     } else if (!DataValidationUtility.isValidMaritalStatus(p_MaritalStatus)) {
-      Map("status" -> "fail", "msg" -> "Invalid marital status.")  
+      List("fail", "Invalid marital status.")  
       
       // Validation - Join Date Format
     } else if (p_JoinDate!="" && !DataValidationUtility.isValidDate(p_JoinDate)) {
-      Map("status" -> "fail", "msg" -> "Join date format not recognised. Date format must dd-mmm-yyyy. ie 31-Jan-2017")
+      List("fail", "Join date format not recognised. Date format must dd-mmm-yyyy. ie 31-Jan-2017")
       
       // Validation - Boolean
     } else if (p_WorkDayMonday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayMonday)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Work Day - Monday. Please fill with Yes/No.")
+      List("fail", "Invalid value for Work Day - Monday. Please fill with Yes/No.")
       
     } else if (p_WorkDayTuesday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayTuesday)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Work Day - Tuesday. Please fill with Yes/No.")
+      List("fail", "Invalid value for Work Day - Tuesday. Please fill with Yes/No.")
       
     } else if (p_WorkDayWebnesday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayWebnesday)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Work Day - Webnesday. Please fill with Yes/No.")
+      List("fail", "Invalid value for Work Day - Webnesday. Please fill with Yes/No.")
       
     } else if (p_WorkDayThursday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayThursday)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Work Day - Thursday. Please fill with Yes/No.")
+      List("fail", "Invalid value for Work Day - Thursday. Please fill with Yes/No.")
       
     } else if (p_WorkDayFriday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayFriday)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Work Day - Friday. Please fill with Yes/No.")
+      List("fail", "Invalid value for Work Day - Friday. Please fill with Yes/No.")
       
     } else if (p_WorkDaySaturday!="" && !DataValidationUtility.isValidYesNo(p_WorkDaySaturday)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Work Day - Saturday. Please fill with Yes/No.")
+      List("fail", "Invalid value for Work Day - Saturday. Please fill with Yes/No.")
       
     } else if (p_WorkDaySunday!="" && !DataValidationUtility.isValidYesNo(p_WorkDaySunday)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Work Day - Sunday. Please fill with Yes/No.")
+      List("fail", "Invalid value for Work Day - Sunday. Please fill with Yes/No.")
       
     } else if (p_Admin!="" && !DataValidationUtility.isValidYesNo(p_Admin)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Admin. Please fill with Yes/No.")
+      List("fail", "Invalid value for Admin. Please fill with Yes/No.")
       
     } else if (p_SendWelcomeEmail!="" && !DataValidationUtility.isValidYesNo(p_SendWelcomeEmail)) {
-      Map("status" -> "fail", "msg" -> "Invalid value for Send Welcome Email. Please fill with Yes/No.")
+      List("fail", "Invalid value for Send Welcome Email. Please fill with Yes/No.")
       
       // Validation Pass
     } else {
-      Map("status" -> "pass", "msg" -> BSONObjectID.generate.stringify)
+      List("pass", BSONObjectID.generate.stringify)
+    }
+    
+  }
+  
+  // This function is to validate manager and substitute manager.
+  private def valmanager(p_manager:String, p_person:List[Any], p_passed_person:List[List[Any]], p_option:String, p_request:RequestHeader) : List[String] = {
+            
+    if (p_person(21) == "fail"){
+      List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, p_person(5).toString, p_person(6).toString, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, p_person(21).toString, p_person(22).toString())
+    } else {
+      
+      // validate manager
+      if (p_option == "manager") {
+
+        if (p_manager == "") {
+          val manager = p_passed_person.filter( value => value(3) == p_person(3) )
+          if (manager.isEmpty) {
+            List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, p_person(5).toString, p_person(6).toString, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, "fail", "Invalid manager.")
+          } else {
+            List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, manager(0)(22).toString(), p_person(6).toString, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, p_person(21).toString, p_person(22).toString)
+          }
+        } else {
+          val manager = Await.result(PersonModel.findOne(BSONDocument("p.em" -> p_manager), p_request), Tools.db_timeout)
+          if (manager.isDefined) {
+            List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, manager.get._id.stringify, p_person(6).toString, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, p_person(21).toString, p_person(22).toString)
+          } else {
+            val manager = p_passed_person.filter( value => value(3) == p_manager )
+            if (manager.isEmpty) {
+              List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, p_person(5).toString, p_person(6).toString, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, "fail", "Invalid manager.")
+            } else {
+              List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, manager(0)(22).toString(), p_person(6).toString, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, p_person(21).toString, p_person(22).toString)
+            } 
+          }
+        }
+        
+      } else {
+        
+        // validate substitute manager
+        if (p_manager == "") {
+          List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, p_person(5).toString, "", p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, p_person(21).toString, p_person(22).toString())
+        } else {
+          val manager = Await.result(PersonModel.findOne(BSONDocument("p.em" -> p_manager), p_request), Tools.db_timeout)
+          if (manager.isDefined) {
+            List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, p_person(5).toString, manager.get._id.stringify, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, p_person(21).toString, p_person(22).toString)
+          } else {
+            val manager = p_passed_person.filter( value => value(3) == p_manager )
+            if (manager.isEmpty) {
+              List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, p_person(5).toString, p_person(6).toString, p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, "fail", "Invalid substitute manager.")
+            } else {
+              List(p_person(0).toString, p_person(1).toString, p_person(2).toString, p_person(3).toString, p_person(4).toString, p_person(5).toString, manager(0)(22).toString(), p_person(7).toString, p_person(8).toString, p_person(9).toString, p_person(10).toString, p_person(11).toString, p_person(12).toString, p_person(13).toString, p_person(14).toString, p_person(15).toString, p_person(16).toString, p_person(17).toString(), p_person(18).toString, p_person(19).toString, p_person(20).toString, p_person(21).toString, p_person(22).toString)
+            } 
+          }
+        }
+        
+      }
+
     }
     
   }
