@@ -365,7 +365,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
     }
     
     val isempemailexist = if (p_Email!="") {
-      if (Await.result(PersonModel.findOne(BSONDocument("p.em" -> p_Email), p_request), Tools.db_timeout).isDefined) {
+      if (Await.result(AuthenticationModel.findOneByEmail(p_Email.toLowerCase()), Tools.db_timeout).isDefined) {
         true
       } else if (p_empemaillist.count { _ == p_Email } > 1) {
         true
