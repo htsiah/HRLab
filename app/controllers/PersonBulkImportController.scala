@@ -253,10 +253,10 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
               AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=newemployee(22), c="Create by using CSV import."), p_request=request)
               
               // Create department keyword if import department no exist
-              KeywordModel.addKeywordValue("Department", newemployee(9), request)
+              Await.result(KeywordModel.addKeywordValue("Department", newemployee(9), request), Tools.db_timeout)
               
               // Create position keyword if import position no exist
-              KeywordModel.addKeywordValue("Position Type", newemployee(4), request)
+              Await.result(KeywordModel.addKeywordValue("Position Type", newemployee(4), request), Tools.db_timeout)
               
               // Output success result
               "<tr style='font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px;'>" +
