@@ -140,7 +140,7 @@ $(function(){
 				$("#file-input-control").addClass("hidden");
 				$("#file-error").addClass("hidden");
 				$("#file-loader").removeClass("hidden");
-				if (!($("#btnApply").text()=="Apply for 0 day" || $("#btnApply").text()=="Conflict with other leave application  Please select to other date")) { $("#btnApply").attr("disabled", "disabled"); };
+				$("#btnApply").attr("disabled", "disabled");
 			},
 	        success: function(data, textStatus, jqXHR){
 		        if (data.status == "exceed file size limit") {
@@ -152,15 +152,18 @@ $(function(){
 					$("#file-loader").addClass("hidden");
 					$("#file-view").html("<a href='/leavefile/viewByLK?p_lk=" + $("#docnum").val() + "' target='_blank'>" + file.name + "</a> &nbsp <a class='remove' href=javascript:onDelete('" + $("#docnum").val() + "') title='Delete'><i class='ace-icon fa fa-trash'></i></a>");
 					$("#file-view").removeClass("hidden");
-					if (!($("#btnApply").text()=="Apply for 0 day" || $("#btnApply").text()=="Conflict with other leave application  Please select to other date")) { $("#btnApply").removeAttr("disabled"); };
 		        }; 
+				if (!($("#btnApply").text()=="Apply for 0 day" || $("#btnApply").text().indexOf("Please select another date") >= 0 || $("#btnApply").text().indexOf("Not enough leave balance") >= 0)) { 
+    				$("#btnApply").removeAttr("disabled"); 
+    			};
 	        },
 	        error: function(jqXHR, textStatus, errorThrown){
 	        	$("#file-loader").addClass("hidden");
 	        	$("#file-view").removeClass("file-input-control");
-	        	$("#btnApply").removeAttr("disabled");
-	        	if ($("#btnApply").text() != "Apply for 0 day" ) { $("#btnApply").removeAttr("disabled"); };
-	        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.my.");
+				if (!($("#btnApply").text()=="Apply for 0 day" || $("#btnApply").text().indexOf("Please select another date") >= 0 || $("#btnApply").text().indexOf("Not enough leave balance") >= 0)) { 
+    				$("#btnApply").removeAttr("disabled"); 
+    			};
+	        	alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
 	        }
 	    });	
 		
@@ -193,16 +196,16 @@ function setApplyBtn() {
 			dataType: "json",
 			success: function(data){
 				if (data.msg == "overlap") {
-					$("#btnApply").html("Conflict with other leave application <br /> Please select to other date");
+					$("#btnApply").html("Conflict with other leave application <br /> Please select another date");
 					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.msg == "restricted on event") {
-					$("#btnApply").html("Restricted leave application on event day <br /> Please select to other date");
+					$("#btnApply").html("Restrict leave application on event day <br /> Please select another date");
 					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.a <= 0) {
 					$("#btnApply").text("Apply for 0 day");
 					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.b < 0) {
-					$("#btnApply").html("Apply for " + data.a + " day(s) <br /> No enough leave balance");
+					$("#btnApply").html("Apply for " + data.a + " day(s) <br /> Not enough leave balance");
 					$("#btnApply").attr("disabled", "disabled");
 				} else {
 					$("#btnApply").html("Apply for " + data.a + " day(s) <br />" + data.b + " day(s) remaining balance");

@@ -45,7 +45,7 @@ function setupJqGrid(data){
 			{name:'cbal',index:'cbal',width:100,sorttype:"float"},
 			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
-	   	rowNum:100,
+	   	rowNum:250,
 	   	rowList:[],
 	   	pager: '#grid-pager',
 	   	altRows: true,

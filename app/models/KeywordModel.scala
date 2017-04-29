@@ -118,7 +118,7 @@ object KeywordModel {
   	
   // Update document
   def update(p_query:BSONDocument, p_doc:Keyword, p_request:RequestHeader) = {
-    val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
+    val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(v = p_doc.v.distinct, sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
     future.onComplete {
       case Failure(e) => throw e
       case Success(lastError) => {}
@@ -198,6 +198,18 @@ object KeywordModel {
       case "Leave Type" => findProtectLeaveTypeKey()
       case _ => List("")
     }
+    
+  }
+  
+  def addKeywordValue(p_keyword:String, p_value:String, p_request:RequestHeader) = {
+    
+    val maybe_doc = KeywordModel.findOne(BSONDocument("n" -> p_keyword), p_request)
+    maybe_doc.map { doc => { 
+      if (!doc.get.v.contains(p_value)) {
+        val values = List(p_value).:::(doc.get.v)
+        KeywordModel.update(BSONDocument("_id" -> doc.get._id), doc.get.copy(v=values.filter { value => value != "" }), p_request)
+      }
+    } }
     
   }
   
