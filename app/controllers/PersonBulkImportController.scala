@@ -86,7 +86,6 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             
             // Generate import employee id list
             val empidlist = importrawdata.map{ importrawrow => if( importrawrow.contains("Employee ID")) { importrawrow("Employee ID").trim } }.filter( value => value != "" )
-            val empemaillist = importrawdata.map{ importrawrow => if( importrawrow.contains("Email")) { importrawrow("Email").trim } }.filter( value => value != "" )
                         
             // Import data validation first round
             // Validate value, manadatory, duplicate emp id, duplicate email.
@@ -173,6 +172,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             
             // Generate new list on pass validation employee
             val importpersons1PASSONLY = importpersons1.filter( value => value(21) != "fail" )
+            val importpersons1PASSONLYNoEmail = importpersons1.filter( value => value(3) != "" )
             
             // Import data validation second round
             // Validate manager exist in system and import sheet
@@ -393,6 +393,10 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
       // Validation - Email must be unique
     } else if (isempemailexist == true) {
       List("fail", "Someone already used or duplicate email address in import csv file.")  
+      
+      // Validation - Manager is mandatory when no email
+    } else if (p_Email == "" && p_Manager == "") {
+      List("fail", "Manager is mandatory on no email employee.")  
       
       // Validation - Office is exist
     } else if (!DataValidationUtility.isOfficeExist(p_Office, p_request)) {
