@@ -86,7 +86,8 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             
             // Generate import employee id list
             val empidlist = importrawdata.map{ importrawrow => if( importrawrow.contains("Employee ID")) { importrawrow("Employee ID").trim } }.filter( value => value != "" )
-                        
+            val empemaillist = importrawdata.map{ importrawrow => if( importrawrow.contains("Email")) { importrawrow("Email").trim } }.filter( value => value != "" )
+            
             // Import data validation first round
             // Validate value, manadatory, duplicate emp id, duplicate email.
             val importpersons1 = importrawdata.map{ importrawrow => {
@@ -172,7 +173,6 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
             
             // Generate new list on pass validation employee
             val importpersons1PASSONLY = importpersons1.filter( value => value(21) != "fail" )
-            val importpersons1PASSONLYNoEmail = importpersons1.filter( value => value(3) != "" )
             
             // Import data validation second round
             // Validate manager exist in system and import sheet
@@ -235,7 +235,7 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                       dpm = newemployee(9),
                       off = newemployee(10),
                       edat = if (newemployee(11) == "") { Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)) } else { Some(new DateTime(dtf.parseLocalDate(newemployee(11)).toDateTimeAtStartOfDay())) },
-                      rl = if (newemployee(19) == "yes") { List("Admin") } else { List("") }
+                      rl = if (newemployee(19) == "yes" && newemployee(3) != "") { List("Admin") } else { List("") }
                   ),
                   wd = PersonModel.doc.wd.copy(
                       wd1 = if (newemployee(12) == "yes") { true } else { false },
