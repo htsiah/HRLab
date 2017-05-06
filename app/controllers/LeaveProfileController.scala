@@ -558,11 +558,11 @@ class LeaveProfileController extends Controller with Secured {
           ",\"e3\":" + leavepolicy.ent.e3.e + ", \"e3_s\":" + leavepolicy.ent.e3.s + ", \"e3_cf\":" + leavepolicy.ent.e3.cf +
           ",\"e4\":" + leavepolicy.ent.e4.e + ", \"e4_s\":" + leavepolicy.ent.e4.s + ", \"e4_cf\":" + leavepolicy.ent.e4.cf +
           ",\"e5\":" + leavepolicy.ent.e5.e + ", \"e5_s\":" + leavepolicy.ent.e5.s + ", \"e5_cf\":" + leavepolicy.ent.e5.cf +
-          ",\"e6\":" + leavepolicy.ent.e6.e + ", \"e5_s\":" + leavepolicy.ent.e6.s + ", \"e5_cf\":" + leavepolicy.ent.e6.cf +
-          ",\"e7\":" + leavepolicy.ent.e7.e + ", \"e5_s\":" + leavepolicy.ent.e7.s + ", \"e5_cf\":" + leavepolicy.ent.e7.cf +
-          ",\"e8\":" + leavepolicy.ent.e8.e + ", \"e5_s\":" + leavepolicy.ent.e8.s + ", \"e5_cf\":" + leavepolicy.ent.e8.cf +
-          ",\"e9\":" + leavepolicy.ent.e9.e + ", \"e5_s\":" + leavepolicy.ent.e9.s + ", \"e5_cf\":" + leavepolicy.ent.e9.cf +
-          ",\"e10\":" + leavepolicy.ent.e10.e + ", \"e5_s\":" + leavepolicy.ent.e10.s + ", \"e5_cf\":" + leavepolicy.ent.e10.cf +
+          ",\"e6\":" + leavepolicy.ent.e6.e + ", \"e6_s\":" + leavepolicy.ent.e6.s + ", \"e6_cf\":" + leavepolicy.ent.e6.cf +
+          ",\"e7\":" + leavepolicy.ent.e7.e + ", \"e7_s\":" + leavepolicy.ent.e7.s + ", \"e7_cf\":" + leavepolicy.ent.e7.cf +
+          ",\"e8\":" + leavepolicy.ent.e8.e + ", \"e8_s\":" + leavepolicy.ent.e8.s + ", \"e8_cf\":" + leavepolicy.ent.e8.cf +
+          ",\"e9\":" + leavepolicy.ent.e9.e + ", \"e9_s\":" + leavepolicy.ent.e9.s + ", \"e9_cf\":" + leavepolicy.ent.e9.cf +
+          ",\"e10\":" + leavepolicy.ent.e10.e + ", \"e10_s\":" + leavepolicy.ent.e10.s + ", \"e10_cf\":" + leavepolicy.ent.e10.cf +
           ",\"earned\":" + leaveearned + ",\"ent\":" + ent + ",\"bal\":" + leaveearned + ",\"cbal\":" + cbal + ",\"m_jan\":" + m_jan +
           ",\"m_feb\":" + m_feb + ",\"m_mar\":" + m_mar + ",\"m_apr\":" + m_apr +
           ",\"m_may\":" + m_may + ",\"m_jun\":" + m_jun + ",\"m_jul\":" + m_jul +

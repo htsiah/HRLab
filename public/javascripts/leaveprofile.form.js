@@ -15,19 +15,7 @@ $(function(){
 		btn_down_class:'btn-danger'
 	});
 
-	$('#e1,#e2,#e3,#e4,#e5,#e6,#e7,#e8,#e9,#e10,#e1_cf,#e2_cf,#e3_cf,#e4_cf,#e5_cf,#e6_cf,#e7_cf,#e8_cf,#e9_cf,#e10_cf').ace_spinner({
-		value:0,
-		min:0,
-		max:120,
-		step:1, 
-		on_sides: true, 
-		icon_up:'ace-icon fa fa-plus smaller-75', 
-		icon_down:'ace-icon fa fa-minus smaller-75', 
-		btn_up_class:'btn-success' , 
-		btn_down_class:'btn-danger'
-	});
-
-	$('#e1_s,#e2_s,#e3_s,#e4_s,#e5_s,#e6_s,#e7_s,#e8_s,#e9_s,#e10_s').ace_spinner({
+	$('#e1_s,#e2_s,#e3_s,#e4_s,#e5_s,#e6_s,#e7_s,#e8_s,#e9_s,#e10_s,#e1,#e2,#e3,#e4,#e5,#e6,#e7,#e8,#e9,#e10,#e1_cf,#e2_cf,#e3_cf,#e4_cf,#e5_cf,#e6_cf,#e7_cf,#e8_cf,#e9_cf,#e10_cf').ace_spinner({
 		value:0,
 		min:0,
 		max:999,
@@ -62,6 +50,21 @@ $(function(){
 				$("#e5_s").ace_spinner('value', data.e5_s);
 				$("#e5").ace_spinner('value', data.e5);
 				$("#e5_cf").ace_spinner('value', data.e5_cf);
+				$("#e6_s").ace_spinner('value', data.e6_s);
+				$("#e6").ace_spinner('value', data.e6);
+				$("#e6_cf").ace_spinner('value', data.e6_cf);
+				$("#e7_s").ace_spinner('value', data.e7_s);
+				$("#e7").ace_spinner('value', data.e7);
+				$("#e7_cf").ace_spinner('value', data.e7_cf);
+				$("#e8_s").ace_spinner('value', data.e8_s);
+				$("#e8").ace_spinner('value', data.e8);
+				$("#e8_cf").ace_spinner('value', data.e8_cf);
+				$("#e9_s").ace_spinner('value', data.e9_s);
+				$("#e9").ace_spinner('value', data.e9);
+				$("#e9_cf").ace_spinner('value', data.e9_cf);
+				$("#e10_s").ace_spinner('value', data.e10_s);
+				$("#e10").ace_spinner('value', data.e10);
+				$("#e10_cf").ace_spinner('value', data.e10_cf);
 				$( "#v_earned" ).text(data.earned);
 				$( "#v_ent" ).text(data.ent);
 				$( "#v_bal" ).text(data.bal);
@@ -96,6 +99,21 @@ $(function(){
 				$("#e5_s").ace_spinner('value', 0);
 				$("#e5").ace_spinner('value', 0);
 				$("#e5_cf").ace_spinner('value', 0);
+				$("#e6_s").ace_spinner('value', 0);
+				$("#e6").ace_spinner('value', 0);
+				$("#e6_cf").ace_spinner('value', 0);
+				$("#e7_s").ace_spinner('value', 0);
+				$("#e7").ace_spinner('value', 0);
+				$("#e7_cf").ace_spinner('value', 0);
+				$("#e8_s").ace_spinner('value', 0);
+				$("#e8").ace_spinner('value', 0);
+				$("#e8_cf").ace_spinner('value', 0);
+				$("#e9_s").ace_spinner('value', 0);
+				$("#e9").ace_spinner('value', 0);
+				$("#e9_cf").ace_spinner('value', 0);
+				$("#e10_s").ace_spinner('value', 0);
+				$("#e10").ace_spinner('value', 0);
+				$("#e10_cf").ace_spinner('value', 0);
 				$( "#v_earned" ).text("0");
 				$( "#v_ent" ).text("0");
 				$( "#v_bal" ).text("0");

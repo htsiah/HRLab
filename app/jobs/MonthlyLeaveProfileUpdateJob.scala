@@ -139,6 +139,17 @@ object MonthlyLeaveProfileUpdateJob {
           persons.map { person => {
             LeaveProfileModel.findOne(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => { 
               leaveprofiles.map { leaveprofile => {
+                if (leavepolicy.set.acc=="No accrue") {
+                  LeaveProfileModel.update(
+                      BSONDocument("_id" -> leaveprofile._id), 
+                      leaveprofile.copy(
+                          cal = leaveprofile.cal.copy(
+                              papr=0.0
+                          )
+                      ), 
+                      p_eid
+                  )
+                } else {
                   LeaveProfileModel.update(
                       BSONDocument("_id" -> leaveprofile._id), 
                       leaveprofile.copy(
@@ -153,12 +164,14 @@ object MonthlyLeaveProfileUpdateJob {
                       ), 
                       p_eid
                   )
+                }
               }}
             }}
           }}
         }}
       }}
     }}
+    
   }
   
 }
