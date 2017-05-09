@@ -74,7 +74,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
             
             // Send email
             mailerClient.send(
-                MailUtility.getEmail(List("support@hrsifu.com"), "System Notification: " + formWithData.company + " deleted.", formWithData.company + "(" + request.session.get("entity").get +  ") deleted by " + request.session.get("username").get + ".")
+                MailUtility.getEmail(List("support@hrsifu.com"), "System Notification: " + formWithData.company + " has been deleted.", formWithData.company + "(" + request.session.get("entity").get +  ") deleted by " + request.session.get("username").get + ".")
             )
             
             // return result
@@ -87,7 +87,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
   
   def success = withAuth { username => implicit request => {
     Cache.remove("PersonProfile." + request.session.get("username").get)
-    Future.successful(Redirect(routes.AuthenticationController.login()).withNewSession.flashing("success" -> (request.session.get("company").get + " deleted.")))
+    Future.successful(Redirect(routes.AuthenticationController.login()).withNewSession.flashing("success" -> (request.session.get("company").get + " has been deleted.")))
   }}
   
   def fail = withAuth { username => implicit request => {

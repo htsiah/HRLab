@@ -208,6 +208,7 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
               isLastAdmin <- PersonModel.isLastAdmin(p_id, request)
               leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid" -> p_id), request)
               maybealert_missingleavepolicy <- AlertUtility.findOne(BSONDocument("k"->1015))
+              maybeauth <- AuthenticationModel.findOneByEmail(formWithData.p.em.toLowerCase())
             } yield {
               
               // Make sure after person update, all leave profile able link to leave policy.
@@ -225,18 +226,45 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
                 
                 if (request.session.get("id").get==p_id) {
                   // Update session when update own record.
-                  val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)
-                  
+                  val maybe_IsManager = Await.result(PersonModel.findOne(BSONDocument("p.mgrid" -> request.session.get("id").get), request), Tools.db_timeout)           
                   val isManager = if(maybe_IsManager.isEmpty) "false" else "true"
                   Redirect(routes.PersonController.index).withSession(
                     request.session + 
                     ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
                     ("roles"->formWithData.p.rl.mkString(",")) + 
                     ("ismanager"->isManager)
+                  ).flashing(
+                      "success" -> { formWithData.p.fn + " " + formWithData.p.ln + " has been updated." }
                   )
                 } else {
-                  Redirect(routes.PersonController.index)
-                } 
+                                    
+                  if (formWithData.p.em == ""){
+                    Redirect(routes.PersonController.index).flashing(
+                        "success" -> { formWithData.p.fn + " " + formWithData.p.ln + " has been updated." }
+                    )
+                  } else {
+                    // Create authentication document if not available      
+                    val maybeauth = Await.result(AuthenticationModel.findOneByEmail(formWithData.p.em.toLowerCase()), Tools.db_timeout)
+                    if (maybeauth.isDefined) {
+                      Redirect(routes.PersonController.index).flashing(
+                          "success" -> { formWithData.p.fn + " " + formWithData.p.ln + " has been updated." }
+                      )
+                    } else {
+                      val authentication_doc = Authentication(
+                          _id = BSONObjectID.generate,
+                          em = formWithData.p.em,
+                          p = Random.alphanumeric.take(8).mkString,
+                          r = Random.alphanumeric.take(8).mkString,
+                          sys = None
+                      )
+                      AuthenticationModel.insert(authentication_doc, p_request=request)
+                      Redirect(routes.PersonController.index).flashing(
+                          "success" -> { formWithData.p.fn + " " + formWithData.p.ln + " has been updated. Remember to send welcome email with logon detail to " + formWithData.p.em + "." }
+                      )
+                    }
+                  }
+                  
+                }
                 
               } else {
                 val replaceMap = Map(
@@ -274,7 +302,9 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
         )
       }
       
-      Future.successful(Redirect(routes.PersonController.index))
+      Future.successful(Redirect(routes.PersonController.index).flashing(
+          "success" -> {"Employee has been deleted." }
+      ))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }

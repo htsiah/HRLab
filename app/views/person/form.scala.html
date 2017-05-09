@@ -97,10 +97,24 @@
 			}
 		} else {
 			@if(person("p")("em").value.get=="") {
-				<dl class="dl-horizontal">
-					<dt><label>Email</label></dt>
-					<dd class="">N/A</dd>
-				</dl>
+				@input(person("p")("em"), '_label->"Email", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+					<div class="row">
+						<div class="col-xs-12 col-sm-8">
+    						<div class="input-group">
+    							<input type="text" name="@name" id="@id" class="form-control" value="@value" @toHtmlArgs(args) disabled>
+								<span class="input-group-addon"><i class="ace-icon fa fa-envelope"></i></span>
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-4">
+							<div class="checkbox" style="display: inline-block;">
+								<label>
+									<input type="checkbox" value="true" name="p.nem" id="p_nem" class="ace" @radioSelected(person("p")("nem").value, "true")>
+									<span class="lbl"> No Email</span>
+								</label>
+							</div>
+						</div>
+					</div>
+				}
 			} else {
 				<dl class="dl-horizontal">
 					<dt><label>Email</label></dt>
@@ -180,25 +194,51 @@
 				</div>
 			</dd>
 		</dl>
-
-		@if(!(oid!="" && person("p")("em").value.get=="")) {
+		
+		@if(oid=="") {	
 			<dl class="dl-horizontal">
 				<dt><label>Role</label></dt>
 				<dd>
-					@if(isLastAdmin) {
-						Only admin
-					} else {
+					<div class="checkbox" style="display: inline-block;">
+						<label>
+							<input type="checkbox" value="Admin" name="rl.admin" id="rl_admin" class="ace" @radioSelected(person("p")("rl").value, "Admin")>
+							<span class="lbl"> Admin</span>
+						</label>
+					</div>
+				</dd>
+			</dl>		
+		} else {
+			@if(person("p")("em").value.get=="") {
+				<dl class="dl-horizontal">
+					<dt><label>Role</label></dt>
+					<dd>
 						<div class="checkbox" style="display: inline-block;">
 							<label>
-								<input type="checkbox" value="Admin" name="rl.admin" id="rl_admin" class="ace" @radioSelected(person("p")("rl").value, "Admin")>
+								<input type="checkbox" value="Admin" name="rl.admin" id="rl_admin" class="ace" disabled>
 								<span class="lbl"> Admin</span>
 							</label>
 						</div>
-					}
-				</dd>
-			</dl>
+					</dd>
+				</dl>	
+			} else {
+				<dl class="dl-horizontal">
+					<dt><label>Role</label></dt>
+					<dd>
+						@if(isLastAdmin) {
+							Only admin
+						} else {
+							<div class="checkbox" style="display: inline-block;">
+								<label>
+									<input type="checkbox" value="Admin" name="rl.admin" id="rl_admin" class="ace" @radioSelected(person("p")("rl").value, "Admin")>
+									<span class="lbl"> Admin</span>
+								</label>
+							</div>
+						}
+					</dd>
+				</dl>
+			}
 		}
-
+		
 		<div class="hidden">
 			@inputText(person("_id"),'type -> "hidden")
 			@inputText(person("p")("nem"),'type -> "hidden")
