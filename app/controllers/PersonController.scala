@@ -120,6 +120,10 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
           },
           formWithData => {
             
+            val person_objectID = BSONObjectID.generate
+            PersonModel.insert(formWithData.copy(_id=person_objectID), p_request=request)
+            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=person_objectID.stringify, c="Create document."), p_request=request)
+            
             if (formWithData.p.nem==false) {
               
               val authentication_doc = Authentication(
@@ -139,12 +143,18 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
                   "URL" -> {Tools.hostname + "/set/" + authentication_doc.em  + "/" + authentication_doc.r}
               )
               MailUtility.getEmailConfig(List(authentication_doc.em), 7, replaceMap).map { email => mailerClient.send(email) }
-            
+              Future.successful(Redirect(routes.PersonController.index).flashing(
+                  "success" -> { formWithData.p.fn + " " + formWithData.p.ln + " has been created. A welcome email with logon detail has been sent to " + formWithData.p.em + "." }
+              ))
+
+            } else {
+              
+              Future.successful(Redirect(routes.PersonController.index).flashing(
+                  "success" -> { formWithData.p.fn + " " + formWithData.p.ln + " has been created." }
+              ))
+              
             }
-            val person_objectID = BSONObjectID.generate
-            PersonModel.insert(formWithData.copy(_id=person_objectID), p_request=request)
-            AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=person_objectID.stringify, c="Create document."), p_request=request)
-            Future.successful(Redirect(routes.PersonController.index))
+
           }
       )
     } else {

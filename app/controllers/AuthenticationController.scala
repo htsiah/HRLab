@@ -187,7 +187,7 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
           AuthenticationModel.findOneByEmail(request.session.get("username").get).map( auth_doc => {
             if (auth_doc.get.p == formWithData.password) {
               AuthenticationModel.update(BSONDocument("em" -> request.session.get("username").get), auth_doc.get.copy(p=formWithData.npassword), request)
-              Redirect(routes.DashboardController.index).flashing("success" -> "Password updated")
+              Redirect(routes.DashboardController.index).flashing("success" -> "Password updated.")
             } else {
               val alert =  Await.result(AlertUtility.findOne(BSONDocument("k"->1012)), Tools.db_timeout)
               val change_doc = Change(password="", npassword="", cpassword="")

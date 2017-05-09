@@ -1,4 +1,6 @@
-@(persons: List[Person])(implicit session: play.api.mvc.Session)
+@import utilities.Alert
+
+@(persons: List[Person], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -35,6 +37,7 @@
 
 @if(session.get("roles").get.contains("Admin")) {
 	@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+		@layout.ace.alert(alert)
 		<div class="table-responsive">
 			<table id="persontable" class="table table-striped table-bordered table-hover">
 				<thead>
