@@ -4,10 +4,10 @@ $(function(){
 
 	// Setup keyword index table using jquery table
 	$('#persontable').dataTable({
+		"lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
 		"aoColumnDefs": [
 	    	{ "bSortable": false, "sClass":"text-center", "aTargets": [ 5 ] }
-	    ],
-	    paging: false
+	    ]
 	});
 });
 
