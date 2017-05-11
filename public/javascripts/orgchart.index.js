@@ -11,7 +11,7 @@ $(function(){
 			$("#chart-container").append("<div id='chart-container-" + i + "'></div>");
 			$('#chart-container-' + i).orgchart({
 				'data' : "/orgchart/getchartstructure/" + data.ids[i],
-				'depth': 10,
+				'verticalDepth': data.verticalDepth,
 				'nodeContent': 'title',
 				'zoom': true,
 				'zoominLimit': 1,

@@ -55,4 +55,30 @@ class OrgChartSettingController extends Controller with Secured {
     }
   }}
   
+  def updateVerticalDepth(p_vdepth:String) = withAuth { username => implicit request => { 
+    if(request.session.get("roles").get.contains("Admin")){
+      for { 
+        maybe_orgchartsetting <- OrgChartSettingModel.findOne(BSONDocument(), request)
+      } yield {
+        render {
+          case Accepts.Html() => Ok(views.html.error.unauthorized())
+          case Accepts.Json() => {
+            val orgchartsetting = maybe_orgchartsetting.get
+            OrgChartSettingModel.update(
+               BSONDocument(), 
+               orgchartsetting.copy(
+                   _id=orgchartsetting._id,
+                   vdepth=p_vdepth.toInt
+               ), 
+               request
+            )
+            Ok(Json.parse("""{"status":true}""")).as("application/json")
+          }
+        }
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
 }

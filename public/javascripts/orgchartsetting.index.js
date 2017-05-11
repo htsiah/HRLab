@@ -3,6 +3,9 @@ $(function(){
 	$("#navAdmin").addClass("active open");
     $("#navOrgChartSetting").addClass("active");
     	
+	// Mouse over help
+	$('[data-rel=popover]').popover({container:'body'});
+	
     // Disable top level manager if top level is "Automatic - employee who report to himself will be at the top-level".
 	if ($("#top-level-field").val() == "Automatic - employee who report to himself will be at the top-level") {
 		$("#top-level-manager-value").text("N/A");
@@ -60,7 +63,36 @@ $(function(){
 		};
 		
 	});
-	    
+	
+	// Vertical Depth
+	$("#vertical-depth-pencil").click(function(){
+		$("#vertical-depth-view").hide();
+		$("#vertical-depth-edit").show();
+	});
+
+	$("#vertical-depth-times").click(function(){
+		$("#vertical-depth-edit").hide();
+		$("#vertical-depth-field").val(verticaldepthvalue);
+		$("#vertical-depth-view").show();
+	});
+	
+	$("#vertical-depth-check").click(function(){
+		verticaldepthvalue = $("#vertical-depth-field").val();
+		$.ajax({
+			url: "/orgchartsetting/updateverticaldepth/" + verticaldepthvalue,
+			type: 'GET',
+			dataType: "json",
+			success: function(result){
+				$("#vertical-depth-edit").hide();
+				$('#vertical-depth-value').text(verticaldepthvalue);
+				$("#vertical-depth-view").show();
+            },
+            error: function(xhr, textStatus, errorThrown) {
+            	alert("Failed update org chart setting!!!");
+			}
+		});
+	});
+	
     // Bind Top Level field 
     $(document).on('change', '#top-level-field', function(e) {
     	if (this.options[this.selectedIndex].value == "Automatic - employee who report to himself will be at the top-level") { 
@@ -85,6 +117,7 @@ $(function(){
 
 let toplevelvalue = $("#top-level-field").val();
 let toplevelmanagervalue = $("#top-level-manager-field").val() || [];
+let verticaldepthvalue = $("#vertical-depth-field").val();
 
 function resetFields() {
 	$("#top_level_manager_field-error").remove();

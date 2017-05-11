@@ -20,3 +20,6 @@ db.alert.insert({k : NumberInt(1016), m : "You are updating position, gender or 
 db.alert.insert({k : NumberInt(1017), m : "Applicant's employment start date is on #DATE#.<br/>You are not allow to apply leave before applicant's employment start date.<br/>Please change leave's application date or applicant's employee profile."})
 db.alert.insert({k : NumberInt(2000), m : "An email with reset instructions has been sent."})
 db.alert.insert({k : NumberInt(2001), m : "Password has been updated."})
+
+use d-hrsifu-directory
+db.orgchartsetting.update({},{ $set: {"vdepth": NumberInt(10) }}, false, true)

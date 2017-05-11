@@ -15,6 +15,7 @@ case class OrgChartSetting (
     _id: BSONObjectID,
     tl: String,
     tlm: List[String],
+    vdepth: Int,
     sys: Option[System]
 )
 
@@ -41,6 +42,7 @@ object OrgChartSettingModel {
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("tl").get,
           p_doc.getAs[List[String]]("tlm").get,
+          p_doc.getAs[Int]("vdepth").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
     }
@@ -67,6 +69,7 @@ object OrgChartSettingModel {
           "_id" -> p_doc._id,
           "tl" -> p_doc.tl,
           "tlm" -> p_doc.tlm,
+          "vdepth" -> p_doc.vdepth,
           "sys" -> p_doc.sys
       )     
     }
@@ -78,6 +81,7 @@ object OrgChartSettingModel {
       _id = BSONObjectID.generate,
       tl = "Automatic - employee who report to himself will be at the top-level",
       tlm = List(),
+      vdepth = 10,
       sys = None
   )
   

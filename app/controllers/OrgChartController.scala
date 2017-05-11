@@ -20,6 +20,7 @@ class OrgChartController extends Controller with Secured {
     ))
   }}
   
+  // Get Top Level Manager
   def getChart = withAuth { username => implicit request => { 
     for {
       maybe_OrgChartSetting <- OrgChartSettingModel.findOne(BSONDocument(), request)
@@ -35,13 +36,14 @@ class OrgChartController extends Controller with Secured {
           } else {
             maybe_OrgChartSetting.get.tlm
           }
-          val json = Json.obj("ids" -> Json.toJson(chartId))
+          val json = Json.obj("ids" -> Json.toJson(chartId), "verticalDepth" -> maybe_OrgChartSetting.get.vdepth)
           Ok(json).as("application/json")
         }
       }
     }
   }}
   
+  // Build Chart using Top Level Manageer
   def getchartstructure(p_id:String) = withAuth { username => implicit request => { 
     for {
       maybe_persons <- PersonModel.find(BSONDocument("_id" -> BSONObjectID(p_id)), BSONDocument("_id" -> 1, "p.mgrid" -> 1), request)

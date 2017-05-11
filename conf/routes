@@ -182,6 +182,7 @@ GET		/orgchart/getchartstructure/:p_id	controllers.OrgChartController.getchartst
 # Org Chart
 GET		/orgchartsetting										controllers.OrgChartSettingController.index
 GET		/orgchartsetting/updateorgchartsetting/:p_toplevel		controllers.OrgChartSettingController.updateOrgChartSetting(p_toplevel:String, p_toplevelmanager:List[String]?=List())
+GET		/orgchartsetting/updateverticaldepth/:p_vdepth			controllers.OrgChartSettingController.updateVerticalDepth(p_vdepth:String)
 
 # Delete Application
 POST	/deleteapp/delete			controllers.DeleteAppController.delete
