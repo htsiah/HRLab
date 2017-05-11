@@ -221,6 +221,9 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
               } }
               
               if (LeaveTypesList.isEmpty) {
+                
+                println(formWithData.p.nem)
+                
                 Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(p_id)), formWithData.copy(_id=BSONObjectID(p_id)), request), Tools.db_timeout)
                 AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Modify document."), p_request=request)
                 

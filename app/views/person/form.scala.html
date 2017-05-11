@@ -88,7 +88,7 @@
 					<div class="col-xs-6 col-sm-4">
 						<div class="checkbox" style="display: inline-block;">
 							<label>
-								<input type="checkbox" value="true" name="p.nem" id="p_nem" class="ace" @radioSelected(person("p")("nem").value, "true")>
+								<input type="checkbox" value="true" name="nem" id="nem" class="ace" @radioSelected(person("p")("nem").value, "true")>
 								<span class="lbl"> No Email</span>
 							</label>
 						</div>
@@ -108,7 +108,7 @@
 						<div class="col-xs-6 col-sm-4">
 							<div class="checkbox" style="display: inline-block;">
 								<label>
-									<input type="checkbox" value="true" name="p.nem" id="p_nem" class="ace" @radioSelected(person("p")("nem").value, "true")>
+									<input type="checkbox" value="true" name="nem" id="nem" class="ace" @radioSelected(person("p")("nem").value, "true")>
 									<span class="lbl"> No Email</span>
 								</label>
 							</div>
@@ -250,7 +250,7 @@
 			@inputText(person("sys")("ddat"),'type -> "hidden")
 			@inputText(person("sys")("dby"),'type -> "hidden")
 			@inputText(person("sys")("ll"),'type -> "hidden")
-			@if(oid!="") {
+			@if(person("p")("em").value.get!="") {
 				@inputText(person("p")("em"),'type -> "hidden")
 			}	
 		</div>

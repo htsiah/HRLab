@@ -138,7 +138,7 @@ $(function(){
 		
 });
 
-$("#p_nem").click(function(){
+$("#nem").click(function(){
 	if(this.checked){
 		// Disable email field
 		$("#p_em").val("");
@@ -149,7 +149,11 @@ $("#p_nem").click(function(){
 		$('#rl_admin').attr('checked', false);
 		$("#rl_admin").attr("disabled", "disabled");
 		$("#p_rl").val("");
+		
+		//Set value
+		$("#p_nem").val(true);
 	} else {
+		$("#p_nem").val(false);
 		$("#p_em").removeAttr("disabled");
 		$("#rl_admin").removeAttr("disabled");
 	}
