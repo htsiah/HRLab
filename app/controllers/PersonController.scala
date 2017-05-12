@@ -212,13 +212,10 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
             } yield {
               
               // Make sure after person update, all leave profile able link to leave policy.
-              var LeaveTypesList = List[String]()
-              leaveprofiles.map { leaveprofile => {
+              val LeaveTypesList = leaveprofiles.map { leaveprofile => {
                 val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.g + " only", formWithData.p.ms + " only", request), Tools.db_timeout)
-                if ( isAvailable == false) {
-                  LeaveTypesList = LeaveTypesList :+ leaveprofile.lt
-                }
-              } }
+                if ( isAvailable == false) { leaveprofile.lt } else { "" }
+              } }.filter( value => value != "" )
               
               if (LeaveTypesList.isEmpty) {
                                 
@@ -403,14 +400,10 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
             } yield {
               
               // Make sure after person update, leave profiles able link to leave policy.
-              var LeaveTypesList = List[String]()
-              leaveprofiles.map { leaveprofile => {
+              val LeaveTypesList = leaveprofiles.map { leaveprofile => {
                 val isAvailable = Await.result(LeavePolicyModel.isAvailable(leaveprofile.lt, formWithData.p.g + " only", formWithData.p.ms + " only", request), Tools.db_timeout)
-                if ( isAvailable == false) {
-                  LeaveTypesList = LeaveTypesList :+ leaveprofile.lt
-                }
-              } }
-              
+                if ( isAvailable == false) { leaveprofile.lt } else { "" }
+              } }.filter( value => value != "" )
               
               if (LeaveTypesList.isEmpty) {
                 Await.result(PersonModel.update(BSONDocument("_id" -> BSONObjectID(request.session.get("id").get)), formWithData.copy(_id=BSONObjectID(request.session.get("id").get)), request), Tools.db_timeout)
