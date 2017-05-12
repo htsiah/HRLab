@@ -1,4 +1,4 @@
-# mongo 128.199.80.162:9622
+# mongo [IP]:[PORT]
 # use admin
 # db.auth( "[Username]", "[Password]" )
 
