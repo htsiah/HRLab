@@ -1,7 +1,0 @@
-# Create Org Chart Setting
-use d-hrsifu-directory
-db.company.find( { "sys.ddat" :{ $exists:false } } ).snapshot().forEach(
-    function (elem) {
-    	db.orgchartsetting.insert({tl:"Automatic - employee who report to himself will be at the top-level",tlm:[],"sys":{"eid":elem.sys.eid,"cdat":ISODate("2016-03-01T00:00:00.000+0800"),"mdat" : ISODate("2017-03-01T00:00:00.000+0800"),"mby" : "System"}});
-    }
-);
