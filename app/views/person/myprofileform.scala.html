@@ -92,48 +92,123 @@
 		<dl class="dl-horizontal">
 			<dt><label>Work Day</label></dt>
 			<dd>
-				<div class="checkbox" style="display: inline-block;">
-					<label>
-						<input type="checkbox" value="true" name="wd.wd1" id="wd_w1" class="ace" @radioSelected(person("wd")("wd1").value, "true")>
-						<span class="lbl"> 1</span>
-					</label>
-				</div>
-				<div class="checkbox" style="display: inline-block;">
-					<label>
-						<input type="checkbox" value="true" name="wd.wd2" id="wd_w2" class="ace" @radioSelected(person("wd")("wd2").value, "true")>
-						<span class="lbl"> 2</span>
-					</label>
-				</div>
-				<div class="checkbox" style="display: inline-block;">
-					<label>
-						<input type="checkbox" value="true" name="wd.wd3" id="wd_w3" class="ace" @radioSelected(person("wd")("wd3").value, "true")>
-						<span class="lbl"> 3</span>
-					</label>
-				</div>
-				<div class="checkbox" style="display: inline-block;">
-					<label>
-						<input type="checkbox" value="true" name="wd.wd4" id="wd_w4" class="ace" @radioSelected(person("wd")("wd4").value, "true")>
-						<span class="lbl"> 4</span>
-					</label>
-				</div>
-				<div class="checkbox" style="display: inline-block;">
-					<label>
-						<input type="checkbox" value="true" name="wd.wd5" id="wd_w5" class="ace" @radioSelected(person("wd")("wd5").value, "true")>
-						<span class="lbl"> 5</span>
-					</label>
-				</div>
-				<div class="checkbox" style="display: inline-block;">
-					<label>
-						<input type="checkbox" value="true" name="wd.wd6" id="wd_w6" class="ace" @radioSelected(person("wd")("wd6").value, "true")>
-						<span class="lbl"> 6</span>
-					</label>
-				</div>
-				<div class="checkbox" style="display: inline-block;">
-					<label>
-						<input type="checkbox" value="true" name="wd.wd7" id="wd_w7" class="ace" @radioSelected(person("wd")("wd7").value, "true")>
-						<span class="lbl"> 7</span>
-					</label>
-				</div>
+				<table class="table"><tbody>
+    				<tr>
+      					<td class="text-center">Mon</td>
+      					<td class="text-center">Tue</td>
+      					<td class="text-center">Web</td>
+      					<td class="text-center">Thu</td>
+      					<td class="text-center">Fri</td>
+      					<td class="text-center">Sat</td>
+      					<td class="text-center">Sun</td>
+    				</tr>
+    				<tr>
+      					<td class="text-center">
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd1_Full" name="wd.wd1" value="Full" class="ace" @radioSelected(person("wd")("wd1").value, "Full")>
+								<span class="lbl"> Full</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd1_Full_Half" name="wd.wd1" value="Half" class="ace" @radioSelected(person("wd")("wd1").value, "Half")>
+								<span class="lbl"> Half</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd1_Off" name="wd.wd1" value="Off" class="ace" @radioSelected(person("wd")("wd1").value, "Off")>
+								<span class="lbl"> Off</span>
+							</label>
+							</div>
+						</td>
+						<td class="text-center">
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd2_Full" name="wd.wd2" value="Full" class="ace" @radioSelected(person("wd")("wd2").value, "Full")>
+								<span class="lbl"> Full</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd2_Full_Half" name="wd.wd2" value="Half" class="ace" @radioSelected(person("wd")("wd2").value, "Half")>
+								<span class="lbl"> Half</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd2_Off" name="wd.wd2" value="Off" class="ace" @radioSelected(person("wd")("wd2").value, "Off")>
+								<span class="lbl"> Off</span>
+							</label>
+							</div>
+						</td>
+						<td class="text-center">
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd3_Full" name="wd.wd3" value="Full" class="ace" @radioSelected(person("wd")("wd3").value, "Full")>
+								<span class="lbl"> Full</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd3_Full_Half" name="wd.wd3" value="Half" class="ace" @radioSelected(person("wd")("wd3").value, "Half")>
+								<span class="lbl"> Half</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd3_Off" name="wd.wd3" value="Off" class="ace" @radioSelected(person("wd")("wd3").value, "Off")>
+								<span class="lbl"> Off</span>
+							</label>
+							</div>
+						</td>
+						<td class="text-center">
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd4_Full" name="wd.wd4" value="Full" class="ace" @radioSelected(person("wd")("wd4").value, "Full")>
+								<span class="lbl"> Full</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd4_Full_Half" name="wd.wd4" value="Half" class="ace" @radioSelected(person("wd")("wd4").value, "Half")>
+								<span class="lbl"> Half</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd4_Off" name="wd.wd4" value="Off" class="ace" @radioSelected(person("wd")("wd4").value, "Off")>
+								<span class="lbl"> Off</span>
+							</label>
+							</div>
+						</td>
+						<td class="text-center">
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd5_Full" name="wd.wd5" value="Full" class="ace" @radioSelected(person("wd")("wd5").value, "Full")>
+								<span class="lbl"> Full</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd5_Full_Half" name="wd.wd5" value="Half" class="ace" @radioSelected(person("wd")("wd5").value, "Half")>
+								<span class="lbl"> Half</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd5_Off" name="wd.wd5" value="Off" class="ace" @radioSelected(person("wd")("wd5").value, "Off")>
+								<span class="lbl"> Off</span>
+							</label>
+							</div>
+						</td>
+						<td class="text-center">
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd6_Full" name="wd.wd6" value="Full" class="ace" @radioSelected(person("wd")("wd6").value, "Full")>
+								<span class="lbl"> Full</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd6_Full_Half" name="wd.wd6" value="Half" class="ace" @radioSelected(person("wd")("wd6").value, "Half")>
+								<span class="lbl"> Half</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd6_Off" name="wd.wd6" value="Off" class="ace" @radioSelected(person("wd")("wd6").value, "Off")>
+								<span class="lbl"> Off</span>
+							</label>
+							</div>
+						</td>
+						<td class="text-center">
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd7_Full" name="wd.wd7" value="Full" class="ace" @radioSelected(person("wd")("wd7").value, "Full")>
+								<span class="lbl"> Full</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd7_Full_Half" name="wd.wd7" value="Half" class="ace" @radioSelected(person("wd")("wd7").value, "Half")>
+								<span class="lbl"> Half</span>
+							</label></div>
+							<div class="radio"><label>
+								<input type="radio" id="wd_wd7_Off" name="wd.wd7" value="Off" class="ace" @radioSelected(person("wd")("wd7").value, "Off")>
+								<span class="lbl"> Off</span>
+							</label></div>
+						</td>
+					</tr>
+  				</tbody></table>
 			</dd>
 		</dl>
 

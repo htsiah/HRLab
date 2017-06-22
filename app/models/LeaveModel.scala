@@ -295,9 +295,18 @@ object LeaveModel {
         val iscompanyholiday =  Await.result(CompanyHolidayModel.isCompanyHoliday(applieddate, p_person.p.off, p_request), Tools.db_timeout)
         if (PersonModel.isWorkDay(p_person, applieddate) && iscompanyholiday==false) {
           if ( p_leave.dt=="Full day" ) {
-            appliedduration = appliedduration + 1
+            if (PersonModel.isHalfWorkDay(p_person, applieddate)){
+              appliedduration = appliedduration + 0.5
+            } else {
+              appliedduration = appliedduration + 1
+            }
           } else {
-            appliedduration = appliedduration + 0.5
+            val HasPendingApprovedleave = Await.result(this.hasPendingApprovedleave(p_person._id.stringify, applieddate, p_request), Tools.db_timeout) 
+            if (PersonModel.isHalfWorkDay(p_person, applieddate) && HasPendingApprovedleave){
+              appliedduration = appliedduration + 0
+            } else {
+              appliedduration = appliedduration + 0.5
+            }
           }
         }
       }
@@ -316,6 +325,14 @@ object LeaveModel {
   def isOnleave(p_pid:String, p_date: DateTime, p_request:RequestHeader) = {
     for {
       leave <- this.findOne(BSONDocument("pid"->p_pid, "wf.s"->"Approved", "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
+    } yield {
+      if (leave.isEmpty) false else true
+    }
+  }
+  
+  def hasPendingApprovedleave(p_pid:String, p_date: DateTime, p_request:RequestHeader) = {
+    for {
+      leave <- this.findOne(BSONDocument("pid"->p_pid, "wf.s"->BSONDocument("$in"->List("Approved", "Pending Approval")), "fdat"->BSONDocument("$lte"->BSONDateTime(p_date.getMillis())), "tdat"->BSONDocument("$gte"->BSONDateTime(p_date.getMillis()))), p_request)
     } yield {
       if (leave.isEmpty) false else true
     }

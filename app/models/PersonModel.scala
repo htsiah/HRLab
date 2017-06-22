@@ -40,13 +40,13 @@ case class Profile (
 )
 
 case class Workday (
-    wd1: Boolean,
-    wd2: Boolean,
-    wd3: Boolean,
-    wd4: Boolean,
-    wd5: Boolean,
-    wd6: Boolean,
-    wd7: Boolean
+    wd1: String,
+    wd2: String,
+    wd3: String,
+    wd4: String,
+    wd5: String,
+    wd6: String,
+    wd7: String
 )
 
 object PersonModel {
@@ -87,13 +87,13 @@ object PersonModel {
   implicit object WorkdayBSONReader extends BSONDocumentReader[Workday] {
     def read(p_doc: BSONDocument): Workday = {
       Workday(
-          p_doc.getAs[Boolean]("wd1").getOrElse(true),
-          p_doc.getAs[Boolean]("wd2").getOrElse(true),
-          p_doc.getAs[Boolean]("wd3").getOrElse(true),
-          p_doc.getAs[Boolean]("wd4").getOrElse(true),
-          p_doc.getAs[Boolean]("wd5").getOrElse(true),
-          p_doc.getAs[Boolean]("wd6").getOrElse(false),
-          p_doc.getAs[Boolean]("wd7").getOrElse(false)  
+          p_doc.getAs[String]("wd1").get,
+          p_doc.getAs[String]("wd2").get,
+          p_doc.getAs[String]("wd3").get,
+          p_doc.getAs[String]("wd4").get,
+          p_doc.getAs[String]("wd5").get,
+          p_doc.getAs[String]("wd6").get,
+          p_doc.getAs[String]("wd7").get
       )
     }
   }
@@ -178,7 +178,7 @@ object PersonModel {
   val doc = Person(
       _id = BSONObjectID.generate,
       p = Profile(empid="", fn="", ln="", em="", nem=false, pt="", mgrid="", smgrid="", g="", ms="", dpm="", off="", edat=Some(new DateTime(DateTime.now().getYear, 1, 1, 0, 0, 0, 0)), rl=List("")),
-      wd = Workday(wd1=true, wd2=true, wd3=true, wd4=true, wd5=true, wd6=false, wd7=false),
+      wd = Workday(wd1="Full", wd2="Full", wd3="Full", wd4="Full", wd5="Full", wd6="Off", wd7="Off"),
       sys = None
   )
   
@@ -434,13 +434,26 @@ object PersonModel {
   
   def isWorkDay(p_doc: Person, p_Date: DateTime): Boolean = {
     p_Date.getDayOfWeek() match {
-      case 1 => if(p_doc.wd.wd1 == true){ return true }
-      case 2 => if(p_doc.wd.wd2 == true){ return true } 
-      case 3 => if(p_doc.wd.wd3 == true){ return true } 
-      case 4 => if(p_doc.wd.wd4 == true){ return true } 
-      case 5 => if(p_doc.wd.wd5 == true){ return true } 
-      case 6 => if(p_doc.wd.wd6 == true){ return true }
-      case 7 => if(p_doc.wd.wd7 == true){ return true }
+      case 1 => if(p_doc.wd.wd1 != "Off"){ return true }
+      case 2 => if(p_doc.wd.wd2 != "Off"){ return true } 
+      case 3 => if(p_doc.wd.wd3 != "Off"){ return true } 
+      case 4 => if(p_doc.wd.wd4 != "Off"){ return true } 
+      case 5 => if(p_doc.wd.wd5 != "Off"){ return true } 
+      case 6 => if(p_doc.wd.wd6 != "Off"){ return true }
+      case 7 => if(p_doc.wd.wd7 != "Off"){ return true }
+    }
+    return false
+  }
+  
+  def isHalfWorkDay(p_doc: Person, p_Date: DateTime): Boolean = {
+    p_Date.getDayOfWeek() match {
+      case 1 => if(p_doc.wd.wd1 == "Half"){ return true }
+      case 2 => if(p_doc.wd.wd2 == "Half"){ return true } 
+      case 3 => if(p_doc.wd.wd3 == "Half"){ return true } 
+      case 4 => if(p_doc.wd.wd4 == "Half"){ return true } 
+      case 5 => if(p_doc.wd.wd5 == "Half"){ return true } 
+      case 6 => if(p_doc.wd.wd6 == "Half"){ return true }
+      case 7 => if(p_doc.wd.wd7 == "Half"){ return true }
     }
     return false
   }

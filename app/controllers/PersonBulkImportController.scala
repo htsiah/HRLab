@@ -105,13 +105,13 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
               val Department = if( importrawrow.contains("Department")) { importrawrow("Department").trim } else { "" }
               val Office = if( importrawrow.contains("Office (M)")) { importrawrow("Office (M)").trim } else { "" }
               val JoinDate = if( importrawrow.contains("Join Date")) { importrawrow("Join Date").trim } else { "" }
-              val WorkDayMonday = if( importrawrow.contains("Work Day - Monday")) { importrawrow("Work Day - Monday").toLowerCase().trim } else { "" }
-              val WorkDayTuesday = if( importrawrow.contains("Work Day - Tuesday")) { importrawrow("Work Day - Tuesday").toLowerCase().trim } else { "" }
-              val WorkDayWebnesday = if( importrawrow.contains("Work Day - Webnesday")) { importrawrow("Work Day - Webnesday").toLowerCase().trim } else { "" }
-              val WorkDayThursday = if( importrawrow.contains("Work Day - Thursday")) { importrawrow("Work Day - Thursday").toLowerCase().trim } else { "" }
-              val WorkDayFriday = if( importrawrow.contains("Work Day - Friday")) { importrawrow("Work Day - Friday").toLowerCase().trim } else { "" }
-              val WorkDaySaturday = if( importrawrow.contains("Work Day - Saturday")) { importrawrow("Work Day - Saturday").toLowerCase().trim } else { "" }
-              val WorkDaySunday = if( importrawrow.contains("Work Day - Sunday")) { importrawrow("Work Day - Sunday").toLowerCase().trim } else { "" }
+              val WorkDayMonday = if( importrawrow.contains("Work Day - Monday")) { importrawrow("Work Day - Monday").trim } else { "" }
+              val WorkDayTuesday = if( importrawrow.contains("Work Day - Tuesday")) { importrawrow("Work Day - Tuesday").trim } else { "" }
+              val WorkDayWebnesday = if( importrawrow.contains("Work Day - Webnesday")) { importrawrow("Work Day - Webnesday").trim } else { "" }
+              val WorkDayThursday = if( importrawrow.contains("Work Day - Thursday")) { importrawrow("Work Day - Thursday").trim } else { "" }
+              val WorkDayFriday = if( importrawrow.contains("Work Day - Friday")) { importrawrow("Work Day - Friday").trim } else { "" }
+              val WorkDaySaturday = if( importrawrow.contains("Work Day - Saturday")) { importrawrow("Work Day - Saturday").trim } else { "" }
+              val WorkDaySunday = if( importrawrow.contains("Work Day - Sunday")) { importrawrow("Work Day - Sunday").trim } else { "" }
               val Admin = if( importrawrow.contains("Admin")) { importrawrow("Admin").toLowerCase().trim } else { "" }
               val SendWelcomeEmail = if( importrawrow.contains("Send Welcome Email")) { importrawrow("Send Welcome Email").toLowerCase().trim } else { "" }
 
@@ -238,13 +238,13 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
                       rl = if (newemployee(19) == "yes" && newemployee(3) != "") { List("Admin") } else { List("") }
                   ),
                   wd = PersonModel.doc.wd.copy(
-                      wd1 = if (newemployee(12) == "yes") { true } else { false },
-                      wd2 = if (newemployee(13) == "yes") { true } else { false },
-                      wd3 = if (newemployee(14) == "yes") { true } else { false },
-                      wd4 = if (newemployee(15) == "yes") { true } else { false },
-                      wd5 = if (newemployee(16) == "yes") { true } else { false },
-                      wd6 = if (newemployee(17) == "yes") { true } else { false },
-                      wd7 = if (newemployee(18) == "yes") { true } else { false }
+                      wd1 = if (newemployee(12) == "") { "Off" } else { newemployee(12) },
+                      wd2 = if (newemployee(13) == "") { "Off" } else { newemployee(13) },
+                      wd3 = if (newemployee(14) == "") { "Off" } else { newemployee(14) },
+                      wd4 = if (newemployee(15) == "") { "Off" } else { newemployee(15) },
+                      wd5 = if (newemployee(16) == "") { "Off" } else { newemployee(16) },
+                      wd6 = if (newemployee(17) == "") { "Off" } else { newemployee(17) },
+                      wd7 = if (newemployee(18) == "") { "Off" } else { newemployee(18) }
                   )
               )
               PersonModel.insert(person_doc, p_request=request)
@@ -419,26 +419,26 @@ class PersonBulkImportController @Inject() (mailerClient: MailerClient, val reac
       List("fail", "Join date format not recognised. Date format must dd-mmm-yyyy. ie 31-Jan-2017")
       
       // Validation - Boolean
-    } else if (p_WorkDayMonday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayMonday)) {
-      List("fail", "Invalid value for Work Day - Monday. Please fill with Yes/No.")
+    } else if (p_WorkDayMonday!="" && !(p_WorkDayMonday=="Full" || p_WorkDayMonday=="Half" || p_WorkDayMonday=="Off")) {
+      List("fail", "Invalid value for Work Day - Monday. Please fill with Full/Half/Off.")
       
-    } else if (p_WorkDayTuesday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayTuesday)) {
-      List("fail", "Invalid value for Work Day - Tuesday. Please fill with Yes/No.")
+    } else if (p_WorkDayTuesday!="" && !(p_WorkDayTuesday=="Full" || p_WorkDayTuesday=="Half" || p_WorkDayTuesday=="Off")) {
+      List("fail", "Invalid value for Work Day - Tuesday. Please fill with Full/Half/Off.")
       
-    } else if (p_WorkDayWebnesday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayWebnesday)) {
-      List("fail", "Invalid value for Work Day - Webnesday. Please fill with Yes/No.")
+    } else if (p_WorkDayWebnesday!="" && !(p_WorkDayWebnesday=="Full" || p_WorkDayWebnesday=="Half" || p_WorkDayWebnesday=="Off")) {
+      List("fail", "Invalid value for Work Day - Webnesday. Please fill with Full/Half/Off.")
       
-    } else if (p_WorkDayThursday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayThursday)) {
-      List("fail", "Invalid value for Work Day - Thursday. Please fill with Yes/No.")
+    } else if (p_WorkDayThursday!="" && !(p_WorkDayThursday=="Full" || p_WorkDayThursday=="Half" || p_WorkDayThursday=="Off")) {
+      List("fail", "Invalid value for Work Day - Thursday. Please fill with Full/Half/Off.")
       
-    } else if (p_WorkDayFriday!="" && !DataValidationUtility.isValidYesNo(p_WorkDayFriday)) {
-      List("fail", "Invalid value for Work Day - Friday. Please fill with Yes/No.")
+    } else if (p_WorkDayFriday!="" && !(p_WorkDayFriday=="Full" || p_WorkDayFriday=="Half" || p_WorkDayFriday=="Off")) {
+      List("fail", "Invalid value for Work Day - Friday. Please fill with Full/Half/Off.")
       
-    } else if (p_WorkDaySaturday!="" && !DataValidationUtility.isValidYesNo(p_WorkDaySaturday)) {
-      List("fail", "Invalid value for Work Day - Saturday. Please fill with Yes/No.")
+    } else if (p_WorkDaySaturday!="" && !(p_WorkDaySaturday=="Full" || p_WorkDaySaturday=="Half" || p_WorkDaySaturday=="Off")) {
+      List("fail", "Invalid value for Work Day - Saturday. Please fill with Full/Half/Off.")
       
-    } else if (p_WorkDaySunday!="" && !DataValidationUtility.isValidYesNo(p_WorkDaySunday)) {
-      List("fail", "Invalid value for Work Day - Sunday. Please fill with Yes/No.")
+    } else if (p_WorkDaySunday!="" && !(p_WorkDaySunday=="Full" || p_WorkDaySunday=="Half" || p_WorkDaySunday=="Off")) {
+      List("fail", "Invalid value for Work Day - Sunday. Please fill with Full/Half/Off.")
       
     } else if (p_Admin!="" && !DataValidationUtility.isValidYesNo(p_Admin)) {
       List("fail", "Invalid value for Admin. Please fill with Yes/No.")

@@ -45,13 +45,13 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
           ){(empid,fn,ln,em,nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl)=>Profile(empid,fn,ln,em.toLowerCase().trim(),nem,pt,mgrid,smgrid,g,ms,dpm,off,edat,rl.split(",").toList)}
           {profile:Profile => Some(profile.empid,profile.fn,profile.ln,profile.em,profile.nem,profile.pt,profile.mgrid,profile.smgrid,profile.g,profile.ms,profile.dpm,profile.off,profile.edat,profile.rl.mkString(","))},
           "wd" -> mapping(
-              "wd1" -> boolean,
-              "wd2" -> boolean,
-              "wd3" -> boolean,
-              "wd4" -> boolean,
-              "wd5" -> boolean,
-              "wd6" -> boolean,
-              "wd7" -> boolean
+              "wd1" -> text,
+              "wd2" -> text,
+              "wd3" -> text,
+              "wd4" -> text,
+              "wd5" -> text,
+              "wd6" -> text,
+              "wd7" -> text
           )(Workday.apply)(Workday.unapply),
           "sys" -> optional(mapping(
                   "eid" -> optional(text),

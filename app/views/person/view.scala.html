@@ -98,13 +98,28 @@
 							<dl class="dl-horizontal">
 								<dt><label>Work Day</label></dt>
 								<dd>
-									@if(person.wd.wd1==true) {Monday}
-									@if(person.wd.wd2==true) {Tuesday}
-									@if(person.wd.wd3==true) {Wednesday}
-									@if(person.wd.wd4==true) {Thursday}
-									@if(person.wd.wd5==true) {Friday}
-									@if(person.wd.wd6==true) {Saturday}
-									@if(person.wd.wd7==true) {Sunday}
+									<div class="table-responsive">
+										<table class="table"><tbody>
+    										<tr>
+      											<td class="text-center">Mon</td>
+      											<td class="text-center">Tue</td>
+      											<td class="text-center">Web</td>
+      											<td class="text-center">Thu</td>
+      											<td class="text-center">Fri</td>
+      											<td class="text-center">Sat</td>
+      											<td class="text-center">Sun</td>
+    										</tr>
+    										<tr>
+      											<td class="text-center">@person.wd.wd1</td>
+      											<td class="text-center">@person.wd.wd2</td>
+      											<td class="text-center">@person.wd.wd3</td>
+      											<td class="text-center">@person.wd.wd4</td>
+      											<td class="text-center">@person.wd.wd5</td>
+      											<td class="text-center">@person.wd.wd6</td>
+      											<td class="text-center">@person.wd.wd7</td>
+      										</tr>
+					  					</tbody></table>
+					  				</div>
 								</dd>
 							</dl>
 							@if(person.p.rl.toString!="List()") {
@@ -226,13 +241,26 @@
 								<dl class="dl-horizontal">
 									<dt><label>Work Day</label></dt>
 									<dd>
-										@if(person.wd.wd1==true) {Monday}
-										@if(person.wd.wd2==true) {Tuesday}
-										@if(person.wd.wd3==true) {Wednesday}
-										@if(person.wd.wd4==true) {Thursday}
-										@if(person.wd.wd5==true) {Friday}
-										@if(person.wd.wd6==true) {Saturday}
-										@if(person.wd.wd7==true) {Sunday}
+										<table class="table"><tbody>
+    										<tr>
+      											<td class="text-center">Mon</td>
+      											<td class="text-center">Tue</td>
+      											<td class="text-center">Web</td>
+      											<td class="text-center">Thu</td>
+      											<td class="text-center">Fri</td>
+      											<td class="text-center">Sat</td>
+      											<td class="text-center">Sun</td>
+    										</tr>
+    										<tr>
+      											<td class="text-center">@person.wd.wd1</td>
+      											<td class="text-center">@person.wd.wd2</td>
+      											<td class="text-center">@person.wd.wd3</td>
+      											<td class="text-center">@person.wd.wd4</td>
+      											<td class="text-center">@person.wd.wd5</td>
+      											<td class="text-center">@person.wd.wd6</td>
+      											<td class="text-center">@person.wd.wd7</td>
+      										</tr>
+					  					</tbody></table>
 									</dd>
 								</dl>
 								@if(person.p.rl.toString!="List()") {
@@ -322,13 +350,26 @@
 			<dl class="dl-horizontal">
 				<dt><label>Work Day</label></dt>
 				<dd>
-					@if(person.wd.wd1==true) {Monday}
-					@if(person.wd.wd2==true) {Tuesday}
-					@if(person.wd.wd3==true) {Wednesday}
-					@if(person.wd.wd4==true) {Thursday}
-					@if(person.wd.wd5==true) {Friday}
-					@if(person.wd.wd6==true) {Saturday}
-					@if(person.wd.wd7==true) {Sunday}
+					<table class="table"><tbody>
+    					<tr>
+      						<td class="text-center">Mon</td>
+      						<td class="text-center">Tue</td>
+      						<td class="text-center">Web</td>
+      						<td class="text-center">Thu</td>
+      						<td class="text-center">Fri</td>
+      						<td class="text-center">Sat</td>
+      						<td class="text-center">Sun</td>
+    					</tr>
+    					<tr>
+      						<td class="text-center">@person.wd.wd1</td>
+      						<td class="text-center">@person.wd.wd2</td>
+      						<td class="text-center">@person.wd.wd3</td>
+      						<td class="text-center">@person.wd.wd4</td>
+      						<td class="text-center">@person.wd.wd5</td>
+      						<td class="text-center">@person.wd.wd6</td>
+      						<td class="text-center">@person.wd.wd7</td>
+      					</tr>
+					  </tbody></table>
 				</dd>
 			</dl>
 			@if(person.p.rl.toString!="List()") {
