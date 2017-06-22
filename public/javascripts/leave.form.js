@@ -190,23 +190,19 @@ function setApplyBtn() {
 		$("#btnApply").text("Apply for 0 day");
 		$("#btnApply").attr("disabled", "disabled");
 	} else {
-		
+		$("#btnApply").attr("disabled", "disabled");
 		$.ajax({
 			url: "/leave/getapplyday/" + selPerson + "/" + encodeURIComponent(selLT) + "/" + selDT + "/" + selFDat + "/" + selTDat,
 			dataType: "json",
 			success: function(data){
 				if (data.msg == "overlap") {
 					$("#btnApply").html("Conflict with other leave application <br /> Please select another date");
-					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.msg == "restricted on event") {
 					$("#btnApply").html("Restrict leave application on event day <br /> Please select another date");
-					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.a <= 0) {
 					$("#btnApply").text("Apply for 0 day");
-					$("#btnApply").attr("disabled", "disabled");
 				} else if (data.b < 0) {
 					$("#btnApply").html("Apply for " + data.a + " day(s) <br /> Not enough leave balance");
-					$("#btnApply").attr("disabled", "disabled");
 				} else {
 					$("#btnApply").html("Apply for " + data.a + " day(s) <br />" + data.b + " day(s) remaining balance");
 					$("#btnApply").removeAttr("disabled");
