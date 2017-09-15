@@ -2,7 +2,7 @@ $(function(){
 
 	$("#navCompany").addClass("active open");
     $("#navComProfile").addClass("active");
-
+    
 	$("#company-name-pencil").click(function(){
 		$("#company-name-view").hide();
 		$("#company-name-edit").show();

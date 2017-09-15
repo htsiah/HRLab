@@ -214,4 +214,13 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
   
+  def importholidays = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      println("Okay")
+      Future.successful(Redirect(routes.CalendarController.company))
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
 }

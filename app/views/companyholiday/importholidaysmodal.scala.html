@@ -1,0 +1,132 @@
+@(offices:List[String])
+
+<div id="importholidaysmodal" class="modal" tabindex="-1">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="blue bigger">Add Holiday From List</h4>
+			</div>
+
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-8">1. Filter the predefined list of holidays by country. </div>
+					<div class="col-md-4">
+						<select id="ct" name="ct" class="form-control" style="font-size:13px;height:auto;"></select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-8">2. Filter the predefined list of holidays by year. </div>
+					<div class="col-md-4">
+						<select id="yr" name="yr" class="form-control" style="font-size:13px;height:auto;"></select>
+					</div>
+				</div>
+				<div class="space"></div>
+				<div class="row">
+					<div class="col-md-12">3. Select holiday(s) you want to add. You may want to change the observed date. </div>
+				</div>
+				<div class="space"></div>
+				<div class="row">
+					<div class="col-md-1" style="width: 4.16666665%">&nbsp</div>
+					<div class="col-md-2"><strong>Date</strong></div>
+					<div class="col-md-2"><strong>Day Of Week</strong></div>
+					<div class="col-md-4"><strong>Holiday Name</strong></div>
+					<div class="col-md-3"><strong>Observed on</strong></div>
+				</div>
+				<div class="space"></div>
+				<form action="/companyholiday/insertfromlist" method="POST" id="importholidaysform" novalidate="novalidate">
+					<div id="holidays">
+						<div class="row">
+							<div class="col-md-1" style="width: 4.16666665%">
+								<label>
+									<input name="form-field-checkbox" type="checkbox" class="ace">
+									<span class="lbl"></span>
+								</label>
+							</div>
+							<div class="col-md-2">14-Sep-2017</div>
+							<div class="col-md-2">Monday</div>
+							<div class="col-md-4">Chinese New Year</div>
+							<div class="col-md-3">
+								<div class="input-group">
+									<input type="text" name="tdat" id="tdat" class="form-control date-picker" value="11-Sep-2017" data-date-format="d-M-yyyy" style="font-size:13px;height:auto;">
+									<span class="input-group-addon" style="font-size:13px;height:auto;"><i class="fa fa-calendar bigger-110"></i></span>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-1" style="width: 4.16666665%">
+								<label>
+									<input name="form-field-checkbox" type="checkbox" class="ace">
+									<span class="lbl"></span>
+								</label>
+							</div>
+							<div class="col-md-2">14-Sep-2017</div>
+							<div class="col-md-2">Monday</div>
+							<div class="col-md-4">Chinese New Year</div>
+							<div class="col-md-3">
+								<div class="input-group">
+									<input type="text" name="tdat" id="tdat" class="form-control date-picker" value="11-Sep-2017" data-date-format="d-M-yyyy" style="font-size:13px;height:auto;">
+									<span class="input-group-addon" style="font-size:13px;height:auto;"><i class="fa fa-calendar bigger-110"></i></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="space"></div>
+					<div class="row">
+						<div class="col-md-12">4. Select the office(s) you want to assign these holiday(s) to. Click the “Add” button below when ready.</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+						@for((office, index) <- offices.zipWithIndex) {
+							<div class="checkbox">
+								<label>
+									<input name="off@index" id="off@index" type="checkbox" class="office ace" value="@office" style="font-size:13px;height:auto;">
+									<span class="lbl" style="font-size:13px;height:auto;"> @office</span>
+								</label>
+							</div>
+						}
+						</div>
+					</div>
+				</form>
+				<div class="space"></div>
+					<div class="row">
+						<div class="col-md-12">* If your country is not listed in the dropdown, please send us an email at support@@hrsifu.com, and we’ll add it.</div>
+					</div>
+				</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-sm btn-primary" onclick="javascript:handleSubmit();">
+					<i class="ace-icon fa fa-check"></i>
+					Add Selected Holidays
+				</button>
+				
+				<button class="btn btn-sm" data-dismiss="modal">
+					Cancel
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@**
+* Keep an hidden block that will be used as template for Javascript copy code
+**@
+<div class="hidden holiday_template">
+	<div class="row">
+		<div class="col-md-1" style="width: 4.16666665%">
+			<label>
+				<input name="cbx" type="checkbox" class="ace cbx">
+				<span class="lbl"></span>
+			</label>
+		</div>
+		<div id="datx" class="col-md-2 datx"></div>
+		<div id="dayx" class="col-md-2 dayx"></div>
+		<div id="holidayx" class="col-md-4 holidayx"></div>
+		<div class="col-md-3">
+				<div class="input-group">
+				<input type="text" name="obsx" class="form-control date-picker obsx" data-date-format="d-M-yyyy" style="font-size:13px;height:auto;">
+				<span class="input-group-addon" style="font-size:13px;height:auto;"><i class="fa fa-calendar bigger-110"></i></span>
+			</div>
+		</div>
+	</div>
+</div>
