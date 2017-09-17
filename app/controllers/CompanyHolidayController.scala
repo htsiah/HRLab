@@ -10,12 +10,16 @@ import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.json.Json
 
 import models.{CompanyHolidayModel, AuditLogModel, OfficeModel, CompanyHoliday}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONDateTime}
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 class CompanyHolidayController extends Controller with Secured {
   
@@ -214,9 +218,19 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
   
-  def importholidays = withAuth { username => implicit request => {
+  // def importholidays = withAuth { username => implicit request => {
+  def importholidays = Action.async { implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
-      println("Okay")
+      println("Okay 1")
+      val jsonBody: Option[JsValue] = request.body.asJson
+
+      jsonBody.map { jsValue =>
+        val name = (jsValue \ "name")
+        println(name)
+      }
+      
+      // println(request.body.asJson)
+      println("Okay 2")
       Future.successful(Redirect(routes.CalendarController.company))
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))

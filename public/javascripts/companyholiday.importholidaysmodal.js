@@ -76,7 +76,8 @@ let IMPORTHOLIDAYS = (function(){
 				for(let i=0; i<totalholiday; i++){
 					let holidaydetail = configholidaysJSON[selectedCounty][selectedYear][i];
 					let $holiday = $('.holiday_template').children().clone();
-					$holiday.find(".cbx").attr("name","cb" + i );
+					$holiday.find(".cbx").attr("name","cb" + i);
+					$holiday.find(".cbx").attr("value",i);
 					$holiday.find(".datx").text(holidaydetail.dat);
 					$holiday.find(".datx").attr("id", "date" + i);
 					$holiday.find(".dayx").text(holidaydetail.day);
@@ -84,6 +85,7 @@ let IMPORTHOLIDAYS = (function(){
 					$holiday.find(".holidayx").text(holidaydetail.name);
 					$holiday.find(".holidayx").attr("id", "holiday" + i);
 					$holiday.find(".obsx").attr("name", "obs" + i);
+					$holiday.find(".obsx").attr("id", "obs" + i);
 					
 					// Append to fragment
 					let div = document.createElement('div');
@@ -109,7 +111,40 @@ let IMPORTHOLIDAYS = (function(){
 			});
 			
 		}, 
-		add: function(){}
+		add: function(){
+			let importholidaysObject = {};
+			
+			if ($('.cbx:checkbox:checked').length !==0) {
+				importholidaysObject.offices = [];
+				importholidaysObject.holidays = [];
+				$('.office:checkbox:checked').each(function () {
+					importholidaysObject.offices.push(this.checked ? $(this).val() : "");
+				});
+				$('.cbx:checkbox:checked').each(function (n) {
+					let selectedNumber = $(this).val();
+					let selectedName = $("#holiday"+selectedNumber).text();
+					let selectedDate = $("#obs"+selectedNumber).val() !== "" ? $("#obs"+selectedNumber).val() : $("#date"+selectedNumber).text();
+					importholidaysObject.holidays.push({"name" : selectedName, "date": selectedDate})
+				});
+				// $.post( "/companyholiday/importholidays", JSON.stringify({ "name": "John", "time": "2pm" }) );
+				// var d = { 'filter': "John Portella" };
+				$.ajax({
+				    type :  "POST",
+				    dataType: 'json',
+				    data: JSON.stringify({ "name": "John", "time": "2pm" }),
+				    contentType: "application/json; charset=utf-8",
+				    url  :  "/companyholiday/importholidays",
+				        success: function(data){
+				            console.log(data);
+				        }
+				});
+				
+				
+				alert(importholidaysObject);
+			} else {
+				alert("No holiday selected!");
+			};
+		}
 		
 	}
 	

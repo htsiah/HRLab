@@ -35,42 +35,7 @@
 				</div>
 				<div class="space"></div>
 				<form action="/companyholiday/insertfromlist" method="POST" id="importholidaysform" novalidate="novalidate">
-					<div id="holidays">
-						<div class="row">
-							<div class="col-md-1" style="width: 4.16666665%">
-								<label>
-									<input name="form-field-checkbox" type="checkbox" class="ace">
-									<span class="lbl"></span>
-								</label>
-							</div>
-							<div class="col-md-2">14-Sep-2017</div>
-							<div class="col-md-2">Monday</div>
-							<div class="col-md-4">Chinese New Year</div>
-							<div class="col-md-3">
-								<div class="input-group">
-									<input type="text" name="tdat" id="tdat" class="form-control date-picker" value="11-Sep-2017" data-date-format="d-M-yyyy" style="font-size:13px;height:auto;">
-									<span class="input-group-addon" style="font-size:13px;height:auto;"><i class="fa fa-calendar bigger-110"></i></span>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-1" style="width: 4.16666665%">
-								<label>
-									<input name="form-field-checkbox" type="checkbox" class="ace">
-									<span class="lbl"></span>
-								</label>
-							</div>
-							<div class="col-md-2">14-Sep-2017</div>
-							<div class="col-md-2">Monday</div>
-							<div class="col-md-4">Chinese New Year</div>
-							<div class="col-md-3">
-								<div class="input-group">
-									<input type="text" name="tdat" id="tdat" class="form-control date-picker" value="11-Sep-2017" data-date-format="d-M-yyyy" style="font-size:13px;height:auto;">
-									<span class="input-group-addon" style="font-size:13px;height:auto;"><i class="fa fa-calendar bigger-110"></i></span>
-								</div>
-							</div>
-						</div>
-					</div>
+					<div id="holidays"></div>
 					<div class="space"></div>
 					<div class="row">
 						<div class="col-md-12">4. Select the office(s) you want to assign these holiday(s) to. Click the “Add” button below when ready.</div>
@@ -95,7 +60,7 @@
 				</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-sm btn-primary" onclick="javascript:handleSubmit();">
+				<button class="btn btn-sm btn-primary" onclick="javascript:IMPORTHOLIDAYS.add();">
 					<i class="ace-icon fa fa-check"></i>
 					Add Selected Holidays
 				</button>
