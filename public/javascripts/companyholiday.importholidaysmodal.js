@@ -1,5 +1,7 @@
 $(function(){
 	
+	// Test - Remove me
+	
 	$( "#addholidayfromlistbtn" ).on( "click", function() {
 		IMPORTHOLIDAYS.init();
 	});
