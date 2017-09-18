@@ -1,7 +1,5 @@
 $(function(){
 	
-	// Test - Remove me
-	
 	$( "#addholidayfromlistbtn" ).on( "click", function() {
 		IMPORTHOLIDAYS.init();
 	});
@@ -16,11 +14,6 @@ $(function(){
 	
 });
 
-// Form submit function
-let handleSubmit = function() {
-	$('#importholidaysform').submit();
-};
-
 let IMPORTHOLIDAYS = (function(){
 	
 	// Private	
@@ -33,10 +26,13 @@ let IMPORTHOLIDAYS = (function(){
 		
 		init: function(){
 			if ( sessionStorage.configholidays === null || sessionStorage.configholidays === undefined ) { 
-				sessionStorage.configholidays = '{"Malaysia":{"2017":[{"name":"Chinese New Year 1","dat":"2017-02-13","day":"Monday"},{"name":"Chinese New Year 2","dat":"2017-02-14","day":"Tuesday"},{"name":"Chinese New Year 3","dat":"2017-02-15","day":"Wednesday"},{"name":"Chinese New Year 4","dat":"2017-02-16","day":"Thursday"}],"2018":[{"name":"Chinese New Year ","dat":"2018-02-13","day":"Monday"},{"name":"Chinese New Year ","dat":"2018-02-14","day":"Monday"}]},"Singapore":{"2019":[{"name":"Chinese New Year ","dat":"2017-02-13","day":"Monday"},{"name":"Chinese New Year ","dat":"2017-02-14","day":"Monday"}],"2020":[{"name":"Chinese New Year ","dat":"2018-02-13","day":"Monday"},{"name":"Chinese New Year ","dat":"2018-02-14","day":"Monday"}]}}' 
+				sessionStorage.configholidays = '{"Malaysia":{"2017":[{"name":"Chinese New Year 1","dat":"13-Feb-2017","day":"Monday"},{"name":"Chinese New Year 2","dat":"14-Feb-2017","day":"Tuesday"},{"name":"Chinese New Year 3","dat":"15-Feb-2017","day":"Wednesday"},{"name":"Chinese New Year 4","dat":"16-Feb-2017","day":"Thursday"}],"2018":[{"name":"Chinese New Year ","dat":"17-Feb-2017","day":"Monday"},{"name":"Chinese New Year ","dat":"18-Feb-2017","day":"Monday"}]},"Singapore":{"2019":[{"name":"Chinese New Year ","dat":"19-Feb-2017","day":"Monday"},{"name":"Chinese New Year ","dat":"20-Feb-2017","day":"Monday"}],"2020":[{"name":"Chinese New Year ","dat":"20-Feb-2017","day":"Monday"},{"name":"Chinese New Year ","dat":"21-Feb-2017","day":"Monday"}]}}' 
 			};
 				
 			configholidaysJSON =  JSON.parse(sessionStorage.configholidays);
+			
+			// Remove offices value
+			$(".office:checkbox:checked").prop('checked', false); 
 			
 			// Append country options
 			$('#ct option').remove();
@@ -128,21 +124,21 @@ let IMPORTHOLIDAYS = (function(){
 					let selectedDate = $("#obs"+selectedNumber).val() !== "" ? $("#obs"+selectedNumber).val() : $("#date"+selectedNumber).text();
 					importholidaysObject.holidays.push({"name" : selectedName, "date": selectedDate})
 				});
-				// $.post( "/companyholiday/importholidays", JSON.stringify({ "name": "John", "time": "2pm" }) );
-				// var d = { 'filter': "John Portella" };
 				$.ajax({
 				    type :  "POST",
 				    dataType: 'json',
-				    data: JSON.stringify({ "name": "John", "time": "2pm" }),
+				    data: JSON.stringify(importholidaysObject),
 				    contentType: "application/json; charset=utf-8",
 				    url  :  "/companyholiday/importholidays",
-				        success: function(data){
-				            console.log(data);
-				        }
+				    success: function(data){
+				    	CALENDAR.removeEvent("showCompanyHoliday");
+				    	CALENDAR.showCompanyHoliday(true, "company");
+				    	$("#importholidaysmodal").modal("hide");
+				    },
+	    			error: function(xhr, status, error){
+	    				alert("There was an error while adding holidays. Do not proceed! Please contact support@hrsifu.com.");
+	    			},
 				});
-				
-				
-				alert(importholidaysObject);
 			} else {
 				alert("No holiday selected!");
 			};
