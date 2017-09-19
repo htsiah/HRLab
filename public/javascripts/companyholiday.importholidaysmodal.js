@@ -26,7 +26,17 @@ let IMPORTHOLIDAYS = (function(){
 		
 		init: function(){
 			if ( sessionStorage.configholidays === null || sessionStorage.configholidays === undefined ) { 
-				sessionStorage.configholidays = '{"Malaysia":{"2017":[{"name":"Chinese New Year 1","dat":"13-Feb-2017","day":"Monday"},{"name":"Chinese New Year 2","dat":"14-Feb-2017","day":"Tuesday"},{"name":"Chinese New Year 3","dat":"15-Feb-2017","day":"Wednesday"},{"name":"Chinese New Year 4","dat":"16-Feb-2017","day":"Thursday"}],"2018":[{"name":"Chinese New Year ","dat":"17-Feb-2017","day":"Monday"},{"name":"Chinese New Year ","dat":"18-Feb-2017","day":"Monday"}]},"Singapore":{"2019":[{"name":"Chinese New Year ","dat":"19-Feb-2017","day":"Monday"},{"name":"Chinese New Year ","dat":"20-Feb-2017","day":"Monday"}],"2020":[{"name":"Chinese New Year ","dat":"20-Feb-2017","day":"Monday"},{"name":"Chinese New Year ","dat":"21-Feb-2017","day":"Monday"}]}}' 
+	    		$.ajax({
+	    			url: "/companyholiday/getconfigholidays",
+	    			dataType: "json",
+	    			async: false,
+	    			success: function(data){
+	    				sessionStorage.configholidays = JSON.stringify(data);
+	    			},
+	    			error: function(xhr, status, error){
+	    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
+	    			},
+	    		});	
 			};
 				
 			configholidaysJSON =  JSON.parse(sessionStorage.configholidays);
@@ -37,10 +47,12 @@ let IMPORTHOLIDAYS = (function(){
 			// Append country options
 			$('#ct option').remove();
 			let CTOptfragment = document.createDocumentFragment();
-			CTOptfragment.appendChild( new Option("Please select","") );
-			for (ct in configholidaysJSON) {
-				CTOptfragment.appendChild( new Option(ct, ct) );
-			};
+			CTOptfragment.appendChild( new Option("Please select","") );			
+			for(let i=0, totalcountry=configholidaysJSON["data"].length; i<totalcountry; i++){
+				for (ct in configholidaysJSON["data"][i]) {
+					CTOptfragment.appendChild( new Option(ct, ct) );
+				}
+			}
 			$('#ct').append( CTOptfragment );
 			
 			this.changeCountry();
@@ -48,48 +60,72 @@ let IMPORTHOLIDAYS = (function(){
 			$("#importholidaysmodal").modal("show");
 		},
 		changeCountry: function(){
-			selectedCounty = $( "#ct option:selected" ).val();
+			this.selectedCounty = $( "#ct option:selected" ).val();
 			
 			// Append year options
 			$('#yr option').remove();
 			let YROptfragment = document.createDocumentFragment();
 			YROptfragment.appendChild( new Option("Please select","") );
-			if (selectedCounty !== "") {
-				for (yr in configholidaysJSON[selectedCounty]) {
-					YROptfragment.appendChild( new Option(yr, yr) );
-				};
+			if (this.selectedCounty !== "") {				
+				for(let i=0, totalcountry=configholidaysJSON["data"].length; i<totalcountry; i++){
+					for (ct in configholidaysJSON["data"][i]) {
+						if (ct==this.selectedCounty){
+							for(let j=0, totalyear=configholidaysJSON["data"][i][this.selectedCounty].length; j<totalyear; j++){
+								for (yr in configholidaysJSON["data"][i][this.selectedCounty][j]) {
+									YROptfragment.appendChild( new Option(yr, yr) );
+								};					
+							};
+							break;
+						}
+					}
+				}
 			};
 			$('#yr').append( YROptfragment );
 			
 			this.changeYear();
 		},
 		changeYear: function(){
-			selectedYear = $( "#yr option:selected" ).val();
+			this.selectedYear = $( "#yr option:selected" ).val();
 			
 			// Draw holiday
 			$('#holidays').empty();
 			let Holidayfragment = document.createDocumentFragment();
-			if ( selectedYear != "") {
-				let totalholiday = configholidaysJSON[selectedCounty][selectedYear].length;
-				for(let i=0; i<totalholiday; i++){
-					let holidaydetail = configholidaysJSON[selectedCounty][selectedYear][i];
-					let $holiday = $('.holiday_template').children().clone();
-					$holiday.find(".cbx").attr("name","cb" + i);
-					$holiday.find(".cbx").attr("value",i);
-					$holiday.find(".datx").text(holidaydetail.dat);
-					$holiday.find(".datx").attr("id", "date" + i);
-					$holiday.find(".dayx").text(holidaydetail.day);
-					$holiday.find(".dayx").attr("id", "day" + i);
-					$holiday.find(".holidayx").text(holidaydetail.name);
-					$holiday.find(".holidayx").attr("id", "holiday" + i);
-					$holiday.find(".obsx").attr("name", "obs" + i);
-					$holiday.find(".obsx").attr("id", "obs" + i);
-					
-					// Append to fragment
-					let div = document.createElement('div');
-					div.innerHTML = $holiday.get(0).outerHTML;
-					Holidayfragment.appendChild( div.firstChild );
-				};
+			if ( this.selectedYear != "") {
+				for(let i=0, totalcountry=configholidaysJSON["data"].length; i<totalcountry; i++){
+					for (ct in configholidaysJSON["data"][i]) {
+						if (ct==this.selectedCounty){
+							for(let j=0, totalyear=configholidaysJSON["data"][i][this.selectedCounty].length; j<totalyear; j++){
+								for (yr in configholidaysJSON["data"][i][this.selectedCounty][j]) {
+									if (yr == this.selectedYear) {
+										let totalholiday = configholidaysJSON["data"][i][this.selectedCounty][j][this.selectedYear].length;
+										for(let k=0; k<totalholiday; k++){
+											let holidaydetail = configholidaysJSON["data"][i][this.selectedCounty][j][this.selectedYear][k];
+											let $holiday = $('.holiday_template').children().clone();
+											$holiday.find(".cbx").attr("name","cb" + k);
+											$holiday.find(".cbx").attr("value",k);
+											$holiday.find(".datx").text(holidaydetail.dt);
+											$holiday.find(".datx").attr("id", "date" + k);
+											$holiday.find(".dayx").text(holidaydetail.dy);
+											$holiday.find(".dayx").attr("id", "day" + k);
+											$holiday.find(".holidayx").text(holidaydetail.n);
+											$holiday.find(".holidayx").attr("id", "holiday" + k);
+											$holiday.find(".obsx").attr("name", "obs" + k);
+											$holiday.find(".obsx").attr("id", "obs" + k);
+											
+											// Append to fragment
+											let div = document.createElement('div');
+											div.innerHTML = $holiday.get(0).outerHTML;
+											Holidayfragment.appendChild( div.firstChild );
+										};
+										break;
+									};
+								};					
+							};
+							break;
+						}
+					}
+				}				
+				
 			} else {
 				// Append to fragment
 				let div = document.createElement('div');

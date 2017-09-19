@@ -13,7 +13,7 @@ import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 
-import models.{CompanyHolidayModel, AuditLogModel, OfficeModel, CompanyHoliday}
+import models.{CompanyHolidayModel, AuditLogModel, OfficeModel, CompanyHoliday, ConfigHolidaysModel}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
@@ -241,6 +241,36 @@ class CompanyHolidayController extends Controller with Secured {
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Import document."), p_request=request)
       })
       Future.successful(Ok(Json.obj("data" -> "success")).as("application/json"))
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
+  def getconfigholidays = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      for {
+        maybe_configholidays <- ConfigHolidaysModel.find(BSONDocument())
+      } yield {
+  
+        render {
+          case Accepts.Html() => {Ok(views.html.error.unauthorized())}
+          case Accepts.Json() => {
+            val countrylist = maybe_configholidays.map(configholidays => configholidays.ctr).distinct        
+            val configholidaysfulllist = countrylist.map( country => {
+              val yearlist = maybe_configholidays.filter(configholidays => configholidays.ctr==country).map(configholidays => configholidays.yr).distinct
+              val configholidaysbyyearlist = yearlist.map( year => {
+                val configholidayslist = maybe_configholidays.filter(configholidays => (configholidays.ctr==country && configholidays.yr==year)).map( configholidays => {
+                  Json.obj("n"->configholidays.nm, "dt"->configholidays.dat, "dy"->configholidays.day )
+                })
+                Json.obj(year->configholidayslist)
+              })
+              Json.obj(country->configholidaysbyyearlist)
+            })
+            Ok(Json.obj("data" -> configholidaysfulllist)).as("application/json")
+          }
+        }
+        
+      }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
