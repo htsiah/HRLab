@@ -62,8 +62,14 @@ class AuthenticationController @Inject() (mailerClient: MailerClient) extends Co
   }
   
   def logout = Action { implicit request =>
-    Cache.remove("PersonProfile." + request.session.get("username").get)
-    Redirect(routes.AuthenticationController.login()).withNewSession
+    
+    if (request.session.get("username").isEmpty) {
+      Redirect(routes.AuthenticationController.login()).withNewSession
+    } else {
+      Cache.remove("PersonProfile." + request.session.get("username").get)
+      Redirect(routes.AuthenticationController.login()).withNewSession
+    }
+    
   }
   
   def authentication = Action.async { implicit request => {
