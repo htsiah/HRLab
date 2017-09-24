@@ -238,7 +238,7 @@ class CompanyHolidayController extends Controller with Secured {
             )
             , p_request=request
         )
-        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Import document."), p_request=request)
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create by using holiday import."), p_request=request)
       })
       Future.successful(Ok(Json.obj("data" -> "success")).as("application/json"))
     } else {
