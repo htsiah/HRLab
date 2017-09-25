@@ -12,6 +12,18 @@ $(function(){
 		IMPORTHOLIDAYS.changeYear();
 	});
 	
+	$( "#selection" ).on("click", function() {
+		if ($("#selection").is(':checked')) {
+			$('.cbxactive:checkbox').each(function() {
+				$(this).prop('checked', true);			
+			})
+		} else {
+			$('.cbxactive:checkbox').each(function() {
+				$(this).prop('checked', false);			
+			})
+		}
+	});
+	
 });
 
 let IMPORTHOLIDAYS = (function(){
@@ -40,6 +52,9 @@ let IMPORTHOLIDAYS = (function(){
 			};
 				
 			configholidaysJSON =  JSON.parse(sessionStorage.configholidays);
+
+			// Remove selection value
+			$("#selection:checkbox").prop('checked', false); 
 			
 			// Remove offices value
 			$(".office:checkbox:checked").prop('checked', false); 
@@ -103,6 +118,7 @@ let IMPORTHOLIDAYS = (function(){
 											let $holiday = $('.holiday_template').children().clone();
 											$holiday.find(".cbx").attr("name","cb" + k);
 											$holiday.find(".cbx").attr("value",k);
+											$holiday.find(".cbx").addClass("cbxactive");
 											$holiday.find(".datx").text(holidaydetail.dt);
 											$holiday.find(".datx").attr("id", "date" + k);
 											$holiday.find(".dayx").text(holidaydetail.dy);
@@ -133,7 +149,7 @@ let IMPORTHOLIDAYS = (function(){
 				Holidayfragment.appendChild( div.firstChild );
 			};
 			$('#holidays').append( Holidayfragment );
-			
+						
 		    $('.date-picker').datepicker({
 				autoclose: true,
 				todayHighlight: true
@@ -143,6 +159,9 @@ let IMPORTHOLIDAYS = (function(){
 			.next().on(ace.click_event, function(){
 				$(this).prev().focus();
 			});
+		    
+			// Remove selection value
+			$("#selection:checkbox").prop('checked', false); 
 			
 		}, 
 		add: function(){
