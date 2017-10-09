@@ -192,10 +192,18 @@ object KeywordModel {
       } }.filter { _.nonEmpty }
     }
     
+    def findProtectCountryKey() : List[String] = {
+      p_doc.v.map { value => {
+        val person = Await.result(OfficeModel.findOne(BSONDocument("ct" -> value), p_request), Tools.db_timeout)
+        if (person.isDefined) { value } else { "" }
+      } }.filter { _.nonEmpty }
+    }
+    
     p_doc.n match {
       case "Department" => findProtectDepartmentKey()
       case "Position Type" => findProtectPositionTypeKey()
       case "Leave Type" => findProtectLeaveTypeKey()
+      case "Country" => findProtectCountryKey()
       case _ => List("")
     }
     
