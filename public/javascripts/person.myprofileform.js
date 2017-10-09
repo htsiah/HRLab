@@ -78,6 +78,19 @@ $(function(){
 			}
 		},		 
 		submitHandler: function(form) {
+			let selectedrl="", rl;
+			
+			for(let i=0, count = $("input:checkbox.role").length; i<count; i++){
+				rl=$("input:checkbox:checked#rl" + i).val();
+				if (rl!=undefined) {
+					if (selectedrl=="") {
+						selectedrl = rl;
+					} else {
+						selectedrl = selectedrl + "," + rl;
+					}
+				}
+			};
+			$("#p_rl").val(selectedrl);
 			form.submit();
 		 }
 	});
@@ -103,12 +116,4 @@ $(function(){
 		"Substitute Manager can not same with Manager."
 	);
 	
-});
-
-$("#rl_admin").click(function(){
-	if(this.checked){
-		$("#p_rl").val("Admin");
-	}else{
-		$("#p_rl").val("");
-	}
 });

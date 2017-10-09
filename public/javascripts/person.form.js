@@ -96,6 +96,19 @@ $(function(){
 			}
 		},		 
 		submitHandler: function(form) {
+			let selectedrl="", rl;
+			
+			for(let i=0, count = $("input:checkbox.role").length; i<count; i++){
+				rl=$("input:checkbox:checked#rl" + i).val();
+				if (rl!=undefined) {
+					if (selectedrl=="") {
+						selectedrl = rl;
+					} else {
+						selectedrl = selectedrl + "," + rl;
+					}
+				}
+			};
+			$("#p_rl").val(selectedrl);
 			$("#p_em").removeAttr("disabled");
 			form.submit();
 		 }
@@ -145,24 +158,21 @@ $("#nem").click(function(){
 		$("#p_em-error").hide();
 		$("#p_em").attr("disabled", "disabled");
 		
-		// Disable admin roles checkbox
-		$('#rl_admin').attr('checked', false);
-		$("#rl_admin").attr("disabled", "disabled");
-		$("#p_rl").val("");
+		// Disable roles checkbox
+		$('#rl0').attr('checked', false);
+		$("#rl0").attr("disabled", "disabled");
+		$('#rl1').attr('checked', false);
+		$("#rl1").attr("disabled", "disabled");
+		$('#rl2').attr('checked', false);
+		$("#rl2").attr("disabled", "disabled");
 		
 		//Set value
 		$("#p_nem").val(true);
 	} else {
 		$("#p_nem").val(false);
 		$("#p_em").removeAttr("disabled");
-		$("#rl_admin").removeAttr("disabled");
-	}
-});
-
-$("#rl_admin").click(function(){
-	if(this.checked){
-		$("#p_rl").val("Admin");
-	}else{
-		$("#p_rl").val("");
+		$("#rl0").removeAttr("disabled");
+		$("#rl1").removeAttr("disabled");
+		$("#rl2").removeAttr("disabled");
 	}
 });
