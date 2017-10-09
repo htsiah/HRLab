@@ -27,6 +27,7 @@ class OfficeController extends Controller with Secured {
           "ad2" -> optional(text),
           "ad3" -> optional(text),
           "pc" -> optional(text),
+          "ccy" -> text,
           "ct" -> text,
           "st" -> optional(text),
           "df" -> boolean,
@@ -39,18 +40,20 @@ class OfficeController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))  
-      ){(_id,n,ad1,ad2,ad3,pc,ct,st,df,sys)=>Office(_id,n,ad1,ad2,ad3,pc,ct,st,df,sys)}
-      {office:Office=>Some(office._id, office.n, office.ad1, office.ad2, office.ad3, office.pc, office.ct, office.st, office.df, office.sys)}
+      ){(_id,n,ad1,ad2,ad3,pc,ccy,ct,st,df,sys)=>Office(_id,n,ad1,ad2,ad3,pc,ccy,ct,st,df,sys)}
+      {office:Office=>Some(office._id, office.n, office.ad1, office.ad2, office.ad3, office.pc, office.ccy, office.ct, office.st, office.df, office.sys)}
    )   
     
   def create = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       for {
         maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+        maybe_kw_currencies <- KeywordModel.findOne(BSONDocument("n" -> "Currency"), request)
       } yield {
         val NewObjectID = BSONObjectID.generate
         val countries = maybe_kw_countries.get.v.sorted
-        Ok(views.html.office.form(officeform.fill(OfficeModel.doc), countries)) 
+        val currencies = maybe_kw_currencies.get.v.sorted
+        Ok(views.html.office.form(officeform.fill(OfficeModel.doc), currencies, countries)) 
       }
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -63,9 +66,11 @@ class OfficeController extends Controller with Secured {
           formWithError => {
             for {
               maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+              maybe_kw_currencies <- KeywordModel.findOne(BSONDocument("n" -> "Currency"), request)
             } yield {
               val countries = maybe_kw_countries.get.v.sorted
-              Ok(views.html.office.form(formWithError, countries))
+              val currencies = maybe_kw_currencies.get.v.sorted
+              Ok(views.html.office.form(formWithError, currencies, countries))
             }
           },
           formWithData => {
@@ -88,10 +93,12 @@ class OfficeController extends Controller with Secured {
       for { 
         maybedoc <- OfficeModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request) 
         maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+        maybe_kw_currencies <- KeywordModel.findOne(BSONDocument("n" -> "Currency"), request)
       } yield {
         maybedoc.map( doc  => {
           val countries = maybe_kw_countries.get.v.sorted
-          Ok(views.html.office.form(officeform.fill(doc), countries, p_id))
+          val currencies = maybe_kw_currencies.get.v.sorted
+          Ok(views.html.office.form(officeform.fill(doc), currencies, countries, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -105,9 +112,11 @@ class OfficeController extends Controller with Secured {
           formWithError => {
             for {
               maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+              maybe_kw_currencies <- KeywordModel.findOne(BSONDocument("n" -> "Currency"), request)
             } yield {
               val countries = maybe_kw_countries.get.v.sorted
-              Ok(views.html.office.form(formWithError, countries, p_id))
+              val currencies = maybe_kw_currencies.get.v.sorted
+              Ok(views.html.office.form(formWithError, currencies, countries, p_id))
             }
           },
           formWithData => {
