@@ -16,27 +16,27 @@ $(function(){
     
     $('#hlp-editor').ace_wysiwyg({
     	toolbar: [
-    		'bold', 
-    		'italic', 
-    		'strikethrough', 
-    		'underline', 
+			{name:'bold', className:'btn-info'},
+			{name:'italic', className:'btn-info'},
+			{name:'strikethrough', className:'btn-info'},
+			{name:'underline', className:'btn-info'},
     		null,
-    		'insertunorderedlist',
-    		'insertorderedlist',
-    		'outdent',
-    		'indent',
+			{name:'insertunorderedlist', className:'btn-success'},
+			{name:'insertorderedlist', className:'btn-success'},
+			{name:'outdent', className:'btn-purple'},
+			{name:'indent', className:'btn-purple'},
     		null,
-    		'justifyleft',
-    		'justifycenter',
-    		'justifyright',
-    		'justifyfull',
+			{name:'justifyleft', className:'btn-primary'},
+			{name:'justifycenter', className:'btn-primary'},
+			{name:'justifyright', className:'btn-primary'},
+			{name:'justifyfull', className:'btn-inverse'},
     		null,
-    		'createLink',
-    		'unlink',
+			{name:'createLink', className:'btn-pink'},
+			{name:'unlink', className:'btn-pink'},
     		null,
     		'foreColor',
     		null,
-    		'viewSource'
+    		{name:'viewSource', className:'btn-grey'}
     	]
     });
     
