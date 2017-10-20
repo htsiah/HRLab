@@ -31,7 +31,7 @@
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 		
 	<div class="table-responsive">
-    	<table id="exchangeratetable" class="table table-striped table-bordered table-hover">
+    	<table id="claimcategorytable" class="table table-striped table-bordered table-hover">
 			<thead>
 				<tr>
 					<th>Category</th>
@@ -44,8 +44,20 @@
 				@claimcategories.map{ claimcategory =>
 					<tr>
 						<td>@claimcategory.cat</td>
-						<td>@claimcategory.app</td>
-						<td>@claimcategory.tlim</td>
+						<td>
+							@if(claimcategory.all) {
+								Everyone
+							} else {
+								@claimcategory.app.map( app => app.split("@|@").head ).mkString(", ")
+							}
+						</td>
+						<td>
+							@if(claimcategory.tlim == 0){
+								No Limit
+							} else {
+								@claimcategory.tlim.toString
+							}
+						</td>
 						<td>
 							<div class="btn-group">
 								<a class="btn btn-xs btn-success" href="@routes.ClaimCategoryController.view(claimcategory._id.stringify)" title="View">

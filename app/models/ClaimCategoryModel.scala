@@ -73,7 +73,7 @@ object ClaimCategoryModel {
       BSONDocument(
           "_id" -> p_doc._id,
           "cat" -> p_doc.cat,
-          "all" -> true,
+          "all" -> p_doc.all,
           "app" -> p_doc.app,
           "tlim" -> p_doc.tlim,
           "hlp" -> p_doc.hlp,

@@ -1,0 +1,49 @@
+@(claimcategory:ClaimCategory)(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Admin <small><i class="ace-icon fa fa-angle-double-right"></i> Claim Setting <i class="ace-icon fa fa-angle-double-right"></i> Claim Category</small></h1>
+	</div>
+}
+
+@pluginjs = {}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/claimcategory.view.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/common.auditlog.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {}
+
+@inlinestyle = {}
+
+@buttons = {
+	<a href="@routes.ClaimCategoryController.edit(claimcategory._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
+	<a href="javascript:displayAuditLog('@claimcategory._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>
+}
+
+@contentRow(label: String, contentVal: String, cssClass:String="") = {
+	@if(contentVal.trim() == "") {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp</dd></dl>
+	} else {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">@contentVal</dd></dl>
+	}
+}
+
+@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+
+	@contentRow("Category", claimcategory.cat)
+	@if(claimcategory.all) {
+		@contentRow("Applicable", "Everyone")
+	} else {
+		@contentRow("Applicable", claimcategory.app.map( app => app.split("@|@").head ).mkString(", "))
+	}
+	@if(claimcategory.tlim == 0){
+		@contentRow("Transaction Limit", "No Limit")
+	} else {
+		@contentRow("Transaction Limit", claimcategory.tlim.toString)
+	}
+	<dl class="dl-horizontal"><dt><label>Help Text</label></dt><dd>@Html(claimcategory.hlp)</dd></dl>
+
+}

@@ -12,9 +12,13 @@ $(function(){
     
     $('ul[class="chosen-choices"]').addClass( "form-control" );
     
-    // wysiwyg
+    // Disable applicable if all
+    if($("#all").prop('checked') == true){
+    	$("#app").attr('disabled', true).trigger("chosen:updated");
+    };
     
-    $('#hlp-editor').ace_wysiwyg({
+    // wysiwyg
+    $('.wysiwyg-editor').ace_wysiwyg({
     	toolbar: [
 			{name:'bold', className:'btn-info'},
 			{name:'italic', className:'btn-info'},
@@ -31,13 +35,63 @@ $(function(){
 			{name:'justifyright', className:'btn-primary'},
 			{name:'justifyfull', className:'btn-inverse'},
     		null,
-			{name:'createLink', className:'btn-pink'},
-			{name:'unlink', className:'btn-pink'},
-    		null,
     		'foreColor',
     		null,
     		{name:'viewSource', className:'btn-grey'}
     	]
     });
     
+    // Append help html
+    $("#hlp-editor").html($("#hlp").val());
+    
+    // form validation
+	$("#claimcategoryform").validate({
+		onkeyup: false,
+		rules: {
+			"cat": {
+				required: true,
+				remote: {
+					url: "/claimcategory/iscatnotunique",
+			        type: "get",
+			        cache: false,
+			        data: {
+			        	p_id: function() {
+			        		return oid;
+			        	},
+			        	p_cat: function() {
+			        		return $( "#cat" ).val();
+			        	}
+			        }
+				}
+			},
+			"tlim": {
+				required: true,
+				digits: true
+			}
+		},
+		messages: {
+			"cat": {
+				required: "Please enter category.",
+				remote: "Category name already been used."
+			},
+			"tlim": {
+				required: "Please enter transaction limit."
+			},
+		},		 
+		submitHandler: function(form) {
+			$("#hlp").val($("#hlp-editor").html());
+			form.submit();
+		 }
+	});
+	
+});
+
+$("#all").click(function(){
+	if(this.checked){
+		// Disable applicable field
+		$("#app").val("").trigger('chosen:updated');
+		$("#app").attr('disabled', true).trigger("chosen:updated");
+	} else {
+		$("#app").attr('disabled', false).trigger("chosen:updated");
+	}
 });
