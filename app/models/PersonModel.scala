@@ -396,6 +396,13 @@ object PersonModel {
               } }
             } } 
             
+            // Update claim category
+            ClaimCategoryModel.find(BSONDocument("app"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { claimcategories => {
+              claimcategories.foreach { claimcategory => {
+                val app = claimcategory.app.map { app => if (app==oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify) p_doc.p.fn + " " + p_doc.p.ln + "@|@" + p_doc._id.stringify else app}
+                ClaimCategoryModel.update(BSONDocument("_id" -> claimcategory._id), claimcategory.copy(app=app), p_request)
+              } }
+            } }
           }
           
           // Update leave profiles - recalculate leave entitlement

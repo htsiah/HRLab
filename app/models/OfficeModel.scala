@@ -206,6 +206,12 @@ object OfficeModel {
                 EventModel.update(BSONDocument("_id" -> event._id), event.copy(lrr=lrr), p_request)
               } }
             } } 
+            ClaimCategoryModel.find(BSONDocument("app"->BSONDocument("$in"->List(oldoffice.get.n))), p_request).map { claimcategories => {
+              claimcategories.foreach { claimcategory => {
+                val app = claimcategory.app.map { app => if (app==oldoffice.get.n) p_doc.n else app}
+                ClaimCategoryModel.update(BSONDocument("_id" -> claimcategory._id), claimcategory.copy(app=app), p_request)
+              } }
+            } } 
           }
         }
       }
