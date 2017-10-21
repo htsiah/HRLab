@@ -12,7 +12,7 @@ import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 
 import models.{KeywordModel, OfficeModel, PersonModel, AuditLogModel, Profile, Office}
-import utilities.{System, Tools}
+import utilities.{KeywordUtility, System, Tools}
 
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
@@ -46,10 +46,10 @@ class OfficeController extends Controller with Secured {
   def create = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       for {
-        maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+        maybe_kw_countries <- KeywordUtility.findOne(BSONDocument("n" -> "Countries"))
       } yield {
         val NewObjectID = BSONObjectID.generate
-        val countries = maybe_kw_countries.get.v.sorted
+        val countries = maybe_kw_countries.get.v.get.sorted
         Ok(views.html.office.form(officeform.fill(OfficeModel.doc), countries)) 
       }
     } else {
@@ -62,9 +62,9 @@ class OfficeController extends Controller with Secured {
       officeform.bindFromRequest.fold(
           formWithError => {
             for {
-              maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+              maybe_kw_countries <- KeywordUtility.findOne(BSONDocument("n" -> "Countries"))
             } yield {
-              val countries = maybe_kw_countries.get.v.sorted
+              val countries = maybe_kw_countries.get.v.get.sorted
               Ok(views.html.office.form(formWithError, countries))
             }
           },
@@ -87,10 +87,10 @@ class OfficeController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
         maybedoc <- OfficeModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request) 
-        maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+        maybe_kw_countries <- KeywordUtility.findOne(BSONDocument("n" -> "Countries"))
       } yield {
         maybedoc.map( doc  => {
-          val countries = maybe_kw_countries.get.v.sorted
+          val countries = maybe_kw_countries.get.v.get.sorted
           Ok(views.html.office.form(officeform.fill(doc), countries, p_id))
         }).getOrElse(NotFound)
       }
@@ -104,9 +104,9 @@ class OfficeController extends Controller with Secured {
       officeform.bindFromRequest.fold(
           formWithError => {
             for {
-              maybe_kw_countries <- KeywordModel.findOne(BSONDocument("n" -> "Country"), request)
+              maybe_kw_countries <- KeywordUtility.findOne(BSONDocument("n" -> "Countries"))
             } yield {
-              val countries = maybe_kw_countries.get.v.sorted
+              val countries = maybe_kw_countries.get.v.get.sorted
               Ok(views.html.office.form(formWithError, countries, p_id))
             }
           },
