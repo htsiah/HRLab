@@ -211,7 +211,12 @@ object PersonModel {
         val future = col.update(BSONDocument("_id" -> doc._id, "sys.ddat"->BSONDocument("$exists"->false)), doc.copy(sys = SystemDataStore.setDeletionFlag(this.updateSystem(doc), p_request)))
         future.onComplete {
           case Failure(e) => throw e
-          case Success(lastError) => {}
+          case Success(lastError) => {
+                    
+            // Remove Person from claim category
+            ClaimCategoryModel.removePersonInApp(doc.p.fn  + " " + doc.p.ln + "@|@" + doc._id.stringify, p_request)
+            
+          }
         }
       }
     }

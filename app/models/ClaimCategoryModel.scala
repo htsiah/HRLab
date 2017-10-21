@@ -172,5 +172,24 @@ object ClaimCategoryModel {
   def findOne(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[ClaimCategory]
   }
+  
+  /** Custom Model Methods **/ 
+  
+  def removeOfficeInApp(p_office:String, p_request:RequestHeader) = {
+    val future = col.update(BSONDocument("app"->BSONDocument("$in"->List(p_office))).++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), BSONDocument("$pull"->BSONDocument("app" -> p_office)), multi=true)
+    future.onComplete {
+      case Failure(e) => throw e
+      case Success(lastError) => {}
+    }
+  }
+  
+  def removePersonInApp(p_person:String, p_request:RequestHeader) = {
+    val future = col.update(BSONDocument("app"->BSONDocument("$in"->List(p_person))).++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), BSONDocument("$pull"->BSONDocument("app" -> p_person)), multi=true)
+    future.onComplete {
+      case Failure(e) => throw e
+      case Success(lastError) => {}
+    }
+  }
+  
 
 }
