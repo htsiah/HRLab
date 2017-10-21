@@ -166,31 +166,11 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               )
               
               // Create Office record
-              def matchCt(x: String): String = x match {
-                case "Australia" => "AUD"
-                case "Brunei" => "BND"
-                case "Cambodia" => "KHR"
-                case "Hong Kong" => "HKD"
-                case "India" => "INR"
-                case "Indonesia" => "IDR"
-                case "Malaysia" => "MYR"
-                case "Myanmar" => "MMK"
-                case "New Zealand" => "NZD"
-                case "Pakistan" => "PKR"
-                case "Philippines" => "PHP"
-                case "Singapore" => "SGD"
-                case "Sri Lanka" => "LKR"
-                case "Thailand" => "THB"
-                case "Vietnam" => "VND"
-                case _ => ""
-              }
-
               val office_objectID = BSONObjectID.generate
               val office_doc = OfficeModel.doc.copy(
                   _id = office_objectID,
                   n = "Main Office",
-                  ct = formWithData.country,
-                  ccy = matchCt(formWithData.country)
+                  ct = formWithData.country
               )
               OfficeModel.insert(office_doc, eid)
               AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=office_objectID.stringify, c="Create document."), p_eid=eid)
