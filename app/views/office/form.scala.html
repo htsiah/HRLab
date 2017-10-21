@@ -3,7 +3,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(office:Form[Office], currencies: List[String], countries: List[String], oid:String="")(implicit session: play.api.mvc.Session)
+@(office:Form[Office], countries: List[String], oid:String="")(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -59,7 +59,6 @@
 		@inputText(office("pc"), '_label->"Postcode", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@inputText(office("st"), '_label->"State / Province ", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
 		@select(office("ct"), options = options(countries.map(country=>country)), '_label -> "Country",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")
-		@select(office("ccy"), options = options(currencies.map(currency=>currency)), '_label -> "Currency",'_default -> "Please select", '_class->"dl-horizontal", 'class->"form-control")	
 		<div class="hidden">
 			@inputText(office("_id"),'type -> "hidden")
 			@inputText(office("df"),'type -> "hidden")

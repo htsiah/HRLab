@@ -22,16 +22,14 @@ $(function(){
 			        }
 				}
 			},
-			"ct": "required",
-			"ccy": "required"
+			"ct": "required"
 		},
 		messages: {
 			"n": {
 				required: "Please enter office name.",
 				remote: "Office name already been used."
 			},
-			"ct": "Please select country.",
-			"ccy": "Please select currency."
+			"ct": "Please select country."
 		},		 
 		submitHandler: function(form) {
 		   form.submit();
