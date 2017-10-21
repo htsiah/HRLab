@@ -141,8 +141,7 @@ class EventController extends Controller with Secured {
        maybe_event <- EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
      } yield {
        maybe_event.map( event  => {
-         val selectedLRR = event.lrr.map { lrr => lrr.split("@|@").head }
-         Ok(views.html.event.view(event, selectedLRR))
+         Ok(views.html.event.view(event))
        }).getOrElse(NotFound)
      }
   }}
@@ -192,8 +191,7 @@ class EventController extends Controller with Secured {
        maybe_event <- {EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)}
      } yield {
        maybe_event.map( event  => {
-         val selectedLRR = event.lrr.map { lrr => lrr.split("@|@").head }
-         Ok(views.html.event.myprofileview(event, selectedLRR))
+         Ok(views.html.event.myprofileview(event))
        }).getOrElse(NotFound)
      }
   }}
