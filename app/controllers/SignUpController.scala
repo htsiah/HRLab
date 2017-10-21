@@ -144,6 +144,27 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               ) 
               CompanyModel.insert(company_doc, eid)
               
+              
+              // Create Claim Category
+              ConfigClaimCategoryModel.find(BSONDocument()).map( configclaimcategories => 
+                configclaimcategories.map( configclaimcategory => {
+                  val claimcategory_objectID = BSONObjectID.generate
+                  ClaimCategoryModel.insert(
+                      ClaimCategory(
+                          _id=claimcategory_objectID, 
+                          cat=configclaimcategory.cat, 
+                          all=configclaimcategory.all, 
+                          app=configclaimcategory.app, 
+                          tlim=configclaimcategory.tlim, 
+                          hlp=configclaimcategory.hlp, 
+                          sys = None
+                      ),
+                      eid              
+                  )
+                  AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=claimcategory_objectID.stringify, c="Create document."), p_eid=eid)
+                })
+              )
+              
               // Create Office record
               def matchCt(x: String): String = x match {
                 case "Australia" => "AUD"
