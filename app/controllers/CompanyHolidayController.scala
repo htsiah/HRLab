@@ -55,7 +55,7 @@ class CompanyHolidayController extends Controller with Secured {
             fdat = Some(new DateTime()),
             tdat = Some(new DateTime())
         ))
-        Ok(views.html.companyholiday.form(filledForm, CompanyHolidayModel.doc.off, offices))
+        Ok(views.html.companyholiday.form(filledForm, offices))
       }  
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
@@ -70,7 +70,7 @@ class CompanyHolidayController extends Controller with Secured {
               offices <- OfficeModel.getAllOfficeName(request)
             } yield {
               formWithError.forField("off")(officesval => {
-                Ok(views.html.companyholiday.form(formWithError, officesval.value.get.split(",").toList, offices))
+                Ok(views.html.companyholiday.form(formWithError, offices))
               }) 
             }
           },
@@ -93,7 +93,7 @@ class CompanyHolidayController extends Controller with Secured {
         offices <- OfficeModel.getAllOfficeName(request)
       } yield {
         maybe_companyholiday.map( companyholiday  => {
-          Ok(views.html.companyholiday.form(companyholidayform.fill(companyholiday), companyholiday.off, offices, p_id))
+          Ok(views.html.companyholiday.form(companyholidayform.fill(companyholiday), offices, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -109,7 +109,7 @@ class CompanyHolidayController extends Controller with Secured {
             offices <- OfficeModel.getAllOfficeName(request)
           } yield {
             formWithError.forField("off")(officesval => {
-              Ok(views.html.companyholiday.form(formWithError, officesval.value.get.split(",").toList, offices)) 
+              Ok(views.html.companyholiday.form(formWithError, offices)) 
             }) 
           } 
         },
@@ -151,7 +151,7 @@ class CompanyHolidayController extends Controller with Secured {
         offices <- OfficeModel.getAllOfficeName(request)
       } yield {
         maybe_companyholiday.map( companyholiday  => {
-          Ok(views.html.companyholiday.myprofileform(companyholidayform.fill(companyholiday), companyholiday.off, offices, p_id))
+          Ok(views.html.companyholiday.myprofileform(companyholidayform.fill(companyholiday), offices, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -167,7 +167,7 @@ class CompanyHolidayController extends Controller with Secured {
               offices <- OfficeModel.getAllOfficeName(request)
             } yield {
               formWithError.forField("off")(officesval => {
-                Ok(views.html.companyholiday.myprofileform(formWithError, officesval.value.get.split(",").toList, offices))
+                Ok(views.html.companyholiday.myprofileform(formWithError, offices))
               }) 
             }
           },

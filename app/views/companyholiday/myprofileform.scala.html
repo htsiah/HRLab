@@ -3,7 +3,7 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 
-@(companyholiday:Form[CompanyHoliday], selectedoff:List[String], offices:List[String], oid:String="")(implicit session: play.api.mvc.Session)
+@(companyholiday:Form[CompanyHoliday], offices:List[String], oid:String="")(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -59,7 +59,7 @@
 				@for((office, index) <- offices.zipWithIndex) {
 					<div class="checkbox">
 						<label>
-							<input name="off@index" id="off@index" type="checkbox" class="office ace" value="@office" @radioSelected(selectedoff, office)>
+							<input name="off@index" id="off@index" type="checkbox" class="office ace" value="@office" @radioSelected(companyholiday.value.get.off, office)>
 							<span class="lbl"> @office</span>
 						</label>
 					</div>
