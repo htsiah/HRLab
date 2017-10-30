@@ -14,11 +14,11 @@ $(function(){
 function onDelete(p_id, p_email) {
 
 	$.ajax({
-		url: "/person/getemploymenttypejson/" + p_id,
+		url: "/person/isdeleteable/" + p_id,
 		type: 'GET',
 		dataType: "json",
 		success: function(data){
-			if(data.type == "staff"){
+			if(data == true){
 				onDeleteProceed(p_id, p_email)
 			} else {
 				onDeleteAbort()

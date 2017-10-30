@@ -14,11 +14,11 @@ import play.api.cache.Cache
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel, LeavePolicyModel, AuditLogModel, OrgChartSettingModel}
+import models.{PersonModel, AuthenticationModel, KeywordModel, ClaimWorkflowModel, OfficeModel, Authentication, Person, Profile, Workday, LeaveProfileModel, LeaveModel, LeavePolicyModel, AuditLogModel, OrgChartSettingModel}
 import utilities.{System, MailUtility, Tools, AlertUtility}
 
 import reactivemongo.api._
-import reactivemongo.bson.{BSONObjectID,BSONDocument}
+import reactivemongo.bson.{BSONObjectID,BSONDocument,BSONArray}
 
 import javax.inject.Inject
 
@@ -433,19 +433,32 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
-  
-  def getEmploymentTypeJSON(p_id:String) = withAuth { username => implicit request => {
+    
+  def isDeleteable(p_id:String) = withAuth { username => implicit request => {
     for {
       maybe_person <- PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
       maybe_staff <- PersonModel.findOne(BSONDocument("p.mgrid" -> p_id), request)
+      maybe_workflow <- ClaimWorkflowModel.findOne(
+          BSONDocument(
+              "$or" -> BSONArray(
+                  BSONDocument("s.s1"->BSONDocument("$ne"->""), "at.at1"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s2"->BSONDocument("$ne"->""), "at.at2"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s3"->BSONDocument("$ne"->""), "at.at3"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s4"->BSONDocument("$ne"->""), "at.at4"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s5"->BSONDocument("$ne"->""), "at.at5"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s6"->BSONDocument("$ne"->""), "at.at6"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s7"->BSONDocument("$ne"->""), "at.at7"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s8"->BSONDocument("$ne"->""), "at.at8"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s9"->BSONDocument("$ne"->""), "at.at9"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify)),
+                  BSONDocument("s.s10"->BSONDocument("$ne"->""), "at.at10"->(maybe_person.get.p.fn + " " + maybe_person.get.p.ln + "@|@" + maybe_person.get._id.stringify))
+              )
+          ), 
+          request)
     } yield {
-      if (maybe_person.get.p.rl.contains("Admin")) {
-        Ok(Json.parse("""{"type":"admin"}""")).as("application/json")
+      if (maybe_person.get.p.rl.contains("Admin") || maybe_staff.isDefined || maybe_workflow.isDefined) {
+        Ok("false").as("text/plain")
       } else {  
-        maybe_staff.isDefined match {
-          case true => Ok(Json.parse("""{"type":"manager"}""")).as("application/json")
-          case _ => Ok(Json.parse("""{"type":"staff"}""")).as("application/json")
-        }
+        Ok("true").as("text/plain")
       }
     }
   }}
