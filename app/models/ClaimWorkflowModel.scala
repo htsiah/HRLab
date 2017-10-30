@@ -310,24 +310,7 @@ object ClaimWorkflowModel {
     ) 
     sys_doc
   }
-  
-  // Insert new document
-  def insert(p_doc:ClaimWorkflow, p_eid:String="", p_request:RequestHeader=null)= {
-    val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
-    future.onComplete {
-      case Failure(e) => throw e
-      case Success(lastError) => {}
-    }
-  }
-  
-  def update(p_query:BSONDocument, p_doc:ClaimWorkflow, p_request:RequestHeader) = {
-    val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
-    future.onComplete {
-      case Failure(e) => throw e
-      case Success(lastError) => {}
-    }
-  }
-		
+   		
   // Soft deletion by setting deletion flag in document
   def remove(p_query:BSONDocument, p_request:RequestHeader) = {
     for {
@@ -368,6 +351,67 @@ object ClaimWorkflowModel {
   // Return the first found document
   def findOne(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[ClaimWorkflow]
+  }
+  
+  /** Custom Model Methods **/ 
+
+  def insert(p_doc:ClaimWorkflow, p_eid:String="", p_request:RequestHeader=null)= {
+    if (p_doc.d) {
+      for {
+        default_workflow <- this.findOne(BSONDocument("d"->true), p_request)
+      } yield {
+        val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
+        future.onComplete {
+          case Failure(e) => throw e
+          case Success(lastError) => {
+            // Change default to false
+            col.update(BSONDocument("_id" -> default_workflow.get._id), default_workflow.get.copy(d=false, sys = SystemDataStore.modifyWithSystem(this.updateSystem(default_workflow.get), p_request)))
+          }
+        } 
+      }
+    } else {
+      val future = col.insert(p_doc.copy(sys = SystemDataStore.creation(p_eid,p_request)))
+      future.onComplete {
+        case Failure(e) => throw e
+        case Success(lastError) => {}
+      }
+    }
+  }
+  
+  def update(p_query:BSONDocument, p_doc:ClaimWorkflow, p_request:RequestHeader) = {
+    if (p_doc.d) {
+      for {
+        default_workflow <- this.findOne(BSONDocument("d"->true), p_request)
+      } yield {
+        val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
+        future.onComplete {
+          case Failure(e) => throw e
+          case Success(lastError) => {
+            // Change default to false
+            if (default_workflow.get._id != p_doc._id) {
+              col.update(BSONDocument("_id" -> default_workflow.get._id), default_workflow.get.copy(d=false, sys = SystemDataStore.modifyWithSystem(this.updateSystem(default_workflow.get), p_request)))
+            }
+          }
+        } 
+      }
+    } else {
+      val future = col.update(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false))), p_doc.copy(sys = SystemDataStore.modifyWithSystem(this.updateSystem(p_doc), p_request)))
+      future.onComplete {
+        case Failure(e) => throw e
+        case Success(lastError) => {}
+      } 
+    }
+  }
+  
+  def getSelectedApplicable(p_request:RequestHeader) = {
+    for {
+      workflows <- this.find(BSONDocument("d" -> false), p_request)
+    } yield {
+      val appliablesList = workflows.map(workflow => {
+        workflow.app
+      })
+      appliablesList.flatten
+    }
   }
   
 }

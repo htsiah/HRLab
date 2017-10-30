@@ -1,4 +1,4 @@
-@(claimcategories: List[ClaimCategory])(implicit session: play.api.mvc.Session)
+@(claimcategories: List[ClaimCategory], claimworkflows: List[ClaimWorkflow])(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -25,11 +25,16 @@
 @inlinestyle = {}
 
 @buttons = {
-	<a href="@routes.ClaimCategoryController.create" class="btn btn-sm btn btn-block">Add Claim Category</a>	
+	<a href="@routes.ClaimCategoryController.create" class="btn btn-sm btn btn-block">Add Claim Category</a>
+	<a href="@routes.ClaimWorkflowController.create" class="btn btn-sm btn btn-block">Add Claim Workflow</a>	
 }
 
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
-		
+			
+	<h4 class="header smaller lighter blue">
+		<i class="fa fa-cog"></i>
+		Claim Category
+	</h4>
 	<div class="table-responsive">
     	<table id="claimcategorytable" class="table table-striped table-bordered table-hover">
 			<thead>
@@ -66,7 +71,7 @@
 								<a class="btn btn-xs btn-info" title="Edit" href="@routes.ClaimCategoryController.edit(claimcategory._id.stringify)">
 									<i class="ace-icon fa fa-pencil bigger-120"></i>
 								</a>
-								<a class="btn btn-xs btn-danger" href="javascript:onDelete('@claimcategory._id.stringify')" title="Delete">
+								<a class="btn btn-xs btn-danger" href="javascript:onDeleteCategory('@claimcategory._id.stringify')" title="Delete">
 									<i class="ace-icon fa fa-trash-o bigger-120"></i>
 								</a>
 							</div>
@@ -76,5 +81,50 @@
 			</tbody>
 		</table>
 	</div>
-	@layout.ace.dialogbox("dialog-delete", Html("<div class='alert alert-info bigger-110'><p>Selected claim category will permanently deleted and cannot be recovered.</p></div>"))
+	
+	<h4 class="header smaller lighter blue">
+		<i class="fa fa-cog"></i>
+		Claim Workflow
+	</h4>
+	<div class="table-responsive">
+    	<table id="claimworkflowtable" class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Applicable</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				@claimworkflows.map{ claimworkflow =>
+					<tr>
+						<td>@claimworkflow.n</td>
+						<td>
+							@if(claimworkflow.d) {
+								Default
+							} else {
+								@claimworkflow.app.map( app => app.split("@|@").head ).mkString(", ")
+							}
+						</td>
+						<td>
+							<div class="btn-group">
+								<a class="btn btn-xs btn-success" href="@routes.ClaimWorkflowController.view(claimworkflow._id.stringify)" title="View">
+									<i class="ace-icon fa fa-search-plus bigger-120"></i>
+								</a>
+								<a class="btn btn-xs btn-info" title="Edit" href="@routes.ClaimWorkflowController.edit(claimworkflow._id.stringify)">
+									<i class="ace-icon fa fa-pencil bigger-120"></i>
+								</a>
+								<a class="btn btn-xs btn-danger" href="javascript:onDeleteWorkflow('@claimworkflow._id.stringify')" title="Delete">
+									<i class="ace-icon fa fa-trash-o bigger-120"></i>
+								</a>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	
+	@layout.ace.dialogbox("dialog-delete-category", Html("<div class='alert alert-info bigger-110'><p>Selected claim category will permanently deleted and cannot be recovered.</p></div>"))
+	@layout.ace.dialogbox("dialog-delete-workflow", Html("<div class='alert alert-info bigger-110'><p>Selected claim workflow will permanently deleted and cannot be recovered.</p></div>"))
 }
