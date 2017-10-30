@@ -1,0 +1,160 @@
+@(claimworkflow:ClaimWorkflow)(implicit session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Admin <small><i class="ace-icon fa fa-angle-double-right"></i> Claim Setting <i class="ace-icon fa fa-angle-double-right"></i> Claim Workflow</small></h1>
+	</div>
+}
+
+@pluginjs = {}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/claimworkflow.view.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/common.auditlog.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {}
+
+@inlinestyle = {}
+
+@buttons = {
+	<a href="@routes.ClaimWorkflowController.edit(claimworkflow._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
+	<a href="javascript:displayAuditLog('@claimworkflow._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>
+}
+
+@contentRow(label: String, contentVal: String, cssClass:String="") = {
+	@if(contentVal.trim() == "") {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp</dd></dl>
+	} else {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">@contentVal</dd></dl>
+	}
+}
+
+@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+
+	@contentRow("Name", claimworkflow.n)
+	@if(claimworkflow.d) {
+		@contentRow("Applicable", "Default for everyone")
+	} else {
+		@contentRow("Applicable", claimworkflow.app.map( app => app.split("@|@").head ).mkString(", "))
+	}
+
+    <div class="widget-box transparent">
+    	<div class="widget-header widget-header-flat">
+			<h4 class="widget-title lighter">
+				<i class="fa fa-cog"></i>
+				Workflow Steps
+			</h4>
+		</div>
+
+		<div class="widget-body" style="display: block;">
+			<div class="widget-main no-padding">
+				<table class="table table-bordered table-striped">
+					<thead class="thin-border-bottom">
+						<tr>
+							<th class="text-center">#</th>
+							<th class="text-center">Status</th>
+							<th class="text-center">Assigned To</th>
+							<th class="text-center" width="15%">Authorize to Change Approved Amount</th>
+							<th class="text-center" width="20%">Applied when Claim Amount Greater Than</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="text-center">1</td>
+							<td class="text-center">@claimworkflow.s.s1</td>
+							<td class="text-center">@claimworkflow.at.at1.split("@|@").head</td>
+							<td class="text-center">@if(claimworkflow.caa.caa1==true){Yes} else {No}</td>
+							<td class="text-center">@claimworkflow.cg.cg1</td>
+						</tr>
+						@if(claimworkflow.s.s2!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s2</td>
+								<td class="text-center">@claimworkflow.at.at2.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa2==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg2</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s3!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s3</td>
+								<td class="text-center">@claimworkflow.at.at3.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa3==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg3</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s4!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s4</td>
+								<td class="text-center">@claimworkflow.at.at4.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa4==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg4</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s5!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s5</td>
+								<td class="text-center">@claimworkflow.at.at5.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa5==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg5</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s6!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s6</td>
+								<td class="text-center">@claimworkflow.at.at6.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa6==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg6</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s7!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s7</td>
+								<td class="text-center">@claimworkflow.at.at7.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa7==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg7</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s8!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s8</td>
+								<td class="text-center">@claimworkflow.at.at8.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa8==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg8</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s9!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s9</td>
+								<td class="text-center">@claimworkflow.at.at9.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa9==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg9</td>
+							</tr>
+						}
+						@if(claimworkflow.s.s10!="") {
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center">@claimworkflow.s.s10</td>
+								<td class="text-center">@claimworkflow.at.at10.split("@|@").head</td>
+								<td class="text-center">@if(claimworkflow.caa.caa10==true){Yes} else {No}</td>
+								<td class="text-center">@claimworkflow.cg.cg10</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div><!-- /.widget-main -->
+		</div><!-- /.widget-body -->
+	</div>
+
+}
+
+

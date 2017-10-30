@@ -101,7 +101,7 @@
 						<td>@claimworkflow.n</td>
 						<td>
 							@if(claimworkflow.d) {
-								Default
+								Default for everyone
 							} else {
 								@claimworkflow.app.map( app => app.split("@|@").head ).mkString(", ")
 							}
@@ -114,9 +114,11 @@
 								<a class="btn btn-xs btn-info" title="Edit" href="@routes.ClaimWorkflowController.edit(claimworkflow._id.stringify)">
 									<i class="ace-icon fa fa-pencil bigger-120"></i>
 								</a>
-								<a class="btn btn-xs btn-danger" href="javascript:onDeleteWorkflow('@claimworkflow._id.stringify')" title="Delete">
-									<i class="ace-icon fa fa-trash-o bigger-120"></i>
-								</a>
+								@if(!claimworkflow.d){
+									<a class="btn btn-xs btn-danger" href="javascript:onDeleteWorkflow('@claimworkflow._id.stringify')" title="Delete">
+										<i class="ace-icon fa fa-trash-o bigger-120"></i>
+									</a>
+								}
 							</div>
 						</td>
 					</tr>

@@ -88,7 +88,19 @@ class ClaimWorkflowController extends Controller with Secured {
       }
   )
   
-  def view(p_id:String) = TODO
+  def view(p_id:String) = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      for { 
+        maybeclaimworkflow <- ClaimWorkflowModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request) 
+      } yield {
+        maybeclaimworkflow.map( claimworkflow => {
+          Ok(views.html.claimworkflow.view(claimworkflow))
+        }).getOrElse(NotFound)
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
   
   def create = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
@@ -204,6 +216,22 @@ class ClaimWorkflowController extends Controller with Secured {
           case _ => Ok("true").as("text/plain")
         }
       )
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
+  def isDefault(p_id:String) = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){      
+      for {
+        claimworkflow <- ClaimWorkflowModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+      } yield {
+        if (claimworkflow.get.d) {
+          Ok("true").as("text/plain")
+        } else {
+          Ok("false").as("text/plain")
+        }
+      }   
     } else {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
