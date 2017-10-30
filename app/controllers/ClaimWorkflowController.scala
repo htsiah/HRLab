@@ -106,11 +106,12 @@ class ClaimWorkflowController extends Controller with Secured {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
         persons <- PersonModel.find(BSONDocument(), request)
+        personsWithEmail <- PersonModel.find(BSONDocument("p.nem" -> false), request)
         offices <- OfficeModel.getAllOfficeName(request)
         selectedApplicable <- ClaimWorkflowModel.getSelectedApplicable(request)
       } yield {
         val applicableSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
-        val assignedToSelections = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify }
+        val assignedToSelections = personsWithEmail.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify }
         Ok(views.html.claimworkflow.form(claimworkflowform.fill(ClaimWorkflowModel.doc), applicableSelection.filterNot(selectedApplicable.contains(_)).sorted, assignedToSelections.sorted))
       }
     } else {
@@ -151,12 +152,13 @@ class ClaimWorkflowController extends Controller with Secured {
       for { 
         maybedoc <- ClaimWorkflowModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request) 
         persons <- PersonModel.find(BSONDocument(), request)
+        personsWithEmail <- PersonModel.find(BSONDocument("p.nem" -> false), request)
         selectedApplicable <- ClaimWorkflowModel.getSelectedApplicable(request)
         offices <- OfficeModel.getAllOfficeName(request)
       } yield {
         maybedoc.map( doc  => {
           val applicableSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
-          val assignedToSelections = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify }
+          val assignedToSelections = personsWithEmail.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify }
           Ok(views.html.claimworkflow.form(claimworkflowform.fill(doc), (applicableSelection.filterNot(selectedApplicable.contains(_)) ::: doc.app).sorted, assignedToSelections.sorted, p_id))
         }).getOrElse(NotFound)
       }
