@@ -148,6 +148,9 @@ object OfficeModel {
             
             // Remove office from claim category
             ClaimCategoryModel.removeOfficeInApp(doc.n, p_request)
+            
+            // Remove office from claim workflow
+            ClaimWorkflowModel.removeOfficeInApp(doc.n, p_request)
           
           }
         }
@@ -211,6 +214,12 @@ object OfficeModel {
               claimcategories.foreach { claimcategory => {
                 val app = claimcategory.app.map { app => if (app==oldoffice.get.n) p_doc.n else app}
                 ClaimCategoryModel.update(BSONDocument("_id" -> claimcategory._id), claimcategory.copy(app=app), p_request)
+              } }
+            } } 
+            ClaimWorkflowModel.findOne(BSONDocument("app"->BSONDocument("$in"->List(oldoffice.get.n))), p_request).map { maybe_claimworkflow => {
+              maybe_claimworkflow.map { claimcategory => {
+                val app = claimcategory.app.map { app => if (app==oldoffice.get.n) p_doc.n else app}
+                ClaimWorkflowModel.update(BSONDocument("_id" -> claimcategory._id), claimcategory.copy(app=app), p_request)
               } }
             } } 
           }

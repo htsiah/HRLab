@@ -216,6 +216,9 @@ object PersonModel {
             // Remove Person from claim category
             ClaimCategoryModel.removePersonInApp(doc.p.fn  + " " + doc.p.ln + "@|@" + doc._id.stringify, p_request)
             
+            // Remove Person from claim workflow
+            ClaimWorkflowModel.removePersonInApp(doc.p.fn  + " " + doc.p.ln + "@|@" + doc._id.stringify, p_request)
+            
           }
         }
       }
@@ -408,6 +411,15 @@ object PersonModel {
                 ClaimCategoryModel.update(BSONDocument("_id" -> claimcategory._id), claimcategory.copy(app=app), p_request)
               } }
             } }
+            
+            // Update claim workflow
+            ClaimWorkflowModel.findOne(BSONDocument("app"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { maybe_claimworkflow => {
+              maybe_claimworkflow.map { claimworkflow => {
+                val app = claimworkflow.app.map { app => if (app==oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify) p_doc.p.fn + " " + p_doc.p.ln + "@|@" + p_doc._id.stringify else app}
+                ClaimWorkflowModel.update(BSONDocument("_id" -> claimworkflow._id), claimworkflow.copy(app=app), p_request)
+              }}
+            }}
+            
           }
           
           // Update leave profiles - recalculate leave entitlement
