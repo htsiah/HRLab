@@ -412,13 +412,8 @@ object PersonModel {
               } }
             } }
             
-            // Update claim workflow
-            ClaimWorkflowModel.findOne(BSONDocument("app"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { maybe_claimworkflow => {
-              maybe_claimworkflow.map { claimworkflow => {
-                val app = claimworkflow.app.map { app => if (app==oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify) p_doc.p.fn + " " + p_doc.p.ln + "@|@" + p_doc._id.stringify else app}
-                ClaimWorkflowModel.update(BSONDocument("_id" -> claimworkflow._id), claimworkflow.copy(app=app), p_request)
-              }}
-            }}
+            // Update claim workflow            
+            ClaimWorkflowModel.updatePersonName(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify, p_doc.p.fn + " " + p_doc.p.ln + "@|@" + p_doc._id.stringify, p_request)
             
           }
           

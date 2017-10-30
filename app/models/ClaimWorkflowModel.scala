@@ -430,4 +430,54 @@ object ClaimWorkflowModel {
     }
   }
   
+  def updatePersonName(p_old_person:String, p_new_person:String, p_request:RequestHeader) = {
+    for {
+      workflows <- this.find(
+          BSONDocument(
+              "$or" -> BSONArray(
+                  BSONDocument("app"->BSONDocument("$in"->List(p_old_person))),
+                  BSONDocument("at.at1"->p_old_person),
+                  BSONDocument("at.at2"->p_old_person),
+                  BSONDocument("at.at3"->p_old_person),
+                  BSONDocument("at.at4"->p_old_person),
+                  BSONDocument("at.at5"->p_old_person),
+                  BSONDocument("at.at6"->p_old_person),
+                  BSONDocument("at.at7"->p_old_person),
+                  BSONDocument("at.at8"->p_old_person),
+                  BSONDocument("at.at9"->p_old_person),
+                  BSONDocument("at.at10"->p_old_person)
+              )
+          ), 
+          p_request)
+    } yield {
+      workflows.map( workflow => {
+        val app = workflow.app.map { app => if (app==p_old_person) p_new_person else app}
+        val at1 = if (workflow.at.at1==p_old_person) p_new_person else workflow.at.at1
+        val at2 = if (workflow.at.at2==p_old_person) p_new_person else workflow.at.at2
+        val at3 = if (workflow.at.at3==p_old_person) p_new_person else workflow.at.at3
+        val at4 = if (workflow.at.at4==p_old_person) p_new_person else workflow.at.at4
+        val at5 = if (workflow.at.at5==p_old_person) p_new_person else workflow.at.at5
+        val at6 = if (workflow.at.at6==p_old_person) p_new_person else workflow.at.at6
+        val at7 = if (workflow.at.at7==p_old_person) p_new_person else workflow.at.at7
+        val at8 = if (workflow.at.at8==p_old_person) p_new_person else workflow.at.at8
+        val at9 = if (workflow.at.at9==p_old_person) p_new_person else workflow.at.at9
+        val at10 = if (workflow.at.at10==p_old_person) p_new_person else workflow.at.at10
+             
+        val future = col.update(
+            BSONDocument("_id" -> workflow._id), 
+            workflow.copy(
+                app = app,
+                at = ClaimWorkflowAssigned(at1=at1, at2=at2, at3=at3, at4=at4, at5=at5, at6=at6, at7=at7, at8=at8, at9=at9, at10=at10), 
+                sys = SystemDataStore.modifyWithSystem(this.updateSystem(workflow), p_request))
+        )
+        future.onComplete {
+          case Failure(e) => throw e
+          case Success(lastError) => {}
+        }
+        
+      })
+
+    }
+  }
+
 }
