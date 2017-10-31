@@ -165,6 +165,29 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                 })
               )
               
+              // Create Claim Workflow
+              ConfigClaimWorkflowModel.find(BSONDocument()).map ( configclaimworkflows =>
+                configclaimworkflows.map ( configclaimworkflow => { 
+                  println("Found")
+                  val claimworkflow_objectID = BSONObjectID.generate
+                  ClaimWorkflowModel.insert(
+                      ClaimWorkflow(
+                          _id = claimworkflow_objectID,
+                          n = configclaimworkflow.n,
+                          d = configclaimworkflow.d,
+                          app = configclaimworkflow.app,
+                          s = ClaimWorkflowStatus(s1=configclaimworkflow.s.s1, s2=configclaimworkflow.s.s2, s3=configclaimworkflow.s.s3, s4=configclaimworkflow.s.s4, s5=configclaimworkflow.s.s5, s6=configclaimworkflow.s.s6, s7=configclaimworkflow.s.s7, s8=configclaimworkflow.s.s8, s9=configclaimworkflow.s.s9, s10=configclaimworkflow.s.s10),
+                          at = ClaimWorkflowAssigned(at1=configclaimworkflow.at.at1, at2=configclaimworkflow.at.at2, at3=configclaimworkflow.at.at3, at4=configclaimworkflow.at.at4, at5=configclaimworkflow.at.at5, at6=configclaimworkflow.at.at6, at7=configclaimworkflow.at.at7, at8=configclaimworkflow.at.at8, at9=configclaimworkflow.at.at9, at10=configclaimworkflow.at.at10),
+                          caa = ClaimWorkflowApprovedAmount(caa1=configclaimworkflow.caa.caa1, caa2=configclaimworkflow.caa.caa2, caa3=configclaimworkflow.caa.caa3, caa4=configclaimworkflow.caa.caa4, caa5=configclaimworkflow.caa.caa5, caa6=configclaimworkflow.caa.caa6, caa7=configclaimworkflow.caa.caa7, caa8=configclaimworkflow.caa.caa8, caa9=configclaimworkflow.caa.caa9, caa10=configclaimworkflow.caa.caa10),
+                          cg = ClaimWorkflowAmountGreater(cg1=configclaimworkflow.cg.cg1, cg2=configclaimworkflow.cg.cg2, cg3=configclaimworkflow.cg.cg3, cg4=configclaimworkflow.cg.cg4, cg5=configclaimworkflow.cg.cg5, cg6=configclaimworkflow.cg.cg6, cg7=configclaimworkflow.cg.cg7, cg8=configclaimworkflow.cg.cg8, cg9=configclaimworkflow.cg.cg9, cg10=configclaimworkflow.cg.cg10),
+                          sys = None
+                      ),
+                      eid
+                  )
+                  AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid="", pn="System", lk=claimworkflow_objectID.stringify, c="Create document."), p_eid=eid)
+                })
+              )
+              
               // Create Office record
               val office_objectID = BSONObjectID.generate
               val office_doc = OfficeModel.doc.copy(

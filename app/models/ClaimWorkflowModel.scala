@@ -356,7 +356,7 @@ object ClaimWorkflowModel {
   /** Custom Model Methods **/ 
 
   def insert(p_doc:ClaimWorkflow, p_eid:String="", p_request:RequestHeader=null)= {
-    if (p_doc.d) {
+    if (p_doc.d && p_request!=null) {
       for {
         default_workflow <- this.findOne(BSONDocument("d"->true), p_request)
       } yield {
