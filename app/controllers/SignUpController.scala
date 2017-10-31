@@ -168,7 +168,6 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               // Create Claim Workflow
               ConfigClaimWorkflowModel.find(BSONDocument()).map ( configclaimworkflows =>
                 configclaimworkflows.map ( configclaimworkflow => { 
-                  println("Found")
                   val claimworkflow_objectID = BSONObjectID.generate
                   ClaimWorkflowModel.insert(
                       ClaimWorkflow(
