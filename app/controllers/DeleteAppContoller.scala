@@ -16,7 +16,7 @@ import play.modules.reactivemongo.json._
 
 import scala.concurrent.{Future, Await}
 
-import models.{PersonModel, AuthenticationModel, KeywordModel, OfficeModel, CompanyHolidayModel, LeavePolicyModel, LeaveProfileModel, LeaveSettingModel, LeaveModel, CompanyModel, TaskModel, LeaveFileModel, AuditLogModel, OrgChartSettingModel}
+import models._
 import utilities.{MailUtility, Tools}
 
 import reactivemongo.api._
@@ -71,6 +71,8 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
             AuditLogModel.remove(BSONDocument(), request)
             LeaveFileModel.remove(Json.obj(), request)
             OrgChartSettingModel.remove(BSONDocument(), request)
+            ClaimCategoryModel.remove(BSONDocument(), request)
+            ClaimWorkflowModel.remove(BSONDocument(), request)
             
             // Send email
             mailerClient.send(
