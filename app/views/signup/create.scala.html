@@ -4,7 +4,33 @@
 
 @pluginjs = {
 	<script src="@routes.Assets.at("layout/jquery.validate/jquery.validate.min.js")"></script>
-	<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion_async.js"></script>
+
+	<!-- Global site tag (gtag.js) - Google AdWords: 1009979115 -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=AW-1009979115"></script>
+	<script>
+  		window.dataLayer = window.dataLayer || [];
+  		function gtag(){dataLayer.push(arguments);}
+  		gtag('js', new Date());
+
+  		gtag('config', 'AW-1009979115');
+	</script>
+	
+	<!-- Event snippet for HRSifu - Sign Up conversion page
+		In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+	<script>
+		function gtag_report_conversion(url) {
+  			var callback = function () {
+    			if (typeof(url) != 'undefined') {
+      				window.location = url;
+    			}
+  			};
+  			gtag('event', 'conversion', {
+      			'send_to': 'AW-1009979115/-A8DCOOskGcQ653M4QM',
+      			'event_callback': callback
+  			});
+ 			return false;
+		}
+	</script>
 }
 
 @inlinejs = {
