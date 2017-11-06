@@ -38,7 +38,7 @@ $(function(){
 			country: "Please select your country."
 		},
 		 submitHandler: function(form) {
-			 gtag_report_conversion ('https://app.hrsifu.com');
+			 gtag_report_conversion();
 			 form.submit();
 		 }
 	});
