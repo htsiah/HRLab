@@ -19,11 +19,11 @@
 		In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
 	<script>
 		function gtag_report_conversion(url) {
-  			var callback = function () {
-    			if (typeof(url) != 'undefined') {
-      				window.location = url;
-    			}
-  			};
+  			// var callback = function () {
+    		//	if (typeof(url) != 'undefined') {
+      		//		window.location = url;
+    		//	}
+  			// };
   			gtag('event', 'conversion', {
       			'send_to': 'AW-1009979115/-A8DCOOskGcQ653M4QM',
       			'event_callback': callback
@@ -128,35 +128,5 @@
 			<a href="https://www.hrsifu.com" class="back-to-home">Go to HRSifu.com</a>
 		</div>
 	</div><!-- /signup-box -->
-	
-<!-- Google Code for HRSifu Sign Up Conversion Page
-In your html page, add the snippet and call
-goog_report_conversion when someone clicks on the
-chosen link or button. -->
-<script type="text/javascript">
-  /* <![CDATA[ */
-  goog_snippet_vars = function() {
-    var w = window;
-    w.google_conversion_id = 1009979115;
-    w.google_conversion_label = "-A8DCOOskGcQ653M4QM";
-    w.google_remarketing_only = false;
-  }
-  // DO NOT CHANGE THE CODE BELOW.
-  goog_report_conversion = function(url) {
-    goog_snippet_vars();
-    window.google_conversion_format = "3";
-    var opt = new Object();
-    opt.onload_callback = function() {
-        if (typeof(url) != 'undefined') {
-          window.location = url;
-        }
-    }
-    var conv_handler = window['google_trackConversion'];
-    if (typeof(conv_handler) == 'function') {
-        conv_handler(opt);
-    }
-  }
-/* ]]> */
-</script>
 	
 }

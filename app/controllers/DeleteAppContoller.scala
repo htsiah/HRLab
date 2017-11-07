@@ -73,6 +73,7 @@ class DeleteAppController @Inject() (val reactiveMongoApi: ReactiveMongoApi, mai
             OrgChartSettingModel.remove(BSONDocument(), request)
             ClaimCategoryModel.remove(BSONDocument(), request)
             ClaimWorkflowModel.remove(BSONDocument(), request)
+            ClaimSettingModel.remove(BSONDocument(), request)
             
             // Send email
             mailerClient.send(

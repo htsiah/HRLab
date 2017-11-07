@@ -1,4 +1,4 @@
-@(claimcategories: List[ClaimCategory], claimworkflows: List[ClaimWorkflow])(implicit session: play.api.mvc.Session)
+@(claimcategories: List[ClaimCategory], claimworkflows: List[ClaimWorkflow], claimsetting: ClaimSetting)(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -30,6 +30,30 @@
 }
 
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+
+	<dl class="dl-horizontal">
+		<dt><label>Disable User Request</label></dt>
+		<dd>
+			<div id="disable-request-view">
+				<span id="disable-request-value">
+					@claimsetting.dis match {
+						case true => { Yes  }
+						case false => { No }
+					}
+				</span>
+				&nbsp;<a href="#" title="Edit"><i class="ace-icon blue fa fa-pencil bigger-120" id="disable-request-pencil"></i></a>
+				&nbsp;<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="left" data-content="Do you want to prevent your users from submitting claim request through the system?" data-original-title="Disable Request">?</span>
+			</div>
+			<div id="disable-request-edit" style="display:none">
+				<select id="disable-request-field">
+					<option value="Yes" @if(claimsetting.dis){ selected }>Yes</option>
+					<option value="No" @if(!claimsetting.dis){ selected }>No</option>
+				</select>
+				&nbsp;<a href="#" title="Update"><i class="ace-icon green fa fa-check bigger-120" id="disable-request-check"></i></a>
+				&nbsp;<a href="#" title="Cancel"><i class="ace-icon red fa fa-times bigger-120" id="disable-request-times"></i></a>
+			</div>
+		</dd>	
+	</dl>
 			
 	<h4 class="header smaller lighter blue">
 		<i class="fa fa-cog"></i>

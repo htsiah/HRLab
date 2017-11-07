@@ -144,6 +144,11 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
               ) 
               CompanyModel.insert(company_doc, eid)
               
+              // Create claim setting            
+              val claimsetting_doc = ClaimSettingModel.doc.copy(
+                  _id = BSONObjectID.generate
+              )
+              ClaimSettingModel.insert(claimsetting_doc, eid)
               
               // Create Claim Category
               ConfigClaimCategoryModel.find(BSONDocument()).map( configclaimcategories => 
