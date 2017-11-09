@@ -12,17 +12,15 @@ import utilities.{System, SystemDataStore, DbConnUtility}
 import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
-case class ConfigHolidays (
+case class ConfigCurrencyCode (
      _id: BSONObjectID,
      ctr: String,
-     yr: String,
-     nm: String,
-     dat: String,
-     day: String,
+     ccyn: String,
+     ccyc: String,
      sys: Option[System]
 )
 
-object ConfigHolidaysModel {
+object ConfigCurrencyCode {
   
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
@@ -39,28 +37,26 @@ object ConfigHolidaysModel {
     }
   }
   
-  implicit object ConfigHolidaysBSONReader extends BSONDocumentReader[ConfigHolidays] {
-    def read(p_doc: BSONDocument): ConfigHolidays = {
-      ConfigHolidays(
+  implicit object ConfigCurrencyCodeBSONReader extends BSONDocumentReader[ConfigCurrencyCode] {
+    def read(p_doc: BSONDocument): ConfigCurrencyCode = {
+      ConfigCurrencyCode(
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("ctr").get,
-          p_doc.getAs[String]("yr").get,
-          p_doc.getAs[String]("nm").get,
-          p_doc.getAs[String]("dat").get,
-          p_doc.getAs[String]("day").get,
+          p_doc.getAs[String]("ccyn").get,
+          p_doc.getAs[String]("ccyc").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
     }
   }
   
-  private val col = DbConnUtility.config_db.collection("holidays")
+  private val col = DbConnUtility.config_db.collection("currencycode")
   
   def find(p_query:BSONDocument) = {
-    col.find(p_query).cursor[ConfigHolidays](ReadPreference.primary).collect[List]()
+    col.find(p_query).cursor[ConfigCurrencyCode](ReadPreference.primary).collect[List]()
   }
   
   def findOne(p_query:BSONDocument) = {
-    col.find(p_query).one[ConfigHolidays]
+    col.find(p_query).one[ConfigCurrencyCode]
   }
   
 }
