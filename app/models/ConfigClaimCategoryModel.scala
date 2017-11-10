@@ -15,6 +15,7 @@ import org.joda.time.DateTime
 case class ConfigClaimCategory (
     _id: BSONObjectID,
     cat: String,      // Category
+    glc: String,      // GL Code
     all: Boolean,    // All, everyone
     app: List[String],     // Applicable
     tlim: Int,      // Transaction Limit
@@ -44,6 +45,7 @@ object ConfigClaimCategoryModel {
       ConfigClaimCategory(
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("cat").get,
+          p_doc.getAs[String]("glc").get,
           p_doc.getAs[Boolean]("all").getOrElse(false),
           p_doc.getAs[List[String]]("app").get,
           p_doc.getAs[BSONInteger]("tlim").get.value,

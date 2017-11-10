@@ -22,6 +22,7 @@ class ClaimCategoryController extends Controller with Secured {
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
           "cat" -> text,
+          "glc" -> text,
           "all" -> boolean,
           "app" -> list(text),
           "tlim" -> number,
@@ -35,8 +36,8 @@ class ClaimCategoryController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))  
-      ){(_id,cat,all,app,tlim,hlp,sys)=>ClaimCategory(_id,cat,all,app,tlim,hlp,sys)}
-      {claimcategory:ClaimCategory=>Some(claimcategory._id, claimcategory.cat, claimcategory.all, claimcategory.app, claimcategory.tlim, claimcategory.hlp, claimcategory.sys)}
+      ){(_id,cat,glc,all,app,tlim,hlp,sys)=>ClaimCategory(_id,cat,glc,all,app,tlim,hlp,sys)}
+      {claimcategory:ClaimCategory=>Some(claimcategory._id, claimcategory.cat, claimcategory.glc, claimcategory.all, claimcategory.app, claimcategory.tlim, claimcategory.hlp, claimcategory.sys)}
   ) 
       
   def view(p_id:String) = withAuth { username => implicit request => {

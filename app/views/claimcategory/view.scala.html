@@ -34,6 +34,7 @@
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 
 	@contentRow("Category", claimcategory.cat)
+	@if(claimcategory.glc!="") { @contentRow("GL Code", claimcategory.glc) }
 	@if(claimcategory.all) {
 		@contentRow("Applicable", "Everyone")
 	} else {

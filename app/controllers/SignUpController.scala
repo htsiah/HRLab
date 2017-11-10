@@ -157,7 +157,8 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                   ClaimCategoryModel.insert(
                       ClaimCategory(
                           _id=claimcategory_objectID, 
-                          cat=configclaimcategory.cat, 
+                          cat=configclaimcategory.cat,
+                          glc=configclaimcategory.glc, 
                           all=configclaimcategory.all, 
                           app=configclaimcategory.app, 
                           tlim=configclaimcategory.tlim, 

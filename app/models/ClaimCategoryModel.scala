@@ -15,6 +15,7 @@ import org.joda.time.DateTime
 case class ClaimCategory (
     _id: BSONObjectID,
     cat: String,      // Category
+    glc: String,      // Category
     all: Boolean,    // All, everyone
     app: List[String],     // Applicable
     tlim: Int,      // Transaction Limit
@@ -44,6 +45,7 @@ object ClaimCategoryModel {
       ClaimCategory(
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[String]("cat").get,
+          p_doc.getAs[String]("glc").get,
           p_doc.getAs[Boolean]("all").getOrElse(false),
           p_doc.getAs[List[String]]("app").get,
           p_doc.getAs[BSONInteger]("tlim").get.value,
@@ -73,6 +75,7 @@ object ClaimCategoryModel {
       BSONDocument(
           "_id" -> p_doc._id,
           "cat" -> p_doc.cat,
+          "glc" -> p_doc.glc,
           "all" -> p_doc.all,
           "app" -> p_doc.app,
           "tlim" -> p_doc.tlim,
@@ -87,6 +90,7 @@ object ClaimCategoryModel {
   val doc = ClaimCategory(
       _id = BSONObjectID.generate,
       cat = "",
+      glc = "",
       all = true,
       app = List(""),
       tlim = 0,
