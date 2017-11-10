@@ -7,33 +7,13 @@
 	</script>
 
 	<ul class="nav nav-list">
-
-		<li id="navProfile">
-			<a href="#" class="dropdown-toggle">
-				<i class="menu-icon fa fa-male"></i>
-				<span class="menu-text"> My Profile </span>
-				<b class="arrow fa fa-angle-down"></b>
+	
+		<li id="navDashboard" class="">
+			<a href="@routes.DashboardController.index">
+				<i class="menu-icon fa fa-tachometer"></i>
+				<span class="menu-text"> Dashboard </span>
 			</a>
-
 			<b class="arrow"></b>
-
-			<ul class="submenu">
-				<li id="navDashboard" class="">
-					<a href="@routes.DashboardController.index">
-						<i class="menu-icon fa fa-caret-right"></i>
-						Dashboard
-					</a>
-					<b class="arrow"></b>
-				</li>
-				
-				<li id="navMyProfile">
-					<a href="@routes.PersonController.myprofileview">
-						<i class="menu-icon fa fa-caret-right"></i>
-						Personal Info
-					</a>
-				</li>
-				
-			</ul>
 		</li>
 		
 		<li id="navCompany">
