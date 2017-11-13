@@ -1,5 +1,4 @@
 package models
-package models
 
 import play.api.Logger
 import play.api.mvc._
@@ -17,11 +16,11 @@ case class Claim (
     _id: BSONObjectID,
     docnum: Int,
     ed: ExpenseDetail,      // Expense Detail
-    wf: Workflow,            // Workflow
-    wfs: WorkflowStatus,    // Workflow Status
-    wfat: WorkflowAssignTo,
-    wfa: WorkflowAction,
-    wdadat: WorkflowActionDate,
+    wf: ClaimFormWorkflow,            // Workflow
+    wfs: ClaimFormWorkflowStatus,    // Workflow Status
+    wfat: ClaimFormWorkflowAssignTo,
+    wfa: ClaimFormWorkflowAction,
+    wdadat: ClaimFormWorkflowActionDate,
     sys: Option[System]
 )
 
@@ -44,12 +43,12 @@ case class TaxDetail (
     tamt: Double         // Tax Amount
 )
 
-case class Workflow (
+case class ClaimFormWorkflow (
     paprn: PersonDetail,    // Pending Approver
     s: String               // Status
 )
 
-case class WorkflowStatus (
+case class ClaimFormWorkflowStatus (
     s1: String,            // Status
     s2: String,
     s3: String,
@@ -62,7 +61,7 @@ case class WorkflowStatus (
     s10: String
 )
 
-case class WorkflowAssignTo (
+case class ClaimFormWorkflowAssignTo (
     at1: PersonDetail,      // Assigned To
     at2: PersonDetail,
     at3: PersonDetail,
@@ -75,7 +74,7 @@ case class WorkflowAssignTo (
     at10: PersonDetail
 )
 
-case class WorkflowAction (
+case class ClaimFormWorkflowAction (
     a1: String,            // Action
     a2: String,
     a3: String,
@@ -88,7 +87,7 @@ case class WorkflowAction (
     a10: String
 )
 
-case class WorkflowActionDate (
+case class ClaimFormWorkflowActionDate (
     ad1: Option[DateTime],      // Action Date
     ad2: Option[DateTime],
     ad3: Option[DateTime],
@@ -136,9 +135,9 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowActionDateBSONReader extends BSONDocumentReader[WorkflowActionDate] {
-    def read(p_doc: BSONDocument): WorkflowActionDate = {
-      WorkflowActionDate(
+  implicit object ClaimFormWorkflowActionDateBSONReader extends BSONDocumentReader[ClaimFormWorkflowActionDate] {
+    def read(p_doc: BSONDocument): ClaimFormWorkflowActionDate = {
+      ClaimFormWorkflowActionDate(
           p_doc.getAs[BSONDateTime]("ad1").map(dt => new DateTime(dt.value)),
           p_doc.getAs[BSONDateTime]("ad2").map(dt => new DateTime(dt.value)),
           p_doc.getAs[BSONDateTime]("ad3").map(dt => new DateTime(dt.value)),
@@ -153,9 +152,9 @@ object ClaimModel {
     }
   }
 
-  implicit object WorkflowActionBSONReader extends BSONDocumentReader[WorkflowAction] {
-    def read(p_doc: BSONDocument): WorkflowAction = {
-      WorkflowAction(
+  implicit object ClaimFormWorkflowActionBSONReader extends BSONDocumentReader[ClaimFormWorkflowAction] {
+    def read(p_doc: BSONDocument): ClaimFormWorkflowAction = {
+      ClaimFormWorkflowAction(
           p_doc.getAs[String]("a1").get,
           p_doc.getAs[String]("a2").get,
           p_doc.getAs[String]("a3").get,
@@ -170,9 +169,9 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowAssignToBSONReader extends BSONDocumentReader[WorkflowAssignTo] {
-    def read(p_doc: BSONDocument): WorkflowAssignTo = {
-      WorkflowAssignTo(
+  implicit object ClaimFormWorkflowAssignToBSONReader extends BSONDocumentReader[ClaimFormWorkflowAssignTo] {
+    def read(p_doc: BSONDocument): ClaimFormWorkflowAssignTo = {
+      ClaimFormWorkflowAssignTo(
           p_doc.getAs[PersonDetail]("at1").get,
           p_doc.getAs[PersonDetail]("at2").get,
           p_doc.getAs[PersonDetail]("at3").get,
@@ -187,9 +186,9 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowStatusBSONReader extends BSONDocumentReader[WorkflowStatus] {
-    def read(p_doc: BSONDocument): WorkflowStatus = {
-      WorkflowStatus(
+  implicit object ClaimFormWorkflowStatusBSONReader extends BSONDocumentReader[ClaimFormWorkflowStatus] {
+    def read(p_doc: BSONDocument): ClaimFormWorkflowStatus = {
+      ClaimFormWorkflowStatus(
           p_doc.getAs[String]("s1").get,
           p_doc.getAs[String]("s2").get,
           p_doc.getAs[String]("s3").get,
@@ -204,9 +203,9 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowBSONReader extends BSONDocumentReader[Workflow] {
-    def read(p_doc: BSONDocument): Workflow = {
-      Workflow(
+  implicit object ClaimFormWorkflowBSONReader extends BSONDocumentReader[ClaimFormWorkflow ] {
+    def read(p_doc: BSONDocument): ClaimFormWorkflow = {
+      ClaimFormWorkflow(
           p_doc.getAs[PersonDetail]("paprn").get,
           p_doc.getAs[String]("s").get
       )
@@ -246,11 +245,11 @@ object ClaimModel {
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[Int]("docnum").get,
           p_doc.getAs[ExpenseDetail]("ed").get,
-          p_doc.getAs[Workflow]("wf").get,
-          p_doc.getAs[WorkflowStatus]("wfs").get,
-          p_doc.getAs[WorkflowAssignTo]("wfat").get,
-          p_doc.getAs[WorkflowAction]("wfa").get,
-          p_doc.getAs[WorkflowActionDate]("wdadat").get,
+          p_doc.getAs[ClaimFormWorkflow]("wf").get,
+          p_doc.getAs[ClaimFormWorkflowStatus]("wfs").get,
+          p_doc.getAs[ClaimFormWorkflowAssignTo]("wfat").get,
+          p_doc.getAs[ClaimFormWorkflowAction]("wfa").get,
+          p_doc.getAs[ClaimFormWorkflowActionDate]("wdadat").get,
           p_doc.getAs[System]("sys").map(o => o)
       )
     }
@@ -290,8 +289,8 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowActionDateBSONWriter extends BSONDocumentWriter[WorkflowActionDate] {
-    def write(p_doc: WorkflowActionDate): BSONDocument = {
+  implicit object ClaimFormWorkflowActionDateBSONWriter extends BSONDocumentWriter[ClaimFormWorkflowActionDate] {
+    def write(p_doc: ClaimFormWorkflowActionDate): BSONDocument = {
       BSONDocument(
           "ad1" -> p_doc.ad1.map(date => BSONDateTime(date.getMillis)),
           "ad2" -> p_doc.ad2.map(date => BSONDateTime(date.getMillis)),
@@ -307,8 +306,8 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowActionBSONWriter extends BSONDocumentWriter[WorkflowAction] {
-    def write(p_doc: WorkflowAction): BSONDocument = {
+  implicit object ClaimFormWorkflowActionBSONWriter extends BSONDocumentWriter[ClaimFormWorkflowAction] {
+    def write(p_doc: ClaimFormWorkflowAction): BSONDocument = {
       BSONDocument(
           "a1" -> p_doc.a1,
           "a2" -> p_doc.a2,
@@ -324,8 +323,8 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowAssignToBSONWriter extends BSONDocumentWriter[WorkflowAssignTo] {
-    def write(p_doc: WorkflowAssignTo): BSONDocument = {
+  implicit object ClaimFormWorkflowAssignToBSONWriter extends BSONDocumentWriter[ClaimFormWorkflowAssignTo] {
+    def write(p_doc: ClaimFormWorkflowAssignTo): BSONDocument = {
       BSONDocument(
           "at1" -> p_doc.at1,
           "at2" -> p_doc.at2,
@@ -341,8 +340,8 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowStatusBSONWriter extends BSONDocumentWriter[WorkflowStatus] {
-    def write(p_doc: WorkflowStatus): BSONDocument = {
+  implicit object ClaimFormWorkflowStatusBSONWriter extends BSONDocumentWriter[ClaimFormWorkflowStatus] {
+    def write(p_doc: ClaimFormWorkflowStatus): BSONDocument = {
       BSONDocument(
           "s1" -> p_doc.s1,
           "s2" -> p_doc.s2,
@@ -358,8 +357,8 @@ object ClaimModel {
     }
   }
   
-  implicit object WorkflowBSONWriter extends BSONDocumentWriter[Workflow] {
-    def write(p_doc: Workflow): BSONDocument = {
+  implicit object ClaimFormWorkflowBSONWriter extends BSONDocumentWriter[ClaimFormWorkflow] {
+    def write(p_doc: ClaimFormWorkflow): BSONDocument = {
       BSONDocument(
           "paprn" -> p_doc.paprn,
           "s" -> p_doc.s
@@ -416,11 +415,11 @@ object ClaimModel {
       _id = BSONObjectID.generate,
       docnum = 0,
       ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=0.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=0.0), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
-      wf = Workflow(paprn=PersonDetail(n="", id=""), s=""),
-      wfs = WorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
-      wfat = WorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
-      wfa = WorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),
-      wdadat = WorkflowActionDate(ad1=Some(new DateTime()), ad2=Some(new DateTime()), ad3=Some(new DateTime()), ad4=Some(new DateTime()), ad5=Some(new DateTime()), ad6=Some(new DateTime()), ad7=Some(new DateTime()), ad8=Some(new DateTime()), ad9=Some(new DateTime()), ad10=Some(new DateTime())),
+      wf = ClaimFormWorkflow(paprn=PersonDetail(n="", id=""), s=""),
+      wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
+      wfat = ClaimFormWorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
+      wfa = ClaimFormWorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),
+      wdadat = ClaimFormWorkflowActionDate(ad1=Some(new DateTime()), ad2=Some(new DateTime()), ad3=Some(new DateTime()), ad4=Some(new DateTime()), ad5=Some(new DateTime()), ad6=Some(new DateTime()), ad7=Some(new DateTime()), ad8=Some(new DateTime()), ad9=Some(new DateTime()), ad10=Some(new DateTime())),
       sys = None
   )
   
