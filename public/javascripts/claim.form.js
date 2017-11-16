@@ -49,6 +49,13 @@ $(function(){
     	]
     });
     
+    // Loan Category 
+    CATEGORY.init();
+    
+	$( "#ed_cat" ).change( "click", function() {
+		CATEGORY.change();
+	});
+    
     // form validation
 	$("#claimform").validate({
 		onkeyup: false,
@@ -119,3 +126,42 @@ function callCompanyTaxModal() {
 		]
 	});
 }
+
+let CATEGORY = (function(){
+	
+	// Private	
+	let wfcategoryJSON = {},
+		selectedCategory = "";
+	
+	// Public
+	return {
+
+		init: function(){
+			$.ajax({
+    			url: "/claimcategory/getdetails",
+    			dataType: "json",
+    			async: false,
+    			success: function(data){
+    				wfcategoryJSON = data;
+    			},
+    			error: function(xhr, status, error){
+    				alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
+    			},
+    		});	
+		},
+	
+		change: function(){			
+			selectedCategory = $("#ed_cat").val();
+			for(let i=0, totalcategory=wfcategoryJSON["data"].length; i<totalcategory; i++){
+				let categorydetail = wfcategoryJSON["data"][i];
+				if (categorydetail.c==selectedCategory) {
+					$("#d-editor").html(categorydetail.h);
+					$("#ed_glc").val(categorydetail.glc);
+					break;
+				}
+			}
+		}
+		
+	}
+	
+})()

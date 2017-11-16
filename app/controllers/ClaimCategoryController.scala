@@ -168,7 +168,7 @@ class ClaimCategoryController extends Controller with Secured {
     )
   }}
   
-  def getHelpGLC = withAuth { username => implicit request => {
+  def getDetails = withAuth { username => implicit request => {
     for { 
       maybe_docs <- ClaimCategoryModel.find(BSONDocument(), request) 
     } yield {
