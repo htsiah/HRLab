@@ -178,7 +178,7 @@ class SignUpController @Inject() (mailerClient: MailerClient) extends Controller
                   ClaimWorkflowModel.insert(
                       ClaimWorkflow(
                           _id = claimworkflow_objectID,
-                          n = configclaimworkflow.n,
+                          wf = configclaimworkflow.wf,
                           d = configclaimworkflow.d,
                           app = configclaimworkflow.app,
                           s = ClaimWorkflowStatus(s1=configclaimworkflow.s.s1, s2=configclaimworkflow.s.s2, s3=configclaimworkflow.s.s3, s4=configclaimworkflow.s.s4, s5=configclaimworkflow.s.s5, s6=configclaimworkflow.s.s6, s7=configclaimworkflow.s.s7, s8=configclaimworkflow.s.s8, s9=configclaimworkflow.s.s9, s10=configclaimworkflow.s.s10),

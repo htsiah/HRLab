@@ -7,6 +7,7 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
+import play.api.libs.json._
 
 import play.api.libs.concurrent.Execution.Implicits._
 
@@ -166,5 +167,21 @@ class ClaimCategoryController extends Controller with Secured {
       }
     )
   }}
+  
+  def getHelpGLC = withAuth { username => implicit request => {
+    for { 
+      maybe_docs <- ClaimCategoryModel.find(BSONDocument(), request) 
+    } yield {
+      render {
+        case Accepts.Html() => {Ok(views.html.error.unauthorized())}
+        case Accepts.Json() => {
+          val categories = maybe_docs.map( doc => {
+            Json.obj( "c"->doc.cat, "h"->doc.hlp, "glc"->doc.glc, "limit"->doc.tlim )
+          })
+          Ok(Json.obj("data" -> categories)).as("application/json")   
+        }
+      }
+    }
+  } }
   
 }

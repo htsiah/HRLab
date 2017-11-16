@@ -40,7 +40,7 @@ case class TaxDetail (
     cn: String,          // Company
     crnum: String,       // Company Register Number
     tnum: String,        // Tax Number
-    tamt: Double         // Tax Amount
+    tamt: CurrencyAmount // Tax Amount
 )
 
 case class ClaimFormWorkflow (
@@ -218,7 +218,7 @@ object ClaimModel {
           p_doc.getAs[String]("cn").get,
           p_doc.getAs[String]("crnum").get,
           p_doc.getAs[String]("tnum").get,
-          p_doc.getAs[Double]("tamt").get
+          p_doc.getAs[CurrencyAmount]("tamt").get
       )
     }
   }
@@ -414,8 +414,8 @@ object ClaimModel {
   val doc = Claim(
       _id = BSONObjectID.generate,
       docnum = 0,
-      ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=0.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=0.0), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
-      wf = ClaimFormWorkflow(paprn=PersonDetail(n="", id=""), s=""),
+      ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=1.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy="", amt=0.0)), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
+      wf = ClaimFormWorkflow(paprn=PersonDetail(n="", id=""), s="New"),
       wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
       wfat = ClaimFormWorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
       wfa = ClaimFormWorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),

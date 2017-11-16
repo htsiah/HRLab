@@ -14,13 +14,13 @@ import org.joda.time.DateTime
 
 case class ConfigCurrencyCode (
      _id: BSONObjectID,
-     ctr: String,
+     ct: String,
      ccyn: String,
      ccyc: String,
      sys: Option[System]
 )
 
-object ConfigCurrencyCode {
+object ConfigCurrencyCodeModel {
   
   // Use Reader to deserialize document automatically
   implicit object SystemBSONReader extends BSONDocumentReader[System] {
@@ -41,7 +41,7 @@ object ConfigCurrencyCode {
     def read(p_doc: BSONDocument): ConfigCurrencyCode = {
       ConfigCurrencyCode(
           p_doc.getAs[BSONObjectID]("_id").get,
-          p_doc.getAs[String]("ctr").get,
+          p_doc.getAs[String]("ct").get,
           p_doc.getAs[String]("ccyn").get,
           p_doc.getAs[String]("ccyc").get,
           p_doc.getAs[System]("sys").map(o => o)

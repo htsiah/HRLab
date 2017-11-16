@@ -14,7 +14,7 @@ import org.joda.time.DateTime
 
 case class ConfigClaimWorkflow (
     _id: BSONObjectID,
-    n: String,
+    wf: String,
     d: Boolean,
     app: List[String],
     s: ConfigClaimWorkflowStatus,
@@ -166,7 +166,7 @@ object ConfigClaimWorkflowModel {
     def read(p_doc: BSONDocument): ConfigClaimWorkflow = {
       ConfigClaimWorkflow(
           p_doc.getAs[BSONObjectID]("_id").get,
-          p_doc.getAs[String]("n").get,
+          p_doc.getAs[String]("wf").get,
           p_doc.getAs[Boolean]("d").getOrElse(false),
           p_doc.getAs[List[String]]("app").get,
           p_doc.getAs[ConfigClaimWorkflowStatus]("s").get,

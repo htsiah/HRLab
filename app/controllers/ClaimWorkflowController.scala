@@ -21,7 +21,7 @@ class ClaimWorkflowController extends Controller with Secured {
   val claimworkflowform = Form(
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
-          "n" -> text,
+          "wf" -> text,
           "d" -> boolean,
           "app" -> list(text),
           "s" -> mapping(
@@ -81,10 +81,10 @@ class ClaimWorkflowController extends Controller with Secured {
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply))
-      ){(_id,n,d,app,s,at,caa,cg,sys)=>
-        ClaimWorkflow(_id,n,d,app,s,at,caa,cg,sys)
+      ){(_id,wf,d,app,s,at,caa,cg,sys)=>
+        ClaimWorkflow(_id,wf,d,app,s,at,caa,cg,sys)
       }{claimworkflow:ClaimWorkflow=>
-        Some(claimworkflow._id,claimworkflow.n,claimworkflow.d,claimworkflow.app,claimworkflow.s,claimworkflow.at,claimworkflow.caa,claimworkflow.cg,claimworkflow.sys)
+        Some(claimworkflow._id,claimworkflow.wf,claimworkflow.d,claimworkflow.app,claimworkflow.s,claimworkflow.at,claimworkflow.caa,claimworkflow.cg,claimworkflow.sys)
       }
   )
   
@@ -208,9 +208,9 @@ class ClaimWorkflowController extends Controller with Secured {
   def checkClaimWorkflowName(p_id:String, p_name:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       val f_workflow = if (p_id == "") {
-        ClaimWorkflowModel.findOne(BSONDocument("n" -> p_name), request)
+        ClaimWorkflowModel.findOne(BSONDocument("wf" -> p_name), request)
       } else {
-        ClaimWorkflowModel.findOne(BSONDocument("_id" -> BSONDocument("$ne" -> BSONObjectID(p_id)), "n" -> p_name), request)
+        ClaimWorkflowModel.findOne(BSONDocument("_id" -> BSONDocument("$ne" -> BSONObjectID(p_id)), "wf" -> p_name), request)
       }
       f_workflow.map( workflow =>
         workflow.isDefined match {

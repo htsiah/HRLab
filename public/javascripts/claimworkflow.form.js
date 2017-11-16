@@ -43,7 +43,7 @@ $(function(){
 	$("#claimworkflowform").validate({
 		onkeyup: false,
 		rules: {
-			"n": {
+			"wf": {
 				required: true,
 				remote: {
 					url: "/claimworkflow/checkclaimworkname",
@@ -54,7 +54,7 @@ $(function(){
 			        		return oid;
 			        	},
 			        	p_name: function() {
-			        		return $( "#n" ).val();
+			        		return $( "#wf" ).val();
 			        	}
 			        }
 				}
@@ -82,9 +82,9 @@ $(function(){
 			"cg.cg10": { digits: true }
 		},
 		messages: {
-			"n": {
+			"wf": {
 				required: "Please enter workflow name.",
-				remote: "Workflow name name already been used."
+				remote: "Workflow name already been used."
 			},
 		},	
 		errorPlacement: function(error, element) {

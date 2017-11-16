@@ -14,7 +14,7 @@ import org.joda.time.DateTime
 
 case class ClaimWorkflow (
     _id: BSONObjectID,
-    n: String,
+    wf: String,
     d: Boolean,
     app: List[String],
     s: ClaimWorkflowStatus,
@@ -166,7 +166,7 @@ object ClaimWorkflowModel {
     def read(p_doc: BSONDocument): ClaimWorkflow = {
       ClaimWorkflow(
           p_doc.getAs[BSONObjectID]("_id").get,
-          p_doc.getAs[String]("n").get,
+          p_doc.getAs[String]("wf").get,
           p_doc.getAs[Boolean]("d").getOrElse(false),
           p_doc.getAs[List[String]]("app").get,
           p_doc.getAs[ClaimWorkflowStatus]("s").get,
@@ -265,7 +265,7 @@ object ClaimWorkflowModel {
     def write(p_doc: ClaimWorkflow): BSONDocument = {
       BSONDocument(
           "_id" -> p_doc._id,
-          "n" -> p_doc.n,
+          "wf" -> p_doc.wf,
           "d" -> p_doc.d,
           "app" -> p_doc.app,
           "s" -> p_doc.s,
@@ -281,7 +281,7 @@ object ClaimWorkflowModel {
   
     val doc = ClaimWorkflow(
       _id = BSONObjectID.generate,
-      n = "",
+      wf = "",
       d = false,
       app = List(""),
       s = ClaimWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),

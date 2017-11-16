@@ -37,7 +37,7 @@
 			<div id="disable-request-view">
 				<span id="disable-request-value">
 					@claimsetting.dis match {
-						case true => { Yes  }
+						case true => { Yes }
 						case false => { No }
 					}
 				</span>
@@ -114,7 +114,7 @@
     	<table id="claimworkflowtable" class="table table-bordered table-hover">
 			<thead>
 				<tr>
-					<th>Name</th>
+					<th>Workflow</th>
 					<th>Applicable</th>
 					<th>&nbsp;</th>
 				</tr>
@@ -122,7 +122,7 @@
 			<tbody>
 				@claimworkflows.map{ claimworkflow =>
 					<tr>
-						<td>@claimworkflow.n</td>
+						<td>@claimworkflow.wf</td>
 						<td>
 							@if(claimworkflow.d) {
 								Default for everyone
