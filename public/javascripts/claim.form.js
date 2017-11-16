@@ -52,8 +52,25 @@ $(function(){
     // Loan Category 
     CATEGORY.init();
     
-	$( "#ed_cat" ).change( "click", function() {
+	$("#ed_cat").change( "click", function() {
 		CATEGORY.change();
+	});
+	
+	$("#ed_amt_ccy").change( "click", function() {		
+		if($("#ed_amt_ccy").val() == $("#ed_aamt_ccy").val()){
+			$("#ed_er").val("1.0");
+			$('#ed_er').attr('readonly', true);
+			$('#ed_gstamt_tamt_amt').removeAttr('readonly');
+			$("#btnCallCompanyTaxModal").show(1000);
+		} else {
+			$('#ed_er').removeAttr('readonly');
+			$("#ed_gstamt_tamt_amt").val("0.0");
+			$('#ed_gstamt_tamt_amt').attr('readonly', true);
+			$("#btnCallCompanyTaxModal").fadeOut("slow");
+			$("#ed_gstamt_cn").val("");
+			$("#ed_gstamt_crnum").val("");
+			$("#ed_gstamt_tnum").val("");
+		}
 	});
     
     // form validation
