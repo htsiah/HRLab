@@ -7,7 +7,7 @@
 
 @pageheader = {
 	<div class="page-header">
-		<h1>My Profile <small><i class="ace-icon fa fa-angle-double-right"></i> Dashboard <i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Holiday </small></h1>
+		<h1>Dashboard <small><i class="ace-icon fa fa-angle-double-right"></i> Calendar <i class="ace-icon fa fa-angle-double-right"></i> Holiday </small></h1>
 	</div>
 }
 
@@ -17,7 +17,7 @@
 }
 
 @inlinejs = {
-	<script src="@routes.Assets.at("javascripts/companyholiday.myprofileform.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/companyholiday.dashboardform.js")" type="text/javascript"></script>
 }
 
 @pluginstyle = {
@@ -47,7 +47,7 @@
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 	
 	@helper.form(
-		action = routes.CompanyHolidayController.myprofileupdate(oid), 
+		action = routes.CompanyHolidayController.dashboardupdate(oid), 
 		'id -> "companyholidayform"
 	) {
 	

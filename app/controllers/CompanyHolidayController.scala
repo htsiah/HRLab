@@ -144,14 +144,14 @@ class CompanyHolidayController extends Controller with Secured {
      }
   }}
   
-  def myprofileedit(p_id:String) = withAuth { username => implicit request => {
+  def dashboardedit(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
         maybe_companyholiday <- CompanyHolidayModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
         offices <- OfficeModel.getAllOfficeName(request)
       } yield {
         maybe_companyholiday.map( companyholiday  => {
-          Ok(views.html.companyholiday.myprofileform(companyholidayform.fill(companyholiday), offices, p_id))
+          Ok(views.html.companyholiday.dashboardform(companyholidayform.fill(companyholiday), offices, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -159,7 +159,7 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
   
-  def myprofileupdate(p_id:String) = withAuth { username => implicit request => {
+  def dashboardupdate(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       companyholidayform.bindFromRequest.fold(
           formWithError => {
@@ -167,7 +167,7 @@ class CompanyHolidayController extends Controller with Secured {
               offices <- OfficeModel.getAllOfficeName(request)
             } yield {
               formWithError.forField("off")(officesval => {
-                Ok(views.html.companyholiday.myprofileform(formWithError, offices))
+                Ok(views.html.companyholiday.dashboardform(formWithError, offices))
               }) 
             }
           },
@@ -182,12 +182,12 @@ class CompanyHolidayController extends Controller with Secured {
     }
   }}
   
-  def myprofileview(p_id:String) = withAuth { username => implicit request => {
+  def dashboardview(p_id:String) = withAuth { username => implicit request => {
     for { 
       maybe_companyholiday <- CompanyHolidayModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
     } yield {
       maybe_companyholiday.map( companyholiday  => {
-        Ok(views.html.companyholiday.myprofileview(companyholiday))
+        Ok(views.html.companyholiday.dashboardview(companyholiday))
       }).getOrElse(NotFound)
     }
   }}
@@ -209,7 +209,7 @@ class CompanyHolidayController extends Controller with Secured {
           val companyholidayJSONStr = companyholidays.zipWithIndex.map{ case (companyholiday, c) => {
             val title = companyholiday.n.replace("\t", "") // Temporary solution 
             val url = if (p_withLink=="y") { 
-              if (p_page=="company") { "\"url\":\"/companyholiday/view/" + companyholiday._id.stringify + "\","  } else { "\"url\":\"/companyholiday/myprofile/view/" + companyholiday._id.stringify + "\"," }
+              if (p_page=="company") { "\"url\":\"/companyholiday/view/" + companyholiday._id.stringify + "\","  } else { "\"url\":\"/companyholiday/dashboard/view/" + companyholiday._id.stringify + "\"," }
             } else { "" }
             val end = if (companyholiday.fdat.get == companyholiday.tdat.get) { "" } else { "\"end\":\"" + fmt.print(companyholiday.tdat.get.plusDays(1)) + "\"," }
             "{\"id\":"+ c + ",\"title\":\"" + title + "\"," + url + "\"start\":\"" + fmt.print(companyholiday.fdat.get) + "\"," + end + "\"tip\":\"" + title + " (" + companyholiday.off.mkString(", ") + ")" + "\"}"

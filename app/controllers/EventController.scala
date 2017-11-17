@@ -146,7 +146,7 @@ class EventController extends Controller with Secured {
      }
   }}
   
-  def myprofileedit(p_id:String) = withAuth { username => implicit request => {
+  def dashboardedit(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       for { 
         maybe_event <- EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
@@ -155,7 +155,7 @@ class EventController extends Controller with Secured {
       } yield {
         val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
         maybe_event.map( event  => {
-          Ok(views.html.event.myprofileform(eventform.fill(event), restrictionSelection.sorted, p_id))
+          Ok(views.html.event.dashboardform(eventform.fill(event), restrictionSelection.sorted, p_id))
         }).getOrElse(NotFound)
       }
     } else {
@@ -163,7 +163,7 @@ class EventController extends Controller with Secured {
     }
   }}
   
-  def myprofileupdate(p_id:String) = withAuth { username => implicit request => {
+  def dashboardupdate(p_id:String) = withAuth { username => implicit request => {
     if(request.session.get("roles").get.contains("Admin")){
       eventform.bindFromRequest.fold(
         formWithError => {
@@ -172,7 +172,7 @@ class EventController extends Controller with Secured {
             offices <- OfficeModel.getAllOfficeName(request)
           } yield {
             val restrictionSelection = persons.map { person => person.p.fn  + " " + person.p.ln + "@|@" + person._id.stringify } ::: offices
-            Ok(views.html.event.myprofileform(formWithError, restrictionSelection.sorted))
+            Ok(views.html.event.dashboardform(formWithError, restrictionSelection.sorted))
           } 
         },
         formWithData => {
@@ -186,12 +186,12 @@ class EventController extends Controller with Secured {
     }
   }}
   
-  def myprofileview(p_id:String) = withAuth { username => implicit request => {
+  def dashboardview(p_id:String) = withAuth { username => implicit request => {
     for { 
        maybe_event <- {EventModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)}
      } yield {
        maybe_event.map( event  => {
-         Ok(views.html.event.myprofileview(event))
+         Ok(views.html.event.dashboardview(event))
        }).getOrElse(NotFound)
      }
   }}
@@ -218,7 +218,7 @@ class EventController extends Controller with Secured {
               if (event.fdat.get == event.tdat.get) { "" } else { "\"end\":\"" + datFmt.print(event.tdat.get.plusDays(1)) + "\"," }
               } else { "\"end\":\"" + dTFmt.print(event.tdat.get) + "\"," }
             val url = if (p_withLink=="y") {
-              if (p_page=="company") { "\"url\":\"/event/view/" + event._id.stringify + "\"," } else {"\"url\":\"/event/myprofile/view/" + event._id.stringify + "\","}
+              if (p_page=="company") { "\"url\":\"/event/view/" + event._id.stringify + "\"," } else {"\"url\":\"/event/dashboard/view/" + event._id.stringify + "\","}
               } else { "" }
             "{\"id\":"+ c + ",\"title\":\"" + event.n + "\"," + url + "\"start\":\"" + start + "\"," + end + "\"color\":\""+ event.c + "\",\"tip\":\"" + event.n + "\"}"
           } }
