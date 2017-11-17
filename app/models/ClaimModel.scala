@@ -419,7 +419,7 @@ object ClaimModel {
       wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
       wfat = ClaimFormWorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
       wfa = ClaimFormWorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),
-      wdadat = ClaimFormWorkflowActionDate(ad1=Some(new DateTime()), ad2=Some(new DateTime()), ad3=Some(new DateTime()), ad4=Some(new DateTime()), ad5=Some(new DateTime()), ad6=Some(new DateTime()), ad7=Some(new DateTime()), ad8=Some(new DateTime()), ad9=Some(new DateTime()), ad10=Some(new DateTime())),
+      wdadat = ClaimFormWorkflowActionDate(ad1=None, ad2=None, ad3=None, ad4=None, ad5=None, ad6=None, ad7=None, ad8=None, ad9=None, ad10=None),
       sys = None
   )
   

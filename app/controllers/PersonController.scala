@@ -230,7 +230,10 @@ class PersonController @Inject() (mailerClient: MailerClient) extends Controller
                     request.session + 
                     ("name" -> (formWithData.p.fn + " " + formWithData.p.ln)) + 
                     ("roles"->formWithData.p.rl.mkString(",")) + 
-                    ("ismanager"->isManager)
+                    ("ismanager"->isManager) +
+                    ("office"->formWithData.p.off) +
+                    ("managerid"->formWithData.p.mgrid) +
+                    ("smanagerid"->formWithData.p.smgrid)
                   ).flashing(
                       "success" -> { formWithData.p.fn + " " + formWithData.p.ln + " has been updated." }
                   )
