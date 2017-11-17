@@ -176,7 +176,7 @@ class ClaimCategoryController extends Controller with Secured {
         case Accepts.Html() => {Ok(views.html.error.unauthorized())}
         case Accepts.Json() => {
           val categories = maybe_docs.map( doc => {
-            Json.obj( "c"->doc.cat, "h"->doc.hlp, "glc"->doc.glc, "limit"->doc.tlim )
+            Json.obj( "c"->doc.cat, "h"->doc.hlp, "glc"->doc.glc, "l"->doc.tlim )
           })
           Ok(Json.obj("data" -> categories)).as("application/json")   
         }

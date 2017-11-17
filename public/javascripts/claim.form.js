@@ -90,6 +90,7 @@ $(function(){
 			"ed.cat": "required",
 			"ed.amt.amt": {
 				required: true,
+				checkTransactionLimit: [$("#ed_aamt_amt").val()],
 				currency: ['$', false]
 			},
 			"ed.er": {
@@ -104,7 +105,8 @@ $(function(){
 		messages: {
 			"ed.cat": "Please select category.",
 			"ed.amt.amt": {
-				required: "Please enter claim amount."
+				required: "Please enter claim amount.",
+				checkTransactionLimit: function(){ return "Over " + $("#ed_aamt_ccy").val() + " " + CATEGORY.getTransactionLimit() + " transaction limit in Approve Amount." }
 			},
 			"ed.er": {
 				required: "Please enter Exchange Rate."
@@ -118,6 +120,21 @@ $(function(){
 			form.submit();
 		 }
 	});
+	
+	$.validator.addMethod(
+		"checkTransactionLimit",
+		function(value,element,params){
+			let aamount = $("#ed_aamt_amt").val(),
+				transactionlimit = parseFloat(CATEGORY.getTransactionLimit());
+
+			if (transactionlimit!=0 && aamount>transactionlimit) {
+				return false;
+			} else {
+				return true;
+			};
+		},
+		"Over transaction limit."
+	);
 	
 });
 
@@ -159,7 +176,7 @@ function setApproveAmount(){
 	let amount = parseFloat($("#ed_amt_amt").val()),
 		exchangerate = parseFloat($("#ed_er").val()),
 		aamount;
-	
+		
 	if(isNaN(amount) || isNaN(exchangerate)){
 		$("#aamt").html("0.0");
 		$("#ed_aamt_amt").val("0.0");
@@ -174,7 +191,8 @@ let CATEGORY = (function(){
 	
 	// Private	
 	let wfcategoryJSON = {},
-		selectedCategory = "";
+		selectedCategory = ""
+		transactionlimit = 0;
 	
 	// Public
 	return {
@@ -200,9 +218,14 @@ let CATEGORY = (function(){
 				if (categorydetail.c==selectedCategory) {
 					$("#d-editor").html(categorydetail.h);
 					$("#ed_glc").val(categorydetail.glc);
+					transactionlimit = categorydetail.l;
 					break;
 				}
 			}
+		},
+		
+		getTransactionLimit: function(){
+			return transactionlimit;
 		}
 		
 	}
