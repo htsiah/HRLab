@@ -49,24 +49,34 @@ $(function(){
     	]
     });
     
-    // Loan Category 
+    // load Category 
     CATEGORY.init();
     
 	$("#ed_cat").change( "click", function() {
 		CATEGORY.change();
 	});
 	
+	// Set approve amount
+	$("#ed_amt_amt").change( "click", function() {
+		setApproveAmount();
+	});
+	
+	$("#ed_er").change( "click", function() {
+		setApproveAmount();
+	});
+	
 	$("#ed_amt_ccy").change( "click", function() {		
 		if($("#ed_amt_ccy").val() == $("#ed_aamt_ccy").val()){
+			$("#btnCallCompanyTaxModal").show(500);
+			$('#ed_gstamt_tamt_amt').removeAttr('readonly');
 			$("#ed_er").val("1.0");
 			$('#ed_er').attr('readonly', true);
-			$('#ed_gstamt_tamt_amt').removeAttr('readonly');
-			$("#btnCallCompanyTaxModal").show(1000);
+			setApproveAmount();
 		} else {
 			$('#ed_er').removeAttr('readonly');
+			$("#btnCallCompanyTaxModal").hide(500);
 			$("#ed_gstamt_tamt_amt").val("0.0");
-			$('#ed_gstamt_tamt_amt').attr('readonly', true);
-			$("#btnCallCompanyTaxModal").fadeOut("slow");
+			$('#ed_gstamt_tamt_amt').attr('readonly', true);		
 			$("#ed_gstamt_cn").val("");
 			$("#ed_gstamt_crnum").val("");
 			$("#ed_gstamt_tnum").val("");
@@ -142,6 +152,22 @@ function callCompanyTaxModal() {
 			}
 		]
 	});
+}
+
+// Calculate Approve Amount
+function setApproveAmount(){
+	let amount = parseFloat($("#ed_amt_amt").val()),
+		exchangerate = parseFloat($("#ed_er").val()),
+		aamount;
+	
+	if(isNaN(amount) || isNaN(exchangerate)){
+		$("#aamt").html("0.0");
+		$("#ed_aamt_amt").val("0.0");
+	} else {
+		aamount =  (amount * exchangerate).toFixed(2);
+		$("#aamt").html(aamount);
+		$("#ed_aamt_amt").val(aamount);
+	};
 }
 
 let CATEGORY = (function(){
