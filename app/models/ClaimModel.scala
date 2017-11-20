@@ -45,7 +45,7 @@ case class TaxDetail (
 )
 
 case class ClaimFormWorkflow (
-    paprn: PersonDetail,    // Pending Approver
+    papr: PersonDetail,    // Pending Approver
     s: String               // Status
 )
 
@@ -207,7 +207,7 @@ object ClaimModel {
   implicit object ClaimFormWorkflowBSONReader extends BSONDocumentReader[ClaimFormWorkflow ] {
     def read(p_doc: BSONDocument): ClaimFormWorkflow = {
       ClaimFormWorkflow(
-          p_doc.getAs[PersonDetail]("paprn").get,
+          p_doc.getAs[PersonDetail]("papr").get,
           p_doc.getAs[String]("s").get
       )
     }
@@ -362,7 +362,7 @@ object ClaimModel {
   implicit object ClaimFormWorkflowBSONWriter extends BSONDocumentWriter[ClaimFormWorkflow] {
     def write(p_doc: ClaimFormWorkflow): BSONDocument = {
       BSONDocument(
-          "paprn" -> p_doc.paprn,
+          "papr" -> p_doc.papr,
           "s" -> p_doc.s
       )     
     }
@@ -419,7 +419,7 @@ object ClaimModel {
       docnum = 0,
       p = PersonDetail(n="", id=""),
       ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=1.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy="", amt=0.0)), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
-      wf = ClaimFormWorkflow(paprn=PersonDetail(n="", id=""), s="New"),
+      wf = ClaimFormWorkflow(papr=PersonDetail(n="", id=""), s="New"),
       wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
       wfat = ClaimFormWorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
       wfa = ClaimFormWorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),

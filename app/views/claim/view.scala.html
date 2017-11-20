@@ -1,0 +1,126 @@
+@import utilities.Alert
+
+@(claim:Claim, alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+
+@pageheader = {
+	<div class="page-header">
+		<h1>Dashboard <small><i class="ace-icon fa fa-angle-double-right"></i> Claim</small></h1>
+	</div>
+}
+
+@pluginjs = {}
+
+@inlinejs = {
+	<script src="@routes.Assets.at("javascripts/claim.view.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/common.auditlog.js")" type="text/javascript"></script>
+}
+
+@pluginstyle = {}
+
+@inlinestyle = {}
+
+@buttons = {
+	<a href="javascript:displayAuditLog('@claim._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
+}
+
+@contentRow(label: String, contentVal: String, cssClass:String="") = {
+	@if(contentVal.trim() == "") {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">&nbsp;</dd></dl>
+	} else {
+		<dl class="dl-horizontal"><dt><label>@label</label></dt><dd class="@cssClass">@contentVal</dd></dl>
+	}
+}
+
+@layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
+	@layout.ace.alert(alert)
+
+	<div class="tabbable">
+		<ul class="nav nav-tabs" id="myTab">
+			<li class="active">
+				<a data-toggle="tab" href="#home">
+					Claim Details
+				</a>
+			</li>
+			<li class="">
+				<a data-toggle="tab" href="#messages">
+					Workflow
+				</a>
+			</li>
+		</ul>
+	
+		<div class="tab-content">
+			<div id="home" class="tab-pane fade active in">
+				@contentRow("Doc Num", claim.docnum.toString())
+				@contentRow("Applicant", claim.p.n)
+				@contentRow("Status", claim.wf.s)
+				@contentRow("Pending Approver(s)", claim.wf.papr.n)
+				@contentRow("Category", claim.ed.cat)
+				@contentRow("Receipt  Date", claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString())
+				@contentRow("Amount", claim.ed.amt.ccy + " " + claim.ed.amt.amt.toString)
+				@contentRow("Exchange Rate", claim.ed.er.toString)
+				@contentRow("Approve Amount", claim.ed.aamt.ccy + " " + claim.ed.aamt.amt.toString)
+				@contentRow("GST / VAT", claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt.toString)
+				<dl class="dl-horizontal"><dt><label>Description</label></dt><dd>@Html(claim.ed.d)</dd></dl>
+			</div>
+				
+			<div id="messages" class="tab-pane fade">
+				<div class="table-responsive">
+					<table id="leavetable" class="table table-striped table-bordered table-hover">
+						<thead><tr>
+							<th class="text-center">#</th>
+							<th class="text-center">Status</th>
+							<th class="text-center">Assigned To</th>
+							<th class="text-center">Action</th>
+							<th class="text-center">Date of Action</th>
+						</tr></thead>
+							@if(claim.wfs.s1!=""){
+    							<tr>
+    								<td class="text-center">1</td>
+      								<td class="text-center">@claim.wfs.s1</td>
+      								<td class="text-center">@claim.wfat.at1.n</td>
+      								<td class="text-center">@claim.wfa.a1</td>
+      								<td class="text-center">
+      									@if(claim.wdadat.ad1.isDefined) {
+      										@claim.wdadat.ad1.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad1.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad1.get.getYear.toString() + " " + @claim.wdadat.ad1.get.hourOfDay() + ":" + @claim.wdadat.ad1.get.minuteOfHour() + ":" + @claim.wdadat.ad1.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad2.isDefined) {
+      										@claim.wdadat.ad2.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad2.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad2.get.getYear.toString() + " " + @claim.wdadat.ad2.get.hourOfDay() + ":" + @claim.wdadat.ad2.get.minuteOfHour() + ":" + @claim.wdadat.ad2.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad3.isDefined) {
+      										@claim.wdadat.ad3.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad3.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad3.get.getYear.toString() + " " + @claim.wdadat.ad3.get.hourOfDay() + ":" + @claim.wdadat.ad3.get.minuteOfHour() + ":" + @claim.wdadat.ad3.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad4.isDefined) {
+      										@claim.wdadat.ad4.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad4.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad4.get.getYear.toString() + " " + @claim.wdadat.ad4.get.hourOfDay() + ":" + @claim.wdadat.ad4.get.minuteOfHour() + ":" + @claim.wdadat.ad4.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad5.isDefined) {
+      										@claim.wdadat.ad5.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad5.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad5.get.getYear.toString() + " " + @claim.wdadat.ad5.get.hourOfDay() + ":" + @claim.wdadat.ad5.get.minuteOfHour() + ":" + @claim.wdadat.ad5.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad6.isDefined) {
+      										@claim.wdadat.ad6.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad6.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad6.get.getYear.toString() + " " + @claim.wdadat.ad6.get.hourOfDay() + ":" + @claim.wdadat.ad6.get.minuteOfHour() + ":" + @claim.wdadat.ad6.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad7.isDefined) {
+      										@claim.wdadat.ad7.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad7.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad7.get.getYear.toString() + " " + @claim.wdadat.ad7.get.hourOfDay() + ":" + @claim.wdadat.ad7.get.minuteOfHour() + ":" + @claim.wdadat.ad7.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad8.isDefined) {
+      										@claim.wdadat.ad8.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad8.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad8.get.getYear.toString() + " " + @claim.wdadat.ad8.get.hourOfDay() + ":" + @claim.wdadat.ad8.get.minuteOfHour() + ":" + @claim.wdadat.ad8.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad9.isDefined) {
+      										@claim.wdadat.ad9.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad9.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad9.get.getYear.toString() + " " + @claim.wdadat.ad9.get.hourOfDay() + ":" + @claim.wdadat.ad9.get.minuteOfHour() + ":" + @claim.wdadat.ad9.get.secondOfMinute()
+      									}
+      									@if(claim.wdadat.ad10.isDefined) {
+      										@claim.wdadat.ad10.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad10.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad10.get.getYear.toString() + " " + @claim.wdadat.ad10.get.hourOfDay() + ":" + @claim.wdadat.ad10.get.minuteOfHour() + ":" + @claim.wdadat.ad10.get.secondOfMinute()
+      									}
+      								</td>
+      							</tr>
+							}
+						
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+}

@@ -1,0 +1,5 @@
+$(function(){
+    
+    $("#navDashboard").addClass("active");
+	
+});

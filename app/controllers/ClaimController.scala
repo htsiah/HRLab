@@ -40,7 +40,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
               "d" -> text
           )(ExpenseDetail.apply)(ExpenseDetail.unapply),
           "wf" -> mapping(
-              "paprn" -> mapping("n" -> text, "id" -> text)(PersonDetail.apply)(PersonDetail.unapply),
+              "papr" -> mapping("n" -> text, "id" -> text)(PersonDetail.apply)(PersonDetail.unapply),
               "s" -> text
           )(ClaimFormWorkflow.apply)(ClaimFormWorkflow.unapply),
           "wfs" -> mapping(
@@ -234,13 +234,14 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	              )
 	          )
 	          ClaimModel.insert(claim_update, p_request=request)
+	          
 	        
 	          // Add ToDo
 	        
 	          // Send email
 
 	          // Insert Audit Log 
-	          AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create document."),p_request=request)
+	          AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Submit claim request."),p_request=request)
 	          
 	          Redirect(routes.DashboardController.index)
 	        }
@@ -248,7 +249,22 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	  )
   } }
   
-  def view(p_id:String) = TODO
+  def view(p_id:String) = withAuth { username => implicit request => {
+	  for {
+	    maybeclaim <- ClaimModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+	  } yield {
+	    maybeclaim.map( claim => {
+        
+        // Viewable by admin, manager, substitute manager and applicant
+        if (claim.p.id == request.session.get("id").get || PersonModel.isManagerFor(claim.p.id, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(claim.p.id, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) {     
+          Ok(views.html.claim.view(claim))
+        } else {
+          Ok(views.html.error.unauthorized())
+        }
+
+      }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+	  }
+  } }
   
   def approve(p_id:String, p_path:String, p_msg:String) = TODO
   
