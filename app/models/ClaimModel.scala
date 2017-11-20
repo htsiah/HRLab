@@ -15,6 +15,7 @@ import org.joda.time.DateTime
 case class Claim (
     _id: BSONObjectID,
     docnum: Int,
+    p: PersonDetail,  // Applicant
     ed: ExpenseDetail,      // Expense Detail
     wf: ClaimFormWorkflow,            // Workflow
     wfs: ClaimFormWorkflowStatus,    // Workflow Status
@@ -244,6 +245,7 @@ object ClaimModel {
       Claim(
           p_doc.getAs[BSONObjectID]("_id").get,
           p_doc.getAs[Int]("docnum").get,
+          p_doc.getAs[PersonDetail]("p").get,
           p_doc.getAs[ExpenseDetail]("ed").get,
           p_doc.getAs[ClaimFormWorkflow]("wf").get,
           p_doc.getAs[ClaimFormWorkflowStatus]("wfs").get,
@@ -398,6 +400,7 @@ object ClaimModel {
       BSONDocument(
           "_id" -> p_doc._id,
           "docnum" -> p_doc.docnum,
+          "p" -> p_doc.p,
           "ed" -> p_doc.ed,
           "wf" -> p_doc.wf,
           "wfs" -> p_doc.wfs,
@@ -414,6 +417,7 @@ object ClaimModel {
   val doc = Claim(
       _id = BSONObjectID.generate,
       docnum = 0,
+      p = PersonDetail(n="", id=""),
       ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=1.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy="", amt=0.0)), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
       wf = ClaimFormWorkflow(paprn=PersonDetail(n="", id=""), s="New"),
       wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
@@ -490,6 +494,11 @@ object ClaimModel {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).cursor[Claim](ReadPreference.primary).collect[List]()
   }
 	
+  // Find and sort all documents using session
+  def find(p_query:BSONDocument, p_sort:BSONDocument, p_request:RequestHeader) = {
+    col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).sort(p_sort).cursor[Claim](ReadPreference.primary).collect[List]()
+  }
+  
   // Find one document
   // Return the first found document
   def findOne(p_query:BSONDocument) = {

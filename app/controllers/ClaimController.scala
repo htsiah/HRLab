@@ -27,6 +27,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
       mapping(
           "_id" -> ignored(BSONObjectID.generate: BSONObjectID),
           "docnum" -> number,
+          "p" -> mapping("n" -> text, "id" -> text)(PersonDetail.apply)(PersonDetail.unapply),
           "ed" -> mapping(
               "rdat" -> optional(jodaDate("d-MMM-yyyy")),
               "cat" -> text,
@@ -99,8 +100,8 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
                   "dby" -> optional(text),
                   "ll" -> optional(jodaDate)
           )(System.apply)(System.unapply)) 
-      ){(_id,docnum,ed,wf,wfs,wfat,wfa,wdadat,sys)=>Claim(_id,docnum,ed,wf,wfs,wfat,wfa,wdadat,sys)}
-      {claim:Claim=>Some(claim._id, claim.docnum, claim.ed, claim.wf, claim.wfs, claim.wfat, claim.wfa, claim.wdadat, claim.sys)}
+      ){(_id,docnum,p,ed,wf,wfs,wfat,wfa,wdadat,sys)=>Claim(_id,docnum,p,ed,wf,wfs,wfat,wfa,wdadat,sys)}
+      {claim:Claim=>Some(claim._id, claim.docnum, claim.p, claim.ed, claim.wf, claim.wfs, claim.wfat, claim.wfa, claim.wdadat, claim.sys)}
   )
   
   def create = withAuth { username => implicit request => {
@@ -115,6 +116,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
       val defcurrency = maybe_currencies.filter(currency => currency.ct == (maybe_office.get.ct))
       val claim:Form[Claim] = claimform.fill(ClaimModel.doc.copy(
           docnum = docnum.toInt,
+          p = PersonDetail(n=request.session.get("name").get, id=request.session.get("id").get),
           ed = ExpenseDetail(
               rdat=Some(new DateTime()), 
               cat="", 
