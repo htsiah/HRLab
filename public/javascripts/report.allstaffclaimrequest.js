@@ -1,10 +1,10 @@
 $(function(){
 	
-    $("#navLeaveReports").addClass("active open");
-    $("#navAllStaffLeaveProfile").addClass("active");
-							
+    $("#navClaimReports").addClass("active open");
+    $("#navAllStaffClaimRequest").addClass("active");
+				
     $.ajax({
-    	url: "/report/allstaffleaveprofile",
+    	url: "/report/allstaffclaimrequest",
 		dataType: "json",
 		success: function(data){
 			setupJqGrid(data);
@@ -13,7 +13,7 @@ $(function(){
 			alert("There was an error while fetching data from server. Do not proceed! Please contact support@hrsifu.com.");
 		}
 	});
-    		
+	
 });
 
 //Failed to load pagination with group using json. There is a suggestion to disable sorting, but still not workable.
@@ -26,20 +26,19 @@ function setupJqGrid(data){
 	$("#grid-table").jqGrid({
 		data: data,
 		datatype: "local",
-	   	colNames:['Name','Leave Type','Entitlement','Earned','Adjustment','Carry Forward','Total Utilised','Total Expired','Pending Approval','Balance','Closing Balance',''],
+	   	colNames:['Name', 'DocNum', 'Receipt Date', 'Category', 'Amount', 'Exchange Rate', 'Approve Amount', 'GST / VAT', 'Status', 'Pending Approver(s)',''],
 	   	colModel:[
-			{name:'name',index:'name',width:100},
-			{name:'lt',index:'lt',width:100},
-			{name:'ent',index:'ent',width:100,sorttype:"int"},
-			{name:'ear',index:'ear',width:100,sorttype:"float"},
-			{name:'adj',index:'adj',width:100,sorttype:"float"},
-			{name:'cf',index:'cf',width:100,sorttype:"float"},
-			{name:'tuti',index:'tuti',width:100,sorttype:"float"},
-			{name:'texp',index:'texp',width:100,sorttype:"float"},
-			{name:'papr',index:'papr',width:120,sorttype:"float"},
-			{name:'bal',index:'bal',width:100,sorttype:"float"},
-			{name:'cbal',index:'cbal',width:120,sorttype:"float"},
-			{name:'a_link',index:'a_link',width:100,sortable:false}
+	   		{name:'name',index:'name',width:100},
+			{name:'docnum',index:'docnum', width:50, sorttype:'int'},
+			{name:'rdat',index:'rdat',width:70,sortable:false},
+			{name:'cat',index:'cat',width:70},
+			{name:'amt',index:'amt',width:70},
+			{name:'er',index:'er',width:70},
+			{name:'aamt',index:'aamt',width:70},
+			{name:'tamt',index:'tamt',width:70},
+			{name:'s',index:'s',width:70},
+			{name:'papr',index:'papr',width:130},
+			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
 	   	rowNum:250,
 	   	rowList:[],
@@ -47,14 +46,16 @@ function setupJqGrid(data){
 	   	altRows: true,
 	   	height: 'auto',
 	   	autowidth: true,
-	   	sortname: 'lt',
+	   	forceFit: true,
+	   	sortname: 'docnum',
+	   	sortorder: "desc",
 	    viewrecords: true,
 	    grouping:true,
    		groupingView : {
    			groupField : ['name'],
    			groupDataSorted : true,
    			groupColumnShow : [false],
-   			groupText : ['<b>&nbsp{0} - {1} Leave Profile(s)</b>'],
+   			groupText : ['<b>&nbsp{0} - {1} Claim Request(s)</b>'],
 			plusicon : 'fa fa-plus-square-o bigger-110',
 			minusicon : 'fa fa-minus-square-o bigger-110',
 			groupCollapse : true
@@ -84,7 +85,8 @@ function setupJqGrid(data){
 		caption:"",
         buttonicon:"ace-icon fa fa-download bigger-140", 
         onClickButton : function () { 
-        	window.open("/report/allstaffleaveprofilecsv");
+        	// window.open("/report/allstaffleaverequestcsv");
+        	alert("Coming soon.");
         } 
     });
 	
@@ -102,7 +104,7 @@ function updatePagerIcons(table) {
 		'ui-icon-seek-next' : 'ace-icon fa fa-angle-right bigger-140',
 		'ui-icon-seek-end' : 'ace-icon fa fa-angle-double-right bigger-140'
 	};
-	let	icon,
+	let icon,
 		$class;
 	
 	$('.ui-pg-table:not(.navtable) > tbody > tr > .ui-pg-button > .ui-icon').each(function(){
@@ -116,31 +118,4 @@ function updatePagerIcons(table) {
 function enableTooltips(table) {
 	$('.navtable .ui-pg-button').tooltip({container:'body'});
 	$(table).find('.ui-pg-div').tooltip({container:'body'});
-}
-
-function onDeleteLeaveProfile(p_id, p_lt, p_pid) {
-
-	$( "#dialog-message" ).removeClass('hide').dialog({
-		resizable: false,
-		modal: true,
-		title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa fa-warning red'></i> Delete the document?</h4></div>",
-		title_html: true,
-		buttons: [
-			{
-				html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Delete",
-				"class" : "btn btn-danger btn-mini",
-				click: function() {
-					window.location = "/leaveprofilereport/delete/" + p_id + "/" + p_lt + "/" + p_pid;
-				}
-			},
-			{
-				html: "Cancel",
-				"class" : "btn btn-mini",
-				click: function() {
-					$( this ).dialog( "close" );
-				}
-			}
-		]
-	});
-
 }

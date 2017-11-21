@@ -10,7 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID, BSONDocument}
 
-import models.{LeaveModel, PersonModel, LeaveProfileModel}
+import models.{ClaimModel, LeaveModel, PersonModel, LeaveProfileModel}
 import utilities.{Tools}
 
 import org.joda.time.DateTime
@@ -515,5 +515,72 @@ class ReportController extends Controller with Secured {
       Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
+
+  def myclaimrequest = withAuth { username => implicit request => { 
+
+    for {
+      claims <- ClaimModel.find(BSONDocument("p.id"->request.session.get("id").get), BSONDocument("docnum" -> -1), request)
+    } yield {
+      render {
+        case Accepts.Html() => {
+           Ok(views.html.report.myclaimrequest()).withSession(
+               (request.session - "path") + ("path"->((routes.ReportController.myclaimrequest).toString))
+           )
+         }
+         case Accepts.Json() => {
+           val claimsMap = claims.map { claim => Map(
+               "docnum" -> Json.toJson(claim.docnum),
+               "rdat" -> Json.toJson(claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString()),
+               "cat" -> Json.toJson(claim.ed.cat),
+               "amt" -> Json.toJson(claim.ed.amt.ccy + " " + claim.ed.amt.amt),
+               "er" -> Json.toJson(claim.ed.er),
+               "aamt" -> Json.toJson(claim.ed.aamt.ccy + " " + claim.ed.aamt.amt),
+               "tamt" -> Json.toJson(claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt),
+               "s" -> Json.toJson(claim.wf.s),
+               "papr" -> Json.toJson(claim.wf.papr.n),
+               "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/claimreport/view?p_id=" + claim._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
+           )}
+           Ok(Json.toJson(claimsMap)).as("application/json")  
+         }
+      }
+     }
+  
+  }}
+  
+  def allstaffclaimrequest = withAuth { username => implicit request => { 
+    if(request.session.get("roles").get.contains("Admin")){
+      for {
+        claims <- ClaimModel.find(BSONDocument(), BSONDocument("p.n" -> -1), request)
+      } yield {
+        render {
+          case Accepts.Html() => {
+            Ok(views.html.report.allstaffclaimrequest()).withSession(
+                (request.session - "path") + ("path"->((routes.ReportController.allstaffclaimrequest).toString))
+            )
+          }
+          case Accepts.Json() => {
+           val claimsMap = claims.map { claim => Map(
+               "name" -> Json.toJson(claim.p.n),
+               "docnum" -> Json.toJson(claim.docnum),
+               "rdat" -> Json.toJson(claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString()),
+               "cat" -> Json.toJson(claim.ed.cat),
+               "amt" -> Json.toJson(claim.ed.amt.ccy + " " + claim.ed.amt.amt),
+               "er" -> Json.toJson(claim.ed.er),
+               "aamt" -> Json.toJson(claim.ed.aamt.ccy + " " + claim.ed.aamt.amt),
+               "tamt" -> Json.toJson(claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt),
+               "s" -> Json.toJson(claim.wf.s),
+               "papr" -> Json.toJson(claim.wf.papr.n),
+               "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/claimreport/view?p_id=" + claim._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
+           )}
+           Ok(Json.toJson(claimsMap)).as("application/json")  
+          }
+        }
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
+  def myclaimapproval = TODO
 
 }

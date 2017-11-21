@@ -300,8 +300,12 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
         
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Approve claim request."), p_request=request)
-        
-        Redirect(routes.DashboardController.index)
+
+        if (p_path!="") {
+          Redirect(p_path).flashing("success" -> p_msg)
+        } else {
+          Redirect(request.session.get("path").get).flashing("success" -> p_msg)
+        }
 	    } else {
 	      Ok(views.html.error.unauthorized())
 	    }
@@ -323,7 +327,11 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject claim request."), p_request=request)
         
-        Redirect(routes.DashboardController.index)
+        if (p_path!="") {
+          Redirect(p_path).flashing("success" -> p_msg)
+        } else {
+          Redirect(request.session.get("path").get).flashing("success" -> p_msg)
+        }
 	    } else {
 	      Ok(views.html.error.unauthorized())
 	    }
@@ -339,13 +347,13 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
       maybeclaim.map( claim => {
         
 	    // Check authorized
-	    if (claim.wf.papr.id==request.session.get("id").get) {
+	    if (claim.p.id==request.session.get("id").get) {
 	      ClaimModel.update(BSONDocument("_id" -> claim._id), ClaimModel.cancel(claim, request), request)
         
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Cancel claim request."), p_request=request)
         
-        Redirect(routes.DashboardController.index)
+        Redirect(request.session.get("path").get)
 	    } else {
 	      Ok(views.html.error.unauthorized())
 	    }

@@ -1,22 +1,22 @@
 $(function(){
 	
-    $("#navLeaveReports").addClass("active open");
-    $("#navMyLeaveRequest").addClass("active");
+    $("#navClaimReports").addClass("active open");
+    $("#navMyClaimRequest").addClass("active");
 				
 	$("#grid-table").jqGrid({
-	   	url:"/report/myleaverequest",
+	   	url:"/report/myclaimrequest",
 		datatype: 'json',
-	   	colNames:['', 'DocNum', 'Leave Type', 'Day Type', 'Date From', 'Date To', 'Utilized', 'Status', 'Approver(s)',''],
+	   	colNames:['DocNum', 'Receipt Date', 'Category', 'Amount', 'Exchange Rate', 'Approve Amount', 'GST / VAT', 'Status', 'Pending Approver(s)',''],
 	   	colModel:[
-	   	    {name:'lock',index:'lock',width:20},
-			{name:'docnum',index:'docnum', width:70, sorttype:'int'},
-			{name:'lt',index:'lt',width:130},
-			{name:'dt',index:'dt',width:70},
-			{name:'fdat',index:'fdat',width:70,sortable:false},
-			{name:'tdat',index:'tdat',width:70,sortable:false},
-			{name:'uti',index:'uti',width:70, sorttype:"int"},
-			{name:'wf_s',index:'wf_s',width:130},
-			{name:'wf_aprn',index:'wf_aprn',width:130},
+			{name:'docnum',index:'docnum', width:50, sorttype:'int'},
+			{name:'rdat',index:'rdat',width:70,sortable:false},
+			{name:'cat',index:'cat',width:70},
+			{name:'amt',index:'amt',width:70},
+			{name:'er',index:'er',width:70},
+			{name:'aamt',index:'aamt',width:70},
+			{name:'tamt',index:'tamt',width:70},
+			{name:'s',index:'s',width:70},
+			{name:'papr',index:'papr',width:130},
 			{name:'v_link',index:'v_link',width:30,sortable:false}
 		],
 	   	rowNum: 250,
@@ -56,7 +56,8 @@ $(function(){
 		caption:"",
         buttonicon:"ace-icon fa fa-download bigger-140", 
         onClickButton : function () { 
-        	window.open("/report/myleaverequestcsv");
+        	// window.open("/report/myleaverequestcsv");
+        	alert("Coming soon.");
         } 
     });
 	

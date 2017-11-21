@@ -1,6 +1,6 @@
 $(function(){
    
-	$("#navReports").addClass("active open");
+	$("#navLeaveReports").addClass("active open");
 		
 	switch(path) {
     case "/report/myleaverequest":

@@ -51,10 +51,10 @@
 			</ul>
 		</li>
 
-		<li id="navReports">
+		<li id="navLeaveReports">
 			<a href="#" class="dropdown-toggle">
 				<i class="menu-icon fa fa-bar-chart-o"></i>
-				<span class="menu-text"> Reports </span>
+				<span class="menu-text"> Leave Reports </span>
 				<b class="arrow fa fa-angle-down"></b>
 			</a>
 	
@@ -98,6 +98,38 @@
 			</ul>
 		</li>
 
+		<li id="navClaimReports">
+			<a href="#" class="dropdown-toggle">
+				<i class="menu-icon fa fa-bar-chart-o"></i>
+				<span class="menu-text"> Claim Reports </span>
+				<b class="arrow fa fa-angle-down"></b>
+			</a>
+	
+			<ul class="submenu">
+				<li id="navMyClaimRequest">
+					<a href="@routes.ReportController.myclaimrequest()">
+						<i class="menu-icon fa fa-caret-right"></i>
+						My Claim Request
+					</a>
+				</li>
+				<li id="navMyApproval">
+					<a href="@routes.ReportController.myclaimapproval()">
+						<i class="menu-icon fa fa-caret-right"></i>
+						My Claim Approval
+					</a>
+				</li>
+				@** only admin can view **@
+				@if(session.get("roles").get.contains("Admin")){
+					<li id="navAllStaffClaimRequest">
+						<a href="@routes.ReportController.allstaffclaimrequest()">
+							<i class="menu-icon fa fa-caret-right"></i>
+							All Staff Claim Request
+						</a>
+					</li>
+				}
+			</ul>
+		</li>
+		
 		@if(session.get("roles").get.contains("Admin")) {
 			<li id="navAdmin">
 				<a href="#" class="dropdown-toggle">
