@@ -46,7 +46,8 @@ case class TaxDetail (
 
 case class ClaimFormWorkflow (
     papr: PersonDetail,    // Pending Approver
-    s: String               // Status
+    s: String,             // Status
+    wfs: String            // Workflow Step
 )
 
 case class ClaimFormWorkflowStatus (
@@ -208,7 +209,8 @@ object ClaimModel {
     def read(p_doc: BSONDocument): ClaimFormWorkflow = {
       ClaimFormWorkflow(
           p_doc.getAs[PersonDetail]("papr").get,
-          p_doc.getAs[String]("s").get
+          p_doc.getAs[String]("s").get,
+          p_doc.getAs[String]("wfs").get
       )
     }
   }
@@ -363,7 +365,8 @@ object ClaimModel {
     def write(p_doc: ClaimFormWorkflow): BSONDocument = {
       BSONDocument(
           "papr" -> p_doc.papr,
-          "s" -> p_doc.s
+          "s" -> p_doc.s,
+          "wfs" -> p_doc.wfs
       )     
     }
   }
@@ -419,7 +422,7 @@ object ClaimModel {
       docnum = 0,
       p = PersonDetail(n="", id=""),
       ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=1.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy="", amt=0.0)), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
-      wf = ClaimFormWorkflow(papr=PersonDetail(n="", id=""), s="New"),
+      wf = ClaimFormWorkflow(papr=PersonDetail(n="", id=""), s="New", wfs="0"),
       wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
       wfat = ClaimFormWorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
       wfa = ClaimFormWorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),
@@ -509,6 +512,351 @@ object ClaimModel {
   // Return the first found document
   def findOne(p_query:BSONDocument, p_request:RequestHeader) = {
     col.find(p_query.++(BSONDocument("sys.eid" -> p_request.session.get("entity").get, "sys.ddat"->BSONDocument("$exists"->false)))).one[Claim]
+  }
+  
+  /** Custom Model Methods **/ 
+  
+  def signWorkflow(p_doc:Claim, p_action:String, p_request:RequestHeader): Claim ={
+    
+    if(p_doc.wf.wfs=="0") {
+      if(p_doc.wfat.at1.n=="Not Assigned"){
+        val doc = p_doc.copy(
+            wf = p_doc.wf.copy(
+                papr=PersonDetail(n="", id=""),
+                s = p_doc.wfs.s1,
+                wfs="1"
+            )
+        )
+        this.signWorkflow(doc, "Approve", p_request)
+      } else {
+        val doc = p_doc.copy(
+            wf = p_doc.wf.copy(
+                papr=PersonDetail(n=p_doc.wfat.at1.n, id=p_doc.wfat.at1.id),
+                s = p_doc.wfs.s1,
+                wfs="1"
+            )
+        )
+      }
+    }
+    
+    
+    p_doc
+    
+  }
+  
+  def approve(p_doc:Claim, p_request:RequestHeader): Claim ={
+        
+    p_doc.wf.wfs match {
+      case "0" => {
+      
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a1 = if (p_doc.wfat.at1.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad1 = Some(new DateTime()))
+        )
+
+        // Setup Workflow
+        if(doc1.wfs.s2=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="End"))
+        } else if (doc1.wfat.at2.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="2")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1"))
+        }
+        
+      }
+      case "1" => {
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a2 = if (p_doc.wfat.at2.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad2 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s3=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="End"))
+        } else if (doc1.wfat.at3.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="2")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), s = p_doc.wfs.s2, wfs="2"))
+        }
+        
+      }
+      case "2" => {  
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a3 = if (p_doc.wfat.at3.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad3 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s4=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="End"))
+        } else if (doc1.wfat.at4.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="3")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), s = p_doc.wfs.s3, wfs="3"))
+        }
+        
+      }
+      case "3" => { 
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a4 = if (p_doc.wfat.at4.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad4 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s5=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="End"))
+        } else if (doc1.wfat.at5.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="4")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), s = p_doc.wfs.s4, wfs="4"))
+        }
+        
+      }
+      case "4" => { 
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a5 = if (p_doc.wfat.at5.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad5 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s6=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="End"))
+        } else if (doc1.wfat.at6.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="5")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), s = p_doc.wfs.s5, wfs="5"))
+        }
+        
+      }
+      case "5" => { 
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a6 = if (p_doc.wfat.at6.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad6 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s7=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="End"))
+        } else if (doc1.wfat.at7.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="6")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), s = p_doc.wfs.s6, wfs="6"))
+        }
+        
+      }
+      case "6" => { 
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a7 = if (p_doc.wfat.at7.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad7 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s8=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="End"))
+        } else if (doc1.wfat.at8.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="7")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), s = p_doc.wfs.s7, wfs="7"))
+        }
+        
+      }
+      case "7" => { 
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a8 = if (p_doc.wfat.at8.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad8 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s9=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="End"))
+        } else if (doc1.wfat.at9.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="8")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), s = p_doc.wfs.s8, wfs="8"))
+        }
+        
+      }
+      case "8" => { 
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a9 = if (p_doc.wfat.at9.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad9 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        if(doc1.wfs.s10=="") {
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="End"))
+        } else if (doc1.wfat.at10.n=="Not Assigned") {
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="9")), p_request)
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), s = p_doc.wfs.s9, wfs="9"))
+        }
+        
+      }
+      case "9" => { 
+        
+        // Stamp Action
+        val doc1 = p_doc.copy(
+            wfa = p_doc.wfa.copy(a10 = if (p_doc.wfat.at10.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wdadat = p_doc.wdadat.copy(ad10 = Some(new DateTime()))
+        )
+      
+        // Setup Workflow
+        doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s10, wfs="End"))
+        
+      }
+    }
+    
+  }
+  
+  def reject(p_doc:Claim, p_request:RequestHeader): Claim ={
+        
+    p_doc.wf.wfs match {
+      case "0" => {
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a1 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad1 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "1" => {
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a2 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad2 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "2" => {  
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a3 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad3 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "3" => { 
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a4 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad4 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "4" => { 
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a5 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad5 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "5" => { 
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a6 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad6 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "6" => { 
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a7 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad7 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "7" => { 
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a8 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad8 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "8" => { 
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a9 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad9 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+      case "9" => { 
+        p_doc.copy(
+            wfa = p_doc.wfa.copy(a10 = "Reject"),
+            wdadat = p_doc.wdadat.copy(ad10 = Some(new DateTime())),
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Rejected", wfs="End")
+        )
+      }
+    }
+    
+  }
+  
+  def cancel(p_doc:Claim, p_request:RequestHeader): Claim ={
+        
+    p_doc.wf.wfs match {
+      case "0" => {
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "1" => {
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "2" => {  
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "3" => { 
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "4" => { 
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "5" => { 
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "6" => { 
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "7" => { 
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "8" => { 
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+      case "9" => { 
+        p_doc.copy(
+            wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = "Cancelled", wfs="End")
+        )
+      }
+    }
+    
   }
   
 }

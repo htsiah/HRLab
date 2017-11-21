@@ -41,7 +41,8 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
           )(ExpenseDetail.apply)(ExpenseDetail.unapply),
           "wf" -> mapping(
               "papr" -> mapping("n" -> text, "id" -> text)(PersonDetail.apply)(PersonDetail.unapply),
-              "s" -> text
+              "s" -> text,
+              "wfs" -> text
           )(ClaimFormWorkflow.apply)(ClaimFormWorkflow.unapply),
           "wfs" -> mapping(
               "s1" -> text,
@@ -161,7 +162,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	          val doc_objectID = BSONObjectID.generate
 	          
 	          // Add Claim
-	          val claim_update = formWithData.copy(
+	          val claim_update1 = formWithData.copy(
 	              _id = doc_objectID,
 	              ed = formWithData.ed.copy( 
 	                  iamt = formWithData.ed.iamt.copy(
@@ -189,51 +190,72 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                  at2 = wf.at.at2 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at2.split("@|@").head, id=wf.at.at2.split("@|@").last)
 	                  },
 	                  at3 = wf.at.at3 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at3.split("@|@").head, id=wf.at.at3.split("@|@").last)
 	                  },
 	                  at4 = wf.at.at4 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at4.split("@|@").head, id=wf.at.at4.split("@|@").last)
 	                  },
 	                  at5 = wf.at.at5 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at5.split("@|@").head, id=wf.at.at5.split("@|@").last)
 	                  },
 	                  at6 = wf.at.at6 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at6.split("@|@").head, id=wf.at.at6.split("@|@").last)
 	                  },
 	                  at7 = wf.at.at7 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at7.split("@|@").head, id=wf.at.at7.split("@|@").last)
 	                  },
 	                  at8 = wf.at.at8 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at8.split("@|@").head, id=wf.at.at8.split("@|@").last)
 	                  },
 	                  at9 = wf.at.at9 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at9.split("@|@").head, id=wf.at.at9.split("@|@").last)
 	                  },
 	                  at10 = wf.at.at10 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at10.split("@|@").head, id=wf.at.at10.split("@|@").last)
 	                  }
 	              )
 	          )
-	          ClaimModel.insert(claim_update, p_request=request)
+	          
+	          val claim_update2 = if(claim_update1.wfat.at1.n=="Not Assigned"){
+	            ClaimModel.approve(	     
+	                claim_update1.copy(  
+	                    wf = claim_update1.wf.copy(   
+	                        papr=PersonDetail(n="", id=""),   
+	                        s = "Submitted",   
+	                        wfs="0"
+	                    )
+	                ), request  
+	            )
+	          } else {
+	            claim_update1.copy( 
+	                wf = claim_update1.wf.copy(  
+	                    papr=PersonDetail(n=claim_update1.wfat.at1.n, id=claim_update1.wfat.at1.id), 
+	                    s = "Submitted",
+	                    wfs="0"
+	                )
+	            )
+	          }
+	         
+	          ClaimModel.insert(claim_update2, p_request=request)
 	          
 	        
 	          // Add ToDo
@@ -256,7 +278,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	    maybeclaim.map( claim => {
         
         // Viewable by admin, manager, substitute manager and applicant
-        if (claim.p.id == request.session.get("id").get || PersonModel.isManagerFor(claim.p.id, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(claim.p.id, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) {     
+        if (claim.p.id == request.session.get("id").get || PersonModel.isManagerFor(claim.p.id, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(claim.p.id, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) {
           Ok(views.html.claim.view(claim))
         } else {
           Ok(views.html.error.unauthorized())
@@ -266,10 +288,70 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	  }
   } }
   
-  def approve(p_id:String, p_path:String, p_msg:String) = TODO
-  
-  def reject(p_id:String, p_path:String, p_msg:String) = TODO
-  
-  def cancel(p_id:String) = TODO
+  def approve(p_id:String, p_path:String, p_msg:String) = withAuth { username => implicit request => {
+    for {
+      maybeclaim <- ClaimModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+    } yield {
+      maybeclaim.map( claim => {
+        
+	    // Check authorized
+	    if (claim.wf.papr.id==request.session.get("id").get) {
+	      ClaimModel.update(BSONDocument("_id" -> claim._id), ClaimModel.approve(claim, request), request)
+        
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Approve claim request."), p_request=request)
+        
+        Redirect(routes.DashboardController.index)
+	    } else {
+	      Ok(views.html.error.unauthorized())
+	    }
 
+      }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+    }
+  } }
+  
+  def reject(p_id:String, p_path:String, p_msg:String) = withAuth { username => implicit request => {
+    for {
+      maybeclaim <- ClaimModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+    } yield {
+      maybeclaim.map( claim => {
+        
+	    // Check authorized
+	    if (claim.wf.papr.id==request.session.get("id").get) {
+	      ClaimModel.update(BSONDocument("_id" -> claim._id), ClaimModel.reject(claim, request), request)
+        
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject claim request."), p_request=request)
+        
+        Redirect(routes.DashboardController.index)
+	    } else {
+	      Ok(views.html.error.unauthorized())
+	    }
+
+      }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+    }
+  } }
+  
+  def cancel(p_id:String) = withAuth { username => implicit request => {
+    for {
+      maybeclaim <- ClaimModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+    } yield {
+      maybeclaim.map( claim => {
+        
+	    // Check authorized
+	    if (claim.wf.papr.id==request.session.get("id").get) {
+	      ClaimModel.update(BSONDocument("_id" -> claim._id), ClaimModel.cancel(claim, request), request)
+        
+        // Insert audit log
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Cancel claim request."), p_request=request)
+        
+        Redirect(routes.DashboardController.index)
+	    } else {
+	      Ok(views.html.error.unauthorized())
+	    }
+
+      }).getOrElse(NotFound(views.html.error.onhandlernotfound()))
+    }
+  } }
+  
 }

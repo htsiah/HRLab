@@ -20,6 +20,13 @@
 @inlinestyle = {}
 
 @buttons = {
+	@if(claim.wf.papr.id==session.get("id").get) {
+		<a href="@routes.ClaimController.approve(claim._id.stringify)" class="btn btn-sm btn btn-block">Approve</a>	
+		<a href="@routes.ClaimController.reject(claim._id.stringify)" class="btn btn-sm btn btn-block">Reject</a>
+	}
+	@if(claim.wf.wfs!="End" && (session.get("id").get==claim.p.id || session.get("roles").get.contains("Admin"))) {
+		<a href="@routes.ClaimController.cancel(claim._id.stringify)" class="btn btn-sm btn btn-block">Cancel Claim</a>
+	}
 	<a href="javascript:displayAuditLog('@claim._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
@@ -54,7 +61,7 @@
 				@contentRow("Doc Num", claim.docnum.toString())
 				@contentRow("Applicant", claim.p.n)
 				@contentRow("Status", claim.wf.s)
-				@contentRow("Pending Approver(s)", claim.wf.papr.n)
+				@if(claim.wf.papr.n!="") { @contentRow("Pending Approver(s)", claim.wf.papr.n) }
 				@contentRow("Category", claim.ed.cat)
 				@contentRow("Receipt  Date", claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString())
 				@contentRow("Amount", claim.ed.amt.ccy + " " + claim.ed.amt.amt.toString)
@@ -81,40 +88,129 @@
       								<td class="text-center">@claim.wfat.at1.n</td>
       								<td class="text-center">@claim.wfa.a1</td>
       								<td class="text-center">
-      									@if(claim.wdadat.ad1.isDefined) {
-      										@claim.wdadat.ad1.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad1.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad1.get.getYear.toString() + " " + @claim.wdadat.ad1.get.hourOfDay() + ":" + @claim.wdadat.ad1.get.minuteOfHour() + ":" + @claim.wdadat.ad1.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad2.isDefined) {
-      										@claim.wdadat.ad2.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad2.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad2.get.getYear.toString() + " " + @claim.wdadat.ad2.get.hourOfDay() + ":" + @claim.wdadat.ad2.get.minuteOfHour() + ":" + @claim.wdadat.ad2.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad3.isDefined) {
-      										@claim.wdadat.ad3.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad3.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad3.get.getYear.toString() + " " + @claim.wdadat.ad3.get.hourOfDay() + ":" + @claim.wdadat.ad3.get.minuteOfHour() + ":" + @claim.wdadat.ad3.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad4.isDefined) {
-      										@claim.wdadat.ad4.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad4.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad4.get.getYear.toString() + " " + @claim.wdadat.ad4.get.hourOfDay() + ":" + @claim.wdadat.ad4.get.minuteOfHour() + ":" + @claim.wdadat.ad4.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad5.isDefined) {
-      										@claim.wdadat.ad5.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad5.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad5.get.getYear.toString() + " " + @claim.wdadat.ad5.get.hourOfDay() + ":" + @claim.wdadat.ad5.get.minuteOfHour() + ":" + @claim.wdadat.ad5.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad6.isDefined) {
-      										@claim.wdadat.ad6.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad6.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad6.get.getYear.toString() + " " + @claim.wdadat.ad6.get.hourOfDay() + ":" + @claim.wdadat.ad6.get.minuteOfHour() + ":" + @claim.wdadat.ad6.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad7.isDefined) {
-      										@claim.wdadat.ad7.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad7.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad7.get.getYear.toString() + " " + @claim.wdadat.ad7.get.hourOfDay() + ":" + @claim.wdadat.ad7.get.minuteOfHour() + ":" + @claim.wdadat.ad7.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad8.isDefined) {
-      										@claim.wdadat.ad8.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad8.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad8.get.getYear.toString() + " " + @claim.wdadat.ad8.get.hourOfDay() + ":" + @claim.wdadat.ad8.get.minuteOfHour() + ":" + @claim.wdadat.ad8.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad9.isDefined) {
-      										@claim.wdadat.ad9.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad9.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad9.get.getYear.toString() + " " + @claim.wdadat.ad9.get.hourOfDay() + ":" + @claim.wdadat.ad9.get.minuteOfHour() + ":" + @claim.wdadat.ad9.get.secondOfMinute()
-      									}
-      									@if(claim.wdadat.ad10.isDefined) {
-      										@claim.wdadat.ad10.get.dayOfMonth().getAsText + "-" + @claim.wdadat.ad10.get.monthOfYear().getAsShortText + "-" + @claim.wdadat.ad10.get.getYear.toString() + " " + @claim.wdadat.ad10.get.hourOfDay() + ":" + @claim.wdadat.ad10.get.minuteOfHour() + ":" + @claim.wdadat.ad10.get.secondOfMinute()
+      									@if(!claim.wdadat.ad1.isEmpty) {
+      										@(claim.wdadat.ad1.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad1.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad1.get.getYear.toString() + " " + claim.wdadat.ad1.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad1.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad1.get.secondOfMinute().getAsShortText)
       									}
       								</td>
       							</tr>
 							}
-						
+							@if(claim.wfs.s2!=""){
+    							<tr>
+    								<td class="text-center">2</td>
+      								<td class="text-center">@claim.wfs.s2</td>
+      								<td class="text-center">@claim.wfat.at2.n</td>
+      								<td class="text-center">@claim.wfa.a2</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad2.isEmpty) {
+      										@(claim.wdadat.ad2.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad2.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad2.get.getYear.toString() + " " + claim.wdadat.ad2.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad2.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad2.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s3!=""){
+    							<tr>
+    								<td class="text-center">3</td>
+      								<td class="text-center">@claim.wfs.s3</td>
+      								<td class="text-center">@claim.wfat.at3.n</td>
+      								<td class="text-center">@claim.wfa.a3</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad3.isEmpty) {
+      										@(claim.wdadat.ad3.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad3.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad3.get.getYear.toString() + " " + claim.wdadat.ad3.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad3.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad3.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s4!=""){
+    							<tr>
+    								<td class="text-center">4</td>
+      								<td class="text-center">@claim.wfs.s4</td>
+      								<td class="text-center">@claim.wfat.at4.n</td>
+      								<td class="text-center">@claim.wfa.a4</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad4.isEmpty) {
+      										@(claim.wdadat.ad4.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad4.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad4.get.getYear.toString() + " " + claim.wdadat.ad4.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad4.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad4.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s5!=""){
+    							<tr>
+    								<td class="text-center">5</td>
+      								<td class="text-center">@claim.wfs.s5</td>
+      								<td class="text-center">@claim.wfat.at5.n</td>
+      								<td class="text-center">@claim.wfa.a5</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad5.isEmpty) {
+      										@(claim.wdadat.ad5.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad5.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad5.get.getYear.toString() + " " + claim.wdadat.ad5.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad5.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad5.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s6!=""){
+    							<tr>
+    								<td class="text-center">6</td>
+      								<td class="text-center">@claim.wfs.s6</td>
+      								<td class="text-center">@claim.wfat.at6.n</td>
+      								<td class="text-center">@claim.wfa.a6</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad6.isEmpty) {
+      										@(claim.wdadat.ad6.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad6.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad6.get.getYear.toString() + " " + claim.wdadat.ad6.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad6.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad6.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s7!=""){
+    							<tr>
+    								<td class="text-center">7</td>
+      								<td class="text-center">@claim.wfs.s7</td>
+      								<td class="text-center">@claim.wfat.at7.n</td>
+      								<td class="text-center">@claim.wfa.a7</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad7.isEmpty) {
+      										@(claim.wdadat.ad7.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad7.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad7.get.getYear.toString() + " " + claim.wdadat.ad7.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad7.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad7.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s8!=""){
+    							<tr>
+    								<td class="text-center">8</td>
+      								<td class="text-center">@claim.wfs.s8</td>
+      								<td class="text-center">@claim.wfat.at8.n</td>
+      								<td class="text-center">@claim.wfa.a8</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad8.isEmpty) {
+      										@(claim.wdadat.ad8.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad8.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad8.get.getYear.toString() + " " + claim.wdadat.ad8.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad8.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad8.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s9!=""){
+    							<tr>
+    								<td class="text-center">9</td>
+      								<td class="text-center">@claim.wfs.s9</td>
+      								<td class="text-center">@claim.wfat.at9.n</td>
+      								<td class="text-center">@claim.wfa.a9</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad9.isEmpty) {
+      										@(claim.wdadat.ad9.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad9.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad9.get.getYear.toString() + " " + claim.wdadat.ad9.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad9.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad9.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
+							@if(claim.wfs.s10!=""){
+    							<tr>
+    								<td class="text-center">10</td>
+      								<td class="text-center">@claim.wfs.s10</td>
+      								<td class="text-center">@claim.wfat.at10.n</td>
+      								<td class="text-center">@claim.wfa.a10</td>
+      								<td class="text-center">
+      									@if(!claim.wdadat.ad10.isEmpty) {
+      										@(claim.wdadat.ad10.get.dayOfMonth().getAsText + "-" + claim.wdadat.ad10.get.monthOfYear().getAsShortText + "-" + claim.wdadat.ad10.get.getYear.toString() + " " + claim.wdadat.ad10.get.hourOfDay().getAsShortText + ":" + claim.wdadat.ad10.get.minuteOfHour().getAsShortText + ":" + claim.wdadat.ad10.get.secondOfMinute().getAsShortText)
+      									}
+      								</td>
+      							</tr>
+							}
 						<tbody>
 						</tbody>
 					</table>
