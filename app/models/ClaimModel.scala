@@ -7,8 +7,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import utilities.{System,SystemDataStore,DbConnUtility}
+import utilities.{System,SystemDataStore,DbConnUtility,Tools}
 
+import scala.concurrent.Await
 import scala.util.{Success, Failure}
 import org.joda.time.DateTime
 
@@ -48,7 +49,7 @@ case class ClaimFormWorkflow (
     papr: PersonDetail,    // Pending Approver
     s: String,             // Status
     wfs: String,           // Workflow Step
-    aid: List[String]      // Person Assigned By ID
+    aprid: List[String]      // Approver Assigned By ID
 )
 
 case class ClaimFormWorkflowStatus (
@@ -212,7 +213,7 @@ object ClaimModel {
           p_doc.getAs[PersonDetail]("papr").get,
           p_doc.getAs[String]("s").get,
           p_doc.getAs[String]("wfs").get,
-          p_doc.getAs[List[String]]("aid").get
+          p_doc.getAs[List[String]]("aprid").get
       )
     }
   }
@@ -369,7 +370,7 @@ object ClaimModel {
           "papr" -> p_doc.papr,
           "s" -> p_doc.s,
           "wfs" -> p_doc.wfs,
-          "aid" -> p_doc.aid
+          "aprid" -> p_doc.aprid
       )     
     }
   }
@@ -425,7 +426,7 @@ object ClaimModel {
       docnum = 0,
       p = PersonDetail(n="", id=""),
       ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=1.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy="", amt=0.0)), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
-      wf = ClaimFormWorkflow(papr=PersonDetail(n="", id=""), s="New", wfs="0", aid=List("")),
+      wf = ClaimFormWorkflow(papr=PersonDetail(n="", id=""), s="New", wfs="0", aprid=List("")),
       wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
       wfat = ClaimFormWorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
       wfa = ClaimFormWorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),
@@ -564,7 +565,7 @@ object ClaimModel {
         } else if (doc1.wfat.at2.n=="Not Assigned" || p_doc.wfat.at2.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="1")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1", aid=p_doc.wf.aid ::: List(p_doc.wfat.at2.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at2.id)))
         }
         
       }
@@ -582,7 +583,7 @@ object ClaimModel {
         } else if (doc1.wfat.at3.n=="Not Assigned" || p_doc.wfat.at3.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="2")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), s = p_doc.wfs.s2, wfs="2", aid=p_doc.wf.aid ::: List(p_doc.wfat.at3.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), s = p_doc.wfs.s2, wfs="2", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at3.id)))
         }
         
       }
@@ -600,7 +601,7 @@ object ClaimModel {
         } else if (doc1.wfat.at4.n=="Not Assigned" || p_doc.wfat.at4.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="3")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), s = p_doc.wfs.s3, wfs="3", aid=p_doc.wf.aid ::: List(p_doc.wfat.at4.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), s = p_doc.wfs.s3, wfs="3", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at4.id)))
         }
         
       }
@@ -618,7 +619,7 @@ object ClaimModel {
         } else if (doc1.wfat.at5.n=="Not Assigned" || p_doc.wfat.at5.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="4")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), s = p_doc.wfs.s4, wfs="4", aid=p_doc.wf.aid ::: List(p_doc.wfat.at5.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), s = p_doc.wfs.s4, wfs="4", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at5.id)))
         }
         
       }
@@ -636,7 +637,7 @@ object ClaimModel {
         } else if (doc1.wfat.at6.n=="Not Assigned" || p_doc.wfat.at6.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="5")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), s = p_doc.wfs.s5, wfs="5", aid=p_doc.wf.aid ::: List(p_doc.wfat.at6.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), s = p_doc.wfs.s5, wfs="5", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at6.id)))
         }
         
       }
@@ -654,7 +655,7 @@ object ClaimModel {
         } else if (doc1.wfat.at7.n=="Not Assigned" || p_doc.wfat.at7.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="6")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), s = p_doc.wfs.s6, wfs="6", aid=p_doc.wf.aid ::: List(p_doc.wfat.at7.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), s = p_doc.wfs.s6, wfs="6", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at7.id)))
         }
         
       }
@@ -672,7 +673,7 @@ object ClaimModel {
         } else if (doc1.wfat.at8.n=="Not Assigned" || p_doc.wfat.at8.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="7")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), s = p_doc.wfs.s7, wfs="7", aid=p_doc.wf.aid ::: List(p_doc.wfat.at8.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), s = p_doc.wfs.s7, wfs="7", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at8.id)))
         }
         
       }
@@ -690,7 +691,7 @@ object ClaimModel {
         } else if (doc1.wfat.at9.n=="Not Assigned" || p_doc.wfat.at9.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="8")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), s = p_doc.wfs.s8, wfs="8", aid=p_doc.wf.aid ::: List(p_doc.wfat.at9.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), s = p_doc.wfs.s8, wfs="8", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at9.id)))
         }
         
       }
@@ -708,7 +709,7 @@ object ClaimModel {
         } else if (doc1.wfat.at10.n=="Not Assigned" || p_doc.wfat.at10.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="9")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), s = p_doc.wfs.s9, wfs="9", aid=p_doc.wf.aid ::: List(p_doc.wfat.at10.id)))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), s = p_doc.wfs.s9, wfs="9", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at10.id)))
         }
         
       }

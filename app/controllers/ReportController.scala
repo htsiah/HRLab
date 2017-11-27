@@ -583,7 +583,7 @@ class ReportController extends Controller with Secured {
   
   def claimundermyapproval = withAuth { username => implicit request => { 
     for {
-      claims <- ClaimModel.find(BSONDocument("wf.aid"->BSONDocument("$in"->List(request.session.get("id").get))), BSONDocument("docnum" -> -1), request)
+      claims <- ClaimModel.find(BSONDocument("wf.aprid"->BSONDocument("$in"->List(request.session.get("id").get))), BSONDocument("docnum" -> -1), request)
     } yield {
       render {
         case Accepts.Html() => {

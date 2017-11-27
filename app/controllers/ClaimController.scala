@@ -43,7 +43,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
               "papr" -> mapping("n" -> text, "id" -> text)(PersonDetail.apply)(PersonDetail.unapply),
               "s" -> text,
               "wfs" -> text,
-              "aid" ->  list(text)
+              "aprid" ->  list(text)
           )(ClaimFormWorkflow.apply)(ClaimFormWorkflow.unapply),
           "wfs" -> mapping(
               "s1" -> text,
@@ -292,7 +292,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    papr=PersonDetail(n=claim_update1.wfat.at1.n, id=claim_update1.wfat.at1.id), 
 	                    s = "Submitted",
 	                    wfs="0",
-	                    aid = List(claim_update1.wfat.at1.id)
+	                    aprid = List(claim_update1.wfat.at1.id)
 	                )
 	            )
 	          }
@@ -319,8 +319,8 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	  } yield {
 	    maybeclaim.map( claim => {
         
-        // Viewable by admin, manager, substitute manager and applicant
-        if (claim.p.id == request.session.get("id").get || PersonModel.isManagerFor(claim.p.id, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(claim.p.id, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) {
+        // Viewable by admin, approvers and applicant
+        if (claim.p.id == request.session.get("id").get || claim.wf.aprid.contains(request.session.get("id").get) || hasRoles(List("Admin"), request)) {
           Ok(views.html.claim.view(claim))
         } else {
           Ok(views.html.error.unauthorized())
