@@ -581,6 +581,35 @@ class ReportController extends Controller with Secured {
     }
   }}
   
-  def myclaimapproval = TODO
+  def claimundermyapproval = withAuth { username => implicit request => { 
+    for {
+      claims <- ClaimModel.find(BSONDocument("wf.aid"->BSONDocument("$in"->List(request.session.get("id").get))), BSONDocument("docnum" -> -1), request)
+    } yield {
+      render {
+        case Accepts.Html() => {
+           Ok(views.html.report.claimundermyapproval()).withSession(
+               (request.session - "path") + ("path"->((routes.ReportController.claimundermyapproval).toString))
+           )
+         }
+         case Accepts.Json() => {
+           val claimsMap = claims.map { claim => Map(
+               "name" -> Json.toJson(claim.p.n),
+               "docnum" -> Json.toJson(claim.docnum),
+               "rdat" -> Json.toJson(claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString()),
+               "cat" -> Json.toJson(claim.ed.cat),
+               "amt" -> Json.toJson(claim.ed.amt.ccy + " " + claim.ed.amt.amt),
+               "er" -> Json.toJson(claim.ed.er),
+               "aamt" -> Json.toJson(claim.ed.aamt.ccy + " " + claim.ed.aamt.amt),
+               "tamt" -> Json.toJson(claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt),
+               "s" -> Json.toJson(claim.wf.s),
+               "papr" -> Json.toJson(claim.wf.papr.n),
+               "v_link" -> Json.toJson("<a class='btn btn-xs btn-success' title='View' href='/claimreport/view?p_id=" + claim._id.stringify + "'><i class='ace-icon fa fa-search-plus bigger-120'></i></a>")
+           )}
+           Ok(Json.toJson(claimsMap)).as("application/json")  
+         }
+      }
+     }
+
+  }}
 
 }

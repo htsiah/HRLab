@@ -47,7 +47,8 @@ case class TaxDetail (
 case class ClaimFormWorkflow (
     papr: PersonDetail,    // Pending Approver
     s: String,             // Status
-    wfs: String            // Workflow Step
+    wfs: String,           // Workflow Step
+    aid: List[String]      // Person Assigned By ID
 )
 
 case class ClaimFormWorkflowStatus (
@@ -210,7 +211,8 @@ object ClaimModel {
       ClaimFormWorkflow(
           p_doc.getAs[PersonDetail]("papr").get,
           p_doc.getAs[String]("s").get,
-          p_doc.getAs[String]("wfs").get
+          p_doc.getAs[String]("wfs").get,
+          p_doc.getAs[List[String]]("aid").get
       )
     }
   }
@@ -366,7 +368,8 @@ object ClaimModel {
       BSONDocument(
           "papr" -> p_doc.papr,
           "s" -> p_doc.s,
-          "wfs" -> p_doc.wfs
+          "wfs" -> p_doc.wfs,
+          "aid" -> p_doc.aid
       )     
     }
   }
@@ -422,7 +425,7 @@ object ClaimModel {
       docnum = 0,
       p = PersonDetail(n="", id=""),
       ed = ExpenseDetail(rdat=Some(new DateTime()), cat="", glc="", amt=CurrencyAmount(ccy="", amt=0.0), er=1.0, aamt=CurrencyAmount(ccy="", amt=0.0), gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy="", amt=0.0)), iamt=CurrencyAmount(ccy="", amt=0.0), d=""),
-      wf = ClaimFormWorkflow(papr=PersonDetail(n="", id=""), s="New", wfs="0"),
+      wf = ClaimFormWorkflow(papr=PersonDetail(n="", id=""), s="New", wfs="0", aid=List("")),
       wfs = ClaimFormWorkflowStatus(s1="", s2="", s3="", s4="", s5="", s6="", s7="", s8="", s9="", s10=""),
       wfat = ClaimFormWorkflowAssignTo(at1=PersonDetail(n="", id=""), at2=PersonDetail(n="", id=""), at3=PersonDetail(n="", id=""), at4=PersonDetail(n="", id=""), at5=PersonDetail(n="", id=""), at6=PersonDetail(n="", id=""), at7=PersonDetail(n="", id=""), at8=PersonDetail(n="", id=""), at9=PersonDetail(n="", id=""), at10=PersonDetail(n="", id="")),
       wfa = ClaimFormWorkflowAction(a1="", a2="", a3="", a4="", a5="", a6="", a7="", a8="", a9="", a10=""),
@@ -551,17 +554,17 @@ object ClaimModel {
       
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a1 = if (p_doc.wfat.at1.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a1 = if (p_doc.wfat.at1.n=="Not Assigned" || p_doc.wfat.at1.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad1 = Some(new DateTime()))
         )
 
         // Setup Workflow
         if(doc1.wfs.s2=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="End"))
-        } else if (doc1.wfat.at2.n=="Not Assigned") {
+        } else if (doc1.wfat.at2.n=="Not Assigned" || p_doc.wfat.at2.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="1")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1", aid=p_doc.wf.aid ::: List(p_doc.wfat.at2.id)))
         }
         
       }
@@ -569,17 +572,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a2 = if (p_doc.wfat.at2.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a2 = if (p_doc.wfat.at2.n=="Not Assigned" || p_doc.wfat.at2.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad2 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s3=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="End"))
-        } else if (doc1.wfat.at3.n=="Not Assigned") {
+        } else if (doc1.wfat.at3.n=="Not Assigned" || p_doc.wfat.at3.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="2")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), s = p_doc.wfs.s2, wfs="2"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), s = p_doc.wfs.s2, wfs="2", aid=p_doc.wf.aid ::: List(p_doc.wfat.at3.id)))
         }
         
       }
@@ -587,17 +590,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a3 = if (p_doc.wfat.at3.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a3 = if (p_doc.wfat.at3.n=="Not Assigned" || p_doc.wfat.at3.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad3 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s4=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="End"))
-        } else if (doc1.wfat.at4.n=="Not Assigned") {
+        } else if (doc1.wfat.at4.n=="Not Assigned" || p_doc.wfat.at4.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="3")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), s = p_doc.wfs.s3, wfs="3"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), s = p_doc.wfs.s3, wfs="3", aid=p_doc.wf.aid ::: List(p_doc.wfat.at4.id)))
         }
         
       }
@@ -605,17 +608,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a4 = if (p_doc.wfat.at4.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a4 = if (p_doc.wfat.at4.n=="Not Assigned" || p_doc.wfat.at4.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad4 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s5=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="End"))
-        } else if (doc1.wfat.at5.n=="Not Assigned") {
+        } else if (doc1.wfat.at5.n=="Not Assigned" || p_doc.wfat.at5.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="4")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), s = p_doc.wfs.s4, wfs="4"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), s = p_doc.wfs.s4, wfs="4", aid=p_doc.wf.aid ::: List(p_doc.wfat.at5.id)))
         }
         
       }
@@ -623,17 +626,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a5 = if (p_doc.wfat.at5.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a5 = if (p_doc.wfat.at5.n=="Not Assigned" || p_doc.wfat.at5.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad5 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s6=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="End"))
-        } else if (doc1.wfat.at6.n=="Not Assigned") {
+        } else if (doc1.wfat.at6.n=="Not Assigned" || p_doc.wfat.at6.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="5")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), s = p_doc.wfs.s5, wfs="5"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), s = p_doc.wfs.s5, wfs="5", aid=p_doc.wf.aid ::: List(p_doc.wfat.at6.id)))
         }
         
       }
@@ -641,17 +644,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a6 = if (p_doc.wfat.at6.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a6 = if (p_doc.wfat.at6.n=="Not Assigned" || p_doc.wfat.at6.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad6 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s7=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="End"))
-        } else if (doc1.wfat.at7.n=="Not Assigned") {
+        } else if (doc1.wfat.at7.n=="Not Assigned" || p_doc.wfat.at7.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="6")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), s = p_doc.wfs.s6, wfs="6"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), s = p_doc.wfs.s6, wfs="6", aid=p_doc.wf.aid ::: List(p_doc.wfat.at7.id)))
         }
         
       }
@@ -659,17 +662,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a7 = if (p_doc.wfat.at7.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a7 = if (p_doc.wfat.at7.n=="Not Assigned" || p_doc.wfat.at7.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad7 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s8=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="End"))
-        } else if (doc1.wfat.at8.n=="Not Assigned") {
+        } else if (doc1.wfat.at8.n=="Not Assigned" || p_doc.wfat.at8.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="7")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), s = p_doc.wfs.s7, wfs="7"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), s = p_doc.wfs.s7, wfs="7", aid=p_doc.wf.aid ::: List(p_doc.wfat.at8.id)))
         }
         
       }
@@ -677,17 +680,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a8 = if (p_doc.wfat.at8.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a8 = if (p_doc.wfat.at8.n=="Not Assigned" || p_doc.wfat.at8.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad8 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s9=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="End"))
-        } else if (doc1.wfat.at9.n=="Not Assigned") {
+        } else if (doc1.wfat.at9.n=="Not Assigned" || p_doc.wfat.at9.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="8")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), s = p_doc.wfs.s8, wfs="8"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), s = p_doc.wfs.s8, wfs="8", aid=p_doc.wf.aid ::: List(p_doc.wfat.at9.id)))
         }
         
       }
@@ -695,17 +698,17 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a9 = if (p_doc.wfat.at9.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a9 = if (p_doc.wfat.at9.n=="Not Assigned" || p_doc.wfat.at9.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad9 = Some(new DateTime()))
         )
       
         // Setup Workflow
         if(doc1.wfs.s10=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="End"))
-        } else if (doc1.wfat.at10.n=="Not Assigned") {
+        } else if (doc1.wfat.at10.n=="Not Assigned" || p_doc.wfat.at10.n=="Not Applicable") {
           this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="9")), p_request)
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), s = p_doc.wfs.s9, wfs="9"))
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), s = p_doc.wfs.s9, wfs="9", aid=p_doc.wf.aid ::: List(p_doc.wfat.at10.id)))
         }
         
       }
@@ -713,7 +716,7 @@ object ClaimModel {
         
         // Stamp Action
         val doc1 = p_doc.copy(
-            wfa = p_doc.wfa.copy(a10 = if (p_doc.wfat.at10.n=="Not Assigned") { "Skip" } else {"Approve"}),
+            wfa = p_doc.wfa.copy(a10 = if (p_doc.wfat.at10.n=="Not Assigned" || p_doc.wfat.at10.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad10 = Some(new DateTime()))
         )
       

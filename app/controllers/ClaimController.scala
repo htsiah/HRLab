@@ -42,7 +42,8 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
           "wf" -> mapping(
               "papr" -> mapping("n" -> text, "id" -> text)(PersonDetail.apply)(PersonDetail.unapply),
               "s" -> text,
-              "wfs" -> text
+              "wfs" -> text,
+              "aid" ->  list(text)
           )(ClaimFormWorkflow.apply)(ClaimFormWorkflow.unapply),
           "wfs" -> mapping(
               "s1" -> text,
@@ -189,7 +190,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at2.split("@|@").head, id=wf.at.at2.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },
 	                  at2 = if(wf.cg.cg2 == 0 || wf.cg.cg2 < formWithData.ed.aamt.amt) {
 	                    wf.at.at2 match {
@@ -198,7 +199,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at2.split("@|@").head, id=wf.at.at2.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },
 	                  at3 = if(wf.cg.cg3 == 0 || wf.cg.cg3 < formWithData.ed.aamt.amt) {
 	                    wf.at.at3 match {
@@ -207,7 +208,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at3.split("@|@").head, id=wf.at.at3.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },
 	                  at4 = if(wf.cg.cg4 == 0 || wf.cg.cg4 < formWithData.ed.aamt.amt) {
 	                    wf.at.at4 match {
@@ -216,7 +217,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at4.split("@|@").head, id=wf.at.at4.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },
 	                  at5 = if(wf.cg.cg5 == 0 || wf.cg.cg5 < formWithData.ed.aamt.amt) {
 	                    wf.at.at5 match {
@@ -225,7 +226,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at5.split("@|@").head, id=wf.at.at5.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  }, 
 	                  at6 = if(wf.cg.cg6 == 0 || wf.cg.cg6 < formWithData.ed.aamt.amt) {
 	                    wf.at.at6 match {
@@ -234,7 +235,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at6.split("@|@").head, id=wf.at.at6.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },  
 	                  at7 = if(wf.cg.cg7 == 0 || wf.cg.cg7 < formWithData.ed.aamt.amt) {
 	                    wf.at.at7 match {
@@ -243,7 +244,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at7.split("@|@").head, id=wf.at.at7.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },  
 	                  at8 = if(wf.cg.cg8 == 0 || wf.cg.cg8 < formWithData.ed.aamt.amt) {
 	                    wf.at.at8 match {
@@ -252,7 +253,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at8.split("@|@").head, id=wf.at.at8.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },  
 	                  at9 = if(wf.cg.cg9 == 0 || wf.cg.cg9 < formWithData.ed.aamt.amt) {
 	                    wf.at.at9 match {
@@ -261,7 +262,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at9.split("@|@").head, id=wf.at.at9.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  },
 	                  at10 = if(wf.cg.cg10 == 0 || wf.cg.cg10 < formWithData.ed.aamt.amt) {
 	                    wf.at.at10 match {
@@ -270,12 +271,12 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    case _ => PersonDetail( n=wf.at.at10.split("@|@").head, id=wf.at.at10.split("@|@").last)
 	                    }
 	                  } else {
-	                    PersonDetail(n="Not Assigned", id="")
+	                    PersonDetail(n="Not Applicable", id="")
 	                  }
 	              )
 	          )
 	          
-	          val claim_update2 = if(claim_update1.wfat.at1.n=="Not Assigned"){
+	          val claim_update2 = if(claim_update1.wfat.at1.n=="Not Assigned" || claim_update1.wfat.at1.n=="Not Applicable"){
 	            ClaimModel.approve(	     
 	                claim_update1.copy(  
 	                    wf = claim_update1.wf.copy(   
@@ -290,7 +291,8 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                wf = claim_update1.wf.copy(  
 	                    papr=PersonDetail(n=claim_update1.wfat.at1.n, id=claim_update1.wfat.at1.id), 
 	                    s = "Submitted",
-	                    wfs="0"
+	                    wfs="0",
+	                    aid = List(claim_update1.wfat.at1.id)
 	                )
 	            )
 	          }
