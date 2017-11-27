@@ -10,7 +10,7 @@ import play.api.libs.json._
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{ClaimWorkflowModel, ConfigCurrencyCodeModel, ClaimModel, Claim, ExpenseDetail, TaxDetail, ClaimFormWorkflow, ClaimFormWorkflowStatus, ClaimFormWorkflowAssignTo, ClaimFormWorkflowAction, ClaimFormWorkflowActionDate, PersonDetail, CurrencyAmount, ClaimCategoryModel, PersonModel, OfficeModel, TaskModel, AuditLogModel}
+import models.{ClaimSettingModel, ClaimWorkflowModel, ConfigCurrencyCodeModel, ClaimModel, Claim, ExpenseDetail, TaxDetail, ClaimFormWorkflow, ClaimFormWorkflowStatus, ClaimFormWorkflowAssignTo, ClaimFormWorkflowAction, ClaimFormWorkflowActionDate, PersonDetail, CurrencyAmount, ClaimCategoryModel, PersonModel, OfficeModel, TaskModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONDateTime}
@@ -111,27 +111,32 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
       maybe_wfcategories <- ClaimCategoryModel.find(BSONDocument(), request)
       maybe_currencies <- ConfigCurrencyCodeModel.find(BSONDocument())
       maybe_office <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get), request)
+      calmsetting <- ClaimSettingModel.findOne(BSONDocument(), request)
     } yield {
-      val docnum = DocNumUtility.getNumberText("claim", request.session.get("entity").get)
-      val wfcategories = maybe_wfcategories.map(wfcategories => wfcategories.cat)
-      val currencies = maybe_currencies.map(currencies => currencies.ccyc)
-      val defcurrency = maybe_currencies.filter(currency => currency.ct == (maybe_office.get.ct))
-      val claim:Form[Claim] = claimform.fill(ClaimModel.doc.copy(
-          docnum = docnum.toInt,
-          p = PersonDetail(n=request.session.get("name").get, id=request.session.get("id").get),
-          ed = ExpenseDetail(
-              rdat=Some(new DateTime()), 
-              cat="", 
-              glc="", 
-              amt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0), 
-              er=1.0, 
-              aamt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0), 
-              gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0)), 
-              iamt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0), 
-              d=""
-          )
-      ))
-      Ok(views.html.claim.form(claim, wfcategories.sorted, currencies.sorted))
+      if(calmsetting.get.dis){
+        Ok(views.html.error.unauthorized())
+      } else {
+        val docnum = DocNumUtility.getNumberText("claim", request.session.get("entity").get)
+        val wfcategories = maybe_wfcategories.map(wfcategories => wfcategories.cat)
+        val currencies = maybe_currencies.map(currencies => currencies.ccyc)
+        val defcurrency = maybe_currencies.filter(currency => currency.ct == (maybe_office.get.ct))
+        val claim:Form[Claim] = claimform.fill(ClaimModel.doc.copy(
+            docnum = docnum.toInt,
+            p = PersonDetail(n=request.session.get("name").get, id=request.session.get("id").get),
+            ed = ExpenseDetail(
+                rdat=Some(new DateTime()), 
+                cat="", 
+                glc="", 
+                amt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0), 
+                er=1.0, 
+                aamt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0), 
+                gstamt=TaxDetail(cn="", crnum="", tnum="", tamt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0)), 
+                iamt=CurrencyAmount(ccy=defcurrency.head.ccyc, amt=0.0), 
+                d=""
+            )        
+        ))
+        Ok(views.html.claim.form(claim, wfcategories.sorted, currencies.sorted))
+      }
     }
   } }
   

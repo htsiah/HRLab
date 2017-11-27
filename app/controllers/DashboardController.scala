@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
-import models.{LeaveModel,LeaveProfileModel,ClaimModel}
+import models.{LeaveModel,LeaveProfileModel,ClaimModel,ClaimSettingModel}
 import scala.concurrent.Future
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID,BSONDocument}
@@ -17,8 +17,9 @@ class DashboardController extends Controller with Secured {
       claims <- ClaimModel.find(BSONDocument("p.id"->request.session.get("id").get, "wf.wfs"->BSONDocument("$ne"->"End") ), BSONDocument("docnum" -> -1), request)
       tasks <- TaskModel.find(BSONDocument("pid"->request.session.get("id").get, "cf"->false), BSONDocument("sys.cdat" -> -1), request)
       leaveprofiles <- LeaveProfileModel.find(BSONDocument("pid"->request.session.get("id").get), BSONDocument("lt" -> 1), request)
+      calmsetting <- ClaimSettingModel.findOne(BSONDocument(), request)
     } yield {
-      Ok(views.html.dashboard.index(tasks, claims, leaves, leaveprofiles)).withSession(
+      Ok(views.html.dashboard.index(tasks, claims, leaves, leaveprofiles, calmsetting.get.dis)).withSession(
           (request.session - "path") + ("path"->((routes.DashboardController.index).toString))
       )
     }

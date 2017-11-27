@@ -1,6 +1,6 @@
 @import utilities.Alert
 
-@(tasks: List[Task], claims: List[Claim], leaves: List[Leave], leaveprofiles: List[LeaveProfile], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(tasks: List[Task], claims: List[Claim], leaves: List[Leave], leaveprofiles: List[LeaveProfile], disableclaim: Boolean, alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pluginjs = {
 	<script src="@routes.Assets.at("layout/ace/js/dataTables/jquery.dataTables.min.js")" type="text/javascript"></script>
@@ -196,7 +196,11 @@
 
 		<div class="col-sm-6">
 			<a href="@routes.LeaveController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg">Apply Leave</a>
-			<a href="@routes.ClaimController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg">Submit Claim</a>
+			@if(disableclaim){
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg" alt="Please contact Admin to enable Claim Request." disabled>Submit Claim - Disabled</a>
+			} else {
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg">Submit Claim</a>
+			}
 			@if(session.get("roles").get.contains("Admin")) {
 				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn btn-block visible-sm visible-md visible-lg">Apply Leave On Behalf Of Employee</a>
 			}
@@ -204,7 +208,11 @@
 			<div id="calendar"></div>
 			<div class="space-6"></div>
 			<a href="@routes.LeaveController.create" class="btn btn-sm btn btn-block visible-xs">Apply Leave</a>
-			<a href="@routes.ClaimController.create" class="btn btn-sm btn btn-block visible-xs">Submit Claim</a>
+			@if(disableclaim){
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn btn-block visible-xs" alt="Please contact Admin to enable Claim Request." disabled>Submit Claim - Disabled</a>
+			} else {
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn btn-block visible-xs">Submit Claim</a>
+			}
 			@if(session.get("roles").get.contains("Admin")) {
 				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn btn-block visible-xs">Apply Leave On Behalf Of Employee</a>
 			}
