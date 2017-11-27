@@ -559,7 +559,7 @@ object ClaimModel {
         if(doc1.wfs.s2=="") {
            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="End"))
         } else if (doc1.wfat.at2.n=="Not Assigned") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="2")), p_request)
+          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="1")), p_request)
         } else {
           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1"))
         }

@@ -182,55 +182,95 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                  s10 = wf.s.s10
 	              ),
 	              wfat = ClaimFormWorkflowAssignTo(
-	                  at1 = wf.at.at1 match {
-	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
-	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
-	                  },
-	                  at2 = wf.at.at2 match {
+	                  at1 = if(wf.cg.cg1 == 0 || wf.cg.cg1 < formWithData.ed.aamt.amt) {
+	                    wf.at.at1 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at2.split("@|@").head, id=wf.at.at2.split("@|@").last)
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
 	                  },
-	                  at3 = wf.at.at3 match {
+	                  at2 = if(wf.cg.cg2 == 0 || wf.cg.cg2 < formWithData.ed.aamt.amt) {
+	                    wf.at.at2 match {
+	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
+	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
+	                    case _ => PersonDetail( n=wf.at.at2.split("@|@").head, id=wf.at.at2.split("@|@").last)
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
+	                  },
+	                  at3 = if(wf.cg.cg3 == 0 || wf.cg.cg3 < formWithData.ed.aamt.amt) {
+	                    wf.at.at3 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at3.split("@|@").head, id=wf.at.at3.split("@|@").last)
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
 	                  },
-	                  at4 = wf.at.at4 match {
+	                  at4 = if(wf.cg.cg4 == 0 || wf.cg.cg4 < formWithData.ed.aamt.amt) {
+	                    wf.at.at4 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at4.split("@|@").head, id=wf.at.at4.split("@|@").last)
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
 	                  },
-	                  at5 = wf.at.at5 match {
+	                  at5 = if(wf.cg.cg5 == 0 || wf.cg.cg5 < formWithData.ed.aamt.amt) {
+	                    wf.at.at5 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at5.split("@|@").head, id=wf.at.at5.split("@|@").last)
-	                  },
-	                  at6 = wf.at.at6 match {
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
+	                  }, 
+	                  at6 = if(wf.cg.cg6 == 0 || wf.cg.cg6 < formWithData.ed.aamt.amt) {
+	                    wf.at.at6 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at6.split("@|@").head, id=wf.at.at6.split("@|@").last)
-	                  },
-	                  at7 = wf.at.at7 match {
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
+	                  },  
+	                  at7 = if(wf.cg.cg7 == 0 || wf.cg.cg7 < formWithData.ed.aamt.amt) {
+	                    wf.at.at7 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at7.split("@|@").head, id=wf.at.at7.split("@|@").last)
-	                  },
-	                  at8 = wf.at.at8 match {
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
+	                  },  
+	                  at8 = if(wf.cg.cg8 == 0 || wf.cg.cg8 < formWithData.ed.aamt.amt) {
+	                    wf.at.at8 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at8.split("@|@").head, id=wf.at.at8.split("@|@").last)
-	                  },
-	                  at9 = wf.at.at9 match {
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
+	                  },  
+	                  at9 = if(wf.cg.cg9 == 0 || wf.cg.cg9 < formWithData.ed.aamt.amt) {
+	                    wf.at.at9 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at9.split("@|@").head, id=wf.at.at9.split("@|@").last)
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
 	                  },
-	                  at10 = wf.at.at10 match {
+	                  at10 = if(wf.cg.cg10 == 0 || wf.cg.cg10 < formWithData.ed.aamt.amt) {
+	                    wf.at.at10 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
 	                    case _ => PersonDetail( n=wf.at.at10.split("@|@").head, id=wf.at.at10.split("@|@").last)
+	                    }
+	                  } else {
+	                    PersonDetail(n="Not Assigned", id="")
 	                  }
 	              )
 	          )
