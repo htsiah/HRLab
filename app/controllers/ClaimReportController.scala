@@ -17,7 +17,7 @@ class ClaimReportController extends Controller with Secured {
 	    maybeclaim.map( claim => {
         
         // Viewable by admin, manager, substitute manager and applicant
-        if (claim.p.id == request.session.get("id").get || PersonModel.isManagerFor(claim.p.id, request.session.get("id").get, request) || PersonModel.isSubstituteManagerFor(claim.p.id, request.session.get("id").get, request) || hasRoles(List("Admin"), request)) {
+        if (claim.p.id == request.session.get("id").get || claim.wf.aprid.contains(request.session.get("id").get) || hasRoles(List("Admin"), request)) {
           Ok(views.html.claimreport.view(claim))
         } else {
           Ok(views.html.error.unauthorized())

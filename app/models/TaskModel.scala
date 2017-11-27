@@ -205,10 +205,10 @@ object TaskModel {
   
   def setCompleted(p_lk:String, p_request:RequestHeader) = {
     for {
-      maybetask <- this.findOne(BSONDocument("lk"->p_lk), p_request)
+      maybetask <- this.findOne(BSONDocument("lk"->p_lk, "cf"->false), p_request)
     } yield {
       maybetask.map { task => (
-          this.update(BSONDocument("lk"->p_lk), task.copy(cf=true), p_request)
+          this.update(BSONDocument("lk"->p_lk, "cf"->false), task.copy(cf=true), p_request)
       ) }
     }
   }
@@ -216,21 +216,21 @@ object TaskModel {
   // Do it using asynchronous as multiple may take longer time.
   def setCompletedMulti(p_lk:String, p_request:RequestHeader) = {
     for {
-      maybetask <- this.find(BSONDocument("lk"->p_lk), p_request)
+      maybetask <- this.find(BSONDocument("lk"->p_lk, "cf"->false), p_request)
     } yield {
       maybetask.map { task => {
-          this.update(BSONDocument("_id"->task._id), task.copy(cf=true), p_request)
+          this.update(BSONDocument("_id"->task._id, "cf"->false), task.copy(cf=true), p_request)
       } }
     }
   }
   
   def setCompleted(p_pid:String, p_lk:String, p_request:RequestHeader) = {
     for {
-      maybetask <- this.findOne(BSONDocument("pid"->p_pid, "lk"->p_lk), p_request)
+      maybetask <- this.findOne(BSONDocument("pid"->p_pid, "lk"->p_lk, "cf"->false), p_request)
     } yield {
-      maybetask.map { task => (
-          this.update(BSONDocument("pid"->p_pid, "lk"->p_lk), task.copy(cf=true), p_request)
-      ) }
+      maybetask.map { task => {
+          this.update(BSONDocument("pid"->p_pid, "lk"->p_lk, "cf"->false), task.copy(cf=true), p_request)
+      } }
     }
   }
   

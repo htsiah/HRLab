@@ -299,10 +299,23 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	         
 	          ClaimModel.insert(claim_update2, p_request=request)
 	          
-	        
 	          // Add ToDo
+	          if(claim_update2.wf.papr.id!=""){
+	            val contentMap = Map( 
+	                "DOCUNUM"->claim_update2.docnum.toString(), 
+	                "APPLICANT"->claim_update2.p.n, 
+	                "AMT"->(claim_update2.ed.aamt.ccy + " " + claim_update2.ed.aamt.amt), 
+	                "CAT"->claim_update2.ed.cat, 
+	                "DAT"->(claim_update2.ed.rdat.get.dayOfMonth().getAsText + "-" + claim_update2.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim_update2.ed.rdat.get.getYear.toString())
+	            )
+	            val buttonMap = Map(
+	                "APPROVELINK"->(Tools.hostname + "/claim/approve/" + claim_update2._id.stringify), 
+	                "DOCLINK"->(Tools.hostname + "/claim/view/" + claim_update2._id.stringify)    
+	            )
+	            TaskModel.insert(8, claim_update2.wf.papr.id, claim_update2._id.stringify, contentMap, buttonMap, "", request)
+	          }
 	        
-	          // Send email
+	          // Send Email
 
 	          // Insert Audit Log 
 	          AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Submit claim request."),p_request=request)
@@ -338,8 +351,32 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
         
 	    // Check authorized
 	    if (claim.wf.papr.id==request.session.get("id").get) {
-	      ClaimModel.update(BSONDocument("_id" -> claim._id), ClaimModel.approve(claim, request), request)
+	      
+	      val claim_update = ClaimModel.approve(claim, request)
+	      ClaimModel.update(BSONDocument("_id" -> claim._id), claim_update, request)
         
+	      // Update ToDo
+	      Await.result(TaskModel.setCompleted(request.session.get("id").get, claim_update._id.stringify, request), Tools.db_timeout)
+	      
+	      // Add ToDo
+	      if(claim_update.wf.papr.id!=""){    
+	        val contentMap = Map( 
+	            "DOCUNUM"->claim_update.docnum.toString(), 
+	            "APPLICANT"->claim_update.p.n, 
+	            "AMT"->(claim_update.ed.aamt.ccy + " " + claim_update.ed.aamt.amt),    
+	            "CAT"->claim_update.ed.cat,  
+	            "DAT"->(claim_update.ed.rdat.get.dayOfMonth().getAsText + "-" + claim_update.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim_update.ed.rdat.get.getYear.toString())  
+	        )
+	            
+	        val buttonMap = Map(   
+	            "APPROVELINK"->(Tools.hostname + "/claim/approve/" + claim_update._id.stringify),  
+	            "DOCLINK"->(Tools.hostname + "/claim/view/" + claim_update._id.stringify)    
+	        )
+	        TaskModel.insert(8, claim_update.wf.papr.id, claim_update._id.stringify, contentMap, buttonMap, "", request)  
+	      }
+	        
+	      // Send Email
+	      
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Approve claim request."), p_request=request)
 
@@ -364,7 +401,11 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
         
 	    // Check authorized
 	    if (claim.wf.papr.id==request.session.get("id").get) {
-	      ClaimModel.update(BSONDocument("_id" -> claim._id), ClaimModel.reject(claim, request), request)
+	      val claim_update = ClaimModel.reject(claim, request)
+	      ClaimModel.update(BSONDocument("_id" -> claim._id), claim_update, request)
+        
+	      // Update Todo
+        Await.result(TaskModel.setCompletedMulti(claim_update._id.stringify, request), Tools.db_timeout)
         
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject claim request."), p_request=request)
@@ -390,7 +431,11 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
         
 	    // Check authorized
 	    if (claim.p.id==request.session.get("id").get) {
-	      ClaimModel.update(BSONDocument("_id" -> claim._id), ClaimModel.cancel(claim, request), request)
+	      val claim_update = ClaimModel.cancel(claim, request)
+	      ClaimModel.update(BSONDocument("_id" -> claim._id), claim_update, request)
+	      
+	      // Update Todo
+        Await.result(TaskModel.setCompletedMulti(claim_update._id.stringify, request), Tools.db_timeout)
         
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Cancel claim request."), p_request=request)
