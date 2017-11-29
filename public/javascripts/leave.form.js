@@ -143,7 +143,7 @@ $(function(){
 			},
 	        success: function(data, textStatus, jqXHR){
 		        if (data.status == "exceed file size limit") {
-		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 1 MB file size limit.</label>");
+		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 5 MB file size limit.</label>");
 		        	$("#file-loader").addClass("hidden");
 		        	$("#file-input-control").removeClass("hidden");
 		        	$("#file-error").removeClass("hidden");
