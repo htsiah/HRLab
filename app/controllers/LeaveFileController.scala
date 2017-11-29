@@ -25,7 +25,7 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
   
   type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
 
-  def insert(p_lk: String) = withAuth (parse.maxLength(1 * 1014 * 1024, gridFSBodyParser(LeaveFileModel.gridFS))) { username => implicit request => {
+  def insert(p_lk: String) = withAuth (parse.maxLength(5 * 1014 * 1024, gridFSBodyParser(LeaveFileModel.gridFS))) { username => implicit request => {
     
     request.body match {
       case Left(MaxSizeExceeded(length)) => {     

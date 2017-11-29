@@ -52,7 +52,7 @@ $(function(){
     
     // Setup input file field
     $('#file').ace_file_input({
-    	maxSize: 1000000, //1 MB
+    	maxSize: 5000000, // 5 MB
         allowExt:  ['jpg', 'jpeg', 'tif', 'tiff', 'gif', 'bmp', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'txt']
     }).on('file.error.ace', function(event, info) {
     	//info.file_count > number of files selected
@@ -69,7 +69,7 @@ $(function(){
         	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Invalid file extension. Allowed file extensions are jpg, jpeg, tif, tiff, gif, bmp, png, pdf, doc, docx, xls, xlsx, ppt, pptx, csv and txt.</label>");
         	$("#file-error").removeClass("hidden");
     	} else if (info.error_count['size'] > 0) {
-        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 1 MB file size limit.</label>");
+        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 5 MB file size limit.</label>");
         	$("#file-error").removeClass("hidden");
     	};
     	
