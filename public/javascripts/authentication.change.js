@@ -12,8 +12,8 @@ $(function(){
 			},
 			cpassword: {
 				required: true,
-				minlength: 8,
-				equalTo: "#npassword"
+				minlength: 8
+				//equalTo: "#npassword"
 			}
 		},
 		messages: {
@@ -34,5 +34,11 @@ $(function(){
 		   form.submit();
 		 }
 	});
+	
+    $('#updpasswd').on('click', function(e) { 
+        e.preventDefault();     // block the default anchor behavior
+        $('#changeform').submit();  // submit the form
+    });
+    
 	
 });

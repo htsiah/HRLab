@@ -1,4 +1,4 @@
-@(departments:List[String])(implicit session: play.api.mvc.Session)
+@(departments:List[String], offices:List[String])(implicit session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -9,22 +9,29 @@
 @pluginjs = {
 	<script src="@routes.Assets.at("layout/moment/moment.min.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("layout/ace/js/date-time/bootstrap-datepicker.min.js")" type="text/javascript"></script>
 }
 
 
 @inlinejs = {
 	<script src="@routes.Assets.at("javascripts/common.calendar.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("javascripts/calendar.company.js")" type="text/javascript"></script>
+	@if(session.get("roles").get.contains("Admin")) {
+		<script src="@routes.Assets.at("javascripts/companyholiday.importholidaysmodal.js")" type="text/javascript"></script>
+	}
 }
 
 @pluginstyle = {
 	<link href="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.min.css")" rel="stylesheet" media="screen">
+	<link href="@routes.Assets.at("layout/jquery.fullcalendar/fullcalendar.print.min.css")" rel="stylesheet" media="print">
+	<link href="@routes.Assets.at("layout/ace/css/datepicker.min.css")" rel="stylesheet" media="screen">
 }
 
 @inlinestyle = {}
 
 @buttons = {
 	<a href="@routes.CompanyHolidayController.create" class="btn btn-sm btn btn-block">Add Holiday</a>
+	<a href="#" id="addholidayfromlistbtn" class="btn btn-sm btn btn-block hidden-xs hidden-sm" data-toggle="modal">Add Holiday From List</a>
 	<a href="@routes.EventController.create" class="btn btn-sm btn btn-block">Add Event</a>
 }
 
@@ -38,6 +45,7 @@
 			</select>		
 		</div>
 		<div id="calendar"></div>
+		@companyholiday.importholidaysmodal(offices)
 	}
 } else {
 	@layout.ace.main(session.get("company").get + " - HRSifu",pluginjs,inlinejs,pluginstyle,inlinestyle) {

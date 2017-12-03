@@ -3,6 +3,7 @@ package controllers
 import scala.concurrent.{Future, Await}
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.format.DateTimeFormat
 
 import play.api.mvc._
 import play.api.data._
@@ -10,14 +11,19 @@ import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.json.Json
 
-import models.{CompanyHolidayModel, AuditLogModel, OfficeModel, CompanyHoliday}
+import models.{CompanyHolidayModel, AuditLogModel, OfficeModel, CompanyHoliday, ConfigHolidaysModel}
 import utilities.{System, Tools}
 
 import reactivemongo.api._
 import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONDateTime}
 
+case class holiday(name: String, date: String)
+
 class CompanyHolidayController extends Controller with Secured {
+  
+  implicit val holidayReader = Json.reads[holiday]
   
   val companyholidayform = Form(
       mapping(
@@ -211,6 +217,62 @@ class CompanyHolidayController extends Controller with Secured {
           Ok(Json.parse("[" + companyholidayJSONStr.mkString(",") + "]")).as("application/json")
         }
       }
+    }
+  }}
+  
+  def importholidays = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      val dtf = DateTimeFormat.forPattern("d-MMM-yyyy")
+      val jsonBody:JsValue = request.body.asJson.get
+      val offices = (jsonBody \ "offices").as[List[String]]
+      val holidays = (jsonBody \ "holidays").as[List[holiday]]
+      holidays.foreach ( holiday => {
+        val doc_objectID = BSONObjectID.generate
+        CompanyHolidayModel.insert(
+            CompanyHolidayModel.doc.copy(
+                _id = doc_objectID,
+                n = holiday.name, 
+                fdat = Some(new DateTime(dtf.parseLocalDate(holiday.date).toDateTimeAtStartOfDay())),
+                tdat = Some(new DateTime(dtf.parseLocalDate(holiday.date).toDateTimeAtStartOfDay())),
+                off = offices
+            )
+            , p_request=request
+        )
+        AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Create by using holiday import."), p_request=request)
+      })
+      Future.successful(Ok(Json.obj("data" -> "success")).as("application/json"))
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
+  def getconfigholidays = withAuth { username => implicit request => {
+    if(request.session.get("roles").get.contains("Admin")){
+      for {
+        maybe_configholidays <- ConfigHolidaysModel.find(BSONDocument())
+      } yield {
+  
+        render {
+          case Accepts.Html() => {Ok(views.html.error.unauthorized())}
+          case Accepts.Json() => {
+            val countrylist = maybe_configholidays.map(configholidays => configholidays.ctr).distinct        
+            val configholidaysfulllist = countrylist.map( country => {
+              val yearlist = maybe_configholidays.filter(configholidays => configholidays.ctr==country).map(configholidays => configholidays.yr).distinct
+              val configholidaysbyyearlist = yearlist.map( year => {
+                val configholidayslist = maybe_configholidays.filter(configholidays => (configholidays.ctr==country && configholidays.yr==year)).map( configholidays => {
+                  Json.obj("n"->configholidays.nm, "dt"->configholidays.dat, "dy"->configholidays.day )
+                })
+                Json.obj(year->configholidayslist)
+              })
+              Json.obj(country->configholidaysbyyearlist)
+            })
+            Ok(Json.obj("data" -> configholidaysfulllist)).as("application/json")
+          }
+        }
+        
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
     }
   }}
   

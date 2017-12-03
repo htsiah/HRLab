@@ -29,5 +29,5 @@ $(function(){
 			CALENDAR.showDeptLeave(selcalendardisplaytypes);
 		}
 	});
-	
+    
 });

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 logs
 project/project
 project/target
@@ -14,4 +15,22 @@ dist
 /RUNNING_PID
 /.settings
 /bin/
+=======
+logs
+project/project
+project/target
+target
+tmp
+.history
+dist
+/.idea
+/*.iml
+/out
+/.idea_modules
+/.classpath
+/.project
+/RUNNING_PID
+/.settings
+/bin/
+>>>>>>> 0bf4336c56728e0faa26d7cc27e7b2b107503a31
 /conf/
