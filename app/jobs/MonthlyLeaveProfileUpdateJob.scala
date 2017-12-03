@@ -10,7 +10,7 @@ import reactivemongo.api._
 import reactivemongo.bson._
 
 import models.{CompanyModel, LeaveSettingModel, LeavePolicyModel, LeaveProfileModel, LeaveModel, LeaveProfile, LeaveSetting, LeavePolicy, PersonModel}
-import utilities.DbConnUtility
+import utilities.{DbConnUtility,DbLoggerUtility}
 
 case class MonthlyLeaveProfileUpdateLog (
     _id: BSONObjectID,
@@ -75,6 +75,8 @@ object MonthlyLeaveProfileUpdateJob {
     val previousmonth = now.minusMonths(1).monthOfYear()
     val thisyear = now.year().get()
     
+    DbLoggerUtility.debug("Start job.")
+    
     this.findOne(BSONDocument("month"->thismonth.getAsShortText(), "year"-> thisyear.toString)).map { upload_log => {
       if (!(upload_log.isDefined)) {
         CompanyModel.find(BSONDocument("sys.ddat"->BSONDocument("$exists"->false))).map { companies => {
@@ -93,6 +95,8 @@ object MonthlyLeaveProfileUpdateJob {
       }
     } }
 
+    DbLoggerUtility.debug("End job.")
+    
     val job_end = new DateTime
     Job.insert(Job(BSONObjectID.generate, "MonthlyLeaveProfileUpdateJob", Some(job_start), Some(job_end)))
   }
