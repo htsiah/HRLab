@@ -104,107 +104,126 @@
     					<div class="row"><div id="d-editor" class="wysiwyg-editor"><!-- custom html data --></div>
     				</dd>
     			</dl>
-				<div class="space-6"></div>
-				<a id="btnSubmit" href="#" onclick="$('#claimform').submit();" class="btn btn-sm btn btn-block">Submit</a>
-				<a href="@routes.DashboardController.index" class="btn btn-sm btn btn-block">Back</a>	
-			</div>	
-			<div id="dialog-companytax" class="hide">
-				<div class="form-group">
-					<label for="form-field-username">Company Name</label>
-					<div><input type="text" id="dialog_gstamt_cn" name="dialog.gstamt.cn" value="" class="form-control"></div>
+    			
+				<div class="visible-sm visible-md visible-lg">
+					<div class="space-6"></div>
+					<a id="btnSubmit" href="#" onclick="$('#claimform').submit();" class="btn btn-sm btn btn-block">Submit</a>
+					<a href="@routes.DashboardController.index" class="btn btn-sm btn btn-block">Back</a>
 				</div>
-				<div class="space-4"></div>
-				<div class="form-group">
-					<label for="form-field-username">Company Reg. No</label>
-					<div><input type="text" id="dialog_gstamt_crnum" name="dialog.gstamt.crnum" value="" class="form-control"></div>
+			
+				<div id="dialog-companytax" class="hide">
+					<div class="form-group">
+						<label for="form-field-username">Company Name</label>
+						<div><input type="text" id="dialog_gstamt_cn" name="dialog.gstamt.cn" value="" class="form-control"></div>
+					</div>
+					<div class="space-4"></div>
+					<div class="form-group">
+						<label for="form-field-username">Company Reg. No</label>
+						<div><input type="text" id="dialog_gstamt_crnum" name="dialog.gstamt.crnum" value="" class="form-control"></div>
+					</div>
+					<div class="space-4"></div>
+					<div class="form-group">
+						<label for="form-field-username">GST / VAT Reg. No</label>
+						<div><input type="text" id="dialog_gstamt_tnum" name="dialog.gstamt.tnum" value="" class="form-control"></div>
+					</div>
+				</div>	
+				<div class="hidden">
+					@inputText(claim("_id"),'type -> "hidden")
+					@inputText(claim("docnum"),'type -> "hidden")
+					@inputText(claim("p.n"),'type -> "hidden")
+					@inputText(claim("p.id"),'type -> "hidden")
+					@inputText(claim("ed.glc"),'type -> "hidden")
+					@inputText(claim("ed.aamt.ccy"),'type -> "hidden")
+					@inputText(claim("ed.aamt.amt"),'type -> "hidden")
+					@inputText(claim("ed.gstamt.cn"),'type -> "hidden")
+					@inputText(claim("ed.gstamt.crnum"),'type -> "hidden")
+					@inputText(claim("ed.gstamt.tnum"),'type -> "hidden")
+					@inputText(claim("ed.gstamt.tamt.ccy"),'type -> "hidden")
+					@inputText(claim("ed.iamt.ccy"),'type -> "hidden")
+					@inputText(claim("ed.iamt.amt"),'type -> "hidden")
+					@inputText(claim("ed.d"),'type -> "hidden")
+					@inputText(claim("wf.papr.n"),'type -> "hidden")
+					@inputText(claim("wf.papr.id"),'type -> "hidden")
+					@inputText(claim("wf.s"),'type -> "hidden")
+					@inputText(claim("wf.aprid"),'type -> "hidden")
+					@inputText(claim("wf.wfs"),'type -> "hidden")
+					@inputText(claim("wfs.s1"),'type -> "hidden")
+					@inputText(claim("wfs.s2"),'type -> "hidden")
+					@inputText(claim("wfs.s3"),'type -> "hidden")
+					@inputText(claim("wfs.s4"),'type -> "hidden")
+					@inputText(claim("wfs.s5"),'type -> "hidden")
+					@inputText(claim("wfs.s6"),'type -> "hidden")
+					@inputText(claim("wfs.s7"),'type -> "hidden")
+					@inputText(claim("wfs.s8"),'type -> "hidden")
+					@inputText(claim("wfs.s9"),'type -> "hidden")
+					@inputText(claim("wfs.s10"),'type -> "hidden")
+					@inputText(claim("wfat.at1.n"),'type -> "hidden")
+					@inputText(claim("wfat.at1.id"),'type -> "hidden")
+					@inputText(claim("wfat.at2.n"),'type -> "hidden")
+					@inputText(claim("wfat.at2.id"),'type -> "hidden")
+					@inputText(claim("wfat.at3.n"),'type -> "hidden")
+					@inputText(claim("wfat.at3.id"),'type -> "hidden")
+					@inputText(claim("wfat.at4.n"),'type -> "hidden")
+					@inputText(claim("wfat.at4.id"),'type -> "hidden")
+					@inputText(claim("wfat.at5.n"),'type -> "hidden")
+					@inputText(claim("wfat.at5.id"),'type -> "hidden")
+					@inputText(claim("wfat.at6.n"),'type -> "hidden")
+					@inputText(claim("wfat.at6.id"),'type -> "hidden")
+					@inputText(claim("wfat.at7.n"),'type -> "hidden")
+					@inputText(claim("wfat.at7.id"),'type -> "hidden")
+					@inputText(claim("wfat.at8.n"),'type -> "hidden")
+					@inputText(claim("wfat.at8.id"),'type -> "hidden")
+					@inputText(claim("wfat.at9.n"),'type -> "hidden")
+					@inputText(claim("wfat.at9.id"),'type -> "hidden")
+					@inputText(claim("wfat.at10.n"),'type -> "hidden")
+					@inputText(claim("wfat.at10.id"),'type -> "hidden")
+					@inputText(claim("wfa.a1"),'type -> "hidden")
+					@inputText(claim("wfa.a2"),'type -> "hidden")
+					@inputText(claim("wfa.a3"),'type -> "hidden")
+					@inputText(claim("wfa.a4"),'type -> "hidden")
+					@inputText(claim("wfa.a5"),'type -> "hidden")
+					@inputText(claim("wfa.a6"),'type -> "hidden")
+					@inputText(claim("wfa.a7"),'type -> "hidden")
+					@inputText(claim("wfa.a8"),'type -> "hidden")
+					@inputText(claim("wfa.a9"),'type -> "hidden")
+					@inputText(claim("wfa.a10"),'type -> "hidden")
+					@inputText(claim("wdadat.ad1"),'type -> "hidden")
+					@inputText(claim("wdadat.ad2"),'type -> "hidden")
+					@inputText(claim("wdadat.ad3"),'type -> "hidden")
+					@inputText(claim("wdadat.ad4"),'type -> "hidden")
+					@inputText(claim("wdadat.ad5"),'type -> "hidden")
+					@inputText(claim("wdadat.ad6"),'type -> "hidden")
+					@inputText(claim("wdadat.ad7"),'type -> "hidden")
+					@inputText(claim("wdadat.ad8"),'type -> "hidden")
+					@inputText(claim("wdadat.ad9"),'type -> "hidden")
+					@inputText(claim("wdadat.ad10"),'type -> "hidden")
+					@inputText(claim("sys")("eid"),'type -> "hidden")
+					@inputText(claim("sys")("cdat"),'type -> "hidden")
+					@inputText(claim("sys")("mdat"),'type -> "hidden")
+					@inputText(claim("sys")("mby"),'type -> "hidden")
+					@inputText(claim("sys")("ddat"),'type -> "hidden")
+					@inputText(claim("sys")("dby"),'type -> "hidden")
+					@inputText(claim("sys")("ll"),'type -> "hidden")
 				</div>
-				<div class="space-4"></div>
-				<div class="form-group">
-					<label for="form-field-username">GST / VAT Reg. No</label>
-					<div><input type="text" id="dialog_gstamt_tnum" name="dialog.gstamt.tnum" value="" class="form-control"></div>
-				</div>
-			</div>	
-			<div class="hidden">
-				@inputText(claim("_id"),'type -> "hidden")
-				@inputText(claim("docnum"),'type -> "hidden")
-				@inputText(claim("p.n"),'type -> "hidden")
-				@inputText(claim("p.id"),'type -> "hidden")
-				@inputText(claim("ed.glc"),'type -> "hidden")
-				@inputText(claim("ed.aamt.ccy"),'type -> "hidden")
-				@inputText(claim("ed.aamt.amt"),'type -> "hidden")
-				@inputText(claim("ed.gstamt.cn"),'type -> "hidden")
-				@inputText(claim("ed.gstamt.crnum"),'type -> "hidden")
-				@inputText(claim("ed.gstamt.tnum"),'type -> "hidden")
-				@inputText(claim("ed.gstamt.tamt.ccy"),'type -> "hidden")
-				@inputText(claim("ed.iamt.ccy"),'type -> "hidden")
-				@inputText(claim("ed.iamt.amt"),'type -> "hidden")
-				@inputText(claim("ed.d"),'type -> "hidden")
-				@inputText(claim("wf.papr.n"),'type -> "hidden")
-				@inputText(claim("wf.papr.id"),'type -> "hidden")
-				@inputText(claim("wf.s"),'type -> "hidden")
-				@inputText(claim("wf.aprid"),'type -> "hidden")
-				@inputText(claim("wf.wfs"),'type -> "hidden")
-				@inputText(claim("wfs.s1"),'type -> "hidden")
-				@inputText(claim("wfs.s2"),'type -> "hidden")
-				@inputText(claim("wfs.s3"),'type -> "hidden")
-				@inputText(claim("wfs.s4"),'type -> "hidden")
-				@inputText(claim("wfs.s5"),'type -> "hidden")
-				@inputText(claim("wfs.s6"),'type -> "hidden")
-				@inputText(claim("wfs.s7"),'type -> "hidden")
-				@inputText(claim("wfs.s8"),'type -> "hidden")
-				@inputText(claim("wfs.s9"),'type -> "hidden")
-				@inputText(claim("wfs.s10"),'type -> "hidden")
-				@inputText(claim("wfat.at1.n"),'type -> "hidden")
-				@inputText(claim("wfat.at1.id"),'type -> "hidden")
-				@inputText(claim("wfat.at2.n"),'type -> "hidden")
-				@inputText(claim("wfat.at2.id"),'type -> "hidden")
-				@inputText(claim("wfat.at3.n"),'type -> "hidden")
-				@inputText(claim("wfat.at3.id"),'type -> "hidden")
-				@inputText(claim("wfat.at4.n"),'type -> "hidden")
-				@inputText(claim("wfat.at4.id"),'type -> "hidden")
-				@inputText(claim("wfat.at5.n"),'type -> "hidden")
-				@inputText(claim("wfat.at5.id"),'type -> "hidden")
-				@inputText(claim("wfat.at6.n"),'type -> "hidden")
-				@inputText(claim("wfat.at6.id"),'type -> "hidden")
-				@inputText(claim("wfat.at7.n"),'type -> "hidden")
-				@inputText(claim("wfat.at7.id"),'type -> "hidden")
-				@inputText(claim("wfat.at8.n"),'type -> "hidden")
-				@inputText(claim("wfat.at8.id"),'type -> "hidden")
-				@inputText(claim("wfat.at9.n"),'type -> "hidden")
-				@inputText(claim("wfat.at9.id"),'type -> "hidden")
-				@inputText(claim("wfat.at10.n"),'type -> "hidden")
-				@inputText(claim("wfat.at10.id"),'type -> "hidden")
-				@inputText(claim("wfa.a1"),'type -> "hidden")
-				@inputText(claim("wfa.a2"),'type -> "hidden")
-				@inputText(claim("wfa.a3"),'type -> "hidden")
-				@inputText(claim("wfa.a4"),'type -> "hidden")
-				@inputText(claim("wfa.a5"),'type -> "hidden")
-				@inputText(claim("wfa.a6"),'type -> "hidden")
-				@inputText(claim("wfa.a7"),'type -> "hidden")
-				@inputText(claim("wfa.a8"),'type -> "hidden")
-				@inputText(claim("wfa.a9"),'type -> "hidden")
-				@inputText(claim("wfa.a10"),'type -> "hidden")
-				@inputText(claim("wdadat.ad1"),'type -> "hidden")
-				@inputText(claim("wdadat.ad2"),'type -> "hidden")
-				@inputText(claim("wdadat.ad3"),'type -> "hidden")
-				@inputText(claim("wdadat.ad4"),'type -> "hidden")
-				@inputText(claim("wdadat.ad5"),'type -> "hidden")
-				@inputText(claim("wdadat.ad6"),'type -> "hidden")
-				@inputText(claim("wdadat.ad7"),'type -> "hidden")
-				@inputText(claim("wdadat.ad8"),'type -> "hidden")
-				@inputText(claim("wdadat.ad9"),'type -> "hidden")
-				@inputText(claim("wdadat.ad10"),'type -> "hidden")
-				@inputText(claim("sys")("eid"),'type -> "hidden")
-				@inputText(claim("sys")("cdat"),'type -> "hidden")
-				@inputText(claim("sys")("mdat"),'type -> "hidden")
-				@inputText(claim("sys")("mby"),'type -> "hidden")
-				@inputText(claim("sys")("ddat"),'type -> "hidden")
-				@inputText(claim("sys")("dby"),'type -> "hidden")
-				@inputText(claim("sys")("ll"),'type -> "hidden")
 			</div>
 		}
 		<div class="col-sm-6">
-			<p>Attachment</p>
+			<label>Receipts</label>
+			<label id="file-input-control">
+				<input type="file" name="file" id="file">
+			</label>
+			<div id="file-loader" class="smaller lighter grey hidden">
+				<i class="ace-icon fa fa-spinner fa-spin orange bigger-125"></i> Uploading
+			</div>
+			<div id="file-error" class="hidden"></div>
+			<div class="space-6"></div>
+			<div id="file-view"></div>
+			<div class="visible-xs">
+				<div class="space-6"></div>
+				<a id="btnSubmit" href="#" onclick="$('#claimform').submit();" class="btn btn-sm btn btn-block">Submit</a>
+				<a href="@routes.DashboardController.index" class="btn btn-sm btn btn-block">Back</a>
+			</div>
+	
 		</div>
 	</div>
 }

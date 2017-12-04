@@ -21,7 +21,8 @@ object DbConnUtility {
   private val calendar_db_name = Play.current.configuration.getString("mongodb_calendar").getOrElse("calendar")
   private val leave_db_dbname = Play.current.configuration.getString("mongodb_leave").getOrElse("leave")
   private val leave_file_db_name = Play.current.configuration.getString("mongodb_leave_file").getOrElse("leave_file")
-  private val claim_db_dbname = Play.current.configuration.getString("mongodb_claim").getOrElse("claim")
+  private val claim_db_db_name = Play.current.configuration.getString("mongodb_claim").getOrElse("claim")
+  private val claim_file_db_name = Play.current.configuration.getString("mongodb_claim_file").getOrElse("claim_file")
   private val job_db_name = Play.current.configuration.getString("mongodb_job").getOrElse("job")
   private val audit_log_db_name = Play.current.configuration.getString("mongodb_audit_log").getOrElse("audit_log")
   
@@ -32,7 +33,8 @@ object DbConnUtility {
   val calendar_db = connection.get.db(calendar_db_name)
   val leave_db = connection.get.db(leave_db_dbname)
   val leave_file_db = connection.get.db(leave_file_db_name)
-  val claim_db = connection.get.db(claim_db_dbname)
+  val claim_db = connection.get.db(claim_db_db_name)
+  val claim_file_db = connection.get.db(claim_file_db_name)
   val job_db = connection.get.db(job_db_name)
   val audit_log_db = connection.get.db(audit_log_db_name)
 
