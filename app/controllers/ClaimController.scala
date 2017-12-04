@@ -10,7 +10,7 @@ import play.api.libs.json._
 import play.api.libs.mailer._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.{ClaimSettingModel, ClaimWorkflowModel, ConfigCurrencyCodeModel, ClaimModel, Claim, ExpenseDetail, TaxDetail, ClaimFormWorkflow, ClaimFormWorkflowStatus, ClaimFormWorkflowAssignTo, ClaimFormWorkflowAction, ClaimFormWorkflowActionDate, PersonDetail, CurrencyAmount, ClaimCategoryModel, PersonModel, OfficeModel, TaskModel, AuditLogModel}
+import models.{ClaimFileModel, ClaimSettingModel, ClaimWorkflowModel, ConfigCurrencyCodeModel, ClaimModel, Claim, ExpenseDetail, TaxDetail, ClaimFormWorkflow, ClaimFormWorkflowStatus, ClaimFormWorkflowAssignTo, ClaimFormWorkflowAction, ClaimFormWorkflowActionDate, PersonDetail, CurrencyAmount, ClaimCategoryModel, PersonModel, OfficeModel, TaskModel, AuditLogModel}
 import utilities.{System, AlertUtility, Tools, DocNumUtility, MailUtility}
 
 import reactivemongo.bson.{BSONObjectID, BSONDocument, BSONDateTime}
@@ -334,12 +334,18 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
   def view(p_id:String) = withAuth { username => implicit request => {
 	  for {
 	    maybeclaim <- ClaimModel.findOne(BSONDocument("_id" -> BSONObjectID(p_id)), request)
+	    maybefiles <- ClaimFileModel.findByLK(maybeclaim.get.docnum.toString(), request).collect[List]()
 	  } yield {
+	    val files = maybefiles.map( file => {
+	      val id = file.id.toString()
+	      Map(id.substring(1, id.length()-1) -> file.filename.getOrElse("No filename"))
+	    })
+	    
 	    maybeclaim.map( claim => {
         
         // Viewable by admin, approvers and applicant
         if (claim.p.id == request.session.get("id").get || claim.wf.aprid.contains(request.session.get("id").get) || hasRoles(List("Admin"), request)) {
-          Ok(views.html.claim.view(claim))
+          Ok(views.html.claim.view(claim, files))
         } else {
           Ok(views.html.error.unauthorized())
         }

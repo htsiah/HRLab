@@ -59,7 +59,6 @@ object ClaimFileModel {
   }
   
   def removeById(p_id: String, p_request:RequestHeader) = {
-    println(p_id)
     this.remove(Json.obj("_id" -> p_id), p_request)    
   }
   

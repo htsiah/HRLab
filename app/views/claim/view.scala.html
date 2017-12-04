@@ -1,6 +1,6 @@
 @import utilities.Alert
 
-@(claim:Claim, alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
+@(claim:Claim, files: List[Map[String,String]], alert:Alert=null)(implicit flash: Flash, session: play.api.mvc.Session)
 
 @pageheader = {
 	<div class="page-header">
@@ -39,6 +39,10 @@
 	}
 }
 
+@T(label: String) ={
+	<p>@label</p>>
+}
+
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 	@layout.ace.alert(alert)
 
@@ -69,6 +73,16 @@
 				@contentRow("Approve Amount", claim.ed.aamt.ccy + " " + claim.ed.aamt.amt.toString)
 				@contentRow("GST / VAT", claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt.toString)
 				<dl class="dl-horizontal"><dt><label>Description</label></dt><dd>@Html(claim.ed.d)</dd></dl>
+				@if(files.length!=0){
+					<dl class="dl-horizontal">
+						<dt><label>Receipt(s)</label></dt>
+						<dd>
+							@files.map { file => @file.map { x => 
+									<p id="@x._1"><a href='/claimfile/view?p_id=@x._1' target='_blank'>@x._2</a></p>
+							} }
+						</dd>
+					</dl>
+				}
 			</div>
 				
 			<div id="messages" class="tab-pane fade">
