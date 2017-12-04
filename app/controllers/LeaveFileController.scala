@@ -21,6 +21,8 @@ import reactivemongo.bson._
 
 import scala.concurrent.Future
 
+import utilities.{DbLoggerUtility}
+
 class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) extends Controller with MongoController with ReactiveMongoComponents with Secured {
   
   type JSONReadFile = ReadFile[JSONSerializationPack.type, JsString]
@@ -42,7 +44,8 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
         // Return error on file upload
         futureFile.onFailure {
           case err => {
-            err.printStackTrace();
+            err.printStackTrace()
+            DbLoggerUtility.error("Error upload receipt in leave #" + p_lk + ". " +  err.printStackTrace(), request)
             Ok(Json.obj("status" -> "error upload file")).as("application/json")
           }
         }
@@ -71,7 +74,8 @@ class LeaveFileController @Inject() (val reactiveMongoApi: ReactiveMongoApi) ext
           Ok(Json.obj("status"->"success")).as("application/json")
         }.recover {
           case err => {
-            err.printStackTrace();
+            err.printStackTrace()
+            DbLoggerUtility.error("Error update medata in Leave #" + p_lk + ". " +  err.printStackTrace(), request)
             Ok(Json.obj("status" -> "error update metadata")).as("application/json")
           }
         }
