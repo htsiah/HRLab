@@ -107,8 +107,10 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
   )
   
   def create = withAuth { username => implicit request => {
-    for {
-      maybe_wfcategories <- ClaimCategoryModel.find(BSONDocument(), request)
+    for {         
+      maybe_default_cat <- ClaimCategoryModel.find(BSONDocument("all" -> true), request)
+      maybe_person_cat <- ClaimCategoryModel.find(BSONDocument("app" -> BSONDocument("$in"->List(request.session.get("name").get + "@|@" + request.session.get("id").get))), request)
+      maybe_office_cat <- ClaimCategoryModel.find(BSONDocument("app" -> BSONDocument("$in"->List(request.session.get("office").get))), request)    
       maybe_currencies <- ConfigCurrencyCodeModel.find(BSONDocument())
       maybe_office <- OfficeModel.findOne(BSONDocument("n" -> request.session.get("office").get), request)
       calmsetting <- ClaimSettingModel.findOne(BSONDocument(), request)
@@ -117,7 +119,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
         Ok(views.html.error.unauthorized())
       } else {
         val docnum = DocNumUtility.getNumberText("claim", request.session.get("entity").get)
-        val wfcategories = maybe_wfcategories.map(wfcategories => wfcategories.cat)
+        val categories = (maybe_default_cat.map(categories => categories.cat) ::: maybe_person_cat.map(categories => categories.cat) ::: maybe_office_cat.map(categories => categories.cat)).distinct
         val currencies = maybe_currencies.map(currencies => currencies.ccyc)
         val defcurrency = maybe_currencies.filter(currency => currency.ct == (maybe_office.get.ct))
         val claim:Form[Claim] = claimform.fill(ClaimModel.doc.copy(
@@ -135,7 +137,8 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
                 d=""
             )        
         ))
-        Ok(views.html.claim.form(claim, wfcategories.sorted, currencies.sorted))
+        
+        Ok(views.html.claim.form(claim, categories.sorted, currencies.sorted))
       }
     }
   } }
@@ -144,12 +147,14 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	  claimform.bindFromRequest.fold(
 	      formWithError => {
 	        for {
-	          maybe_wfcategories <- ClaimCategoryModel.find(BSONDocument(), request)
+	          maybe_default_cat <- ClaimCategoryModel.find(BSONDocument("all" -> true), request)
+	          maybe_person_cat <- ClaimCategoryModel.find(BSONDocument("app" -> BSONDocument("$in"->List(request.session.get("name").get + "@|@" + request.session.get("id").get))), request)
+	          maybe_office_cat <- ClaimCategoryModel.find(BSONDocument("app" -> BSONDocument("$in"->List(request.session.get("office").get))), request)  
 	          maybe_currencies <- ConfigCurrencyCodeModel.find(BSONDocument())
 	        } yield{
-	          val wfcategories = maybe_wfcategories.map(wfcategories => wfcategories.cat)
+	          val categories = (maybe_default_cat.map(categories => categories.cat) ::: maybe_person_cat.map(categories => categories.cat) ::: maybe_office_cat.map(categories => categories.cat)).distinct
 	          val currencies = maybe_currencies.map(currencies => currencies.ccyc)
-	          Ok(views.html.claim.form(formWithError, wfcategories.sorted, currencies.sorted))
+	          Ok(views.html.claim.form(formWithError, categories.sorted, currencies.sorted))
 	        }
 	      },
 	      formWithData => {
