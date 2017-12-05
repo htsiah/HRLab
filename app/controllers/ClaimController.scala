@@ -309,8 +309,8 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	         
 	          ClaimModel.insert(claim_update2, p_request=request)
 	          
-	          // Add ToDo
 	          if(claim_update2.wf.papr.id!=""){
+	            // Add ToDo
 	            val contentMap = Map( 
 	                "DOCUNUM"->claim_update2.docnum.toString(), 
 	                "APPLICANT"->claim_update2.p.n, 
@@ -323,10 +323,23 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                "DOCLINK"->(Tools.hostname + "/claim/view/" + claim_update2._id.stringify)    
 	            )
 	            TaskModel.insert(8, claim_update2.wf.papr.id, claim_update2._id.stringify, contentMap, buttonMap, "", request)
+	            
+	            // Send Email
+	            val approver = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(claim_update2.wf.papr.id))), Tools.db_timeout)
+	            val replaceMap = Map(
+	                "APPROVER"->claim_update2.wf.papr.n, 
+	                "APPLICANT"->claim_update2.p.n,
+	                "AMOUNT"->(claim_update2.ed.aamt.ccy + " " + claim_update2.ed.aamt.amt).toString(), 
+	                "CATEGORY"->claim_update2.ed.cat, 
+	                "DATE"->(claim_update2.ed.rdat.get.toLocalDate().getDayOfMonth + "-" + claim_update2.ed.rdat.get.toLocalDate().toString("MMM") + "-" + claim_update2.ed.rdat.get.toLocalDate().getYear + " (" + claim_update2.ed.rdat.get.toLocalDate().dayOfWeek().getAsText + ")"), 
+	                "APPROVEURL"->(Tools.hostname+"/claim/approve/"+claim_update2._id.stringify+"?p_path=/dashboard&p_msg="+claim_update2.p.n+"%27s claim request (%23"+claim_update2.docnum.toString()+") approved."), 
+	                "REJECTURL"->(Tools.hostname+"/claim/reject?p_id="+claim_update2._id.stringify+"&p_path=/dashboard&p_msg="+claim_update2.p.n+"%27s claim request (%23"+claim_update2.docnum.toString()+") rejected."),
+	                "DOCURL"->(Tools.hostname+"/claim/view/"+claim_update2._id.stringify),
+	                "DOCNUM"-> claim_update2.docnum.toString()
+	            )
+	            MailUtility.getEmailConfig(List(approver.get.p.em), 24, replaceMap).map { email => mailerClient.send(email) }
 	          }
-	        
-	          // Send Email
-
+	          
 	          // Insert Audit Log 
 	          AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id =BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=doc_objectID.stringify, c="Submit claim request."),p_request=request)
 	          
@@ -389,9 +402,36 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	            "DOCLINK"->(Tools.hostname + "/claim/view/" + claim_update._id.stringify)    
 	        )
 	        TaskModel.insert(8, claim_update.wf.papr.id, claim_update._id.stringify, contentMap, buttonMap, "", request)  
-	      }
+	
+	        // Send Email next approver
+	        val approver = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(claim_update.wf.papr.id))), Tools.db_timeout) 
+	        val replaceMap = Map(
+	            "APPROVER"->claim_update.wf.papr.n, 
+	            "APPLICANT"->claim_update.p.n, 
+	            "AMOUNT"->(claim_update.ed.aamt.ccy + " " + claim_update.ed.aamt.amt).toString(), 
+	            "CATEGORY"->claim_update.ed.cat,   
+	            "DATE"->(claim_update.ed.rdat.get.toLocalDate().getDayOfMonth + "-" + claim_update.ed.rdat.get.toLocalDate().toString("MMM") + "-" + claim_update.ed.rdat.get.toLocalDate().getYear + " (" + claim_update.ed.rdat.get.toLocalDate().dayOfWeek().getAsText + ")"), 
+	            "APPROVEURL"->(Tools.hostname+"/claim/approve/"+claim_update._id.stringify+"?p_path=/dashboard&p_msg="+claim_update.p.n+"%27s claim request (%23"+claim_update.docnum.toString()+") approved."), 
+	            "REJECTURL"->(Tools.hostname+"/claim/reject?p_id="+claim_update._id.stringify+"&p_path=/dashboard&p_msg="+claim_update.p.n+"%27s claim request (%23"+claim_update.docnum.toString()+") rejected."),  
+	            "DOCURL"->(Tools.hostname+"/claim/view/"+claim_update._id.stringify),
+	            "DOCNUM"-> claim_update.docnum.toString()
+	        )
+	        MailUtility.getEmailConfig(List(approver.get.p.em), 24, replaceMap).map { email => mailerClient.send(email) }
+	      } else {
 	        
-	      // Send Email
+	        // Send Email signed off 
+	        val applicant = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(claim_update.p.id))), Tools.db_timeout) 
+	        val replaceMap = Map(
+	            "APPLICANT"->claim_update.p.n, 
+	            "AMOUNT"->(claim_update.ed.aamt.ccy + " " + claim_update.ed.aamt.amt).toString(), 
+	            "CATEGORY"->claim_update.ed.cat,   
+	            "DATE"->(claim_update.ed.rdat.get.toLocalDate().getDayOfMonth + "-" + claim_update.ed.rdat.get.toLocalDate().toString("MMM") + "-" + claim_update.ed.rdat.get.toLocalDate().getYear + " (" + claim_update.ed.rdat.get.toLocalDate().dayOfWeek().getAsText + ")"), 
+	            "DOCURL"->(Tools.hostname+"/claim/view/"+claim_update._id.stringify),
+	            "DOCNUM"-> claim_update.docnum.toString()
+	        )
+	        MailUtility.getEmailConfig(List(applicant.get.p.em), 26, replaceMap).map { email => mailerClient.send(email) }
+	        
+	      }
 	      
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Approve claim request."), p_request=request)
@@ -422,7 +462,20 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
         
 	      // Update Todo
         Await.result(TaskModel.setCompletedMulti(claim_update._id.stringify, request), Tools.db_timeout)
-        
+
+        // Send Email 
+        val applicant = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(claim_update.p.id))), Tools.db_timeout) 
+        val replaceMap = Map(
+            "APPROVER"->request.session.get("name").get, 
+            "APPLICANT"->claim_update.p.n, 
+            "AMOUNT"->(claim_update.ed.aamt.ccy + " " + claim_update.ed.aamt.amt).toString(), 
+            "CATEGORY"->claim_update.ed.cat,   
+            "DATE"->(claim_update.ed.rdat.get.toLocalDate().getDayOfMonth + "-" + claim_update.ed.rdat.get.toLocalDate().toString("MMM") + "-" + claim_update.ed.rdat.get.toLocalDate().getYear + " (" + claim_update.ed.rdat.get.toLocalDate().dayOfWeek().getAsText + ")"), 
+            "DOCURL"->(Tools.hostname+"/claim/view/"+claim_update._id.stringify),
+            "DOCNUM"-> claim_update.docnum.toString()
+        )
+        MailUtility.getEmailConfig(List(applicant.get.p.em), 25, replaceMap).map { email => mailerClient.send(email) }
+	      
         // Insert audit log
         AuditLogModel.insert(p_doc=AuditLogModel.doc.copy(_id=BSONObjectID.generate, pid=request.session.get("id").get, pn=request.session.get("name").get, lk=p_id, c="Reject claim request."), p_request=request)
         
@@ -446,7 +499,22 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
       maybeclaim.map( claim => {
         
 	    // Check authorized
-	    if (claim.p.id==request.session.get("id").get) {
+	    if (claim.p.id==request.session.get("id").get || hasRoles(List("Admin"), request)) {
+	      
+        // Send email
+        val approver = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(claim.wf.papr.id))), Tools.db_timeout)
+        val applicant = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(claim.p.id))), Tools.db_timeout)
+        val recipients = (List(approver.get.p.em) ::: List(applicant.get.p.em)).filter( approver => approver != request.session.get("username").get )
+        val replaceMap = Map(
+            "BY"->request.session.get("name").get, 
+            "AMOUNT"->(claim.ed.aamt.ccy + " " + claim.ed.aamt.amt).toString(), 
+            "CATEGORY"->claim.ed.cat,   
+            "DATE"->(claim.ed.rdat.get.toLocalDate().getDayOfMonth + "-" + claim.ed.rdat.get.toLocalDate().toString("MMM") + "-" + claim.ed.rdat.get.toLocalDate().getYear + " (" + claim.ed.rdat.get.toLocalDate().dayOfWeek().getAsText + ")"), 
+            "DOCURL"->(Tools.hostname+"/claim/view/"+claim._id.stringify),
+            "DOCNUM"-> claim.docnum.toString()
+        )
+        MailUtility.getEmailConfig(recipients, 27, replaceMap).map { email => mailerClient.send(email) }
+        
 	      val claim_update = ClaimModel.cancel(claim, request)
 	      ClaimModel.update(BSONDocument("_id" -> claim._id), claim_update, request)
 	      
