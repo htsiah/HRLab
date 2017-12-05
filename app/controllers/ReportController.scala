@@ -547,6 +547,37 @@ class ReportController extends Controller with Secured {
   
   }}
   
+  def myclaimrequestcsv = withAuth { username => implicit request => { 
+
+    for {
+      claims <- ClaimModel.find(BSONDocument("p.id"->request.session.get("id").get), BSONDocument("docnum" -> -1), request)
+    } yield {
+      val filename = "attachment; filename=" + request.session.get("name").get.toString().replaceAll(" ", "") + "-ClaimRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
+      val header = "Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,Description,Status,Pending Approver\n"
+      val data = claims.map { claim => {
+        claim.docnum + "," + 
+        claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString() + "," +
+        claim.ed.cat + "," + 
+        claim.ed.amt.ccy + " " + claim.ed.amt.amt + "," +
+        claim.ed.er + "," +
+        claim.ed.aamt.ccy + " " + claim.ed.aamt.amt + "," +
+        claim.ed.iamt.ccy + " " + claim.ed.iamt.amt + "," +
+        claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt + "," +
+        claim.ed.gstamt.cn + "," +
+        claim.ed.gstamt.crnum + "," +
+        claim.ed.gstamt.tnum + "," +
+        Tools.cleanCSV(claim.ed.d) + "," +
+        claim.wf.s + "," +
+        claim.wf.papr.n
+      } }
+      Ok(header + data.mkString("\n")).withHeaders(
+          CONTENT_TYPE -> "text/csv",
+          CONTENT_DISPOSITION -> filename
+      )
+    }
+  
+  }}
+  
   def allstaffclaimrequest = withAuth { username => implicit request => { 
     if(request.session.get("roles").get.contains("Admin")){
       for {
@@ -581,6 +612,49 @@ class ReportController extends Controller with Secured {
     }
   }}
   
+  def allstaffclaimrequestcsv = withAuth { username => implicit request => { 
+    if(request.session.get("roles").get.contains("Admin")){
+      for {
+        maybe_persons <- PersonModel.find(BSONDocument(), request)
+        claims <- ClaimModel.find(BSONDocument(), BSONDocument("p.n" -> -1), request)
+      } yield {
+        val filename = "attachment; filename=AllStaffClaimRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
+        val header = "Employee ID,Applicant,Email,Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,Description,Status,Pending Approver\n"
+        val persons = maybe_persons.map { person => List(person._id.stringify, person.p.empid, person.p.em) }
+        val data = claims.map { claim => {
+
+          val person = persons.filter( value => value(0) == claim.p.id )
+          val empId = if (person.isEmpty) { "" } else { person(0)(1) }
+          val email = if (person.isEmpty) { "" } else { person(0)(2) }
+          
+          empId + "," + 
+          claim.p.n + "," + 
+          email + "," + 
+          claim.docnum + "," + 
+          claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString() + "," +
+          claim.ed.cat + "," + 
+          claim.ed.amt.ccy + " " + claim.ed.amt.amt + "," +
+          claim.ed.er + "," +
+          claim.ed.aamt.ccy + " " + claim.ed.aamt.amt + "," +
+          claim.ed.iamt.ccy + " " + claim.ed.iamt.amt + "," +
+          claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt + "," +
+          claim.ed.gstamt.cn + "," +
+          claim.ed.gstamt.crnum + "," +
+          claim.ed.gstamt.tnum + "," +
+          Tools.cleanCSV(claim.ed.d) + "," +
+          claim.wf.s + "," +
+          claim.wf.papr.n
+        } }
+        Ok(header + data.mkString("\n")).withHeaders(
+            CONTENT_TYPE -> "text/csv",
+            CONTENT_DISPOSITION -> filename
+        )
+      }
+    } else {
+      Future.successful(Ok(views.html.error.unauthorized()))
+    }
+  }}
+  
   def claimundermyapproval = withAuth { username => implicit request => { 
     for {
       claims <- ClaimModel.find(BSONDocument("wf.aprid"->BSONDocument("$in"->List(request.session.get("id").get))), BSONDocument("docnum" -> -1), request)
@@ -608,6 +682,46 @@ class ReportController extends Controller with Secured {
            Ok(Json.toJson(claimsMap)).as("application/json")  
          }
       }
+     }
+
+  }}
+
+  def claimundermyapprovalcsv = withAuth { username => implicit request => { 
+    for {
+      maybe_persons <- PersonModel.find(BSONDocument(), request)
+      claims <- ClaimModel.find(BSONDocument("wf.aprid"->BSONDocument("$in"->List(request.session.get("id").get))), BSONDocument("docnum" -> -1), request)
+    } yield {
+        val filename = "attachment; filename=ClaimsUnderMyApproval-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
+        val header = "Employee ID,Applicant,Email,Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,Description,Status,Pending Approver\n"
+        val persons = maybe_persons.map { person => List(person._id.stringify, person.p.empid, person.p.em) }
+        val data = claims.map { claim => {
+
+          val person = persons.filter( value => value(0) == claim.p.id )
+          val empId = if (person.isEmpty) { "" } else { person(0)(1) }
+          val email = if (person.isEmpty) { "" } else { person(0)(2) }
+          
+          empId + "," + 
+          claim.p.n + "," + 
+          email + "," + 
+          claim.docnum + "," + 
+          claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString() + "," +
+          claim.ed.cat + "," + 
+          claim.ed.amt.ccy + " " + claim.ed.amt.amt + "," +
+          claim.ed.er + "," +
+          claim.ed.aamt.ccy + " " + claim.ed.aamt.amt + "," +
+          claim.ed.iamt.ccy + " " + claim.ed.iamt.amt + "," +
+          claim.ed.gstamt.tamt.ccy + " " + claim.ed.gstamt.tamt.amt + "," +
+          claim.ed.gstamt.cn + "," +
+          claim.ed.gstamt.crnum + "," +
+          claim.ed.gstamt.tnum + "," +
+          Tools.cleanCSV(claim.ed.d) + "," +
+          claim.wf.s + "," +
+          claim.wf.papr.n
+        } }
+        Ok(header + data.mkString("\n")).withHeaders(
+            CONTENT_TYPE -> "text/csv",
+            CONTENT_DISPOSITION -> filename
+        )
      }
 
   }}

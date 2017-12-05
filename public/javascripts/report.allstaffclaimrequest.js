@@ -85,8 +85,7 @@ function setupJqGrid(data){
 		caption:"",
         buttonicon:"ace-icon fa fa-download bigger-140", 
         onClickButton : function () { 
-        	// window.open("/report/allstaffleaverequestcsv");
-        	alert("Coming soon.");
+        	window.open("/report/allstaffclaimrequestcsv");
         } 
     });
 	

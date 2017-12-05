@@ -56,8 +56,7 @@ $(function(){
 		caption:"",
         buttonicon:"ace-icon fa fa-download bigger-140", 
         onClickButton : function () { 
-        	// window.open("/report/myleaverequestcsv");
-        	alert("Coming soon.");
+        	window.open("/report/myclaimrequestcsv");
         } 
     });
 	
