@@ -10,7 +10,7 @@ import reactivemongo.api._
 import reactivemongo.bson._
 
 import models.{CompanyModel, LeaveSettingModel, LeavePolicyModel, LeaveProfileModel, LeaveModel, LeaveProfile, LeaveSetting, LeavePolicy, PersonModel}
-import utilities.DbConnUtility
+import utilities.{DbConnUtility,DbLoggerUtility}
 
 case class MonthlyLeaveProfileUpdateLog (
     _id: BSONObjectID,
@@ -75,15 +75,24 @@ object MonthlyLeaveProfileUpdateJob {
     val previousmonth = now.minusMonths(1).monthOfYear()
     val thisyear = now.year().get()
     
+    DbLoggerUtility.debug("Start MonthlyLeaveProfileUpdateJob.")
+    
     this.findOne(BSONDocument("month"->thismonth.getAsShortText(), "year"-> thisyear.toString)).map { upload_log => {
       if (!(upload_log.isDefined)) {
         CompanyModel.find(BSONDocument("sys.ddat"->BSONDocument("$exists"->false))).map { companies => {
           companies.map { company => {
+                        
             LeaveSettingModel.findOne(BSONDocument("sys.eid" -> company.sys.get.eid.get)).map { leavesetting => {
               if (leavesetting.get.cfm==thismonth.get) {
+                
+                DbLoggerUtility.debug("Processing Yearly Cut Off for: " + company.c + " " + company.sys.get.eid.get + ".")
+                
                 LeaveModel.setLockDown(BSONDocument("sys.eid" -> company.sys.get.eid.get))
                 this.yearlycut0ff(company.sys.get.eid.get, leavesetting.get)
               } else {
+                
+                DbLoggerUtility.debug("Processing Monthly Cut Off for: " + company.c + " " + company.sys.get.eid.get + ".")
+                
                 this.monthlyaccumulation(company.sys.get.eid.get, leavesetting.get)
               }
             } }
@@ -95,6 +104,8 @@ object MonthlyLeaveProfileUpdateJob {
 
     val job_end = new DateTime
     Job.insert(Job(BSONObjectID.generate, "MonthlyLeaveProfileUpdateJob", Some(job_start), Some(job_end)))
+    
+    DbLoggerUtility.debug("End MonthlyLeaveProfileUpdateJob.")
   }
   
   private def monthlyaccumulation(p_eid:String, p_leavesetting: LeaveSetting) = {
@@ -108,6 +119,9 @@ object MonthlyLeaveProfileUpdateJob {
         if(leavepolicy.set.acc=="Monthly - utilisation based on earned" || leavepolicy.set.acc=="Monthly - utilisation based on closing balance" || leavepolicy.set.cexp>0) {
           PersonModel.find(BSONDocument("sys.eid"->p_eid)).map { persons => {
             persons.map { person => {
+              
+              DbLoggerUtility.debug("Processing " + p_eid + " " + person.p.ln + " " + person.p.fn + " " + person._id.stringify + " " + leavepolicy.lt + ".")
+              
               LeaveProfileModel.find(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => {
                 leaveprofiles.map { leaveprofile => {
                   LeaveProfileModel.update(
@@ -137,6 +151,9 @@ object MonthlyLeaveProfileUpdateJob {
       leavepolicies.map { leavepolicy => {
         PersonModel.find(BSONDocument("sys.eid"->p_eid)).map { persons => {
           persons.map { person => {
+            
+            DbLoggerUtility.debug("Processing " + p_eid + " " + person.p.ln + " " + person.p.fn + " " + person._id + " " + leavepolicy.lt + ".")
+            
             LeaveProfileModel.findOne(BSONDocument("lt"->leavepolicy.lt ,"pid"->person._id.stringify, "sys.eid"->p_eid, "sys.ddat"->BSONDocument("$exists"->false))).map { leaveprofiles => { 
               leaveprofiles.map { leaveprofile => {
                 if (leavepolicy.set.acc=="No accrue") {
