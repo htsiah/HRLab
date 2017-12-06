@@ -404,6 +404,13 @@ object PersonModel {
               } }
             } } 
             
+            // Update claim
+            ClaimModel.find(BSONDocument("p.id"->oldperson.get._id.stringify), p_request).map { claims => {
+              claims.foreach { claim => {
+                ClaimModel.update(BSONDocument("_id" -> claim._id), claim.copy(p=claim.p.copy(n=p_doc.p.fn + " " + p_doc.p.ln)), p_request)
+              } }
+            } }
+            
             // Update claim category
             ClaimCategoryModel.find(BSONDocument("app"->BSONDocument("$in"->List(oldperson.get.p.fn + " " + oldperson.get.p.ln + "@|@" + oldperson.get._id.stringify))), p_request).map { claimcategories => {
               claimcategories.foreach { claimcategory => {
