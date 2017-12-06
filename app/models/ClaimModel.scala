@@ -561,11 +561,21 @@ object ClaimModel {
 
         // Setup Workflow
         if(doc1.wfs.s2=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="End"))
+           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
         } else if (doc1.wfat.at2.n=="Not Assigned" || p_doc.wfat.at2.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="1")), p_request)
+          // Next workflow step is skip
+          if( (doc1.wfa.a1=="Skip")){
+            // Don't set status, inherit from previous status when current workflow step is skip.
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="1")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s1, wfs="1")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at2.id)))
+          if( (doc1.wfa.a1=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), wfs="1", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at2.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at2.n, id=p_doc.wfat.at2.id), s = p_doc.wfs.s1, wfs="1", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at2.id)))
+          }
         }
         
       }
@@ -579,11 +589,35 @@ object ClaimModel {
       
         // Setup Workflow
         if(doc1.wfs.s3=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="End"))
+          
+          // End of workflow
+          if( (doc1.wfa.a2=="Skip")){
+            // Don't set status, inherit from previous status when previous workflow step is skip.
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="End"))
+          }
+          
         } else if (doc1.wfat.at3.n=="Not Assigned" || p_doc.wfat.at3.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="2")), p_request)
+          
+          // Next workflow step is skip
+          if( (doc1.wfa.a2=="Skip")){
+            // Don't set status, inherit from previous status when current workflow step is skip.
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="2")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s2, wfs="2")), p_request)
+          }
+          
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), s = p_doc.wfs.s2, wfs="2", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at3.id)))
+          
+          // Setting next workflow step
+          if( (doc1.wfa.a2=="Skip")){
+            // Don't set status, inherit from previous status when current workflow step is skip.
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), wfs="2", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at3.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at3.n, id=p_doc.wfat.at3.id), s = p_doc.wfs.s2, wfs="2", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at3.id)))
+          }
+          
         }
         
       }
@@ -597,11 +631,23 @@ object ClaimModel {
       
         // Setup Workflow
         if(doc1.wfs.s4=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="End"))
+          if( (doc1.wfa.a3=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="End"))
+          }
         } else if (doc1.wfat.at4.n=="Not Assigned" || p_doc.wfat.at4.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="3")), p_request)
+          if( (doc1.wfa.a3=="Skip")){
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="3")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s3, wfs="3")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), s = p_doc.wfs.s3, wfs="3", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at4.id)))
+          if( (doc1.wfa.a3=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), wfs="3", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at4.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at4.n, id=p_doc.wfat.at4.id), s = p_doc.wfs.s3, wfs="3", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at4.id)))
+          }
         }
         
       }
@@ -615,11 +661,23 @@ object ClaimModel {
       
         // Setup Workflow
         if(doc1.wfs.s5=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="End"))
+          if( (doc1.wfa.a4=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="End"))
+          }
         } else if (doc1.wfat.at5.n=="Not Assigned" || p_doc.wfat.at5.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="4")), p_request)
+          if( (doc1.wfa.a4=="Skip")){
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="4")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s4, wfs="4")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), s = p_doc.wfs.s4, wfs="4", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at5.id)))
+          if( (doc1.wfa.a4=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), wfs="4", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at5.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at5.n, id=p_doc.wfat.at5.id), s = p_doc.wfs.s4, wfs="4", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at5.id)))
+          }
         }
         
       }
@@ -630,14 +688,26 @@ object ClaimModel {
             wfa = p_doc.wfa.copy(a5 = if (p_doc.wfat.at5.n=="Not Assigned" || p_doc.wfat.at5.n=="Not Applicable") { "Skip" } else {"Approve"}),
             wdadat = p_doc.wdadat.copy(ad5 = Some(new DateTime()))
         )
-      
+
         // Setup Workflow
         if(doc1.wfs.s6=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="End"))
+          if( (doc1.wfa.a5=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="End"))
+          }
         } else if (doc1.wfat.at6.n=="Not Assigned" || p_doc.wfat.at6.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="5")), p_request)
+          if( (doc1.wfa.a5=="Skip")){
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="5")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s5, wfs="5")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), s = p_doc.wfs.s5, wfs="5", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at6.id)))
+          if( (doc1.wfa.a5=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), wfs="5", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at6.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at6.n, id=p_doc.wfat.at6.id), s = p_doc.wfs.s5, wfs="5", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at6.id)))
+          }
         }
         
       }
@@ -651,11 +721,23 @@ object ClaimModel {
       
         // Setup Workflow
         if(doc1.wfs.s7=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="End"))
+          if( (doc1.wfa.a6=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="End"))
+          }
         } else if (doc1.wfat.at7.n=="Not Assigned" || p_doc.wfat.at7.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="6")), p_request)
+          if( (doc1.wfa.a6=="Skip")){
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="6")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s6, wfs="6")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), s = p_doc.wfs.s6, wfs="6", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at7.id)))
+          if( (doc1.wfa.a6=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), wfs="6", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at7.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at7.n, id=p_doc.wfat.at7.id), s = p_doc.wfs.s6, wfs="6", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at7.id)))
+          }          
         }
         
       }
@@ -669,11 +751,23 @@ object ClaimModel {
       
         // Setup Workflow
         if(doc1.wfs.s8=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="End"))
+          if( (doc1.wfa.a7=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="End"))
+          }
         } else if (doc1.wfat.at8.n=="Not Assigned" || p_doc.wfat.at8.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="7")), p_request)
+          if( (doc1.wfa.a7=="Skip")){
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="7")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s7, wfs="7")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), s = p_doc.wfs.s7, wfs="7", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at8.id)))
+          if( (doc1.wfa.a7=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), wfs="7", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at8.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at8.n, id=p_doc.wfat.at8.id), s = p_doc.wfs.s7, wfs="7", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at8.id)))
+          }  
         }
         
       }
@@ -687,11 +781,23 @@ object ClaimModel {
       
         // Setup Workflow
         if(doc1.wfs.s9=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="End"))
+          if( (doc1.wfa.a8=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="End"))
+          }
         } else if (doc1.wfat.at9.n=="Not Assigned" || p_doc.wfat.at9.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="8")), p_request)
+          if( (doc1.wfa.a8=="Skip")){
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="8")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s8, wfs="8")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), s = p_doc.wfs.s8, wfs="8", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at9.id)))
+          if( (doc1.wfa.a8=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), wfs="8", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at9.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at9.n, id=p_doc.wfat.at9.id), s = p_doc.wfs.s8, wfs="8", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at9.id)))
+          }  
         }
         
       }
@@ -705,11 +811,23 @@ object ClaimModel {
       
         // Setup Workflow
         if(doc1.wfs.s10=="") {
-           doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="End"))
+          if( (doc1.wfa.a9=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="End"))
+          }
         } else if (doc1.wfat.at10.n=="Not Assigned" || p_doc.wfat.at10.n=="Not Applicable") {
-          this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="9")), p_request)
+          if( (doc1.wfa.a9=="Skip")){
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="9")), p_request)
+          } else {
+            this.approve(doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s9, wfs="9")), p_request)
+          }
         } else {
-          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), s = p_doc.wfs.s9, wfs="9", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at10.id)))
+          if( (doc1.wfa.a9=="Skip")){
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), wfs="9", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at10.id)))
+          } else {
+            doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n=p_doc.wfat.at10.n, id=p_doc.wfat.at10.id), s = p_doc.wfs.s9, wfs="9", aprid=p_doc.wf.aprid ::: List(p_doc.wfat.at10.id)))
+          } 
         }
         
       }
@@ -722,7 +840,11 @@ object ClaimModel {
         )
       
         // Setup Workflow
-        doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s10, wfs="End"))
+        if( (doc1.wfa.a10=="Skip")){
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), wfs="End"))
+        } else {
+          doc1.copy(wf = p_doc.wf.copy(papr=PersonDetail(n="", id=""), s = p_doc.wfs.s10, wfs="End"))
+        }
         
       }
     }

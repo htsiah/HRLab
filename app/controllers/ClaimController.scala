@@ -338,6 +338,18 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                "DOCNUM"-> claim_update2.docnum.toString()
 	            )
 	            MailUtility.getEmailConfig(List(approver.get.p.em), 24, replaceMap).map { email => mailerClient.send(email) }
+	          } else {
+    	        // Send Email signed off 
+    	        val applicant = Await.result(PersonModel.findOne(BSONDocument("_id" -> BSONObjectID(claim_update2.p.id))), Tools.db_timeout) 
+    	        val replaceMap = Map(
+    	            "APPLICANT"->claim_update2.p.n, 
+    	            "AMOUNT"->(claim_update2.ed.aamt.ccy + " " + claim_update2.ed.aamt.amt).toString(), 
+    	            "CATEGORY"->claim_update2.ed.cat,   
+    	            "DATE"->(claim_update2.ed.rdat.get.toLocalDate().getDayOfMonth + "-" + claim_update2.ed.rdat.get.toLocalDate().toString("MMM") + "-" + claim_update2.ed.rdat.get.toLocalDate().getYear + " (" + claim_update2.ed.rdat.get.toLocalDate().dayOfWeek().getAsText + ")"), 
+    	            "DOCURL"->(Tools.hostname+"/claim/view/"+claim_update2._id.stringify),
+    	            "DOCNUM"-> claim_update2.docnum.toString()
+    	        )
+    	        MailUtility.getEmailConfig(List(applicant.get.p.em), 26, replaceMap).map { email => mailerClient.send(email) } 
 	          }
 	          
 	          // Insert Audit Log 
