@@ -553,7 +553,7 @@ class ReportController extends Controller with Secured {
       claims <- ClaimModel.find(BSONDocument("p.id"->request.session.get("id").get), BSONDocument("docnum" -> -1), request)
     } yield {
       val filename = "attachment; filename=" + request.session.get("name").get.toString().replaceAll(" ", "") + "-ClaimRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-      val header = "Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,Description,Status,Pending Approver\n"
+      val header = "Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,GL Code,Description,Status,Pending Approver\n"
       val data = claims.map { claim => {
         claim.docnum + "," + 
         claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString() + "," +
@@ -566,6 +566,7 @@ class ReportController extends Controller with Secured {
         claim.ed.gstamt.cn + "," +
         claim.ed.gstamt.crnum + "," +
         claim.ed.gstamt.tnum + "," +
+        claim.ed.glc + "," +
         Tools.cleanCSV(claim.ed.d) + "," +
         claim.wf.s + "," +
         claim.wf.papr.n
@@ -619,7 +620,7 @@ class ReportController extends Controller with Secured {
         claims <- ClaimModel.find(BSONDocument(), BSONDocument("p.n" -> -1), request)
       } yield {
         val filename = "attachment; filename=AllStaffClaimRequest-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-        val header = "Employee ID,Applicant,Email,Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,Description,Status,Pending Approver\n"
+        val header = "Employee ID,Applicant,Email,Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,GL Code,Description,Status,Pending Approver\n"
         val persons = maybe_persons.map { person => List(person._id.stringify, person.p.empid, person.p.em) }
         val data = claims.map { claim => {
 
@@ -641,6 +642,7 @@ class ReportController extends Controller with Secured {
           claim.ed.gstamt.cn + "," +
           claim.ed.gstamt.crnum + "," +
           claim.ed.gstamt.tnum + "," +
+          claim.ed.glc + "," +
           Tools.cleanCSV(claim.ed.d) + "," +
           claim.wf.s + "," +
           claim.wf.papr.n
@@ -692,7 +694,7 @@ class ReportController extends Controller with Secured {
       claims <- ClaimModel.find(BSONDocument("wf.aprid"->BSONDocument("$in"->List(request.session.get("id").get))), BSONDocument("docnum" -> -1), request)
     } yield {
         val filename = "attachment; filename=ClaimsUnderMyApproval-" + DateTime.now().dayOfMonth().getAsShortText + DateTime.now().monthOfYear().getAsShortText + DateTime.now().year().getAsShortText + ".csv"
-        val header = "Employee ID,Applicant,Email,Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,Description,Status,Pending Approver\n"
+        val header = "Employee ID,Applicant,Email,Doc Num, Receipt Date,Category,Amount,Exchange Rate,Approve Amount,Item Amount,GST / VAT,Tax Company Name,Tax Company Reg. No,GST / VAT Reg. No,GL Code,Description,Status,Pending Approver\n"
         val persons = maybe_persons.map { person => List(person._id.stringify, person.p.empid, person.p.em) }
         val data = claims.map { claim => {
 
@@ -714,6 +716,7 @@ class ReportController extends Controller with Secured {
           claim.ed.gstamt.cn + "," +
           claim.ed.gstamt.crnum + "," +
           claim.ed.gstamt.tnum + "," +
+          claim.ed.glc + "," +
           Tools.cleanCSV(claim.ed.d) + "," +
           claim.wf.s + "," +
           claim.wf.papr.n
