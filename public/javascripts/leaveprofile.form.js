@@ -134,6 +134,9 @@ $(function(){
 			},
 		});
 	});
+	
+	// Mouse over help
+	$('[data-rel=popover]').popover({container:'body'});
 		
 	$("#leaveprofileform").validate({
 		onkeyup: false,

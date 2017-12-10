@@ -44,6 +44,14 @@
 	}
 }
 
+@dropdownSelected(value: Option[String], valueCheck: String) = {
+	@if(value != None){
+		@if(value.get == valueCheck){
+			selected="selected"
+		}
+	}
+}
+
 @layout.ace.main93(session.get("company").get + " - HRSifu",pageheader,pluginjs,inlinejs,pluginstyle,inlinestyle,buttons) {
 	@layout.ace.alert(alert)
 	@helper.form(
@@ -74,12 +82,51 @@
 		</dl>
 	}
 	@select(leavepolicy("set")("dt"), options = Seq("Full day only"->"Full day only", "Full day and half day (1st or 2nd)"->"Full day and half day (1st or 2nd)"), '_label -> "Day Type Option", '_class->"dl-horizontal", 'class->"form-control")
-	@select(leavepolicy("set")("acc"), options = Seq(
-		"No accrue"->"Do not accrue. Just track usage", 
-		"Monthly - utilisation based on earned"->"Accrue Monthly (At start of the month) - utilisation based on leave earned", 
-		"Monthly - utilisation based on closing balance"->"Accrue Monthly (At start of the month) - utilisation based on closing balance",
-		"Yearly"->"Accrue Annually (At start of the cut off month)"), 
-		'_label -> "Accrual / Earn", '_class->"dl-horizontal", 'class->"form-control")
+	<dl class="dl-horizontal " id="set_acc_field">
+    	<dt><label for="set_acc">Accrual / Earn</label></dt>
+    	<dd>
+    		<div class="row">
+				<div class="col-xs-10 col-sm-8">
+		    		<select id="set_acc" name="set.acc" class="form-control">
+						<option value="No accrue" @dropdownSelected(leavepolicy("set")("acc").value, "No accrue")>Do not accrue. Just track usage</option>
+						<option value="Monthly - utilisation based on earned" @dropdownSelected(leavepolicy("set")("acc").value, "Monthly - utilisation based on earned")>Accrue Monthly (At start of the month) - utilisation based on leave earned</option>
+						<option value="Monthly - utilisation based on closing balance" @dropdownSelected(leavepolicy("set")("acc").value, "Monthly - utilisation based on closing balance")>Accrue Monthly (At start of the month) - utilisation based on closing balance</option>
+						<option value="Yearly" @dropdownSelected(leavepolicy("set")("acc").value, "Yearly")>Accrue Annually (At start of the cut off month)</option>
+		      		</select>
+           		</div>
+				<div class="col-xs-2 col-sm-4">
+					<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="left" data-content="
+<table class='table table-bordered'>
+<thead>
+<tr>
+<th>Accrue Type</th>
+<th>Help</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Do not accrue. Just track usage.</td>
+<td>Do nothing.</td>
+</tr>
+<tr>
+<td>Accrue Monthly – utilization based on leave earned.</td>
+<td>Leave entitlement divided by 12 months and earned on monthly basis. Employee utilize based on leave earned.</td>
+</tr>
+<tr>
+<td>Accrue Monthly – utilization based on closing balance.</td>
+<td>Leave entitlement divided by 12 months and earned on monthly basis. Employee utilize based on leave entitlement.</td>
+</tr>
+<tr>
+<td>Accrue Annually</td>
+<td>Leave earned on yearly basis.</td>
+</tr>
+</tbody>
+</table>
+" data-html="true" data-original-title="Accrual / Earn
+">?</span>
+				</div>
+		</dd>
+	</dl>
 	@select(leavepolicy("set")("cexp"), options = Seq(
 		"0"->"Does not expire", 
 		"1"->"After 1 month", 
@@ -110,6 +157,7 @@
 				<label>
 					<input type="checkbox" value="true" name="set.nwd" id="set_nwd" class="ace" @radioSelected(leavepolicy("set")("nwd").value, "true")>
 					<span class="lbl"> Intervening holiday on no working day</span>
+					<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="left" data-content="Checked if leave calculation days includes holidays and non working days. Example: Maternity leave, holidays is included in the leave calculation." data-original-title="Intervening on no working day">?</span>
 				</label>
 			</div>
 			<br/>
@@ -135,7 +183,10 @@
 				<table class="table table-bordered table-striped">
 					<thead class="thin-border-bottom">
 						<tr>
-							<th class="text-center">Service Month</th>
+							<th class="text-center">
+								Service Month
+								<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="Example:<br>Set 24 months for employee working up to 2 years.<br>Set 60 months for employee working 2 - 5 years.<br>Set 999 months for those working more than 5 years." data-html="true" data-original-title="Service Month">?</span>	
+							</th>
 							<th class="text-center">Entitlement</th>
 							<th class="text-center">Carry Forward</th>
 						</tr>

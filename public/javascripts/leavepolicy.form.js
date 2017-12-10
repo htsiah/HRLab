@@ -15,6 +15,9 @@ $(function(){
 		btn_down_class:'btn-danger'
 	});
 	
+	// Mouse over help
+	$('[data-rel=popover]').popover({container:'body'});
+	
 	$("#leavepolicyform").validate({
 		onkeyup: false,
 		rules: {

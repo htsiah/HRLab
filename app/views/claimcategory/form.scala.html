@@ -86,12 +86,29 @@
 					</div>
 				</div>
     		</dd>
-    	</dl>	
-		@inputText(claimcategory("tlim"), '_label->"Transaction Limit", '_class->"dl-horizontal", '_showConstraints->false, 'class->"form-control")
+    	</dl>
+    	@input(claimcategory("tlim"), '_label->"Transaction Limit", '_class->"dl-horizontal", '_showConstraints->false) { (id, name, value, args) =>
+    		<div class="row">
+    			<div class="col-xs-10 col-sm-8">
+    				<input type="text" id="@id" name="@name" value="@value" class="form-control" @toHtmlArgs(args)>
+    			</div>
+    			<div class="col-xs-2 col-sm-4">
+    				<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="left" data-content="This option is to set expense claim limit on each submission. For no limit, set 0." data-original-title="Transaction Limit">?</span>
+    			</div>
+    		</div>
+		}		
 		<dl class="dl-horizontal " id="app_field">
-    		<dt><label for="app">Help Text</label></dt>
+    		<dt><label for="app">Description of Help Text</label></dt>
     		<dd>
-    			<div class="row"><div id="hlp-editor" class="wysiwyg-editor"><!-- custom html data --></div>
+    		<div class="row">
+    			<div class="col-xs-10 col-sm-8">
+    				<div id="hlp-editor" class="wysiwyg-editor"><!-- custom html data --></div>
+    			</div>
+    			<div class="col-xs-2 col-sm-4">
+    				<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="left" data-content="This text will be display in the expense claim description when this category is selected." data-original-title="Description of Help Text">?</span>
+    			</div>
+    		</div>
+    			
     		</dd>
     	</dl>
 		<div class="hidden">		

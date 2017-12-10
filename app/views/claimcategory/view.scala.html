@@ -45,6 +45,8 @@
 	} else {
 		@contentRow("Transaction Limit", claimcategory.tlim.toString)
 	}
-	<dl class="dl-horizontal"><dt><label>Help Text</label></dt><dd>@Html(claimcategory.hlp)</dd></dl>
+	@if(!(claimcategory.hlp=="" || claimcategory.hlp=="<br>")){
+		<dl class="dl-horizontal"><dt><label>Description of Help Text</label></dt><dd>@Html(claimcategory.hlp)</dd></dl>
+	}
 
 }

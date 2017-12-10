@@ -44,6 +44,9 @@ $(function(){
     // Append help html
     $("#hlp-editor").html($("#hlp").val());
     
+	// Mouse over help
+	$('[data-rel=popover]').popover({container:'body'});
+	
     // form validation
 	$("#claimcategoryform").validate({
 		onkeyup: false,

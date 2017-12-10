@@ -81,7 +81,7 @@
 				@if(claim.ed.gstamt.tnum!=""){
 					@contentRow("GST / VAT Reg. No", claim.ed.gstamt.tnum)
 				}
-				@if(claim.ed.d!=""){
+				@if(!(claim.ed.d=="" || claim.ed.d=="<br>")){
 					<dl class="dl-horizontal"><dt><label>Description</label></dt><dd>@Html(claim.ed.d)</dd></dl>
 				}
 				@if(files.length!=0){
