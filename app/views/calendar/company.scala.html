@@ -30,9 +30,9 @@
 @inlinestyle = {}
 
 @buttons = {
-	<a href="@routes.CompanyHolidayController.create" class="btn btn-sm btn btn-block">Add Holiday</a>
-	<a href="#" id="addholidayfromlistbtn" class="btn btn-sm btn btn-block hidden-xs hidden-sm" data-toggle="modal">Add Holiday From List</a>
-	<a href="@routes.EventController.create" class="btn btn-sm btn btn-block">Add Event</a>
+	<a href="@routes.CompanyHolidayController.create" class="btn btn-sm btn-block">Add Holiday</a>
+	<a href="#" id="addholidayfromlistbtn" class="btn btn-sm btn-block hidden-xs hidden-sm" data-toggle="modal">Add Holiday From List</a>
+	<a href="@routes.EventController.create" class="btn btn-sm btn-block">Add Event</a>
 }
 
 @if(session.get("roles").get.contains("Admin")) {

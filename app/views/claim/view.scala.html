@@ -21,13 +21,13 @@
 
 @buttons = {
 	@if(claim.wf.papr.id==session.get("id").get) {
-		<a href="@routes.ClaimController.approve(claim._id.stringify)" class="btn btn-sm btn btn-block">Approve</a>	
-		<a href="@routes.ClaimController.reject(claim._id.stringify)" class="btn btn-sm btn btn-block">Reject</a>
+		<a href="@routes.ClaimController.approve(claim._id.stringify)" class="btn btn-sm btn-block">Approve</a>	
+		<a href="@routes.ClaimController.reject(claim._id.stringify)" class="btn btn-sm btn-block">Reject</a>
 	}
 	@if(claim.wf.wfs!="End" && (session.get("id").get==claim.p.id || session.get("roles").get.contains("Admin"))) {
-		<a href="@routes.ClaimController.cancel(claim._id.stringify)" class="btn btn-sm btn btn-block">Cancel Claim</a>
+		<a href="@routes.ClaimController.cancel(claim._id.stringify)" class="btn btn-sm btn-block">Cancel Claim</a>
 	}
-	<a href="javascript:displayAuditLog('@claim._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
+	<a href="javascript:displayAuditLog('@claim._id.stringify')" class="btn btn-sm btn-block">Audit Log</a>
 	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>	
 }
 

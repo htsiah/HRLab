@@ -25,11 +25,11 @@
 
 @buttons = {
 	@if(session.get("roles").get.contains("Admin")) {
-		<a href="@routes.CompanyHolidayController.edit(companyholiday._id.stringify)" class="btn btn-sm btn btn-block">Edit</a>
-		<a href="javascript:onDelete('@companyholiday._id.stringify')" class="btn btn-sm btn btn-block">Delete</a>
+		<a href="@routes.CompanyHolidayController.edit(companyholiday._id.stringify)" class="btn btn-sm btn-block">Edit</a>
+		<a href="javascript:onDelete('@companyholiday._id.stringify')" class="btn btn-sm btn-block">Delete</a>
 	}
-	<a href="javascript:displayAuditLog('@companyholiday._id.stringify')" class="btn btn-sm btn btn-block">Audit Log</a>
-	<a href="javascript:history.back()" class="btn btn-sm btn btn-block">Back</a>
+	<a href="javascript:displayAuditLog('@companyholiday._id.stringify')" class="btn btn-sm btn-block">Audit Log</a>
+	<a href="javascript:history.back()" class="btn btn-sm btn-block">Back</a>
 }
 
 @contentRow(label: String, contentVal: String, cssClass:String="") = {
