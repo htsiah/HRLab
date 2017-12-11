@@ -92,7 +92,63 @@ $(function(){
 		droppable: true,
     	maxSize: 5000000, // 5 MB
         allowExt:  ['jpg', 'jpeg', 'tif', 'tiff', 'gif', 'bmp', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'txt']
-	}).on('file.error.ace', function(event, info) {
+	}).on('change', function(e) {
+					
+ 		let formfile = new FormData(), // Create a new FormData object for file upload.
+ 		files = $(this).data('ace_input_files');
+ 		
+ 		// Don't process invalid file selected.
+ 		if(files != undefined){
+ 			
+ 	 		let file = files[0]; // Get upload file
+ 	 	 	
+ 	 		// Add the file to the request.
+ 	 		formfile.append("file", file, file.name);
+ 	 		
+ 	 		// Upload using AJAX
+ 	 	    $.ajax({
+ 	 	        url: "/claimfile/insert?p_lk=" + $("#docnum").val(),
+ 	 	        type: "POST",
+ 	 	        data: formfile,
+ 	 	        cache: false,
+ 	 	        dataType: "json",
+ 	 	        processData: false, // Don't process the files
+ 	 	        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+ 	 			beforeSend: function(){
+ 	 				$("#file-input-control").addClass("hidden");
+ 	 				$("#file-error").addClass("hidden");
+ 	 				$("#file-loader").removeClass("hidden");
+ 	 			},
+ 	 	        success: function(data, textStatus, jqXHR){
+ 	 		        if (data.status == "exceed file size limit") {
+ 	 		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 5 MB file size limit.</label>");
+ 	 		        	$("#file-loader").addClass("hidden");
+ 	 		        	$("#file-input-control").removeClass("hidden");
+ 	 		        	$("#file-error").removeClass("hidden");
+ 	 		        } else if (data.status == "error update metadata" || data.status == "error upload file") {
+ 	 		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>There was an error while uploading data to server. Do not proceed! Please contact support@hrsifu.com.</label>");
+ 	 		        	$("#file-loader").addClass("hidden");
+ 	 		        	$("#file-input-control").removeClass("hidden");
+ 	 		        	$("#file-error").removeClass("hidden");
+ 	 		        } else {
+ 	 					$("#file-loader").addClass("hidden");
+ 	 					$('#file').ace_file_input('reset_input');
+ 	 					$("#file-input-control").removeClass("hidden");
+ 	 					$("#file-view").append("<p id=" + data.id + "><a href='/claimfile/view?p_id=" + data.id + "' target='_blank'>" + file.name + "</a> &nbsp <a class='remove' href=javascript:onDelete('" + data.id + "') title='Delete'><i class='ace-icon fa fa-trash'></i></a></p>");
+ 	 		        };
+ 	 	        },
+ 	 	        error: function(jqXHR, textStatus, errorThrown){
+ 	 	        	$("#file-loader").addClass("hidden");
+ 	 	        	$("#file-view").removeClass("file-input-control");
+ 	 	        	alert("There was an error while uploading data to server. Do not proceed! Please contact support@hrsifu.com.");
+ 	 	        }
+ 	 	    });	
+ 			
+ 		}
+
+ 	});
+	
+	$('#file').on('file.error.ace', function(event, info) {
     	//info.file_count > number of files selected
     	//info.invalid_count > number of invalid files
     	//info.error_count['ext'] > number of files with invalid extension (only if allowExt or denyExt is set)
@@ -114,56 +170,7 @@ $(function(){
     	//if you do this
     	event.preventDefault();
     	//it will reset (empty) file input, i.e. no files selected
-     }); 
-	
-	$(document).on('change', '#file', function(e) {
-				
-		let formfile = new FormData(), // Create a new FormData object for file upload.
-		file = e.target.files[0]; // Get upload file
-	
-		// Add the file to the request.
-		formfile.append("file", file, file.name);
-		
-		// Upload using AJAX
-	    $.ajax({
-	        url: "/claimfile/insert?p_lk=" + $("#docnum").val(),
-	        type: "POST",
-	        data: formfile,
-	        cache: false,
-	        dataType: "json",
-	        processData: false, // Don't process the files
-	        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-			beforeSend: function(){
-				$("#file-input-control").addClass("hidden");
-				$("#file-error").addClass("hidden");
-				$("#file-loader").removeClass("hidden");
-			},
-	        success: function(data, textStatus, jqXHR){
-		        if (data.status == "exceed file size limit") {
-		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>Over 5 MB file size limit.</label>");
-		        	$("#file-loader").addClass("hidden");
-		        	$("#file-input-control").removeClass("hidden");
-		        	$("#file-error").removeClass("hidden");
-		        } else if (data.status == "error update metadata" || data.status == "error upload file") {
-		        	$("#file-error").html("<label id='p_file-error' class='error red' for='p_file'>There was an error while uploading data to server. Do not proceed! Please contact support@hrsifu.com.</label>");
-		        	$("#file-loader").addClass("hidden");
-		        	$("#file-input-control").removeClass("hidden");
-		        	$("#file-error").removeClass("hidden");
-		        } else {
-					$("#file-loader").addClass("hidden");
-					$('#file').ace_file_input('reset_input');
-					$("#file-input-control").removeClass("hidden");
-					$("#file-view").append("<p id=" + data.id + "><a href='/claimfile/view?p_id=" + data.id + "' target='_blank'>" + file.name + "</a> &nbsp <a class='remove' href=javascript:onDelete('" + data.id + "') title='Delete'><i class='ace-icon fa fa-trash'></i></a></p>");
-		        };
-	        },
-	        error: function(jqXHR, textStatus, errorThrown){
-	        	$("#file-loader").addClass("hidden");
-	        	$("#file-view").removeClass("file-input-control");
-	        	alert("There was an error while uploading data to server. Do not proceed! Please contact support@hrsifu.com.");
-	        }
-	    });	
-		
-	});
+     });
 	
     // form validation
 	$("#claimform").validate({
