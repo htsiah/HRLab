@@ -405,9 +405,60 @@ object PersonModel {
             } } 
             
             // Update claim
-            ClaimModel.find(BSONDocument("p.id"->oldperson.get._id.stringify), p_request).map { claims => {
+            ClaimModel.find(
+                BSONDocument(
+                    "$or" -> BSONArray(
+                        BSONDocument("p.id"->oldperson.get._id.stringify), 
+                        BSONDocument("wf.papr.id"->oldperson.get._id.stringify), 
+                        BSONDocument("wfat.at1.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at2.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at3.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at4.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at5.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at6.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at7.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at8.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at9.id"->oldperson.get._id.stringify),
+                        BSONDocument("wfat.at10.id"->oldperson.get._id.stringify)
+                    )
+                ),
+                p_request
+            ).map { claims => {
               claims.foreach { claim => {
-                ClaimModel.update(BSONDocument("_id" -> claim._id), claim.copy(p=claim.p.copy(n=p_doc.p.fn + " " + p_doc.p.ln)), p_request)
+                val p = if (claim.p.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.p.id }
+                val papr = if (claim.wf.papr.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wf.papr.n }
+                val at1 = if (claim.wfat.at1.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at1.n }
+                val at2 = if (claim.wfat.at2.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at2.n } 
+                val at3 = if (claim.wfat.at3.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at3.n } 
+                val at4 = if (claim.wfat.at4.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at4.n } 
+                val at5 = if (claim.wfat.at5.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at5.n } 
+                val at6 = if (claim.wfat.at6.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at6.n } 
+                val at7 = if (claim.wfat.at7.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at7.n } 
+                val at8 = if (claim.wfat.at8.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at8.n } 
+                val at9 = if (claim.wfat.at9.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at9.n } 
+                val at10 = if (claim.wfat.at10.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at10.n } 
+                
+                ClaimModel.update(
+                    BSONDocument("_id" -> claim._id), 
+                    claim.copy(
+                        p=claim.p.copy(n=p_doc.p.fn + " " + p_doc.p.ln),
+                        wf=claim.wf.copy(
+                            papr=claim.wf.papr.copy(n=papr)
+                        ),
+                        wfat=claim.wfat.copy(
+                            at1=claim.wfat.at1.copy(n=at1),
+                            at2=claim.wfat.at2.copy(n=at2),
+                            at3=claim.wfat.at3.copy(n=at3),
+                            at4=claim.wfat.at4.copy(n=at4),
+                            at5=claim.wfat.at5.copy(n=at5),
+                            at6=claim.wfat.at6.copy(n=at6),
+                            at7=claim.wfat.at7.copy(n=at7),
+                            at8=claim.wfat.at8.copy(n=at8),
+                            at9=claim.wfat.at9.copy(n=at9),
+                            at10=claim.wfat.at10.copy(n=at10)
+                        )
+                    ), p_request
+                )
               } }
             } }
             
