@@ -54,106 +54,100 @@
 					</div> @**/.widget-body **@
 				</div> @**/.widget-box **@
 			}
-
-			<div class="widget-box transparent">
-				<div class="widget-header widget-header-flat">
-					<h4 class="widget-title blue">
-						<i class="ace-icon fa fa-tasks orange"></i>
-						My Claim Request(s)
-					</h4>
-				</div> @** .widget-header **@
-				<div class="widget-body">
-					<div class="widget-main">
-						<div class="profile-activity clearfix">	
-						@if(claims.length==0){
-							<div>You have no pending claim request.</div>
-						} else {												
-							<table id="sample-table-1" class="table table-striped table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>Num</th>
-										<th>Category</th>
-										<th>Receipt Date</th>
-										<th>Approve Amount</th>
-										<th>Status</th>
-										<th>&nbsp;</th>
-									</tr>
-								</thead>
-
-								<tbody>
-									@claims.map { claim =>
-										<tr>
-											<td>@claim.docnum</td>
-											<td>@claim.ed.cat</td>
-											<td>@{claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString()}</td>
-											<td>@claim.ed.aamt.ccy @claim.ed.aamt.amt</td>
-											<td>@claim.wf.s</td>
-											<td class="text-center">
-												<div class="btn-group">
-													<a class="btn btn-xs btn-success" title="View" href="@routes.ClaimController.view(claim._id.stringify)">
-														<i class="ace-icon fa fa-search-plus bigger-120"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-									}
-								</tbody>
-							</table>
-						}
-						</div>
-					</div>
-				</div> @**/.widget-body **@
-			</div> @**/.widget-box **@
 			
-			<div class="widget-box transparent">
-				<div class="widget-header widget-header-flat">
-					<h4 class="widget-title blue">
-						<i class="ace-icon fa fa-tasks orange"></i>
-						My Leave Request(s)
-					</h4>
-				</div> @** .widget-header **@
-				<div class="widget-body">
-					<div class="widget-main">
-						<div class="profile-activity clearfix">	
-						@if(leaves.length==0){
-							<div>You have no pending leave request.</div>
-						} else {												
-							<table id="sample-table-1" class="table table-striped table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>Num</th>
-										<th>Leave Type</th>
-										<th>Day Type</th>
-										<th>Date From</th>
-										<th>Date To</th>
-										<th>&nbsp;</th>
-									</tr>
-								</thead>
-
-								<tbody>
-									@leaves.map { leave =>
+			@if(claims.length!=0){
+				<div class="widget-box transparent">
+					<div class="widget-header widget-header-flat">
+						<h4 class="widget-title blue">
+							<i class="ace-icon fa fa-tasks orange"></i>
+							My Pending Claim Request(s)
+						</h4>
+					</div> @** .widget-header **@
+					<div class="widget-body">
+						<div class="widget-main">
+							<div class="profile-activity clearfix">												
+								<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+									<thead>
 										<tr>
-											<td>@leave.docnum</td>
-											<td>@leave.lt</td>
-											<td>@leave.dt</td>
-											<td>@{leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString()}</td>
-											<td>@{leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()}</td>
-											<td class="text-center">
-												<div class="btn-group">
-													<a class="btn btn-xs btn-success" title="View" href="@routes.LeaveController.view(leave._id.stringify)">
-														<i class="ace-icon fa fa-search-plus bigger-120"></i>
-													</a>
-												</div>
-											</td>
+											<th>Num</th>
+											<th>Category</th>
+											<th>Receipt Date</th>
+											<th>Approve Amount</th>
+											<th>Status</th>
+											<th>&nbsp;</th>
 										</tr>
-									}
-								</tbody>
-							</table>
-						}
+									</thead>
+									<tbody>
+										@claims.map { claim =>
+											<tr>
+												<td>@claim.docnum</td>
+												<td>@claim.ed.cat</td>
+												<td>@{claim.ed.rdat.get.dayOfMonth().getAsText + "-" + claim.ed.rdat.get.monthOfYear().getAsShortText + "-" + claim.ed.rdat.get.getYear.toString()}</td>
+												<td>@claim.ed.aamt.ccy @claim.ed.aamt.amt</td>
+												<td>@claim.wf.s</td>
+												<td class="text-center">
+													<div class="btn-group">
+														<a class="btn btn-xs btn-success" title="View" href="@routes.ClaimController.view(claim._id.stringify)">
+															<i class="ace-icon fa fa-search-plus bigger-120"></i>
+														</a>
+													</div>
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
 						</div>
-					</div>
-				</div> @**/.widget-body **@
-			</div> @**/.widget-box **@
+					</div> @**/.widget-body **@
+				</div> @**/.widget-box **@
+			}
+			
+			@if(leaves.length!=0){
+				<div class="widget-box transparent">
+					<div class="widget-header widget-header-flat">
+						<h4 class="widget-title blue">
+							<i class="ace-icon fa fa-tasks orange"></i>
+							My Pending Leave Request(s)
+						</h4>
+					</div> @** .widget-header **@
+					<div class="widget-body">
+						<div class="widget-main">
+							<div class="profile-activity clearfix">												
+								<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+									<thead>
+										<tr>
+											<th>Num</th>
+											<th>Leave Type</th>
+											<th>Day Type</th>
+											<th>Date From</th>
+											<th>Date To</th>
+											<th>&nbsp;</th>
+										</tr>
+									</thead>
+									<tbody>
+										@leaves.map { leave =>
+											<tr>
+												<td>@leave.docnum</td>
+												<td>@leave.lt</td>
+												<td>@leave.dt</td>
+												<td>@{leave.fdat.get.dayOfMonth().getAsText + "-" + leave.fdat.get.monthOfYear().getAsShortText + "-" + leave.fdat.get.getYear.toString()}</td>
+												<td>@{leave.tdat.get.dayOfMonth().getAsText + "-" + leave.tdat.get.monthOfYear().getAsShortText + "-" + leave.tdat.get.getYear.toString()}</td>
+												<td class="text-center">
+													<div class="btn-group">
+														<a class="btn btn-xs btn-success" title="View" href="@routes.LeaveController.view(leave._id.stringify)">
+															<i class="ace-icon fa fa-search-plus bigger-120"></i>
+														</a>
+													</div>
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div> @**/.widget-body **@
+				</div> @**/.widget-box **@
+			}
 			
 			<div class="widget-box transparent">
 				<div class="widget-header widget-header-flat">
@@ -195,26 +189,26 @@
 		</div>
 
 		<div class="col-sm-6">
-			<a href="@routes.LeaveController.create" class="btn btn-primary btn-sm btn-block visible-sm visible-md visible-lg">Apply Leave</a>
+			<a href="@routes.LeaveController.create" class="btn btn-sm btn-block visible-sm visible-md visible-lg">Apply Leave</a>
 			@if(disableclaim){
-				<a href="@routes.ClaimController.create" class="btn btn-primary btn-sm btn-block visible-sm visible-md visible-lg" alt="Please contact Admin to enable Claim Request." disabled>Submit Claim - Disabled</a>
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn-block visible-sm visible-md visible-lg" alt="Please contact Admin to enable Claim Request." disabled>Submit Claim - Disabled</a>
 			} else {
-				<a href="@routes.ClaimController.create" class="btn btn-primary btn-sm btn-block visible-sm visible-md visible-lg">Submit Claim</a>
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn-block visible-sm visible-md visible-lg">Submit Claim</a>
 			}
 			@if(session.get("roles").get.contains("Admin")) {
-				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-primary btn-sm btn-block visible-sm visible-md visible-lg">Apply Leave On Behalf Of Employee</a>
+				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn-block visible-sm visible-md visible-lg">Apply Leave On Behalf Of Employee</a>
 			}
 			<div class="space-6"></div>
 			<div id="calendar"></div>
 			<div class="space-6"></div>
-			<a href="@routes.LeaveController.create" class="btn btn-primary btn-sm btn-block visible-xs">Apply Leave</a>
+			<a href="@routes.LeaveController.create" class="btn btn-sm btn-block visible-xs">Apply Leave</a>
 			@if(disableclaim){
-				<a href="@routes.ClaimController.create" class="btn btn-primary btn-sm btn-block visible-xs" alt="Please contact Admin to enable Claim Request." disabled>Submit Claim - Disabled</a>
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn-block visible-xs" alt="Please contact Admin to enable Claim Request." disabled>Submit Claim - Disabled</a>
 			} else {
-				<a href="@routes.ClaimController.create" class="btn btn-primary btn-sm btn-block visible-xs">Submit Claim</a>
+				<a href="@routes.ClaimController.create" class="btn btn-sm btn-block visible-xs">Submit Claim</a>
 			}
 			@if(session.get("roles").get.contains("Admin")) {
-				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-primary btn-sm btn-block visible-xs">Apply Leave On Behalf Of Employee</a>
+				<a href="@routes.LeaveOnBehalfController.create" class="btn btn-sm btn-block visible-xs">Apply Leave On Behalf Of Employee</a>
 			}
 		</div>
 	
