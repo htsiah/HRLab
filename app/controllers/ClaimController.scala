@@ -197,7 +197,7 @@ class ClaimController @Inject() (mailerClient: MailerClient) extends Controller 
 	                    wf.at.at1 match {
 	                    case "[Employee’s Manager]" => PersonDetail( n=manager.p.fn + " " + manager.p.ln, id=manager._id.stringify)
 	                    case "[Employee’s Substitute Manager]" => if(smanager == null) { PersonDetail(n="Not Assigned", id="") } else { PersonDetail(n=smanager.p.fn + " " + smanager.p.ln, id=smanager._id.stringify) }
-	                    case _ => PersonDetail( n=wf.at.at2.split("@|@").head, id=wf.at.at2.split("@|@").last)
+	                    case _ => PersonDetail( n=wf.at.at1.split("@|@").head, id=wf.at.at1.split("@|@").last)
 	                    }
 	                  } else {
 	                    PersonDetail(n="Not Applicable", id="")
