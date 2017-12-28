@@ -425,7 +425,7 @@ object PersonModel {
                 p_request
             ).map { claims => {
               claims.foreach { claim => {
-                val p = if (claim.p.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.p.id }
+                val p = if (claim.p.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.p.n }
                 val papr = if (claim.wf.papr.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wf.papr.n }
                 val at1 = if (claim.wfat.at1.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at1.n }
                 val at2 = if (claim.wfat.at2.id == oldperson.get._id.stringify) { p_doc.p.fn + " " + p_doc.p.ln } else { claim.wfat.at2.n } 
@@ -441,7 +441,7 @@ object PersonModel {
                 ClaimModel.update(
                     BSONDocument("_id" -> claim._id), 
                     claim.copy(
-                        p=claim.p.copy(n=p_doc.p.fn + " " + p_doc.p.ln),
+                        p=claim.p.copy(n=p),
                         wf=claim.wf.copy(
                             papr=claim.wf.papr.copy(n=papr)
                         ),
